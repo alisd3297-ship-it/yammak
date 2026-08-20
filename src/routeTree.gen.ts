@@ -17,6 +17,7 @@ import { Route as DriverRouteImport } from './routes/driver'
 import { Route as PaymentsRouteImport } from './routes/payments'
 import { Route as ProviderRouteImport } from './routes/provider'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SetupAdminRouteImport } from './routes/setup-admin'
 import { Route as SpecialDeliveryRouteImport } from './routes/special-delivery'
 import { Route as TaxiRouteImport } from './routes/taxi'
 import { Route as VerifyPhoneRouteImport } from './routes/verify-phone'
@@ -81,6 +82,11 @@ const ProviderRoute = ProviderRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SetupAdminRoute = SetupAdminRouteImport.update({
+  id: '/setup-admin',
+  path: '/setup-admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SpecialDeliveryRoute = SpecialDeliveryRouteImport.update({
@@ -218,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/setup-admin': typeof SetupAdminRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
@@ -253,6 +260,7 @@ export interface FileRoutesByTo {
   '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/setup-admin': typeof SetupAdminRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
@@ -289,6 +297,7 @@ export interface FileRoutesById {
   '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/setup-admin': typeof SetupAdminRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
@@ -326,6 +335,7 @@ export interface FileRouteTypes {
     | '/payments'
     | '/provider'
     | '/reset-password'
+    | '/setup-admin'
     | '/special-delivery'
     | '/taxi'
     | '/verify-phone'
@@ -361,6 +371,7 @@ export interface FileRouteTypes {
     | '/payments'
     | '/provider'
     | '/reset-password'
+    | '/setup-admin'
     | '/special-delivery'
     | '/taxi'
     | '/verify-phone'
@@ -396,6 +407,7 @@ export interface FileRouteTypes {
     | '/payments'
     | '/provider'
     | '/reset-password'
+    | '/setup-admin'
     | '/special-delivery'
     | '/taxi'
     | '/verify-phone'
@@ -432,6 +444,7 @@ export interface RootRouteChildren {
   PaymentsRoute: typeof PaymentsRoute
   ProviderRoute: typeof ProviderRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SetupAdminRoute: typeof SetupAdminRoute
   SpecialDeliveryRoute: typeof SpecialDeliveryRoute
   TaxiRoute: typeof TaxiRoute
   VerifyPhoneRoute: typeof VerifyPhoneRoute
@@ -515,6 +528,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/setup-admin': {
+      id: '/setup-admin'
+      path: '/setup-admin'
+      fullPath: '/setup-admin'
+      preLoaderRoute: typeof SetupAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/special-delivery': {
@@ -704,6 +724,7 @@ const rootRouteChildren: RootRouteChildren = {
   PaymentsRoute: PaymentsRoute,
   ProviderRoute: ProviderRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SetupAdminRoute: SetupAdminRoute,
   SpecialDeliveryRoute: SpecialDeliveryRoute,
   TaxiRoute: TaxiRoute,
   VerifyPhoneRoute: VerifyPhoneRoute,
