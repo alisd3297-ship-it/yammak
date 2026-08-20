@@ -11,9 +11,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/restaurants/")({
   head: () => ({
     meta: [
-      { title: "طلبات المطاعم | يمّك" },
+      { title: "مطاعم وكافتريات | يمّك" },
       { name: "description", content: "اختر مطعمك المفضل في مدينتك واطلب أكلك بسرعة عبر يمّك." },
-      { property: "og:title", content: "طلبات المطاعم | يمّك" },
+      { property: "og:title", content: "مطاعم وكافتريات | يمّك" },
       { property: "og:description", content: "مطاعم قريبة منك، مرتبة حسب التقييم والسرعة." },
     ],
   }),
@@ -81,7 +81,7 @@ function RestaurantsPage() {
         <Link to="/" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
           <ArrowRight className="size-4" /> رجوع
         </Link>
-        <h1 className="text-2xl font-black">طلبات المطاعم</h1>
+        <h1 className="text-2xl font-black">مطاعم وكافتريات</h1>
       </header>
 
       <div className="px-4">

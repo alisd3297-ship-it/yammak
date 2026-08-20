@@ -15,12 +15,12 @@ import { createCourierOrder, quoteCourierFee } from "@/lib/courier.functions";
 export const Route = createFileRoute("/courier")({
   head: () => ({
     meta: [
-      { title: "اطلب مندوب | يمّك" },
+      { title: "توصيل سريع | يمّك" },
       {
         name: "description",
-        content: "اطلب مندوب مستقل لإرسال أو استلام أغراضك من أي نقطة إلى أخرى داخل مدينتك مع تسعير واضح.",
+        content: "توصيل سريع لإرسال أو استلام أغراضك من أي نقطة إلى أخرى داخل مدينتك مع تسعير واضح.",
       },
-      { property: "og:title", content: "اطلب مندوب | يمّك" },
+      { property: "og:title", content: "توصيل سريع | يمّك" },
       { property: "og:description", content: "إرسال واستلام من نقطة لنقطة عبر مندوبي يمّك." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -107,7 +107,7 @@ function CourierPage() {
         <Link to="/" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
           <ArrowRight className="size-4" /> الرئيسية
         </Link>
-        <h1 className="text-2xl font-black">اطلب مندوب</h1>
+        <h1 className="text-2xl font-black">توصيل سريع</h1>
         <p className="mt-1 text-sm opacity-90">إرسال واستلام من نقطة إلى نقطة داخل مدينتك.</p>
       </header>
 

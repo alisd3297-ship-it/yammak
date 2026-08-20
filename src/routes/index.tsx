@@ -190,23 +190,10 @@ function ServiceTile({ service }: { service: ServiceRow }) {
       <span className="text-xs font-semibold leading-tight">{service.name}</span>
     </div>
   );
-  if (to === "/restaurants") {
-    return <Link to="/restaurants">{content}</Link>;
+  const KNOWN = ["/restaurants", "/stores", "/services", "/courier", "/special-delivery", "/taxi"] as const;
+  if ((KNOWN as readonly string[]).includes(to)) {
+    return <Link to={to as (typeof KNOWN)[number]}>{content}</Link>;
   }
-  if (to === "/stores") {
-    return <Link to="/stores">{content}</Link>;
-  }
-  if (to === "/services") {
-    return <Link to="/services">{content}</Link>;
-  }
-  if (to === "/courier") {
-    return <Link to="/courier">{content}</Link>;
-  }
-  if (to === "/special-delivery") {
-    return <Link to="/special-delivery">{content}</Link>;
-  }
-
-
 
   return (
     <div title="هذه الخدمة قيد الإطلاق ضمن المراحل القادمة" className="opacity-70">
