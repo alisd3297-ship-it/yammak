@@ -76,7 +76,7 @@ export const changeOrderStatus = createServerFn({ method: "POST" })
     const { data: order, error } = await context.supabase.rpc("change_order_status", {
       _order_id: data.orderId,
       _new_status: data.status,
-      _reason: data.reason ?? undefined,
+      ...(data.reason ? { _reason: data.reason } : {}),
     });
     if (error || !order) throw new Error(friendly(error?.message ?? ""));
     return { id: order.id, status: order.status as OrderStatus };
