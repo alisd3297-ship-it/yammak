@@ -82,3 +82,27 @@ export const CUSTOMER_STATUS_FLOW: OrderStatus[] = [
   "on_the_way",
   "delivered",
 ];
+
+/** مسار حالات طلب المندوب المستقل (بدون مقدم خدمة). */
+export const COURIER_STATUS_FLOW: OrderStatus[] = [
+  "searching_driver",
+  "driver_accepted",
+  "driver_heading_pickup",
+  "picked_up",
+  "on_the_way",
+  "delivered",
+];
+
+export const COURIER_STATUS_LABELS: Partial<Record<OrderStatus, string>> = {
+  searching_driver: "جاري البحث عن مندوب",
+  offered_to_driver: "تم إرسال الطلب لمندوب",
+  driver_accepted: "المندوب قبل المهمة",
+  driver_heading_pickup: "المندوب متوجه لنقطة الاستلام",
+  picked_up: "تم استلام الغرض",
+  on_the_way: "بالطريق لنقطة التسليم",
+  delivered: "تم التسليم",
+};
+
+export function isCourierType(t: string | null | undefined): boolean {
+  return t === "courier" || t === "special_delivery";
+}
