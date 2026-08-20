@@ -964,10 +964,134 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_delivery_offer: {
+        Args: { _offer_id: string }
+        Returns: {
+          cancel_reason: string | null
+          city_id: string | null
+          code: string
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          delivery_fee: number
+          driver_id: string | null
+          dropoff_lat: number | null
+          dropoff_lng: number | null
+          dropoff_text: string | null
+          id: string
+          notes: string | null
+          order_type: Database["public"]["Enums"]["order_type"]
+          payment_method: string
+          pickup_lat: number | null
+          pickup_lng: number | null
+          pickup_text: string | null
+          provider_id: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total: number
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      auto_complete_delivered_orders: { Args: never; Returns: number }
       can_see_order: {
         Args: { _order_id: string; _user_id: string }
         Returns: boolean
       }
+      change_order_status: {
+        Args: {
+          _new_status: Database["public"]["Enums"]["order_status"]
+          _order_id: string
+          _reason?: string
+        }
+        Returns: {
+          cancel_reason: string | null
+          city_id: string | null
+          code: string
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          delivery_fee: number
+          driver_id: string | null
+          dropoff_lat: number | null
+          dropoff_lng: number | null
+          dropoff_text: string | null
+          id: string
+          notes: string | null
+          order_type: Database["public"]["Enums"]["order_type"]
+          payment_method: string
+          pickup_lat: number | null
+          pickup_lng: number | null
+          pickup_text: string | null
+          provider_id: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total: number
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      compute_delivery_fee: {
+        Args: {
+          _city_id: string
+          _distance_km: number
+          _order_type: Database["public"]["Enums"]["order_type"]
+          _provider_id: string
+        }
+        Returns: number
+      }
+      create_customer_order: {
+        Args: {
+          _dropoff_lat?: number
+          _dropoff_lng?: number
+          _dropoff_text: string
+          _items: Json
+          _notes?: string
+          _provider_id: string
+        }
+        Returns: {
+          cancel_reason: string | null
+          city_id: string | null
+          code: string
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          delivery_fee: number
+          driver_id: string | null
+          dropoff_lat: number | null
+          dropoff_lng: number | null
+          dropoff_text: string | null
+          id: string
+          notes: string | null
+          order_type: Database["public"]["Enums"]["order_type"]
+          payment_method: string
+          pickup_lat: number | null
+          pickup_lng: number | null
+          pickup_text: string | null
+          provider_id: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total: number
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      expire_stale_offers: { Args: { _order_id?: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -975,14 +1099,71 @@ export type Database = {
         }
         Returns: boolean
       }
+      haversine_km: {
+        Args: { a_lat: number; a_lng: number; b_lat: number; b_lng: number }
+        Returns: number
+      }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_allowed_transition: {
+        Args: {
+          _actor: string
+          _from: Database["public"]["Enums"]["order_status"]
+          _to: Database["public"]["Enums"]["order_status"]
+        }
+        Returns: boolean
+      }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      order_actor: {
+        Args: { _order_id: string; _user_id: string }
+        Returns: string
+      }
       owns_provider: {
         Args: { _provider_id: string; _user_id: string }
         Returns: boolean
       }
+      reject_delivery_offer: {
+        Args: { _offer_id: string; _reason?: string }
+        Returns: string
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      system_change_order_status: {
+        Args: {
+          _new_status: Database["public"]["Enums"]["order_status"]
+          _order_id: string
+        }
+        Returns: {
+          cancel_reason: string | null
+          city_id: string | null
+          code: string
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          delivery_fee: number
+          driver_id: string | null
+          dropoff_lat: number | null
+          dropoff_lng: number | null
+          dropoff_text: string | null
+          id: string
+          notes: string | null
+          order_type: Database["public"]["Enums"]["order_type"]
+          payment_method: string
+          pickup_lat: number | null
+          pickup_lng: number | null
+          pickup_text: string | null
+          provider_id: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total: number
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       app_role:
