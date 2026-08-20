@@ -249,6 +249,38 @@ function OrderTrackPage() {
                 {order?.dropoff_text}
               </span>
             </p>
+            {(data?.stops?.length ?? 0) > 1 && (
+              <ul className="mt-3 space-y-2">
+                {data!.stops.map((s, i) => (
+                  <li key={s.id} className="rounded-xl bg-muted/60 p-3 text-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold">النقطة {i + 1}</span>
+                      <span className={s.completed_at ? "text-xs text-success" : "text-xs text-muted-foreground"}>
+                        {s.completed_at ? "تم التسليم" : "بالانتظار"}
+                      </span>
+                    </div>
+                    <p className="mt-1">{s.address_text}</p>
+                    {s.recipient_name && (
+                      <p className="text-xs text-muted-foreground">المستلم: {s.recipient_name}</p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {order?.vehicle_type && (
+              <p className="mt-3 text-xs text-muted-foreground">
+                المركبة المطلوبة: {vehicleLabel(order.vehicle_type)}
+                {order.cargo_weight_kg ? ` · الوزن التقريبي ${order.cargo_weight_kg} كغم` : ""}
+              </p>
+            )}
+            {order?.cargo_description && (
+              <p className="mt-1 text-xs text-muted-foreground">الحمولة: {order.cargo_description}</p>
+            )}
+            {order?.scheduled_at && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                الموعد: {new Date(order.scheduled_at).toLocaleString("ar-IQ")}
+              </p>
+            )}
             {order?.notes && (
               <p className="mt-3 text-xs text-muted-foreground">الوصف والملاحظات: {order.notes}</p>
             )}
