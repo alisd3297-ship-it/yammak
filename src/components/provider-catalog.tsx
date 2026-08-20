@@ -40,7 +40,10 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
     const { error } = await supabase
       .from("menu_categories")
       .insert({ provider_id: providerId, name: catName.trim(), sort_order: (data?.categories.length ?? 0) + 1 });
-    if (error) return toast.error("تعذر إضافة القسم");
+    if (error) {
+      toast.error("تعذر إضافة القسم");
+      return;
+    }
     setCatName("");
     refresh();
   }
@@ -60,20 +63,31 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
       stock,
       sort_order: (data?.products.length ?? 0) + 1,
     });
-    if (error) return toast.error("تعذر إضافة المنتج");
+    if (error) {
+      toast.error("تعذر إضافة المنتج");
+      return;
+    }
     setForm({ name: "", price: "", stock: "", categoryId: "" });
     refresh();
   }
 
-  async function patchProduct(id: string, patch: Record<string, unknown>) {
+  type ProductPatch = { price?: number; stock?: number | null; is_available?: boolean };
+
+  async function patchProduct(id: string, patch: ProductPatch) {
     const { error } = await supabase.from("products").update(patch).eq("id", id);
-    if (error) return toast.error("تعذر حفظ التعديل");
+    if (error) {
+      toast.error("تعذر حفظ التعديل");
+      return;
+    }
     refresh();
   }
 
   async function removeProduct(id: string) {
     const { error } = await supabase.from("products").delete().eq("id", id);
-    if (error) return toast.error("تعذر حذف المنتج");
+    if (error) {
+      toast.error("تعذر حذف المنتج");
+      return;
+    }
     refresh();
   }
 
