@@ -1,0 +1,1 @@
+DROP FUNCTION IF EXISTS public.apply_as_provider(public.provider_kind, text, text, text, uuid, uuid, text, double precision, double precision);
