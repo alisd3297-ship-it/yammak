@@ -7,6 +7,8 @@ import { useCachedQuery } from "@/lib/offline-cache";
 import { BottomNav, BrandHeader, OfflineBanner, PageShell } from "@/components/app-shell";
 import { Input } from "@/components/ui/input";
 import { normalizeArabic, fuzzyScore } from "@/lib/search";
+import { AdsTickerBoard } from "@/components/ads-ticker";
+import { useAdsBoard } from "@/routes/ads.index";
 
 export const Route = createFileRoute("/")({
   head: () => ({
