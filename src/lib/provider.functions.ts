@@ -9,6 +9,7 @@ function friendly(message: string): string {
   if (message.includes("provider_already_exists")) return "عندك طلب أو متجر مسجّل بحسابك مسبقاً";
   if (message.includes("kind_not_allowed")) return "نوع النشاط غير مدعوم حالياً";
   if (message.includes("missing_name")) return "اكتب اسم النشاط";
+  if (message.includes("missing_category")) return "اختر تصنيف المهنة";
   if (message.includes("provider_not_found")) return "الطلب غير موجود";
   if (message.includes("forbidden") || message.includes("unauthorized")) return "غير مصرح بهذا الإجراء";
   return "تعذر تنفيذ العملية، حاول مرة ثانية";
@@ -27,6 +28,7 @@ export const applyAsProvider = createServerFn({ method: "POST" })
       addressText?: string | null;
       lat?: number | null;
       lng?: number | null;
+      professionCategoryId?: string | null;
     }) => data,
   )
   .handler(async ({ data, context }) => {
@@ -39,6 +41,7 @@ export const applyAsProvider = createServerFn({ method: "POST" })
       ...(data.addressText ? { _address_text: data.addressText } : {}),
       ...(data.lat != null ? { _lat: data.lat } : {}),
       ...(data.lng != null ? { _lng: data.lng } : {}),
+      ...(data.professionCategoryId ? { _profession_category_id: data.professionCategoryId } : {}),
     });
     if (error || !provider) throw new Error(friendly(error?.message ?? ""));
     return { id: provider.id, status: provider.status as ProviderStatus };

@@ -648,6 +648,33 @@ export type Database = {
           },
         ]
       }
+      profession_categories: {
+        Row: {
+          created_at: string
+          icon: string
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -689,6 +716,66 @@ export type Database = {
           },
         ]
       }
+      provider_services: {
+        Row: {
+          category_id: string | null
+          created_at: string
+          description: string | null
+          estimated_minutes: number | null
+          id: string
+          is_active: boolean
+          name: string
+          price_amount: number
+          price_unit: Database["public"]["Enums"]["service_price_unit"]
+          provider_id: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          estimated_minutes?: number | null
+          id?: string
+          is_active?: boolean
+          name: string
+          price_amount?: number
+          price_unit?: Database["public"]["Enums"]["service_price_unit"]
+          provider_id: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          estimated_minutes?: number | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          price_amount?: number
+          price_unit?: Database["public"]["Enums"]["service_price_unit"]
+          provider_id?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_services_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "profession_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_services_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       providers: {
         Row: {
           address_text: string | null
@@ -711,6 +798,7 @@ export type Database = {
           orders_count: number
           owner_id: string | null
           phone: string | null
+          profession_category_id: string | null
           rating: number
           ratings_count: number
           status: Database["public"]["Enums"]["provider_status"]
@@ -737,6 +825,7 @@ export type Database = {
           orders_count?: number
           owner_id?: string | null
           phone?: string | null
+          profession_category_id?: string | null
           rating?: number
           ratings_count?: number
           status?: Database["public"]["Enums"]["provider_status"]
@@ -763,6 +852,7 @@ export type Database = {
           orders_count?: number
           owner_id?: string | null
           phone?: string | null
+          profession_category_id?: string | null
           rating?: number
           ratings_count?: number
           status?: Database["public"]["Enums"]["provider_status"]
@@ -781,6 +871,13 @@ export type Database = {
             columns: ["city_id"]
             isOneToOne: false
             referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "providers_profession_category_id_fkey"
+            columns: ["profession_category_id"]
+            isOneToOne: false
+            referencedRelation: "profession_categories"
             referencedColumns: ["id"]
           },
         ]
@@ -822,6 +919,171 @@ export type Database = {
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_ratings: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          provider_id: string
+          rater_id: string
+          request_id: string
+          stars: number
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          provider_id: string
+          rater_id: string
+          request_id: string
+          stars: number
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          provider_id?: string
+          rater_id?: string
+          request_id?: string
+          stars?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_ratings_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_ratings_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: true
+            referencedRelation: "service_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_request_history: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          id: string
+          request_id: string
+          status: Database["public"]["Enums"]["service_request_status"]
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          request_id: string
+          status: Database["public"]["Enums"]["service_request_status"]
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          request_id?: string
+          status?: Database["public"]["Enums"]["service_request_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_request_history_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "service_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_requests: {
+        Row: {
+          address_text: string
+          cancel_reason: string | null
+          city_id: string | null
+          code: string
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          description: string | null
+          id: string
+          lat: number | null
+          lng: number | null
+          price_amount: number
+          price_unit: Database["public"]["Enums"]["service_price_unit"]
+          provider_id: string
+          scheduled_at: string | null
+          service_id: string | null
+          service_name: string
+          status: Database["public"]["Enums"]["service_request_status"]
+          updated_at: string
+        }
+        Insert: {
+          address_text: string
+          cancel_reason?: string | null
+          city_id?: string | null
+          code?: string
+          completed_at?: string | null
+          created_at?: string
+          customer_id: string
+          description?: string | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          price_amount?: number
+          price_unit?: Database["public"]["Enums"]["service_price_unit"]
+          provider_id: string
+          scheduled_at?: string | null
+          service_id?: string | null
+          service_name: string
+          status?: Database["public"]["Enums"]["service_request_status"]
+          updated_at?: string
+        }
+        Update: {
+          address_text?: string
+          cancel_reason?: string | null
+          city_id?: string | null
+          code?: string
+          completed_at?: string | null
+          created_at?: string
+          customer_id?: string
+          description?: string | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          price_amount?: number
+          price_unit?: Database["public"]["Enums"]["service_price_unit"]
+          provider_id?: string
+          scheduled_at?: string | null
+          service_id?: string | null
+          service_name?: string
+          status?: Database["public"]["Enums"]["service_request_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_requests_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_requests_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_requests_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "provider_services"
             referencedColumns: ["id"]
           },
         ]
@@ -1043,54 +1305,107 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      apply_as_provider: {
-        Args: {
-          _address_text?: string
-          _area_id?: string
-          _city_id?: string
-          _description?: string
-          _kind: Database["public"]["Enums"]["provider_kind"]
-          _lat?: number
-          _lng?: number
-          _name: string
-          _phone?: string
-        }
-        Returns: {
-          address_text: string | null
-          approval_code: string | null
-          area_id: string | null
-          avg_prep_minutes: number
-          city_id: string | null
-          commission_percent: number
-          cover_url: string | null
-          created_at: string
-          description: string | null
-          id: string
-          is_open: boolean
-          keywords: string[]
-          kind: Database["public"]["Enums"]["provider_kind"]
-          lat: number | null
-          lng: number | null
-          logo_url: string | null
-          name: string
-          orders_count: number
-          owner_id: string | null
-          phone: string | null
-          rating: number
-          ratings_count: number
-          status: Database["public"]["Enums"]["provider_status"]
-          updated_at: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "providers"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
+      apply_as_provider:
+        | {
+            Args: {
+              _address_text?: string
+              _area_id?: string
+              _city_id?: string
+              _description?: string
+              _kind: Database["public"]["Enums"]["provider_kind"]
+              _lat?: number
+              _lng?: number
+              _name: string
+              _phone?: string
+            }
+            Returns: {
+              address_text: string | null
+              approval_code: string | null
+              area_id: string | null
+              avg_prep_minutes: number
+              city_id: string | null
+              commission_percent: number
+              cover_url: string | null
+              created_at: string
+              description: string | null
+              id: string
+              is_open: boolean
+              keywords: string[]
+              kind: Database["public"]["Enums"]["provider_kind"]
+              lat: number | null
+              lng: number | null
+              logo_url: string | null
+              name: string
+              orders_count: number
+              owner_id: string | null
+              phone: string | null
+              profession_category_id: string | null
+              rating: number
+              ratings_count: number
+              status: Database["public"]["Enums"]["provider_status"]
+              updated_at: string
+            }
+            SetofOptions: {
+              from: "*"
+              to: "providers"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: {
+              _address_text?: string
+              _area_id?: string
+              _city_id?: string
+              _description?: string
+              _kind: Database["public"]["Enums"]["provider_kind"]
+              _lat?: number
+              _lng?: number
+              _name: string
+              _phone?: string
+              _profession_category_id?: string
+            }
+            Returns: {
+              address_text: string | null
+              approval_code: string | null
+              area_id: string | null
+              avg_prep_minutes: number
+              city_id: string | null
+              commission_percent: number
+              cover_url: string | null
+              created_at: string
+              description: string | null
+              id: string
+              is_open: boolean
+              keywords: string[]
+              kind: Database["public"]["Enums"]["provider_kind"]
+              lat: number | null
+              lng: number | null
+              logo_url: string | null
+              name: string
+              orders_count: number
+              owner_id: string | null
+              phone: string | null
+              profession_category_id: string | null
+              rating: number
+              ratings_count: number
+              status: Database["public"]["Enums"]["provider_status"]
+              updated_at: string
+            }
+            SetofOptions: {
+              from: "*"
+              to: "providers"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
       auto_complete_delivered_orders: { Args: never; Returns: number }
       can_see_order: {
         Args: { _order_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_see_service_request: {
+        Args: { _request_id: string; _user_id: string }
         Returns: boolean
       }
       change_order_status: {
@@ -1127,6 +1442,41 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      change_service_request_status: {
+        Args: {
+          _new_status: Database["public"]["Enums"]["service_request_status"]
+          _reason?: string
+          _request_id: string
+          _scheduled_at?: string
+        }
+        Returns: {
+          address_text: string
+          cancel_reason: string | null
+          city_id: string | null
+          code: string
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          description: string | null
+          id: string
+          lat: number | null
+          lng: number | null
+          price_amount: number
+          price_unit: Database["public"]["Enums"]["service_price_unit"]
+          provider_id: string
+          scheduled_at: string | null
+          service_id: string | null
+          service_name: string
+          status: Database["public"]["Enums"]["service_request_status"]
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "service_requests"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -1185,6 +1535,43 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      create_service_request: {
+        Args: {
+          _address_text: string
+          _description?: string
+          _lat?: number
+          _lng?: number
+          _scheduled_at?: string
+          _service_id: string
+        }
+        Returns: {
+          address_text: string
+          cancel_reason: string | null
+          city_id: string | null
+          code: string
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          description: string | null
+          id: string
+          lat: number | null
+          lng: number | null
+          price_amount: number
+          price_unit: Database["public"]["Enums"]["service_price_unit"]
+          provider_id: string
+          scheduled_at: string | null
+          service_id: string | null
+          service_name: string
+          status: Database["public"]["Enums"]["service_request_status"]
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "service_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       expire_stale_offers: { Args: { _order_id?: string }; Returns: number }
       has_role: {
         Args: {
@@ -1198,6 +1585,14 @@ export type Database = {
         Returns: number
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_allowed_service_transition: {
+        Args: {
+          _actor: string
+          _from: Database["public"]["Enums"]["service_request_status"]
+          _to: Database["public"]["Enums"]["service_request_status"]
+        }
+        Returns: boolean
+      }
       is_allowed_transition: {
         Args: {
           _actor: string
@@ -1215,11 +1610,33 @@ export type Database = {
         Args: { _provider_id: string; _user_id: string }
         Returns: boolean
       }
+      rate_service_request: {
+        Args: { _comment?: string; _request_id: string; _stars: number }
+        Returns: {
+          comment: string | null
+          created_at: string
+          id: string
+          provider_id: string
+          rater_id: string
+          request_id: string
+          stars: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "service_ratings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       reject_delivery_offer: {
         Args: { _offer_id: string; _reason?: string }
         Returns: string
       }
       run_sql_maintenance: { Args: never; Returns: Json }
+      service_request_actor: {
+        Args: { _request_id: string; _user_id: string }
+        Returns: string
+      }
       set_provider_status: {
         Args: {
           _provider_id: string
@@ -1247,6 +1664,7 @@ export type Database = {
           orders_count: number
           owner_id: string | null
           phone: string | null
+          profession_category_id: string | null
           rating: number
           ratings_count: number
           status: Database["public"]["Enums"]["provider_status"]
@@ -1332,6 +1750,16 @@ export type Database = {
         | "profession"
       provider_kind: "restaurant" | "store" | "profession"
       provider_status: "pending" | "approved" | "suspended" | "rejected"
+      service_price_unit: "fixed" | "hourly" | "daily" | "visit" | "negotiable"
+      service_request_status:
+        | "requested"
+        | "accepted"
+        | "scheduled"
+        | "en_route"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
+        | "rejected"
       worker_kind: "delivery" | "taxi"
     }
     CompositeTypes: {
@@ -1495,6 +1923,17 @@ export const Constants = {
       ],
       provider_kind: ["restaurant", "store", "profession"],
       provider_status: ["pending", "approved", "suspended", "rejected"],
+      service_price_unit: ["fixed", "hourly", "daily", "visit", "negotiable"],
+      service_request_status: [
+        "requested",
+        "accepted",
+        "scheduled",
+        "en_route",
+        "in_progress",
+        "completed",
+        "cancelled",
+        "rejected",
+      ],
       worker_kind: ["delivery", "taxi"],
     },
   },

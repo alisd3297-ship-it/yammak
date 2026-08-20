@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell, StatusDot } from "@/components/app-shell";
 import { ProviderCatalog } from "@/components/provider-catalog";
+import { ProviderServices } from "@/components/provider-services";
+import { ProviderServiceRequests } from "@/components/provider-service-requests";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -68,6 +70,8 @@ function ProviderDashboard() {
     },
   });
 
+  const isProfession = provider?.kind === "profession";
+
   async function toggleOpen(open: boolean) {
     if (!provider) return;
     await supabase.from("providers").update({ is_open: open }).eq("id", provider.id);
@@ -120,7 +124,15 @@ function ProviderDashboard() {
         <h1 className="text-2xl font-black">{provider?.name ?? "لوحة مقدم الخدمة"}</h1>
         {provider && (
           <div className="mt-3 flex items-center justify-between rounded-2xl bg-white/15 px-4 py-3">
-            <span className="text-sm font-semibold">{provider.is_open ? "المتجر مفتوح" : "المتجر مغلق"}</span>
+            <span className="text-sm font-semibold">
+              {isProfession
+                ? provider.is_open
+                  ? "متاح لاستقبال الطلبات"
+                  : "غير متاح حالياً"
+                : provider.is_open
+                  ? "المتجر مفتوح"
+                  : "المتجر مغلق"}
+            </span>
             <Switch checked={provider.is_open} onCheckedChange={toggleOpen} />
           </div>
         )}
@@ -128,11 +140,15 @@ function ProviderDashboard() {
 
       {provider && (
         <div className="mt-4 flex gap-2 px-4">
-          {(
-            [
-              { key: "orders", label: "الطلبات" },
-              { key: "catalog", label: "الكتالوج" },
-            ] as const
+          {(isProfession
+            ? ([
+                { key: "orders", label: "طلبات الخدمة" },
+                { key: "catalog", label: "خدماتي وأسعاري" },
+              ] as const)
+            : ([
+                { key: "orders", label: "الطلبات" },
+                { key: "catalog", label: "الكتالوج" },
+              ] as const)
           ).map((t) => (
             <button
               key={t.key}
@@ -150,11 +166,26 @@ function ProviderDashboard() {
 
       {provider && tab === "catalog" && (
         <div className="px-4 py-5">
-          <ProviderCatalog providerId={provider.id} isStore={provider.kind === "store"} />
+          {isProfession ? (
+            <ProviderServices providerId={provider.id} />
+          ) : (
+            <ProviderCatalog providerId={provider.id} isStore={provider.kind === "store"} />
+          )}
         </div>
       )}
 
-      <div className={cn("space-y-3 px-4 py-5", provider && tab !== "orders" && "hidden")}>
+      {provider && isProfession && tab === "orders" && (
+        <div className="px-4 py-5">
+          {provider.status !== "approved" && (
+            <p className="mb-3 rounded-2xl bg-warning/15 p-4 text-sm">
+              ملفك قيد المراجعة من الإدارة، ما راح تستلم طلبات قبل الاعتماد.
+            </p>
+          )}
+          <ProviderServiceRequests providerId={provider.id} />
+        </div>
+      )}
+
+      <div className={cn("space-y-3 px-4 py-5", provider && (isProfession || tab !== "orders") && "hidden")}>
         {!provider && (
           <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
             ما عندك نشاط مرتبط بحسابك.{" "}

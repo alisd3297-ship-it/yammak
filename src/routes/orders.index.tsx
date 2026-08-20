@@ -39,6 +39,12 @@ function OrdersPage() {
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
         <h1 className="text-2xl font-black">طلباتي</h1>
         <p className="mt-1 text-sm opacity-90">متابعة كل طلباتك بمكان واحد</p>
+        <Link
+          to="/service-requests"
+          className="mt-3 inline-block rounded-full bg-white/15 px-4 py-2 text-xs font-semibold"
+        >
+          طلبات المهن والخدمات
+        </Link>
       </header>
 
       <div className="space-y-3 px-4 py-5">
