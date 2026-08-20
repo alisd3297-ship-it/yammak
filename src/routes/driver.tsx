@@ -58,7 +58,7 @@ function DriverDashboard() {
     queryFn: async () => {
       const { data } = await supabase
         .from("delivery_offers")
-        .select("id, order_id, distance_km, expires_at, status, orders(code, total, order_type, notes, pickup_text, dropoff_text)")
+        .select("id, order_id, distance_km, expires_at, status, orders(code, total, order_type, notes, pickup_text, dropoff_text, vehicle_type, cargo_description, cargo_weight_kg, scheduled_at)")
         .eq("driver_id", account!.userId!)
         .eq("status", "sent")
         .gt("expires_at", new Date().toISOString());
@@ -73,7 +73,7 @@ function DriverDashboard() {
     queryFn: async () => {
       const { data } = await supabase
         .from("orders")
-        .select("id, code, status, total, order_type, notes, pickup_text, dropoff_text, dropoff_lat, dropoff_lng")
+        .select("id, code, status, total, order_type, notes, pickup_text, dropoff_text, dropoff_lat, dropoff_lng, vehicle_type, cargo_description, scheduled_at, order_stops(id, position, address_text, recipient_name, recipient_phone, notes, is_delivered)")
         .eq("driver_id", account!.userId!)
         .in("status", ["driver_accepted", "driver_heading_pickup", "picked_up", "on_the_way"]);
       return data ?? [];
