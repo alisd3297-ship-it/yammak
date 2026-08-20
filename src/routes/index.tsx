@@ -190,7 +190,7 @@ function ServiceTile({ service }: { service: ServiceRow }) {
       <span className="text-xs font-semibold leading-tight">{service.name}</span>
     </div>
   );
-  const KNOWN = ["/restaurants", "/stores", "/services", "/courier", "/special-delivery", "/taxi"] as const;
+  const KNOWN = ["/restaurants", "/stores", "/services", "/courier", "/special-delivery", "/taxi", "/ads"] as const;
   if ((KNOWN as readonly string[]).includes(to)) {
     return <Link to={to as (typeof KNOWN)[number]}>{content}</Link>;
   }
