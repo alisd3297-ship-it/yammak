@@ -19,6 +19,7 @@ import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as RestaurantsIndexRouteImport } from './routes/restaurants.index'
 import { Route as RestaurantsIdRouteImport } from './routes/restaurants.$id'
 import { Route as StoresIndexRouteImport } from './routes/stores.index'
+import { Route as StoresIdRouteImport } from './routes/stores.$id'
 import { Route as ApiPublicMaintenanceRouteImport } from './routes/api/public/maintenance'
 
 const IndexRoute = IndexRouteImport.update({
@@ -71,6 +72,11 @@ const StoresIndexRoute = StoresIndexRouteImport.update({
   path: '/stores/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StoresIdRoute = StoresIdRouteImport.update({
+  id: '/stores/$id',
+  path: '/stores/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicMaintenanceRoute = ApiPublicMaintenanceRouteImport.update({
   id: '/api/public/maintenance',
   path: '/api/public/maintenance',
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/provider': typeof ProviderRoute
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
+  '/stores/$id': typeof StoresIdRoute
   '/orders/': typeof OrdersIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
   '/stores/': typeof StoresIndexRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByTo {
   '/provider': typeof ProviderRoute
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
+  '/stores/$id': typeof StoresIdRoute
   '/orders': typeof OrdersIndexRoute
   '/restaurants': typeof RestaurantsIndexRoute
   '/stores': typeof StoresIndexRoute
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   '/provider': typeof ProviderRoute
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
+  '/stores/$id': typeof StoresIdRoute
   '/orders/': typeof OrdersIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
   '/stores/': typeof StoresIndexRoute
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/provider'
     | '/orders/$id'
     | '/restaurants/$id'
+    | '/stores/$id'
     | '/orders/'
     | '/restaurants/'
     | '/stores/'
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/provider'
     | '/orders/$id'
     | '/restaurants/$id'
+    | '/stores/$id'
     | '/orders'
     | '/restaurants'
     | '/stores'
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/provider'
     | '/orders/$id'
     | '/restaurants/$id'
+    | '/stores/$id'
     | '/orders/'
     | '/restaurants/'
     | '/stores/'
@@ -167,6 +179,7 @@ export interface RootRouteChildren {
   ProviderRoute: typeof ProviderRoute
   OrdersIdRoute: typeof OrdersIdRoute
   RestaurantsIdRoute: typeof RestaurantsIdRoute
+  StoresIdRoute: typeof StoresIdRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
   RestaurantsIndexRoute: typeof RestaurantsIndexRoute
   StoresIndexRoute: typeof StoresIndexRoute
@@ -245,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StoresIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/stores/$id': {
+      id: '/stores/$id'
+      path: '/stores/$id'
+      fullPath: '/stores/$id'
+      preLoaderRoute: typeof StoresIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/maintenance': {
       id: '/api/public/maintenance'
       path: '/api/public/maintenance'
@@ -263,6 +283,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderRoute: ProviderRoute,
   OrdersIdRoute: OrdersIdRoute,
   RestaurantsIdRoute: RestaurantsIdRoute,
+  StoresIdRoute: StoresIdRoute,
   OrdersIndexRoute: OrdersIndexRoute,
   RestaurantsIndexRoute: RestaurantsIndexRoute,
   StoresIndexRoute: StoresIndexRoute,
