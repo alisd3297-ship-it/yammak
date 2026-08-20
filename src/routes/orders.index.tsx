@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { BottomNav, PageShell, StatusDot } from "@/components/app-shell";
 import { useAccount } from "@/lib/auth";
 import { ORDER_STATUS_LABELS, formatIQD, statusTone, type OrderStatus } from "@/lib/orders";
+import { TRIP_STATUS_LABELS, taxiClassLabel, tripTone, type TripStatus } from "@/lib/taxi";
 
 export const Route = createFileRoute("/orders/")({
   head: () => ({
@@ -34,6 +35,22 @@ function OrdersPage() {
     },
   });
 
+  const { data: trips } = useQuery({
+    queryKey: ["my-trips", account?.userId],
+    enabled: !!account?.userId,
+    refetchInterval: 15_000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("trips")
+        .select("id, code, status, fare, taxi_class, pickup_text, destination_text, created_at")
+        .eq("customer_id", account!.userId!)
+        .order("created_at", { ascending: false })
+        .limit(20);
+      return data ?? [];
+    },
+  });
+
+
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
@@ -48,6 +65,27 @@ function OrdersPage() {
       </header>
 
       <div className="space-y-3 px-4 py-5">
+        {!!trips?.length && (
+          <section className="space-y-3">
+            <h2 className="font-bold">رحلات التكسي</h2>
+            {trips.map((t) => (
+              <Link key={t.id} to="/taxi" className="block rounded-2xl bg-card p-4 shadow-soft">
+                <div className="flex items-center justify-between">
+                  <p className="font-bold">رحلة #{t.code}</p>
+                  <span className="text-sm font-bold text-primary">{formatIQD(Number(t.fare))}</span>
+                </div>
+                <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                  <StatusDot tone={tripTone(t.status as TripStatus)} />
+                  {TRIP_STATUS_LABELS[t.status as TripStatus]} · {taxiClassLabel(t.taxi_class)}
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {t.pickup_text} ← {t.destination_text}
+                </p>
+              </Link>
+            ))}
+            <h2 className="pt-2 font-bold">الطلبات</h2>
+          </section>
+        )}
         {!account?.userId && (
           <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
             سجّل دخولك حتى تشوف طلباتك.{" "}
