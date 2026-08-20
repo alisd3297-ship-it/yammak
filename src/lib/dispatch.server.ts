@@ -183,9 +183,20 @@ export async function runMaintenance(source = "manual", minSeconds = 30) {
     }
   }
 
+  // صيانة رحلات التكسي: إنهاء العروض المنتهية وإعادة توزيع الرحلات المعلّقة
+  let tripExpired = 0;
+  try {
+    const { runTripMaintenance } = await import("@/lib/taxi.server");
+    const trips = await runTripMaintenance();
+    tripExpired = trips.expired;
+    redispatched += trips.redispatched;
+  } catch {
+    // لا نوقف الصيانة العامة بسبب الرحلات
+  }
+
   const result = {
     skipped: false,
-    expired: Number(expired ?? 0),
+    expired: Number(expired ?? 0) + tripExpired,
     completed: Number(completed ?? 0),
     redispatched,
   };
