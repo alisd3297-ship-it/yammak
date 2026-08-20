@@ -49,6 +49,7 @@ type ProviderRow = {
 
 function CustomerHome() {
   const [term, setTerm] = useState("");
+  const adsBoard = useAdsBoard();
 
   const catalog = useCachedQuery(["home-catalog"], async () => {
     const [sections, services, providers] = await Promise.all([
