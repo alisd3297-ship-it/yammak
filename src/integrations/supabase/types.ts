@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      _e2e_taxi: {
+        Row: {
+          created_at: string
+          detail: string | null
+          id: number
+          name: string
+          ok: boolean
+          step: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: string | null
+          id?: number
+          name: string
+          ok: boolean
+          step: string
+        }
+        Update: {
+          created_at?: string
+          detail?: string | null
+          id?: number
+          name?: string
+          ok?: boolean
+          step?: string
+        }
+        Relationships: []
+      }
       addresses: {
         Row: {
           address_text: string
@@ -1563,6 +1590,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      _e2e_accept_as: {
+        Args: { _offer: string; _uid: string }
+        Returns: string
+      }
+      _e2e_as: { Args: { _uid: string }; Returns: undefined }
+      _e2e_force_expire: { Args: { _trip: string }; Returns: number }
+      _e2e_log: {
+        Args: { _detail?: string; _name: string; _ok: boolean; _step: string }
+        Returns: undefined
+      }
+      _e2e_make_offer: {
+        Args: { _driver: string; _trip: string }
+        Returns: string
+      }
+      _e2e_reset: { Args: never; Returns: undefined }
       accept_delivery_offer: {
         Args: { _offer_id: string }
         Returns: {
