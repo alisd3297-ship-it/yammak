@@ -17,6 +17,7 @@ import {
   isCourierType,
   type OrderStatus,
 } from "@/lib/orders";
+import { vehicleLabel } from "@/lib/vehicles";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/orders/$id")({
