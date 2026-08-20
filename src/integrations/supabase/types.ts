@@ -700,6 +700,57 @@ export type Database = {
         }
         Relationships: []
       }
+      phone_verifications: {
+        Row: {
+          attempts: number
+          channel: string
+          code_hash: string
+          consumed_at: string | null
+          created_at: string
+          delivered: boolean
+          expires_at: string
+          id: string
+          max_attempts: number
+          phone: string
+          salt: string
+          send_count: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          channel?: string
+          code_hash: string
+          consumed_at?: string | null
+          created_at?: string
+          delivered?: boolean
+          expires_at: string
+          id?: string
+          max_attempts?: number
+          phone: string
+          salt: string
+          send_count?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          channel?: string
+          code_hash?: string
+          consumed_at?: string | null
+          created_at?: string
+          delivered?: boolean
+          expires_at?: string
+          id?: string
+          max_attempts?: number
+          phone?: string
+          salt?: string
+          send_count?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pricing_rules: {
         Row: {
           base_fee: number
@@ -859,6 +910,7 @@ export type Database = {
           id: string
           is_blocked: boolean
           phone: string | null
+          phone_verified_at: string | null
           updated_at: string
         }
         Insert: {
@@ -869,6 +921,7 @@ export type Database = {
           id: string
           is_blocked?: boolean
           phone?: string | null
+          phone_verified_at?: string | null
           updated_at?: string
         }
         Update: {
@@ -879,6 +932,7 @@ export type Database = {
           id?: string
           is_blocked?: boolean
           phone?: string | null
+          phone_verified_at?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -2392,10 +2446,29 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_phone_verified: { Args: { _user_id: string }; Returns: boolean }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
       order_actor: {
         Args: { _order_id: string; _user_id: string }
         Returns: string
+      }
+      otp_flag: { Args: { _flag: string }; Returns: boolean }
+      otp_mark_delivered: {
+        Args: { _challenge_id: string; _channel: string; _delivered: boolean }
+        Returns: undefined
+      }
+      otp_request: {
+        Args: {
+          _code_hash: string
+          _phone: string
+          _salt: string
+          _user_id: string
+        }
+        Returns: Json
+      }
+      otp_verify: {
+        Args: { _code_hash: string; _user_id: string }
+        Returns: Json
       }
       owns_provider: {
         Args: { _provider_id: string; _user_id: string }
