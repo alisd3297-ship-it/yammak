@@ -95,6 +95,11 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
 
   const candidates = (workers ?? [])
     .filter((w) => !excluded.has(w.user_id))
+    .filter((w) => {
+      if (!requiredRank) return true;
+      const rank = w.vehicle_type ? VEHICLE_RANK[w.vehicle_type as VehicleType] : 1;
+      return rank >= requiredRank;
+    })
     .map((w) => {
       const loc = locations?.find((l) => l.user_id === w.user_id);
       if (!loc) return null;
