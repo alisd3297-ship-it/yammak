@@ -16,6 +16,7 @@ import { Route as CourierRouteImport } from './routes/courier'
 import { Route as DriverRouteImport } from './routes/driver'
 import { Route as PaymentsRouteImport } from './routes/payments'
 import { Route as ProviderRouteImport } from './routes/provider'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SpecialDeliveryRouteImport } from './routes/special-delivery'
 import { Route as TaxiRouteImport } from './routes/taxi'
 import { Route as VerifyPhoneRouteImport } from './routes/verify-phone'
@@ -75,6 +76,11 @@ const PaymentsRoute = PaymentsRouteImport.update({
 const ProviderRoute = ProviderRouteImport.update({
   id: '/provider',
   path: '/provider',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SpecialDeliveryRoute = SpecialDeliveryRouteImport.update({
@@ -211,6 +217,7 @@ export interface FileRoutesByFullPath {
   '/driver': typeof DriverRoute
   '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
@@ -245,6 +252,7 @@ export interface FileRoutesByTo {
   '/driver': typeof DriverRoute
   '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
@@ -280,6 +288,7 @@ export interface FileRoutesById {
   '/driver': typeof DriverRoute
   '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
@@ -316,6 +325,7 @@ export interface FileRouteTypes {
     | '/driver'
     | '/payments'
     | '/provider'
+    | '/reset-password'
     | '/special-delivery'
     | '/taxi'
     | '/verify-phone'
@@ -350,6 +360,7 @@ export interface FileRouteTypes {
     | '/driver'
     | '/payments'
     | '/provider'
+    | '/reset-password'
     | '/special-delivery'
     | '/taxi'
     | '/verify-phone'
@@ -384,6 +395,7 @@ export interface FileRouteTypes {
     | '/driver'
     | '/payments'
     | '/provider'
+    | '/reset-password'
     | '/special-delivery'
     | '/taxi'
     | '/verify-phone'
@@ -419,6 +431,7 @@ export interface RootRouteChildren {
   DriverRoute: typeof DriverRoute
   PaymentsRoute: typeof PaymentsRoute
   ProviderRoute: typeof ProviderRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SpecialDeliveryRoute: typeof SpecialDeliveryRoute
   TaxiRoute: typeof TaxiRoute
   VerifyPhoneRoute: typeof VerifyPhoneRoute
@@ -495,6 +508,13 @@ declare module '@tanstack/react-router' {
       path: '/provider'
       fullPath: '/provider'
       preLoaderRoute: typeof ProviderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/special-delivery': {
@@ -683,6 +703,7 @@ const rootRouteChildren: RootRouteChildren = {
   DriverRoute: DriverRoute,
   PaymentsRoute: PaymentsRoute,
   ProviderRoute: ProviderRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SpecialDeliveryRoute: SpecialDeliveryRoute,
   TaxiRoute: TaxiRoute,
   VerifyPhoneRoute: VerifyPhoneRoute,
