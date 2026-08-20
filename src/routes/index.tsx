@@ -202,6 +202,10 @@ function ServiceTile({ service }: { service: ServiceRow }) {
   if (to === "/courier") {
     return <Link to="/courier">{content}</Link>;
   }
+  if (to === "/special-delivery") {
+    return <Link to="/special-delivery">{content}</Link>;
+  }
+
 
 
   return (
