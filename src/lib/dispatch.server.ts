@@ -52,7 +52,7 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
   if (liveOffer)
     return { assignedTo: null, status: "offered_to_driver", message: "هناك عرض قائم بانتظار رد المندوب" };
 
-  if (order.status === "ready_for_pickup") {
+  if (order.status === "ready_for_pickup" || order.status === "new") {
     await supabaseAdmin.rpc("system_change_order_status", {
       _order_id: order.id,
       _new_status: "searching_driver",
@@ -68,10 +68,13 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
 
   const { data: workers } = await supabaseAdmin
     .from("worker_profiles")
-    .select("user_id, max_active_orders")
+    .select("user_id, max_active_orders, vehicle_type")
     .eq("worker_kind", "delivery")
     .eq("is_approved", true)
     .eq("is_available", true);
+
+  // تصفية حسب سعة المركبة المطلوبة (التوصيل الخاص)
+  const requiredRank = order.vehicle_type ? VEHICLE_RANK[order.vehicle_type as VehicleType] : 0;
 
   const freshAfter = new Date(Date.now() - maxAgeMin * 60_000).toISOString();
   const { data: locations } = await supabaseAdmin
