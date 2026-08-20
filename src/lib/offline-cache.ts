@@ -1,0 +1,75 @@
+import { useQuery, type QueryKey } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+
+/**
+ * طبقة تخزين مؤقت للبيانات الثابتة (الخدمات، الأقسام، المطاعم، المتاجر).
+ * تُحدَّث كل 6 ساعات عند توفر الإنترنت، وتُعرض آخر نسخة مخزنة عند انقطاعه.
+ * لا تُستخدم للبيانات الحية (حالة الطلب، موقع المندوب، التوفر).
+ */
+export const CACHE_TTL_MS = 6 * 60 * 60 * 1000;
+
+type Envelope<T> = { at: number; data: T };
+
+function storageKey(key: QueryKey) {
+  return `yammak.cache.${JSON.stringify(key)}`;
+}
+
+export function readCache<T>(key: QueryKey): Envelope<T> | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(storageKey(key));
+    return raw ? (JSON.parse(raw) as Envelope<T>) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache<T>(key: QueryKey, data: T) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(storageKey(key), JSON.stringify({ at: Date.now(), data }));
+  } catch {
+    /* المساحة ممتلئة */
+  }
+}
+
+export function useOnline() {
+  const [online, setOnline] = useState(true);
+  useEffect(() => {
+    const update = () => setOnline(navigator.onLine);
+    update();
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("offline", update);
+    };
+  }, []);
+  return online;
+}
+
+export function useCachedQuery<T>(key: QueryKey, fetcher: () => Promise<T>) {
+  const query = useQuery({
+    queryKey: key,
+    queryFn: async () => {
+      try {
+        const data = await fetcher();
+        writeCache(key, data);
+        return data;
+      } catch (error) {
+        const cached = readCache<T>(key);
+        if (cached) return cached.data;
+        throw error;
+      }
+    },
+    initialData: () => readCache<T>(key)?.data,
+    initialDataUpdatedAt: () => readCache<T>(key)?.at,
+    staleTime: CACHE_TTL_MS,
+    refetchInterval: CACHE_TTL_MS,
+    refetchOnWindowFocus: false,
+  });
+
+  const cached = readCache<T>(key);
+  const isStaleCache = !!cached && Date.now() - cached.at > CACHE_TTL_MS;
+  return { ...query, isStaleCache };
+}
