@@ -54,11 +54,18 @@ export function AdsTicker({ category, ads }: { category: AdCategory; ads: AdRow[
 
         <div
           className="relative min-w-0 flex-1 overflow-hidden"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-          onTouchStart={() => setPaused(true)}
-          onTouchEnd={() => setPaused(false)}
+          onMouseEnter={hold}
+          onMouseLeave={() => release(0)}
+          onFocusCapture={hold}
+          onBlurCapture={() => release(0)}
+          onPointerDown={hold}
+          onPointerUp={() => release(4000)}
+          onPointerCancel={() => release(1500)}
+          onTouchStart={hold}
+          onTouchEnd={() => release(4000)}
+          onTouchCancel={() => release(1500)}
         >
+
           <div
             className="ad-ticker-track flex w-max items-center gap-2 py-2"
             style={{ animationDuration: `${duration}s`, animationPlayState: paused ? "paused" : "running" }}
