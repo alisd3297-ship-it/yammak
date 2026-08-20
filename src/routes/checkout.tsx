@@ -25,16 +25,27 @@ export const Route = createFileRoute("/checkout")({
   component: CheckoutPage,
 });
 
-const DELIVERY_FEE = 3000;
-
 function CheckoutPage() {
   const cart = useCart();
   const navigate = useNavigate();
   const { data: account } = useAccount();
+  const submit = useServerFn(createOrder);
+  const quote = useServerFn(quoteDeliveryFee);
   const [address, setAddress] = useState("");
   const [notes, setNotes] = useState("");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [saving, setSaving] = useState(false);
+
+  // أجرة التوصيل تُحسب من قواعد التسعير في الخادم، لا من الواجهة
+  const { data: feeQuote } = useQuery({
+    queryKey: ["delivery-quote", cart.providerId, coords?.lat, coords?.lng],
+    enabled: !!cart.providerId && !!account?.userId && !!cart.items.length,
+    queryFn: () =>
+      quote({
+        data: { providerId: cart.providerId!, lat: coords?.lat ?? null, lng: coords?.lng ?? null },
+      }),
+  });
+  const deliveryFee = feeQuote?.fee ?? null;
 
   function useMyLocation() {
     if (!navigator.geolocation) {
@@ -64,62 +75,25 @@ function CheckoutPage() {
       return;
     }
     setSaving(true);
-    const { data: provider } = await supabase
-      .from("providers")
-      .select("id, lat, lng, address_text, city_id")
-      .eq("id", cart.providerId)
-      .maybeSingle();
-
-    const { data: order, error } = await supabase
-      .from("orders")
-      .insert({
-        customer_id: account.userId,
-        provider_id: cart.providerId,
-        order_type: "restaurant",
-        status: "awaiting_provider",
-        city_id: provider?.city_id ?? null,
-        pickup_text: provider?.address_text ?? null,
-        pickup_lat: provider?.lat ?? null,
-        pickup_lng: provider?.lng ?? null,
-        dropoff_text: address || "موقع محدد على الخريطة",
-        dropoff_lat: coords?.lat ?? null,
-        dropoff_lng: coords?.lng ?? null,
-        notes,
-        subtotal: cart.total,
-        delivery_fee: DELIVERY_FEE,
-        total: cart.total + DELIVERY_FEE,
-      })
-      .select("id")
-      .single();
-
-    if (error || !order) {
-      setSaving(false);
-      toast.error("تعذر إرسال الطلب، حاول مرة ثانية");
-      return;
-    }
-
-    await supabase.from("order_items").insert(
-      cart.items.map((i) => ({
-        order_id: order.id,
-        product_id: i.productId,
-        name: i.name,
-        unit_price: i.price,
-        quantity: i.quantity,
-      })),
-    );
-    if (address.trim()) {
-      await supabase.from("addresses").insert({
-        user_id: account.userId,
-        address_text: address,
-        lat: coords?.lat ?? null,
-        lng: coords?.lng ?? null,
+    try {
+      const order = await submit({
+        data: {
+          providerId: cart.providerId,
+          items: cart.items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
+          address,
+          lat: coords?.lat ?? null,
+          lng: coords?.lng ?? null,
+          notes,
+        },
       });
+      cart.clear();
+      toast.success("تم إرسال طلبك للمطعم");
+      navigate({ to: "/orders/$id", params: { id: order.id } });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر إرسال الطلب، حاول مرة ثانية");
+    } finally {
+      setSaving(false);
     }
-
-    cart.clear();
-    setSaving(false);
-    toast.success("تم إرسال طلبك للمطعم");
-    navigate({ to: "/orders/$id", params: { id: order.id } });
   }
 
   return (
