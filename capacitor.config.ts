@@ -1,10 +1,14 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 /**
- * إعداد إصدار الموبايل (Capacitor) لتطبيق «يمّك».
- * هذا الملف مرجع الإطلاق: المعرفات، الاسم الظاهر، شاشة البداية، والصلاحيات.
+ * إعداد إصدار الموبايل (Capacitor) لتطبيق «يمّك» — نمط Hosted Wrapper.
+ *
+ * التطبيق يحمّل نسخة الإنتاج المنشورة (SSR + server functions) مباشرة،
+ * لذلك لا حاجة لإعادة هيكلة الباك-إند أو تصدير موقع ثابت.
+ * webDir موجود فقط لأن Capacitor يتطلبه (نسخة احتياطية من dist/client).
+ *
  * الخطوات الفعلية للبناء ورفع المتاجر تتم خارج Lovable:
- *   npm i @capacitor/cli @capacitor/core @capacitor/android @capacitor/ios
+ *   npm run build
  *   npx cap add android && npx cap add ios && npx cap sync
  * الأيقونة المصدر: src/assets/app-icon.png (1024×1024)، وشعار الويب: public/icon-512.png
  */
@@ -17,12 +21,16 @@ const config: CapacitorConfig = {
   },
   ios: {
     contentInset: "always",
+    limitsNavigationsToAppBoundDomains: false,
   },
   server: {
+    // Hosted Wrapper: يفتح التطبيق نسخة الإنتاج المنشورة.
+    url: "https://yammak.lovable.app",
     androidScheme: "https",
-    // روابط عميقة: yammak.iq و project--729acaeb-a297-44ff-bcda-163988b47b73.lovable.app
-    // تُضبط عبر App Links / Universal Links بعد ربط الدومين النهائي.
+    iosScheme: "https",
+    hostname: "yammak.lovable.app",
     cleartext: false,
+    allowNavigation: ["yammak.lovable.app", "*.supabase.co", "*.stripe.com"],
   },
   plugins: {
     SplashScreen: {
