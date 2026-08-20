@@ -81,10 +81,10 @@ export const createSpecialDeliveryOrder = createServerFn({ method: "POST" })
       _pickup_lat: data.pickupLat ?? (null as never),
       _pickup_lng: data.pickupLng ?? (null as never),
       _stops: stops as never,
-      _cargo_description: data.cargoDescription ?? null,
-      _cargo_weight_kg: data.cargoWeightKg ?? null,
-      _scheduled_at: data.scheduledAt ?? null,
-      _notes: data.notes ?? null,
+      ...(data.cargoDescription ? { _cargo_description: data.cargoDescription } : {}),
+      ...(data.cargoWeightKg != null ? { _cargo_weight_kg: data.cargoWeightKg } : {}),
+      ...(data.scheduledAt ? { _scheduled_at: data.scheduledAt } : {}),
+      ...(data.notes ? { _notes: data.notes } : {}),
     });
     if (error || !order) throw new Error(friendly(error?.message ?? ""));
 
