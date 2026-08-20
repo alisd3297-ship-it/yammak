@@ -175,11 +175,20 @@ function CheckoutPage() {
 
           <section className="rounded-2xl bg-card p-4 text-sm shadow-soft">
             <Row label="مجموع الطلب" value={formatIQD(cart.total)} />
-            <Row label="أجرة التوصيل" value={formatIQD(DELIVERY_FEE)} />
+            <Row
+              label="أجرة التوصيل"
+              value={deliveryFee == null ? "يتم الحساب…" : formatIQD(deliveryFee)}
+            />
             <div className="mt-2 border-t border-border pt-2">
-              <Row label="الإجمالي" value={formatIQD(cart.total + DELIVERY_FEE)} bold />
+              <Row
+                label="الإجمالي"
+                value={deliveryFee == null ? formatIQD(cart.total) : formatIQD(cart.total + deliveryFee)}
+                bold
+              />
             </div>
-            <p className="mt-2 text-xs text-muted-foreground">طريقة الدفع: نقداً عند الاستلام</p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              طريقة الدفع: نقداً عند الاستلام · الأسعار والمجموع النهائي يُحتسبان في الخادم
+            </p>
           </section>
 
           <Button className="h-13 w-full text-base" disabled={saving} onClick={submitOrder}>
