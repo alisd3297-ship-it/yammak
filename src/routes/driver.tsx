@@ -116,13 +116,12 @@ function DriverDashboard() {
   }
 
   async function advance(orderId: string, next: OrderStatus) {
-    await supabase
-      .from("orders")
-      .update({
-        status: next,
-        ...(next === "delivered" ? { completed_at: new Date().toISOString() } : {}),
-      })
-      .eq("id", orderId);
+    try {
+      await setStatus({ data: { orderId, status: next } });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر تحديث حالة الطلب");
+      return;
+    }
     qc.invalidateQueries({ queryKey: ["driver-orders"] });
   }
 
