@@ -8,6 +8,7 @@ import { PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { useAccount } from "@/lib/auth";
 import { setProviderStatus } from "@/lib/provider.functions";
+import { changeServiceRequestStatus } from "@/lib/services.functions";
 import {
   SERVICE_STATUS_LABELS,
   formatServicePrice,
@@ -39,10 +40,38 @@ const STATUS_LABELS: Record<string, string> = {
 
 const FILTERS = ["pending", "approved", "suspended", "rejected"] as const;
 
+/** خطوات الإدارة على طلب الخدمة عندما يحتاج المزوّد متابعة يدوية. */
+const STAFF_NEXT_STEPS: Partial<
+  Record<ServiceRequestStatus, { next: ServiceRequestStatus; label: string; tone?: "danger" }[]>
+> = {
+  requested: [
+    { next: "accepted", label: "قبول الطلب" },
+    { next: "rejected", label: "رفض", tone: "danger" },
+  ],
+  accepted: [
+    { next: "en_route", label: "بالطريق" },
+    { next: "in_progress", label: "بدء التنفيذ" },
+    { next: "cancelled", label: "إلغاء", tone: "danger" },
+  ],
+  scheduled: [
+    { next: "en_route", label: "بالطريق" },
+    { next: "cancelled", label: "إلغاء", tone: "danger" },
+  ],
+  en_route: [
+    { next: "in_progress", label: "بدء التنفيذ" },
+    { next: "cancelled", label: "إلغاء", tone: "danger" },
+  ],
+  in_progress: [
+    { next: "completed", label: "إنهاء الخدمة" },
+    { next: "cancelled", label: "إلغاء", tone: "danger" },
+  ],
+};
+
 function AdminProvidersPage() {
   const { data: account } = useAccount();
   const qc = useQueryClient();
   const setStatus = useServerFn(setProviderStatus);
+  const setRequestStatus = useServerFn(changeServiceRequestStatus);
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("pending");
   const [view, setView] = useState<"providers" | "service-requests">("providers");
 
@@ -68,7 +97,7 @@ function AdminProvidersPage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("service_requests")
-        .select("id, code, status, service_name, price_amount, price_unit, address_text, created_at, providers(name)")
+        .select("id, code, status, service_name, price_amount, price_unit, address_text, created_at, providers(name, owner_id)")
         .order("created_at", { ascending: false })
         .limit(50);
       return data ?? [];
@@ -82,6 +111,16 @@ function AdminProvidersPage() {
       qc.invalidateQueries({ queryKey: ["admin-providers"] });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "تعذر تحديث الحالة");
+    }
+  }
+
+  async function advanceRequest(requestId: string, status: ServiceRequestStatus) {
+    try {
+      await setRequestStatus({ data: { requestId, status } });
+      toast.success("تم تحديث حالة طلب الخدمة");
+      qc.invalidateQueries({ queryKey: ["admin-service-requests"] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر تحديث الطلب");
     }
   }
 
@@ -146,6 +185,26 @@ function AdminProvidersPage() {
               <p className="text-xs text-muted-foreground">
                 {formatServicePrice(Number(r.price_amount), r.price_unit as ServicePriceUnit)} — {r.address_text}
               </p>
+              {!(r.providers as { owner_id: string | null } | null)?.owner_id && (
+                <p className="mt-2 rounded-xl bg-warning/15 px-3 py-2 text-[11px] font-semibold text-warning-foreground">
+                  هذا المزوّد ما عنده حساب مرتبط، تابع الطلب من هنا لحد ما يرتبط بحساب.
+                </p>
+              )}
+              {STAFF_NEXT_STEPS[r.status as ServiceRequestStatus]?.length ? (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {STAFF_NEXT_STEPS[r.status as ServiceRequestStatus]!.map((step) => (
+                    <Button
+                      key={step.next}
+                      size="sm"
+                      variant={step.tone === "danger" ? "outline" : "default"}
+                      className="h-9 rounded-full text-xs"
+                      onClick={() => advanceRequest(r.id, step.next)}
+                    >
+                      {step.label}
+                    </Button>
+                  ))}
+                </div>
+              ) : null}
             </article>
           ))}
           {!serviceRequests?.length && (
