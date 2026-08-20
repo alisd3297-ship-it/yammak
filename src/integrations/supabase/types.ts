@@ -438,9 +438,64 @@ export type Database = {
           },
         ]
       }
+      order_stops: {
+        Row: {
+          address_text: string
+          created_at: string
+          delivered_at: string | null
+          id: string
+          is_delivered: boolean
+          lat: number | null
+          lng: number | null
+          notes: string | null
+          order_id: string
+          position: number
+          recipient_name: string | null
+          recipient_phone: string | null
+        }
+        Insert: {
+          address_text: string
+          created_at?: string
+          delivered_at?: string | null
+          id?: string
+          is_delivered?: boolean
+          lat?: number | null
+          lng?: number | null
+          notes?: string | null
+          order_id: string
+          position: number
+          recipient_name?: string | null
+          recipient_phone?: string | null
+        }
+        Update: {
+          address_text?: string
+          created_at?: string
+          delivered_at?: string | null
+          id?: string
+          is_delivered?: boolean
+          lat?: number | null
+          lng?: number | null
+          notes?: string | null
+          order_id?: string
+          position?: number
+          recipient_name?: string | null
+          recipient_phone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_stops_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           cancel_reason: string | null
+          cargo_description: string | null
+          cargo_weight_kg: number | null
           city_id: string | null
           code: string
           completed_at: string | null
@@ -459,13 +514,17 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
           subtotal: number
           total: number
           updated_at: string
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
         }
         Insert: {
           cancel_reason?: string | null
+          cargo_description?: string | null
+          cargo_weight_kg?: number | null
           city_id?: string | null
           code?: string
           completed_at?: string | null
@@ -484,13 +543,17 @@ export type Database = {
           pickup_lng?: number | null
           pickup_text?: string | null
           provider_id?: string | null
+          scheduled_at?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           subtotal?: number
           total?: number
           updated_at?: string
+          vehicle_type?: Database["public"]["Enums"]["vehicle_type"] | null
         }
         Update: {
           cancel_reason?: string | null
+          cargo_description?: string | null
+          cargo_weight_kg?: number | null
           city_id?: string | null
           code?: string
           completed_at?: string | null
@@ -509,10 +572,12 @@ export type Database = {
           pickup_lng?: number | null
           pickup_text?: string | null
           provider_id?: string | null
+          scheduled_at?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           subtotal?: number
           total?: number
           updated_at?: string
+          vehicle_type?: Database["public"]["Enums"]["vehicle_type"] | null
         }
         Relationships: [
           {
@@ -543,6 +608,7 @@ export type Database = {
           order_type: Database["public"]["Enums"]["order_type"]
           per_km_fee: number
           provider_id: string | null
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
         }
         Insert: {
           base_fee?: number
@@ -555,6 +621,7 @@ export type Database = {
           order_type?: Database["public"]["Enums"]["order_type"]
           per_km_fee?: number
           provider_id?: string | null
+          vehicle_type?: Database["public"]["Enums"]["vehicle_type"] | null
         }
         Update: {
           base_fee?: number
@@ -567,6 +634,7 @@ export type Database = {
           order_type?: Database["public"]["Enums"]["order_type"]
           per_km_fee?: number
           provider_id?: string | null
+          vehicle_type?: Database["public"]["Enums"]["vehicle_type"] | null
         }
         Relationships: [
           {
@@ -1226,6 +1294,7 @@ export type Database = {
           updated_at: string
           user_id: string
           vehicle: string | null
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
           worker_kind: Database["public"]["Enums"]["worker_kind"] | null
         }
         Insert: {
@@ -1240,6 +1309,7 @@ export type Database = {
           updated_at?: string
           user_id: string
           vehicle?: string | null
+          vehicle_type?: Database["public"]["Enums"]["vehicle_type"] | null
           worker_kind?: Database["public"]["Enums"]["worker_kind"] | null
         }
         Update: {
@@ -1254,6 +1324,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
           vehicle?: string | null
+          vehicle_type?: Database["public"]["Enums"]["vehicle_type"] | null
           worker_kind?: Database["public"]["Enums"]["worker_kind"] | null
         }
         Relationships: [
@@ -1275,6 +1346,8 @@ export type Database = {
         Args: { _offer_id: string }
         Returns: {
           cancel_reason: string | null
+          cargo_description: string | null
+          cargo_weight_kg: number | null
           city_id: string | null
           code: string
           completed_at: string | null
@@ -1293,10 +1366,12 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
           subtotal: number
           total: number
           updated_at: string
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
         }
         SetofOptions: {
           from: "*"
@@ -1416,6 +1491,8 @@ export type Database = {
         }
         Returns: {
           cancel_reason: string | null
+          cargo_description: string | null
+          cargo_weight_kg: number | null
           city_id: string | null
           code: string
           completed_at: string | null
@@ -1434,10 +1511,12 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
           subtotal: number
           total: number
           updated_at: string
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
         }
         SetofOptions: {
           from: "*"
@@ -1485,12 +1564,44 @@ export type Database = {
         Args: { _min_seconds?: number; _name?: string }
         Returns: boolean
       }
+      complete_order_stop: {
+        Args: { _stop_id: string }
+        Returns: {
+          address_text: string
+          created_at: string
+          delivered_at: string | null
+          id: string
+          is_delivered: boolean
+          lat: number | null
+          lng: number | null
+          notes: string | null
+          order_id: string
+          position: number
+          recipient_name: string | null
+          recipient_phone: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "order_stops"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       compute_delivery_fee: {
         Args: {
           _city_id: string
           _distance_km: number
           _order_type: Database["public"]["Enums"]["order_type"]
           _provider_id: string
+        }
+        Returns: number
+      }
+      compute_delivery_fee_v: {
+        Args: {
+          _city_id: string
+          _distance_km: number
+          _order_type: Database["public"]["Enums"]["order_type"]
+          _vehicle_type: Database["public"]["Enums"]["vehicle_type"]
         }
         Returns: number
       }
@@ -1506,6 +1617,8 @@ export type Database = {
         }
         Returns: {
           cancel_reason: string | null
+          cargo_description: string | null
+          cargo_weight_kg: number | null
           city_id: string | null
           code: string
           completed_at: string | null
@@ -1524,10 +1637,12 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
           subtotal: number
           total: number
           updated_at: string
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
         }
         SetofOptions: {
           from: "*"
@@ -1547,6 +1662,8 @@ export type Database = {
         }
         Returns: {
           cancel_reason: string | null
+          cargo_description: string | null
+          cargo_weight_kg: number | null
           city_id: string | null
           code: string
           completed_at: string | null
@@ -1565,10 +1682,12 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
           subtotal: number
           total: number
           updated_at: string
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
         }
         SetofOptions: {
           from: "*"
@@ -1610,6 +1729,54 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "service_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      create_special_delivery_order: {
+        Args: {
+          _cargo_description?: string
+          _cargo_weight_kg?: number
+          _notes?: string
+          _pickup_lat: number
+          _pickup_lng: number
+          _pickup_text: string
+          _scheduled_at?: string
+          _stops: Json
+          _vehicle_type: Database["public"]["Enums"]["vehicle_type"]
+        }
+        Returns: {
+          cancel_reason: string | null
+          cargo_description: string | null
+          cargo_weight_kg: number | null
+          city_id: string | null
+          code: string
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          delivery_fee: number
+          driver_id: string | null
+          dropoff_lat: number | null
+          dropoff_lng: number | null
+          dropoff_text: string | null
+          id: string
+          notes: string | null
+          order_type: Database["public"]["Enums"]["order_type"]
+          payment_method: string
+          pickup_lat: number | null
+          pickup_lng: number | null
+          pickup_text: string | null
+          provider_id: string | null
+          scheduled_at: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total: number
+          updated_at: string
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -1661,6 +1828,15 @@ export type Database = {
       owns_provider: {
         Args: { _provider_id: string; _user_id: string }
         Returns: boolean
+      }
+      quote_special_delivery: {
+        Args: {
+          _pickup_lat: number
+          _pickup_lng: number
+          _stops: Json
+          _vehicle_type: Database["public"]["Enums"]["vehicle_type"]
+        }
+        Returns: Json
       }
       rate_service_request: {
         Args: { _comment?: string; _request_id: string; _stars: number }
@@ -1731,6 +1907,10 @@ export type Database = {
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      special_delivery_distance: {
+        Args: { _pickup_lat: number; _pickup_lng: number; _stops: Json }
+        Returns: number
+      }
       system_change_order_status: {
         Args: {
           _new_status: Database["public"]["Enums"]["order_status"]
@@ -1738,6 +1918,8 @@ export type Database = {
         }
         Returns: {
           cancel_reason: string | null
+          cargo_description: string | null
+          cargo_weight_kg: number | null
           city_id: string | null
           code: string
           completed_at: string | null
@@ -1756,10 +1938,12 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
           subtotal: number
           total: number
           updated_at: string
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
         }
         SetofOptions: {
           from: "*"
@@ -1812,6 +1996,7 @@ export type Database = {
         | "completed"
         | "cancelled"
         | "rejected"
+      vehicle_type: "bike" | "car" | "pickup" | "small_truck"
       worker_kind: "delivery" | "taxi"
     }
     CompositeTypes: {
@@ -1986,6 +2171,7 @@ export const Constants = {
         "cancelled",
         "rejected",
       ],
+      vehicle_type: ["bike", "car", "pickup", "small_truck"],
       worker_kind: ["delivery", "taxi"],
     },
   },
