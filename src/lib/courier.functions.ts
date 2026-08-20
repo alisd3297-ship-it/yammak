@@ -68,7 +68,8 @@ export const quoteCourierFee = createServerFn({ method: "POST" })
 
     const { data: fee } = await context.supabase.rpc("compute_delivery_fee", {
       _order_type: "courier",
-      ...(cityId ? { _city_id: cityId } : {}),
+      _city_id: cityId as string,
+      _provider_id: null as unknown as string,
       _distance_km: km,
     });
     return { fee: Number(fee ?? 0), km };
