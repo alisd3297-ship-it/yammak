@@ -11,6 +11,8 @@ import { Switch } from "@/components/ui/switch";
 import { useAccount } from "@/lib/auth";
 import { respondToOffer } from "@/lib/dispatch.functions";
 import { changeOrderStatus } from "@/lib/orders.functions";
+import { vehicleLabel } from "@/lib/vehicles";
+import { completeOrderStop } from "@/lib/special-delivery.functions";
 import { ORDER_STATUS_LABELS, formatIQD, isCourierType, statusTone, type OrderStatus } from "@/lib/orders";
 
 export const Route = createFileRoute("/driver")({
@@ -37,6 +39,7 @@ function DriverDashboard() {
   const qc = useQueryClient();
   const respond = useServerFn(respondToOffer);
   const setStatus = useServerFn(changeOrderStatus);
+  const finishStop = useServerFn(completeOrderStop);
 
   const { data: worker } = useQuery({
     queryKey: ["worker-profile", account?.userId],
@@ -118,6 +121,16 @@ function DriverDashboard() {
     }
   }
 
+  async function completeStop(stopId: string) {
+    try {
+      await finishStop({ data: { stopId } });
+      qc.invalidateQueries({ queryKey: ["driver-orders"] });
+      toast.success("تم تحديث نقطة التسليم");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر تحديث النقطة");
+    }
+  }
+
   async function advance(orderId: string, next: OrderStatus) {
     try {
       await setStatus({ data: { orderId, status: next } });
@@ -178,6 +191,10 @@ function DriverDashboard() {
                   notes: string | null;
                   pickup_text: string | null;
                   dropoff_text: string | null;
+                  vehicle_type: string | null;
+                  cargo_description: string | null;
+                  cargo_weight_kg: number | null;
+                  scheduled_at: string | null;
                 } | null;
                 return (
                   <article key={o.id} className="rounded-2xl border-2 border-primary/40 bg-card p-4 shadow-card">
@@ -193,6 +210,20 @@ function DriverDashboard() {
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">من: {ord?.pickup_text}</p>
                     <p className="text-xs text-muted-foreground">إلى: {ord?.dropoff_text}</p>
+                    {ord?.vehicle_type && (
+                      <p className="mt-1 text-xs font-semibold text-primary">
+                        المركبة المطلوبة: {vehicleLabel(ord.vehicle_type)}
+                        {ord.cargo_weight_kg ? ` · ${ord.cargo_weight_kg} كغم` : ""}
+                      </p>
+                    )}
+                    {ord?.scheduled_at && (
+                      <p className="text-xs text-muted-foreground">
+                        الموعد: {new Date(ord.scheduled_at).toLocaleString("ar-IQ")}
+                      </p>
+                    )}
+                    {ord?.cargo_description && (
+                      <p className="text-xs text-muted-foreground">الحمولة: {ord.cargo_description}</p>
+                    )}
                     {isCourierType(ord?.order_type) && ord?.notes && (
                       <p className="mt-1 text-xs text-muted-foreground">الوصف: {ord.notes}</p>
                     )}
@@ -238,6 +269,42 @@ function DriverDashboard() {
                     >
                       فتح الاتجاهات
                     </a>
+                  )}
+                  {o.vehicle_type && (
+                    <p className="mt-1 text-xs font-semibold text-primary">
+                      المركبة: {vehicleLabel(o.vehicle_type)}
+                    </p>
+                  )}
+                  {!!(o.order_stops ?? []).length && (
+                    <ul className="mt-3 space-y-2">
+                      {[...(o.order_stops ?? [])]
+                        .sort((a, b) => a.position - b.position)
+                        .map((s, i) => (
+                          <li key={s.id} className="rounded-xl bg-muted/60 p-3 text-xs">
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="font-semibold">النقطة {i + 1}</span>
+                              {s.is_delivered ? (
+                                <span className="text-success">تم التسليم</span>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-8"
+                                  onClick={() => completeStop(s.id)}
+                                >
+                                  تم التسليم
+                                </Button>
+                              )}
+                            </div>
+                            <p className="mt-1">{s.address_text}</p>
+                            {s.recipient_phone && (
+                              <a href={`tel:${s.recipient_phone}`} className="text-primary">
+                                {s.recipient_name ?? "اتصال بالمستلم"} · {s.recipient_phone}
+                              </a>
+                            )}
+                          </li>
+                        ))}
+                    </ul>
                   )}
                   {step && (
                     <Button className="mt-3 h-10 w-full" onClick={() => advance(o.id, step.next)}>
