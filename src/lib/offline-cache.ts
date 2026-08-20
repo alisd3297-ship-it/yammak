@@ -69,6 +69,12 @@ export function useOnline() {
 }
 
 export function useCachedQuery<T>(key: QueryKey, fetcher: () => Promise<T>) {
+  // لا نقرأ التخزين المحلي أثناء أول رسم حتى لا يختلف ناتج الخادم عن المتصفح (hydration).
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
+
+  const cached = hydrated ? readCache<T>(key) : null;
+
   const query = useQuery({
     queryKey: key,
     queryFn: async () => {
@@ -77,21 +83,19 @@ export function useCachedQuery<T>(key: QueryKey, fetcher: () => Promise<T>) {
         writeCache(key, data);
         return data;
       } catch (error) {
-        const cached = readCache<T>(key);
-        if (cached) return cached.data;
+        const fallback = readCache<T>(key);
+        if (fallback) return fallback.data;
         throw error;
       }
     },
-    initialData: () => readCache<T>(key)?.data,
-    initialDataUpdatedAt: () => 0, // نعرض النسخة المخزنة فوراً لكن نحدّثها من الخادم دائماً
+    ...(cached ? { placeholderData: (() => cached.data) as never } : {}),
     staleTime: 60 * 1000,
     refetchOnMount: "always",
     refetchInterval: CACHE_TTL_MS,
     refetchOnWindowFocus: false,
-
   });
 
-  const cached = readCache<T>(key);
   const isStaleCache = !!cached && Date.now() - cached.at > CACHE_TTL_MS;
   return { ...query, isStaleCache };
 }
+

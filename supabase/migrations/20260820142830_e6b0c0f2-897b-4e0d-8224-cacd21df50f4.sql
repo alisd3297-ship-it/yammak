@@ -1,0 +1,18 @@
+DELETE FROM public.ratings WHERE order_id IN (SELECT id FROM public.orders);
+DELETE FROM public.orders;
+DELETE FROM public.trips;
+DELETE FROM public.service_requests;
+DELETE FROM public.ads;
+DELETE FROM public.payments;
+DELETE FROM public.phone_verifications;
+DELETE FROM public.notifications;
+DELETE FROM public.audit_logs;
+DELETE FROM public.maintenance_runs;
+DELETE FROM public.provider_services WHERE provider_id IN (SELECT id FROM public.providers WHERE owner_id IS NOT NULL);
+DELETE FROM public.products WHERE provider_id IN (SELECT id FROM public.providers WHERE owner_id IS NOT NULL);
+DELETE FROM public.providers WHERE owner_id IS NOT NULL;
+DELETE FROM public.worker_profiles;
+DELETE FROM public.worker_locations;
+DELETE FROM public.addresses;
+DELETE FROM public.profiles p WHERE NOT EXISTS (SELECT 1 FROM auth.users u WHERE u.id = p.id);
+DELETE FROM public.user_roles r WHERE NOT EXISTS (SELECT 1 FROM auth.users u WHERE u.id = r.user_id);
