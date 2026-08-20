@@ -46,3 +46,42 @@ npm run build
 npx cap add android && npx cap add ios
 npx cap sync
 ```
+
+## نمط الإطلاق: Hosted Wrapper (Capacitor)
+
+التطبيق الأصلي يفتح نسخة الإنتاج المنشورة مباشرة:
+`server.url = https://yammak.lovable.app` في `capacitor.config.ts`.
+السبب: المشروع TanStack Start مع SSR و`createServerFn` ومسارات `src/routes/api/*`
+(الدفع، webhook Stripe، صور الإعلانات، الصيانة) — لا يمكن تصديره كموقع ثابت داخل الحزمة.
+النتيجة: أي تحديث في الويب يظهر فوراً داخل التطبيق بدون إصدار جديد على المتاجر.
+
+الحزم المثبتة: `@capacitor/core`, `@capacitor/cli`, `@capacitor/android`, `@capacitor/ios`,
+`@capacitor/splash-screen`, `@capacitor/status-bar`, `@capacitor/app`.
+
+### ما لا يمكن إنجازه داخل Lovable
+- إنشاء مجلدي `android/` و`ios/` (`npx cap add`) والبناء والتوقيع: يتطلبان Android Studio/JDK وXcode/macOS.
+- توليد AAB/IPA ورفعها إلى Google Play / App Store Connect.
+- تحرير `AndroidManifest.xml` و`Info.plist` للصلاحيات (الملفات غير موجودة قبل `cap add`).
+
+### الخطوات الخارجية لإنتاج AAB/IPA
+```bash
+git clone <repo> && npm install
+npm run build
+npx cap add android && npx cap add ios
+npx cap sync
+```
+1. Android: افتح `android/` في Android Studio، اضبط `versionCode/versionName`،
+   أضف الصلاحيات في `AndroidManifest.xml` (INTERNET, ACCESS_NETWORK_STATE,
+   ACCESS_FINE_LOCATION, CAMERA/READ_MEDIA_IMAGES, POST_NOTIFICATIONS)،
+   ثم `Build > Generate Signed Bundle (AAB)` بمفتاح keystore خاص بك.
+2. iOS: افتح `ios/App/App.xcworkspace` في Xcode على macOS، اضبط Team وBundle ID
+   `iq.yammak.app`، أضف مفاتيح الاستخدام في `Info.plist`
+   (`NSLocationWhenInUseUsageDescription`, `NSCameraUsageDescription`,
+   `NSPhotoLibraryUsageDescription`)، ثم Archive ورفع إلى App Store Connect.
+3. الأيقونات والـ splash: استخدم `npx @capacitor/assets generate` مع
+   `src/assets/app-icon.png` (1024×1024) ولون الخلفية `#c81e2b`.
+4. Deep links (اختياري): استضف `assetlinks.json` و`apple-app-site-association`
+   على الدومين النهائي ثم فعّل App Links / Universal Links.
+
+> ملاحظة مراجعة Apple: تطبيقات wrapper بحتة قد تُرفض بموجب 4.2؛ يُنصح بإضافة
+> قيمة أصلية (إشعارات Push، موقع أصلي، كاميرا) قبل التقديم.
