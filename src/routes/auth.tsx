@@ -99,6 +99,41 @@ function AuthPage() {
     toast.success("تم إنشاء حسابك، أهلاً بيك بيمّك");
   }
 
+  function randomString(bytes: number): string {
+    const arr = new Uint8Array(bytes);
+    crypto.getRandomValues(arr);
+    return Array.from(arr, (b) => b.toString(36).padStart(2, "0")).join("").slice(0, bytes * 2);
+  }
+
+  async function createTestAccount() {
+    setLoading(true);
+    const testEmail = `test.${randomString(6)}@yammak-test.dev`;
+    const testPassword = `Yk!${randomString(12)}Aa1`;
+    const { error } = await supabase.auth.signUp({
+      email: testEmail,
+      password: testPassword,
+      options: {
+        emailRedirectTo: window.location.origin,
+        data: { full_name: "حساب اختبار", is_test_account: true },
+      },
+    });
+    if (error) {
+      setLoading(false);
+      toast.error(authErrorMessage(error.message));
+      return;
+    }
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: testEmail,
+      password: testPassword,
+    });
+    setLoading(false);
+    if (signInError) {
+      toast.error(authErrorMessage(signInError.message));
+      return;
+    }
+    toast.success(`تم إنشاء حساب اختبار مؤقت (${testEmail}) — صلاحيات زبون فقط`);
+  }
+
 
   async function resetPassword() {
     if (!email) {
