@@ -32,6 +32,7 @@ import { Route as ServicesIdRouteImport } from './routes/services.$id'
 import { Route as StoresIndexRouteImport } from './routes/stores.index'
 import { Route as StoresIdRouteImport } from './routes/stores.$id'
 import { Route as ApiPublicMaintenanceRouteImport } from './routes/api/public/maintenance'
+import { Route as ApiPublicPaymentsStripeRouteImport } from './routes/api/public/payments.stripe'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -148,6 +149,11 @@ const ApiPublicMaintenanceRoute = ApiPublicMaintenanceRouteImport.update({
   path: '/api/public/maintenance',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPaymentsStripeRoute = ApiPublicPaymentsStripeRouteImport.update({
+  id: '/api/public/payments/stripe',
+  path: '/api/public/payments/stripe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -173,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/services/': typeof ServicesIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
+  '/api/public/payments/stripe': typeof ApiPublicPaymentsStripeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -198,6 +205,7 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesIndexRoute
   '/stores': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
+  '/api/public/payments/stripe': typeof ApiPublicPaymentsStripeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -224,6 +232,7 @@ export interface FileRoutesById {
   '/services/': typeof ServicesIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
+  '/api/public/payments/stripe': typeof ApiPublicPaymentsStripeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -251,6 +260,7 @@ export interface FileRouteTypes {
     | '/services/'
     | '/stores/'
     | '/api/public/maintenance'
+    | '/api/public/payments/stripe'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -276,6 +286,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/stores'
     | '/api/public/maintenance'
+    | '/api/public/payments/stripe'
   id:
     | '__root__'
     | '/'
@@ -301,6 +312,7 @@ export interface FileRouteTypes {
     | '/services/'
     | '/stores/'
     | '/api/public/maintenance'
+    | '/api/public/payments/stripe'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -327,6 +339,7 @@ export interface RootRouteChildren {
   ServicesIndexRoute: typeof ServicesIndexRoute
   StoresIndexRoute: typeof StoresIndexRoute
   ApiPublicMaintenanceRoute: typeof ApiPublicMaintenanceRoute
+  ApiPublicPaymentsStripeRoute: typeof ApiPublicPaymentsStripeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -492,6 +505,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicMaintenanceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/payments/stripe': {
+      id: '/api/public/payments/stripe'
+      path: '/api/public/payments/stripe'
+      fullPath: '/api/public/payments/stripe'
+      preLoaderRoute: typeof ApiPublicPaymentsStripeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -519,6 +539,7 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesIndexRoute: ServicesIndexRoute,
   StoresIndexRoute: StoresIndexRoute,
   ApiPublicMaintenanceRoute: ApiPublicMaintenanceRoute,
+  ApiPublicPaymentsStripeRoute: ApiPublicPaymentsStripeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
