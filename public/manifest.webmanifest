@@ -1,0 +1,18 @@
+{
+  "name": "يمّك | ويّانه كلشي صار يمّك",
+  "short_name": "يمّك",
+  "description": "منصة يمّك العراقية: مطاعم وكافتريات، متاجر، توصيل سريع، توصيل خاص، تكسي، ومهن وخدمات.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#c81e2b",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
