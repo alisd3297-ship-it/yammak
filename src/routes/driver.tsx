@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useAccount } from "@/lib/auth";
 import { respondToOffer } from "@/lib/dispatch.functions";
+import { changeOrderStatus } from "@/lib/orders.functions";
 import { ORDER_STATUS_LABELS, formatIQD, statusTone, type OrderStatus } from "@/lib/orders";
 
 export const Route = createFileRoute("/driver")({
