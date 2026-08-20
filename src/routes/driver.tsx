@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useAccount } from "@/lib/auth";
 import { respondToOffer } from "@/lib/dispatch.functions";
+import { changeOrderStatus } from "@/lib/orders.functions";
 import { ORDER_STATUS_LABELS, formatIQD, statusTone, type OrderStatus } from "@/lib/orders";
 
 export const Route = createFileRoute("/driver")({
@@ -35,6 +36,7 @@ function DriverDashboard() {
   const { data: account } = useAccount();
   const qc = useQueryClient();
   const respond = useServerFn(respondToOffer);
+  const setStatus = useServerFn(changeOrderStatus);
 
   const { data: worker } = useQuery({
     queryKey: ["worker-profile", account?.userId],
@@ -110,19 +112,19 @@ function DriverDashboard() {
       toast.success(accept ? "قبلت المهمة" : "تم رفض العرض");
       qc.invalidateQueries({ queryKey: ["driver-offers"] });
       qc.invalidateQueries({ queryKey: ["driver-orders"] });
-    } catch {
-      toast.error("انتهت صلاحية العرض");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر تنفيذ الرد على العرض");
+      qc.invalidateQueries({ queryKey: ["driver-offers"] });
     }
   }
 
   async function advance(orderId: string, next: OrderStatus) {
-    await supabase
-      .from("orders")
-      .update({
-        status: next,
-        ...(next === "delivered" ? { completed_at: new Date().toISOString() } : {}),
-      })
-      .eq("id", orderId);
+    try {
+      await setStatus({ data: { orderId, status: next } });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر تحديث حالة الطلب");
+      return;
+    }
     qc.invalidateQueries({ queryKey: ["driver-orders"] });
   }
 

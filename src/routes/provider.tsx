@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useAccount } from "@/lib/auth";
 import { dispatchOrder } from "@/lib/dispatch.functions";
+import { changeOrderStatus } from "@/lib/orders.functions";
 import { ORDER_STATUS_LABELS, formatIQD, statusTone, type OrderStatus } from "@/lib/orders";
 
 export const Route = createFileRoute("/provider")({
@@ -32,6 +33,7 @@ function ProviderDashboard() {
   const { data: account } = useAccount();
   const qc = useQueryClient();
   const dispatch = useServerFn(dispatchOrder);
+  const setStatus = useServerFn(changeOrderStatus);
 
   const { data: provider } = useQuery({
     queryKey: ["my-provider", account?.userId],
@@ -68,9 +70,10 @@ function ProviderDashboard() {
   }
 
   async function advance(orderId: string, next: OrderStatus) {
-    const { error } = await supabase.from("orders").update({ status: next }).eq("id", orderId);
-    if (error) {
-      toast.error("تعذر تحديث الطلب");
+    try {
+      await setStatus({ data: { orderId, status: next } });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر تحديث الطلب");
       return;
     }
     if (next === "ready_for_pickup") {
@@ -85,7 +88,12 @@ function ProviderDashboard() {
   }
 
   async function cancel(orderId: string) {
-    await supabase.from("orders").update({ status: "cancelled" }).eq("id", orderId);
+    try {
+      await setStatus({ data: { orderId, status: "cancelled", reason: "رفض المتجر الطلب" } });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر إلغاء الطلب");
+      return;
+    }
     qc.invalidateQueries({ queryKey: ["provider-orders"] });
   }
 

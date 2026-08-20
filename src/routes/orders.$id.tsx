@@ -1,8 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, MapPin, Phone } from "lucide-react";
+import { useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { ArrowRight, MapPin, Phone, Navigation } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell, StatusDot } from "@/components/app-shell";
+import { Button } from "@/components/ui/button";
+import { changeOrderStatus } from "@/lib/orders.functions";
 import {
   CUSTOMER_STATUS_FLOW,
   ORDER_STATUS_LABELS,
@@ -24,12 +29,22 @@ export const Route = createFileRoute("/orders/$id")({
   component: OrderTrackPage,
 });
 
+const TERMINAL: OrderStatus[] = ["delivered", "completed", "cancelled"];
+const TRACKING_STATUSES: OrderStatus[] = [
+  "driver_accepted",
+  "driver_heading_pickup",
+  "picked_up",
+  "on_the_way",
+];
+
 function OrderTrackPage() {
   const { id } = Route.useParams();
+  const qc = useQueryClient();
+  const setStatus = useServerFn(changeOrderStatus);
 
   const { data } = useQuery({
     queryKey: ["order", id],
-    refetchInterval: 10_000,
+    refetchInterval: 15_000,
     queryFn: async () => {
       const [order, items] = await Promise.all([
         supabase
@@ -46,9 +61,84 @@ function OrderTrackPage() {
   });
 
   const order = data?.order;
-  const status = (order?.status ?? "pending") as OrderStatus;
+  const status = (order?.status ?? "awaiting_provider") as OrderStatus;
   const activeIndex = CUSTOMER_STATUS_FLOW.indexOf(status);
   const provider = order?.providers as { name: string; phone: string | null } | null;
+  const driverId = order?.driver_id ?? null;
+  const tracking = !!driverId && TRACKING_STATUSES.includes(status);
+
+  // تحديث لحظي لحالة الطلب
+  useEffect(() => {
+    if (!order?.id || TERMINAL.includes(status)) return;
+    const channel = supabase
+      .channel(`order-${order.id}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "orders", filter: `id=eq.${order.id}` },
+        () => qc.invalidateQueries({ queryKey: ["order", id] }),
+      )
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [order?.id, status, id, qc]);
+
+  // موقع المندوب المعيّن لهذا الطلب فقط، ويتوقف عند انتهاء الطلب
+  const { data: driverLoc } = useQuery({
+    queryKey: ["driver-location", driverId],
+    enabled: tracking,
+    refetchInterval: tracking ? 15_000 : false,
+    queryFn: async () => {
+      const { data: loc } = await supabase
+        .from("worker_locations")
+        .select("lat, lng, updated_at, is_online")
+        .eq("user_id", driverId!)
+        .maybeSingle();
+      return loc;
+    },
+  });
+
+  useEffect(() => {
+    if (!tracking || !driverId) return;
+    const channel = supabase
+      .channel(`driver-${driverId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "worker_locations",
+          filter: `user_id=eq.${driverId}`,
+        },
+        () => qc.invalidateQueries({ queryKey: ["driver-location", driverId] }),
+      )
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [tracking, driverId, qc]);
+
+  async function confirmReceived() {
+    try {
+      await setStatus({ data: { orderId: id, status: "completed" } });
+      toast.success("شكراً! تم إغلاق الطلب");
+      qc.invalidateQueries({ queryKey: ["order", id] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر تأكيد الاستلام");
+    }
+  }
+
+  async function cancelOrder() {
+    try {
+      await setStatus({ data: { orderId: id, status: "cancelled", reason: "إلغاء من العميل" } });
+      toast.success("تم إلغاء الطلب");
+      qc.invalidateQueries({ queryKey: ["order", id] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "ما نكدر نلغي الطلب بهذه المرحلة");
+    }
+  }
+
+  const canCancel = (["new", "awaiting_provider", "accepted"] as OrderStatus[]).includes(status);
 
   return (
     <PageShell>
@@ -88,7 +178,48 @@ function OrderTrackPage() {
               تم إلغاء هذا الطلب.
             </p>
           )}
+          {status === "completed" && (
+            <p className="mt-3 rounded-xl bg-success/10 p-3 text-sm text-success">تم إكمال الطلب.</p>
+          )}
+          {status === "delivered" && (
+            <Button className="mt-4 h-11 w-full" onClick={confirmReceived}>
+              تأكيد الاستلام وإنهاء الطلب
+            </Button>
+          )}
+          {canCancel && (
+            <Button variant="outline" className="mt-3 h-11 w-full" onClick={cancelOrder}>
+              إلغاء الطلب
+            </Button>
+          )}
         </section>
+
+        {tracking && (
+          <section className="rounded-2xl bg-card p-4 shadow-soft">
+            <h2 className="mb-2 flex items-center gap-2 font-bold">
+              <Navigation className="size-4 text-primary" /> تتبع المندوب
+            </h2>
+            {driverLoc ? (
+              <>
+                <p className="text-sm text-muted-foreground">
+                  الموقع الحالي: {driverLoc.lat.toFixed(4)}، {driverLoc.lng.toFixed(4)}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  آخر تحديث: {new Date(driverLoc.updated_at).toLocaleTimeString("ar-IQ")}
+                </p>
+                <a
+                  className="mt-2 inline-block text-xs font-semibold text-primary"
+                  href={`https://www.google.com/maps/search/?api=1&query=${driverLoc.lat},${driverLoc.lng}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  عرض على الخريطة
+                </a>
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground">بانتظار تحديث موقع المندوب…</p>
+            )}
+          </section>
+        )}
 
         <section className="rounded-2xl bg-card p-4 shadow-soft">
           <h2 className="mb-3 font-bold">{provider?.name}</h2>

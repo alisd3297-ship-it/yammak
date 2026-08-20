@@ -1,0 +1,2 @@
+REVOKE EXECUTE ON FUNCTION public.compute_delivery_fee(order_type, uuid, uuid, double precision) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.haversine_km(double precision, double precision, double precision, double precision) FROM anon;
