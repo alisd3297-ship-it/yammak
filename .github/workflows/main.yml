@@ -15,16 +15,16 @@ jobs:
         uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: bun install
 
       - name: Build web app
         run: bun run build
 
       - name: Add Android platform
-        run: npx cap add android || true
+        run: bunx cap add android || true
 
       - name: Sync Capacitor
-        run: npx cap sync android
+        run: bunx cap sync android
 
       - name: Setup Java
         uses: actions/setup-java@v4
