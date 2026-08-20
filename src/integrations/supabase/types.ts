@@ -243,6 +243,51 @@ export type Database = {
           },
         ]
       }
+      maintenance_locks: {
+        Row: {
+          last_started_at: string
+          name: string
+        }
+        Insert: {
+          last_started_at?: string
+          name: string
+        }
+        Update: {
+          last_started_at?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      maintenance_runs: {
+        Row: {
+          completed: number
+          created_at: string
+          expired: number
+          id: string
+          note: string | null
+          redispatched: number
+          source: string
+        }
+        Insert: {
+          completed?: number
+          created_at?: string
+          expired?: number
+          id?: string
+          note?: string | null
+          redispatched?: number
+          source: string
+        }
+        Update: {
+          completed?: number
+          created_at?: string
+          expired?: number
+          id?: string
+          note?: string | null
+          redispatched?: number
+          source?: string
+        }
+        Relationships: []
+      }
       menu_categories: {
         Row: {
           created_at: string
@@ -1041,6 +1086,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      claim_maintenance_slot: {
+        Args: { _min_seconds?: number; _name?: string }
+        Returns: boolean
+      }
       compute_delivery_fee: {
         Args: {
           _city_id: string
@@ -1125,6 +1174,7 @@ export type Database = {
         Args: { _offer_id: string; _reason?: string }
         Returns: string
       }
+      run_sql_maintenance: { Args: never; Returns: Json }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
       system_change_order_status: {
