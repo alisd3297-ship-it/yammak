@@ -112,8 +112,9 @@ function DriverDashboard() {
       toast.success(accept ? "قبلت المهمة" : "تم رفض العرض");
       qc.invalidateQueries({ queryKey: ["driver-offers"] });
       qc.invalidateQueries({ queryKey: ["driver-orders"] });
-    } catch {
-      toast.error("انتهت صلاحية العرض");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر تنفيذ الرد على العرض");
+      qc.invalidateQueries({ queryKey: ["driver-offers"] });
     }
   }
 
