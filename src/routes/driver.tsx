@@ -93,6 +93,43 @@ function DriverDashboard() {
     },
   });
 
+  const isTaxi = worker?.worker_kind === "taxi";
+
+  const { data: tripOffers } = useQuery({
+    queryKey: ["driver-trip-offers", account?.userId],
+    enabled: !!account?.userId && isTaxi,
+    refetchInterval: 8_000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("trip_offers")
+        .select(
+          "id, trip_id, distance_km, expires_at, trips(code, fare, taxi_class, passengers, pickup_text, destination_text, distance_km, notes)",
+        )
+        .eq("driver_id", account!.userId!)
+        .eq("status", "sent")
+        .gt("expires_at", new Date().toISOString());
+      return data ?? [];
+    },
+  });
+
+  const { data: activeTrips } = useQuery({
+    queryKey: ["driver-trips", account?.userId],
+    enabled: !!account?.userId && isTaxi,
+    refetchInterval: 10_000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("trips")
+        .select(
+          "id, code, status, fare, taxi_class, passengers, pickup_text, pickup_lat, pickup_lng, destination_text, destination_lat, destination_lng, notes, customer_id",
+        )
+        .eq("driver_id", account!.userId!)
+        .in("status", ["driver_assigned", "driver_arriving", "driver_arrived", "in_progress"]);
+      return data ?? [];
+    },
+  });
+
+
+
   // بث موقع المندوب أثناء التوفر
   useEffect(() => {
     if (!account?.userId || !worker?.is_available || !navigator.geolocation) return;
