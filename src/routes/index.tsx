@@ -107,6 +107,16 @@ function CustomerHome() {
 
       <OfflineBanner stale={catalog.isStaleCache} />
 
+      <section className="mt-4 px-4">
+        <div className="mb-2 flex items-center justify-between">
+          <h2 className="text-base font-bold">إعلانات</h2>
+          <Link to="/ads" className="text-sm font-semibold text-primary">
+            أعلن معنا
+          </Link>
+        </div>
+        <AdsTickerBoard categories={adsBoard.data?.categories ?? []} ads={adsBoard.data?.ads ?? []} />
+      </section>
+
       {results ? (
         <section className="mt-6 space-y-6 px-4">
           <div>
