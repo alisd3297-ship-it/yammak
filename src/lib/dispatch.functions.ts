@@ -74,10 +74,13 @@ export const assignDriverManually = createServerFn({ method: "POST" })
       .update({ status: "cancelled", responded_at: new Date().toISOString() })
       .eq("order_id", data.orderId)
       .eq("status", "sent");
-    await supabaseAdmin
+    const { data: updated } = await supabaseAdmin
       .from("orders")
       .update({ driver_id: data.driverId, status: "driver_accepted" })
-      .eq("id", data.orderId);
+      .eq("id", data.orderId)
+      .not("status", "in", "(completed,cancelled,delivered)")
+      .select("id");
+    if (!updated || updated.length === 0) throw new Error("لا يمكن تعيين مندوب لهذا الطلب");
     await supabaseAdmin.from("audit_logs").insert({
       actor_id: context.userId,
       action: "assign_driver",
