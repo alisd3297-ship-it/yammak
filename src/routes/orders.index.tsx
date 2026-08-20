@@ -64,6 +64,27 @@ function OrdersPage() {
       </header>
 
       <div className="space-y-3 px-4 py-5">
+        {!!trips?.length && (
+          <section className="space-y-3">
+            <h2 className="font-bold">رحلات التكسي</h2>
+            {trips.map((t) => (
+              <Link key={t.id} to="/taxi" className="block rounded-2xl bg-card p-4 shadow-soft">
+                <div className="flex items-center justify-between">
+                  <p className="font-bold">رحلة #{t.code}</p>
+                  <span className="text-sm font-bold text-primary">{formatIQD(Number(t.fare))}</span>
+                </div>
+                <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                  <StatusDot tone={tripTone(t.status as TripStatus)} />
+                  {TRIP_STATUS_LABELS[t.status as TripStatus]} · {taxiClassLabel(t.taxi_class)}
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {t.pickup_text} ← {t.destination_text}
+                </p>
+              </Link>
+            ))}
+            <h2 className="pt-2 font-bold">الطلبات</h2>
+          </section>
+        )}
         {!account?.userId && (
           <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
             سجّل دخولك حتى تشوف طلباتك.{" "}
