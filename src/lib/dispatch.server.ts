@@ -131,7 +131,16 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
 }
 
 /** صيانة دورية: إنهاء العروض المنتهية وإكمال الطلبات المسلَّمة بعد المهلة. */
-export async function runMaintenance() {
+export async function runMaintenance(source = "manual", minSeconds = 30) {
+  // قفل يمنع التشغيل المتزامن أو المتكرر خلال فترة قصيرة (cron + fallback معاً)
+  const { data: claimed } = await supabaseAdmin.rpc("claim_maintenance_slot", {
+    _name: "dispatch_maintenance",
+    _min_seconds: minSeconds,
+  });
+  if (claimed === false) {
+    return { skipped: true, expired: 0, completed: 0, redispatched: 0 };
+  }
+
   const { data: expired } = await supabaseAdmin.rpc("expire_stale_offers", {});
   const { data: completed } = await supabaseAdmin.rpc("auto_complete_delivered_orders");
 
@@ -151,5 +160,20 @@ export async function runMaintenance() {
       // نتجاهل الطلب المتعثر ونكمل البقية
     }
   }
-  return { expired: Number(expired ?? 0), completed: Number(completed ?? 0), redispatched };
+
+  const result = {
+    skipped: false,
+    expired: Number(expired ?? 0),
+    completed: Number(completed ?? 0),
+    redispatched,
+  };
+
+  await supabaseAdmin.from("maintenance_runs").insert({
+    source,
+    expired: result.expired,
+    completed: result.completed,
+    redispatched: result.redispatched,
+  });
+
+  return result;
 }
