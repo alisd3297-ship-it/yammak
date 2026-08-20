@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -128,6 +128,8 @@ function OrderTrackPage() {
       void supabase.removeChannel(channel);
     };
   }, [tracking, driverId, qc]);
+
+  const navigate = useNavigate();
 
   async function confirmReceived() {
     try {
