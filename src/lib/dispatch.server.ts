@@ -156,6 +156,16 @@ export async function runMaintenance(source = "manual", minSeconds = 30) {
   const { data: expired } = await supabaseAdmin.rpc("expire_stale_offers", {});
   const { data: completed } = await supabaseAdmin.rpc("auto_complete_delivered_orders");
 
+  // إطلاق طلبات التوصيل الخاص المجدولة عند اقتراب موعدها
+  const { data: due } = await supabaseAdmin
+    .from("orders")
+    .select("id")
+    .eq("order_type", "special_delivery")
+    .eq("status", "new")
+    .is("driver_id", null)
+    .lte("scheduled_at", new Date(Date.now() + 15 * 60_000).toISOString())
+    .limit(20);
+
   const { data: stuck } = await supabaseAdmin
     .from("orders")
     .select("id")
