@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { BottomNav, PageShell, StatusDot } from "@/components/app-shell";
 import { useAccount } from "@/lib/auth";
 import { ORDER_STATUS_LABELS, formatIQD, statusTone, type OrderStatus } from "@/lib/orders";
+import { TRIP_STATUS_LABELS, taxiClassLabel, tripTone, type TripStatus } from "@/lib/taxi";
 
 export const Route = createFileRoute("/orders/")({
   head: () => ({
