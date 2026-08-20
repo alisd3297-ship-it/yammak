@@ -174,7 +174,7 @@ export async function runMaintenance(source = "manual", minSeconds = 30) {
     .limit(20);
 
   let redispatched = 0;
-  for (const o of stuck ?? []) {
+  for (const o of [...(due ?? []), ...(stuck ?? [])]) {
     try {
       await runDispatch(o.id);
       redispatched += 1;
