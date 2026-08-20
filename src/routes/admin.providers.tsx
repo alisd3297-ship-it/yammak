@@ -102,7 +102,11 @@ function AdminProvidersPage() {
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
         <h1 className="text-2xl font-black">اعتماد مقدمي الخدمة</h1>
         <p className="mt-1 text-sm opacity-90">راجع طلبات المطاعم والمتاجر</p>
+        <Link to="/admin/courier" className="mt-3 inline-block text-sm font-semibold underline">
+          طلبات المندوب المستقل
+        </Link>
       </header>
+
 
       <div className="mt-4 flex gap-2 px-4">
         {(
