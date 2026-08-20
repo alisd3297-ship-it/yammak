@@ -13,6 +13,14 @@ import { respondToOffer } from "@/lib/dispatch.functions";
 import { changeOrderStatus } from "@/lib/orders.functions";
 import { vehicleLabel } from "@/lib/vehicles";
 import { completeOrderStop } from "@/lib/special-delivery.functions";
+import { changeTripStatus, respondToTripOffer } from "@/lib/taxi.functions";
+import {
+  TAXI_DRIVER_STEPS,
+  TRIP_STATUS_LABELS,
+  taxiClassLabel,
+  tripTone,
+  type TripStatus,
+} from "@/lib/taxi";
 import { ORDER_STATUS_LABELS, formatIQD, isCourierType, statusTone, type OrderStatus } from "@/lib/orders";
 
 export const Route = createFileRoute("/driver")({
