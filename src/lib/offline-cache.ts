@@ -83,10 +83,12 @@ export function useCachedQuery<T>(key: QueryKey, fetcher: () => Promise<T>) {
       }
     },
     initialData: () => readCache<T>(key)?.data,
-    initialDataUpdatedAt: () => readCache<T>(key)?.at,
-    staleTime: CACHE_TTL_MS,
+    initialDataUpdatedAt: () => 0, // نعرض النسخة المخزنة فوراً لكن نحدّثها من الخادم دائماً
+    staleTime: 60 * 1000,
+    refetchOnMount: "always",
     refetchInterval: CACHE_TTL_MS,
     refetchOnWindowFocus: false,
+
   });
 
   const cached = readCache<T>(key);
