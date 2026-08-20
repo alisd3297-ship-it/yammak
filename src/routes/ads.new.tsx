@@ -40,6 +40,7 @@ function NewAdPage() {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [images, setImages] = useState<string[]>([]);
+  const [previews, setPreviews] = useState<Record<string, string>>({});
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -73,8 +74,12 @@ function NewAdPage() {
       const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
       const path = `${account.userId}/${crypto.randomUUID()}.${ext}`;
       const { error } = await supabase.storage.from("ad-images").upload(path, file, { contentType: file.type });
-      if (error) toast.error("تعذر رفع الصورة");
-      else added.push(path);
+      if (error) {
+        toast.error("تعذر رفع الصورة");
+      } else {
+        added.push(path);
+        setPreviews((current) => ({ ...current, [path]: URL.createObjectURL(file) }));
+      }
     }
     setImages((current) => [...current, ...added].slice(0, AD_IMAGES_MAX));
     setUploading(false);
@@ -171,7 +176,7 @@ function NewAdPage() {
           <div className="flex flex-wrap gap-2">
             {images.map((path) => (
               <div key={path} className="relative size-20 overflow-hidden rounded-xl">
-                <img src={adImageUrl(path)} alt="" className="size-full object-cover" />
+                <img src={previews[path] ?? adImageUrl(path)} alt="" className="size-full object-cover" />
                 <button
                   type="button"
                   aria-label="حذف الصورة"
