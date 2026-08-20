@@ -1834,100 +1834,53 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      apply_as_provider:
-        | {
-            Args: {
-              _address_text?: string
-              _area_id?: string
-              _city_id?: string
-              _description?: string
-              _kind: Database["public"]["Enums"]["provider_kind"]
-              _lat?: number
-              _lng?: number
-              _name: string
-              _phone?: string
-            }
-            Returns: {
-              address_text: string | null
-              approval_code: string | null
-              area_id: string | null
-              avg_prep_minutes: number
-              city_id: string | null
-              commission_percent: number
-              cover_url: string | null
-              created_at: string
-              description: string | null
-              id: string
-              is_open: boolean
-              keywords: string[]
-              kind: Database["public"]["Enums"]["provider_kind"]
-              lat: number | null
-              lng: number | null
-              logo_url: string | null
-              name: string
-              orders_count: number
-              owner_id: string | null
-              phone: string | null
-              profession_category_id: string | null
-              rating: number
-              ratings_count: number
-              status: Database["public"]["Enums"]["provider_status"]
-              updated_at: string
-            }
-            SetofOptions: {
-              from: "*"
-              to: "providers"
-              isOneToOne: true
-              isSetofReturn: false
-            }
-          }
-        | {
-            Args: {
-              _address_text?: string
-              _area_id?: string
-              _city_id?: string
-              _description?: string
-              _kind: Database["public"]["Enums"]["provider_kind"]
-              _lat?: number
-              _lng?: number
-              _name: string
-              _phone?: string
-              _profession_category_id?: string
-            }
-            Returns: {
-              address_text: string | null
-              approval_code: string | null
-              area_id: string | null
-              avg_prep_minutes: number
-              city_id: string | null
-              commission_percent: number
-              cover_url: string | null
-              created_at: string
-              description: string | null
-              id: string
-              is_open: boolean
-              keywords: string[]
-              kind: Database["public"]["Enums"]["provider_kind"]
-              lat: number | null
-              lng: number | null
-              logo_url: string | null
-              name: string
-              orders_count: number
-              owner_id: string | null
-              phone: string | null
-              profession_category_id: string | null
-              rating: number
-              ratings_count: number
-              status: Database["public"]["Enums"]["provider_status"]
-              updated_at: string
-            }
-            SetofOptions: {
-              from: "*"
-              to: "providers"
-              isOneToOne: true
-              isSetofReturn: false
-            }
-          }
+      apply_as_provider: {
+        Args: {
+          _address_text?: string
+          _area_id?: string
+          _city_id?: string
+          _description?: string
+          _kind: Database["public"]["Enums"]["provider_kind"]
+          _lat?: number
+          _lng?: number
+          _name: string
+          _phone?: string
+          _profession_category_id?: string
+        }
+        Returns: {
+          address_text: string | null
+          approval_code: string | null
+          area_id: string | null
+          avg_prep_minutes: number
+          city_id: string | null
+          commission_percent: number
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_open: boolean
+          keywords: string[]
+          kind: Database["public"]["Enums"]["provider_kind"]
+          lat: number | null
+          lng: number | null
+          logo_url: string | null
+          name: string
+          orders_count: number
+          owner_id: string | null
+          phone: string | null
+          profession_category_id: string | null
+          rating: number
+          ratings_count: number
+          status: Database["public"]["Enums"]["provider_status"]
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "providers"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       attach_payment_intent: {
         Args: {
           _client_secret: string

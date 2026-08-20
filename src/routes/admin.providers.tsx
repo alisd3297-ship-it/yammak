@@ -105,6 +105,8 @@ function AdminProvidersPage() {
         <div className="mt-3 flex gap-4 text-sm font-semibold underline">
           <Link to="/admin/courier">طلبات المندوب المستقل</Link>
           <Link to="/admin/drivers">السائقون والرحلات</Link>
+          <Link to="/admin/payments">المدفوعات</Link>
+
         </div>
       </header>
 
