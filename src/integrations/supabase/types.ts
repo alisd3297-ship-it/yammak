@@ -596,6 +596,110 @@ export type Database = {
           },
         ]
       }
+      payment_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          payload: Json
+          payment_id: string | null
+          provider: string
+          provider_event_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          payload?: Json
+          payment_id?: string | null
+          provider: string
+          provider_event_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          payload?: Json
+          payment_id?: string | null
+          provider?: string
+          provider_event_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_events_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          client_secret: string | null
+          created_at: string
+          currency: string
+          failure_reason: string | null
+          id: string
+          idempotency_key: string
+          metadata: Json
+          method: string
+          paid_at: string | null
+          provider: string
+          provider_intent_id: string | null
+          refunded_amount: number
+          refunded_at: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          subject_id: string
+          subject_type: Database["public"]["Enums"]["payment_subject"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          client_secret?: string | null
+          created_at?: string
+          currency?: string
+          failure_reason?: string | null
+          id?: string
+          idempotency_key: string
+          metadata?: Json
+          method?: string
+          paid_at?: string | null
+          provider?: string
+          provider_intent_id?: string | null
+          refunded_amount?: number
+          refunded_at?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          subject_id: string
+          subject_type: Database["public"]["Enums"]["payment_subject"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          client_secret?: string | null
+          created_at?: string
+          currency?: string
+          failure_reason?: string | null
+          id?: string
+          idempotency_key?: string
+          metadata?: Json
+          method?: string
+          paid_at?: string | null
+          provider?: string
+          provider_intent_id?: string | null
+          refunded_amount?: number
+          refunded_at?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          subject_id?: string
+          subject_type?: Database["public"]["Enums"]["payment_subject"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pricing_rules: {
         Row: {
           base_fee: number
@@ -1770,6 +1874,40 @@ export type Database = {
               isSetofReturn: false
             }
           }
+      attach_payment_intent: {
+        Args: {
+          _client_secret: string
+          _intent_id: string
+          _payment_id: string
+        }
+        Returns: {
+          amount: number
+          client_secret: string | null
+          created_at: string
+          currency: string
+          failure_reason: string | null
+          id: string
+          idempotency_key: string
+          metadata: Json
+          method: string
+          paid_at: string | null
+          provider: string
+          provider_intent_id: string | null
+          refunded_amount: number
+          refunded_at: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          subject_id: string
+          subject_type: Database["public"]["Enums"]["payment_subject"]
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "payments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       auto_complete_delivered_orders: { Args: never; Returns: number }
       can_see_order: {
         Args: { _order_id: string; _user_id: string }
@@ -2042,6 +2180,41 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      create_payment_record: {
+        Args: {
+          _idempotency_key: string
+          _provider?: string
+          _subject_id: string
+          _subject_type: Database["public"]["Enums"]["payment_subject"]
+        }
+        Returns: {
+          amount: number
+          client_secret: string | null
+          created_at: string
+          currency: string
+          failure_reason: string | null
+          id: string
+          idempotency_key: string
+          metadata: Json
+          method: string
+          paid_at: string | null
+          provider: string
+          provider_intent_id: string | null
+          refunded_amount: number
+          refunded_at: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          subject_id: string
+          subject_type: Database["public"]["Enums"]["payment_subject"]
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "payments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       create_service_request: {
         Args: {
           _address_text: string
@@ -2228,6 +2401,18 @@ export type Database = {
         Args: { _provider_id: string; _user_id: string }
         Returns: boolean
       }
+      payment_subject_info: {
+        Args: {
+          _subject_id: string
+          _subject_type: Database["public"]["Enums"]["payment_subject"]
+        }
+        Returns: {
+          amount: number
+          is_terminal: boolean
+          label: string
+          owner_id: string
+        }[]
+      }
       quote_special_delivery: {
         Args: {
           _pickup_lat: number
@@ -2279,6 +2464,36 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "trip_ratings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      record_payment_refund: {
+        Args: { _amount: number; _payment_id: string; _reason?: string }
+        Returns: {
+          amount: number
+          client_secret: string | null
+          created_at: string
+          currency: string
+          failure_reason: string | null
+          id: string
+          idempotency_key: string
+          metadata: Json
+          method: string
+          paid_at: string | null
+          provider: string
+          provider_intent_id: string | null
+          refunded_amount: number
+          refunded_at: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          subject_id: string
+          subject_type: Database["public"]["Enums"]["payment_subject"]
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "payments"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -2365,6 +2580,19 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      settle_payment: {
+        Args: {
+          _amount?: number
+          _event_id?: string
+          _event_type?: string
+          _failure_reason?: string
+          _intent_id: string
+          _new_status: Database["public"]["Enums"]["payment_status"]
+          _payload?: Json
+          _provider: string
+        }
+        Returns: Json
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
@@ -2490,6 +2718,14 @@ export type Database = {
         | "special_delivery"
         | "taxi"
         | "profession"
+      payment_status:
+        | "pending"
+        | "processing"
+        | "succeeded"
+        | "failed"
+        | "cancelled"
+        | "refunded"
+      payment_subject: "order" | "trip" | "service_request"
       provider_kind: "restaurant" | "store" | "profession"
       provider_status: "pending" | "approved" | "suspended" | "rejected"
       service_price_unit: "fixed" | "hourly" | "daily" | "visit" | "negotiable"
@@ -2674,6 +2910,15 @@ export const Constants = {
         "taxi",
         "profession",
       ],
+      payment_status: [
+        "pending",
+        "processing",
+        "succeeded",
+        "failed",
+        "cancelled",
+        "refunded",
+      ],
+      payment_subject: ["order", "trip", "service_request"],
       provider_kind: ["restaurant", "store", "profession"],
       provider_status: ["pending", "approved", "suspended", "rejected"],
       service_price_unit: ["fixed", "hourly", "daily", "visit", "negotiable"],
