@@ -18,6 +18,7 @@ import { Route as PaymentsRouteImport } from './routes/payments'
 import { Route as ProviderRouteImport } from './routes/provider'
 import { Route as SpecialDeliveryRouteImport } from './routes/special-delivery'
 import { Route as TaxiRouteImport } from './routes/taxi'
+import { Route as VerifyPhoneRouteImport } from './routes/verify-phone'
 import { Route as AdminCourierRouteImport } from './routes/admin.courier'
 import { Route as AdminDriversRouteImport } from './routes/admin.drivers'
 import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
@@ -79,6 +80,11 @@ const SpecialDeliveryRoute = SpecialDeliveryRouteImport.update({
 const TaxiRoute = TaxiRouteImport.update({
   id: '/taxi',
   path: '/taxi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyPhoneRoute = VerifyPhoneRouteImport.update({
+  id: '/verify-phone',
+  path: '/verify-phone',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminCourierRoute = AdminCourierRouteImport.update({
@@ -177,6 +183,7 @@ export interface FileRoutesByFullPath {
   '/provider': typeof ProviderRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
+  '/verify-phone': typeof VerifyPhoneRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
   '/admin/payments': typeof AdminPaymentsRoute
@@ -205,6 +212,7 @@ export interface FileRoutesByTo {
   '/provider': typeof ProviderRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
+  '/verify-phone': typeof VerifyPhoneRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
   '/admin/payments': typeof AdminPaymentsRoute
@@ -234,6 +242,7 @@ export interface FileRoutesById {
   '/provider': typeof ProviderRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
+  '/verify-phone': typeof VerifyPhoneRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
   '/admin/payments': typeof AdminPaymentsRoute
@@ -264,6 +273,7 @@ export interface FileRouteTypes {
     | '/provider'
     | '/special-delivery'
     | '/taxi'
+    | '/verify-phone'
     | '/admin/courier'
     | '/admin/drivers'
     | '/admin/payments'
@@ -292,6 +302,7 @@ export interface FileRouteTypes {
     | '/provider'
     | '/special-delivery'
     | '/taxi'
+    | '/verify-phone'
     | '/admin/courier'
     | '/admin/drivers'
     | '/admin/payments'
@@ -320,6 +331,7 @@ export interface FileRouteTypes {
     | '/provider'
     | '/special-delivery'
     | '/taxi'
+    | '/verify-phone'
     | '/admin/courier'
     | '/admin/drivers'
     | '/admin/payments'
@@ -349,6 +361,7 @@ export interface RootRouteChildren {
   ProviderRoute: typeof ProviderRoute
   SpecialDeliveryRoute: typeof SpecialDeliveryRoute
   TaxiRoute: typeof TaxiRoute
+  VerifyPhoneRoute: typeof VerifyPhoneRoute
   AdminCourierRoute: typeof AdminCourierRoute
   AdminDriversRoute: typeof AdminDriversRoute
   AdminPaymentsRoute: typeof AdminPaymentsRoute
@@ -431,6 +444,13 @@ declare module '@tanstack/react-router' {
       path: '/taxi'
       fullPath: '/taxi'
       preLoaderRoute: typeof TaxiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verify-phone': {
+      id: '/verify-phone'
+      path: '/verify-phone'
+      fullPath: '/verify-phone'
+      preLoaderRoute: typeof VerifyPhoneRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/courier': {
@@ -565,6 +585,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderRoute: ProviderRoute,
   SpecialDeliveryRoute: SpecialDeliveryRoute,
   TaxiRoute: TaxiRoute,
+  VerifyPhoneRoute: VerifyPhoneRoute,
   AdminCourierRoute: AdminCourierRoute,
   AdminDriversRoute: AdminDriversRoute,
   AdminPaymentsRoute: AdminPaymentsRoute,
