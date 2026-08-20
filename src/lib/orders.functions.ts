@@ -53,9 +53,9 @@ export const createOrder = createServerFn({ method: "POST" })
       _provider_id: data.providerId,
       _items: items,
       _dropoff_text: (data.address ?? "").trim(),
-      _dropoff_lat: data.lat ?? undefined,
-      _dropoff_lng: data.lng ?? undefined,
-      _notes: data.notes ?? undefined,
+      ...(data.lat != null ? { _dropoff_lat: data.lat } : {}),
+      ...(data.lng != null ? { _dropoff_lng: data.lng } : {}),
+      ...(data.notes ? { _notes: data.notes } : {}),
     });
     if (error || !order) throw new Error(friendly(error?.message ?? ""));
 
