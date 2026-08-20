@@ -242,9 +242,12 @@ function DriverDashboard() {
 
       <div className="space-y-5 px-4 py-5">
         {!worker && (
-          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
-            ما عندك ملف مندوب. قدّم طلب انضمام وتواصل مع إدارة يمّك.
-          </p>
+          <div className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+            ما عندك ملف سائق أو مندوب.{" "}
+            <Link to="/join/driver" className="font-semibold text-primary">
+              قدّم طلب انضمام الآن
+            </Link>
+          </div>
         )}
         {worker && !worker.is_approved && (
           <p className="rounded-2xl bg-warning/15 p-4 text-sm">حسابك قيد المراجعة من الإدارة.</p>
