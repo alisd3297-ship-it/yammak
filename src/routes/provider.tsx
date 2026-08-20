@@ -1,9 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell, StatusDot } from "@/components/app-shell";
+import { ProviderCatalog } from "@/components/provider-catalog";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useAccount } from "@/lib/auth";
@@ -35,13 +38,15 @@ function ProviderDashboard() {
   const dispatch = useServerFn(dispatchOrder);
   const setStatus = useServerFn(changeOrderStatus);
 
+  const [tab, setTab] = useState<"orders" | "catalog">("orders");
+
   const { data: provider } = useQuery({
     queryKey: ["my-provider", account?.userId],
     enabled: !!account?.userId,
     queryFn: async () => {
       const { data } = await supabase
         .from("providers")
-        .select("id, name, is_open, status, orders_count, rating")
+        .select("id, name, kind, is_open, status, orders_count, rating")
         .eq("owner_id", account!.userId!)
         .maybeSingle();
       return data;
@@ -121,14 +126,45 @@ function ProviderDashboard() {
         )}
       </header>
 
-      <div className="space-y-3 px-4 py-5">
+      {provider && (
+        <div className="mt-4 flex gap-2 px-4">
+          {(
+            [
+              { key: "orders", label: "الطلبات" },
+              { key: "catalog", label: "الكتالوج" },
+            ] as const
+          ).map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={cn(
+                "flex-1 rounded-full px-4 py-2 text-xs font-semibold transition",
+                tab === t.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+              )}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {provider && tab === "catalog" && (
+        <div className="px-4 py-5">
+          <ProviderCatalog providerId={provider.id} isStore={provider.kind === "store"} />
+        </div>
+      )}
+
+      <div className={cn("space-y-3 px-4 py-5", provider && tab !== "orders" && "hidden")}>
         {!provider && (
           <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
-            ما عندك متجر مرتبط بحسابك. تواصل مع إدارة يمّك لتفعيل متجرك.
+            ما عندك نشاط مرتبط بحسابك.{" "}
+            <Link to="/join/provider" className="font-semibold text-primary">
+              قدّم طلب انضمام
+            </Link>
           </p>
         )}
         {provider?.status !== "approved" && provider && (
-          <p className="rounded-2xl bg-warning/15 p-4 text-sm">متجرك قيد المراجعة من الإدارة.</p>
+          <p className="rounded-2xl bg-warning/15 p-4 text-sm">نشاطك قيد المراجعة من الإدارة، ما راح تستلم طلبات قبل الاعتماد.</p>
         )}
 
         {(orders ?? []).map((o) => {
