@@ -34,6 +34,22 @@ function OrdersPage() {
     },
   });
 
+  const { data: trips } = useQuery({
+    queryKey: ["my-trips", account?.userId],
+    enabled: !!account?.userId,
+    refetchInterval: 15_000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("trips")
+        .select("id, code, status, fare, taxi_class, pickup_text, destination_text, created_at")
+        .eq("passenger_id", account!.userId!)
+        .order("created_at", { ascending: false })
+        .limit(20);
+      return data ?? [];
+    },
+  });
+
+
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
