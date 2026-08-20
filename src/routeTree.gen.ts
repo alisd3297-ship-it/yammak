@@ -14,10 +14,14 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as DriverRouteImport } from './routes/driver'
 import { Route as ProviderRouteImport } from './routes/provider'
+import { Route as AdminProvidersRouteImport } from './routes/admin.providers'
+import { Route as JoinProviderRouteImport } from './routes/join.provider'
 import { Route as OrdersIndexRouteImport } from './routes/orders.index'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as RestaurantsIndexRouteImport } from './routes/restaurants.index'
 import { Route as RestaurantsIdRouteImport } from './routes/restaurants.$id'
+import { Route as StoresIndexRouteImport } from './routes/stores.index'
+import { Route as StoresIdRouteImport } from './routes/stores.$id'
 import { Route as ApiPublicMaintenanceRouteImport } from './routes/api/public/maintenance'
 
 const IndexRoute = IndexRouteImport.update({
@@ -45,6 +49,16 @@ const ProviderRoute = ProviderRouteImport.update({
   path: '/provider',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminProvidersRoute = AdminProvidersRouteImport.update({
+  id: '/admin/providers',
+  path: '/admin/providers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinProviderRoute = JoinProviderRouteImport.update({
+  id: '/join/provider',
+  path: '/join/provider',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OrdersIndexRoute = OrdersIndexRouteImport.update({
   id: '/orders/',
   path: '/orders/',
@@ -65,6 +79,16 @@ const RestaurantsIdRoute = RestaurantsIdRouteImport.update({
   path: '/restaurants/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StoresIndexRoute = StoresIndexRouteImport.update({
+  id: '/stores/',
+  path: '/stores/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoresIdRoute = StoresIdRouteImport.update({
+  id: '/stores/$id',
+  path: '/stores/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicMaintenanceRoute = ApiPublicMaintenanceRouteImport.update({
   id: '/api/public/maintenance',
   path: '/api/public/maintenance',
@@ -77,10 +101,14 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/driver': typeof DriverRoute
   '/provider': typeof ProviderRoute
+  '/admin/providers': typeof AdminProvidersRoute
+  '/join/provider': typeof JoinProviderRoute
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
+  '/stores/$id': typeof StoresIdRoute
   '/orders/': typeof OrdersIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
+  '/stores/': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
 }
 export interface FileRoutesByTo {
@@ -89,10 +117,14 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/driver': typeof DriverRoute
   '/provider': typeof ProviderRoute
+  '/admin/providers': typeof AdminProvidersRoute
+  '/join/provider': typeof JoinProviderRoute
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
+  '/stores/$id': typeof StoresIdRoute
   '/orders': typeof OrdersIndexRoute
   '/restaurants': typeof RestaurantsIndexRoute
+  '/stores': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
 }
 export interface FileRoutesById {
@@ -102,10 +134,14 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/driver': typeof DriverRoute
   '/provider': typeof ProviderRoute
+  '/admin/providers': typeof AdminProvidersRoute
+  '/join/provider': typeof JoinProviderRoute
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
+  '/stores/$id': typeof StoresIdRoute
   '/orders/': typeof OrdersIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
+  '/stores/': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
 }
 export interface FileRouteTypes {
@@ -116,10 +152,14 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/driver'
     | '/provider'
+    | '/admin/providers'
+    | '/join/provider'
     | '/orders/$id'
     | '/restaurants/$id'
+    | '/stores/$id'
     | '/orders/'
     | '/restaurants/'
+    | '/stores/'
     | '/api/public/maintenance'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -128,10 +168,14 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/driver'
     | '/provider'
+    | '/admin/providers'
+    | '/join/provider'
     | '/orders/$id'
     | '/restaurants/$id'
+    | '/stores/$id'
     | '/orders'
     | '/restaurants'
+    | '/stores'
     | '/api/public/maintenance'
   id:
     | '__root__'
@@ -140,10 +184,14 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/driver'
     | '/provider'
+    | '/admin/providers'
+    | '/join/provider'
     | '/orders/$id'
     | '/restaurants/$id'
+    | '/stores/$id'
     | '/orders/'
     | '/restaurants/'
+    | '/stores/'
     | '/api/public/maintenance'
   fileRoutesById: FileRoutesById
 }
@@ -153,10 +201,14 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   DriverRoute: typeof DriverRoute
   ProviderRoute: typeof ProviderRoute
+  AdminProvidersRoute: typeof AdminProvidersRoute
+  JoinProviderRoute: typeof JoinProviderRoute
   OrdersIdRoute: typeof OrdersIdRoute
   RestaurantsIdRoute: typeof RestaurantsIdRoute
+  StoresIdRoute: typeof StoresIdRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
   RestaurantsIndexRoute: typeof RestaurantsIndexRoute
+  StoresIndexRoute: typeof StoresIndexRoute
   ApiPublicMaintenanceRoute: typeof ApiPublicMaintenanceRoute
 }
 
@@ -197,6 +249,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProviderRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/providers': {
+      id: '/admin/providers'
+      path: '/admin/providers'
+      fullPath: '/admin/providers'
+      preLoaderRoute: typeof AdminProvidersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join/provider': {
+      id: '/join/provider'
+      path: '/join/provider'
+      fullPath: '/join/provider'
+      preLoaderRoute: typeof JoinProviderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/orders/': {
       id: '/orders/'
       path: '/orders'
@@ -225,6 +291,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RestaurantsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/stores/': {
+      id: '/stores/'
+      path: '/stores'
+      fullPath: '/stores/'
+      preLoaderRoute: typeof StoresIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stores/$id': {
+      id: '/stores/$id'
+      path: '/stores/$id'
+      fullPath: '/stores/$id'
+      preLoaderRoute: typeof StoresIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/maintenance': {
       id: '/api/public/maintenance'
       path: '/api/public/maintenance'
@@ -241,10 +321,14 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   DriverRoute: DriverRoute,
   ProviderRoute: ProviderRoute,
+  AdminProvidersRoute: AdminProvidersRoute,
+  JoinProviderRoute: JoinProviderRoute,
   OrdersIdRoute: OrdersIdRoute,
   RestaurantsIdRoute: RestaurantsIdRoute,
+  StoresIdRoute: StoresIdRoute,
   OrdersIndexRoute: OrdersIndexRoute,
   RestaurantsIndexRoute: RestaurantsIndexRoute,
+  StoresIndexRoute: StoresIndexRoute,
   ApiPublicMaintenanceRoute: ApiPublicMaintenanceRoute,
 }
 export const routeTree = rootRouteImport
