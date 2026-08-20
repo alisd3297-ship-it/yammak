@@ -1,0 +1,20 @@
+REVOKE EXECUTE ON FUNCTION public.otp_request(uuid, text, text, text) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.otp_verify(uuid, text) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.otp_mark_delivered(uuid, boolean, text) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.settle_payment(text, text, payment_status, text, text, jsonb, text, numeric) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.attach_payment_intent(uuid, text, text) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.record_payment_refund(uuid, numeric, text) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.system_change_order_status(uuid, order_status) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.system_change_trip_status(uuid, trip_status) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.run_sql_maintenance() FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.claim_maintenance_slot(text, integer) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.auto_complete_delivered_orders() FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.expire_stale_offers(uuid) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.expire_stale_trip_offers(uuid) FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.expire_ads() FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.expire_due_ads() FROM anon, authenticated, public;
+
+REVOKE EXECUTE ON FUNCTION public.create_ad(uuid, text, text, text, text, text[], numeric, uuid) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.set_ad_status(uuid, ad_status, text, integer, timestamptz, uuid) FROM anon, public;
+GRANT EXECUTE ON FUNCTION public.create_ad(uuid, text, text, text, text, text[], numeric, uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.set_ad_status(uuid, ad_status, text, integer, timestamptz, uuid) TO authenticated;

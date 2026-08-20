@@ -1,5 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
+import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 import { routeTree } from "./routeTree.gen";
 
 export const getRouter = () => {
@@ -12,5 +13,9 @@ export const getRouter = () => {
     defaultPreloadStaleTime: 0,
   });
 
+  // ينقل بيانات الاستعلامات المنفَّذة على الخادم إلى المتصفح حتى لا يختلف الرسم بعد التحميل.
+  setupRouterSsrQueryIntegration({ router, queryClient });
+
   return router;
 };
+
