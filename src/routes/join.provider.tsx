@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { ArrowRight, LocateFixed, Store as StoreIcon, UtensilsCrossed } from "lucide-react";
+import { ArrowRight, LocateFixed, Store as StoreIcon, UtensilsCrossed, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/app-shell";
@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/join/provider")({
   head: () => ({
     meta: [
-      { title: "انضم كمطعم أو متجر | يمّك" },
+      { title: "انضم كمطعم أو متجر أو مهني | يمّك" },
       { name: "description", content: "سجّل مطعمك أو متجرك في يمّك واستقبل الطلبات بعد اعتماد الإدارة." },
       { property: "og:title", content: "انضم كمطعم أو متجر | يمّك" },
       { property: "og:description", content: "تقديم طلب انضمام لمقدمي الخدمة." },
@@ -32,7 +32,8 @@ function JoinProviderPage() {
   const navigate = useNavigate();
   const apply = useServerFn(applyAsProvider);
 
-  const [kind, setKind] = useState<"restaurant" | "store">("store");
+  const [kind, setKind] = useState<"restaurant" | "store" | "profession">("store");
+  const [professionCategoryId, setProfessionCategoryId] = useState<string>("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [phone, setPhone] = useState("");
@@ -40,6 +41,18 @@ function JoinProviderPage() {
   const [addressText, setAddressText] = useState("");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const { data: categories } = useQuery({
+    queryKey: ["profession-categories"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profession_categories")
+        .select("id, name")
+        .eq("is_active", true)
+        .order("sort_order");
+      return data ?? [];
+    },
+  });
 
   const { data: cities } = useQuery({
     queryKey: ["cities"],
@@ -54,6 +67,10 @@ function JoinProviderPage() {
       toast.error("اكتب اسم النشاط");
       return;
     }
+    if (kind === "profession" && !professionCategoryId) {
+      toast.error("اختر تصنيف المهنة");
+      return;
+    }
     setSaving(true);
     try {
       await apply({
@@ -66,6 +83,7 @@ function JoinProviderPage() {
           addressText: addressText || null,
           lat: coords?.lat ?? null,
           lng: coords?.lng ?? null,
+          professionCategoryId: kind === "profession" ? professionCategoryId : null,
         },
       });
       toast.success("استلمنا طلبك، بانتظار اعتماد الإدارة");
@@ -111,15 +129,16 @@ function JoinProviderPage() {
           <ArrowRight className="size-4" /> الرئيسية
         </Link>
         <h1 className="text-2xl font-black">انضم كمقدم خدمة</h1>
-        <p className="mt-1 text-sm opacity-90">سجّل مطعمك أو متجرك، والإدارة راح تراجع طلبك</p>
+        <p className="mt-1 text-sm opacity-90">سجّل مطعمك أو متجرك أو مهنتك، والإدارة راح تراجع طلبك</p>
       </header>
 
       <div className="space-y-5 px-4 py-5">
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           {(
             [
               { key: "store", label: "متجر / صيدلية", icon: StoreIcon },
               { key: "restaurant", label: "مطعم", icon: UtensilsCrossed },
+              { key: "profession", label: "مهنة / خدمة", icon: Wrench },
             ] as const
           ).map((opt) => (
             <button
@@ -137,6 +156,21 @@ function JoinProviderPage() {
         </div>
 
         <section className="space-y-3 rounded-2xl bg-card p-4 shadow-soft">
+          {kind === "profession" && (
+            <select
+              value={professionCategoryId}
+              onChange={(e) => setProfessionCategoryId(e.target.value)}
+              className="h-12 w-full rounded-md border border-input bg-background px-3 text-sm"
+              aria-label="تصنيف المهنة"
+            >
+              <option value="">اختر تصنيف المهنة</option>
+              {(categories ?? []).map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          )}
           <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="اسم النشاط" className="h-12" />
           <Textarea
             value={description}

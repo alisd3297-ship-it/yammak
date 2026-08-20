@@ -196,6 +196,9 @@ function ServiceTile({ service }: { service: ServiceRow }) {
   if (to === "/stores") {
     return <Link to="/stores">{content}</Link>;
   }
+  if (to === "/services") {
+    return <Link to="/services">{content}</Link>;
+  }
 
   return (
     <div title="هذه الخدمة قيد الإطلاق ضمن المراحل القادمة" className="opacity-70">

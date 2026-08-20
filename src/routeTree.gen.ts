@@ -20,6 +20,9 @@ import { Route as OrdersIndexRouteImport } from './routes/orders.index'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as RestaurantsIndexRouteImport } from './routes/restaurants.index'
 import { Route as RestaurantsIdRouteImport } from './routes/restaurants.$id'
+import { Route as ServiceRequestsIndexRouteImport } from './routes/service-requests.index'
+import { Route as ServicesIndexRouteImport } from './routes/services.index'
+import { Route as ServicesIdRouteImport } from './routes/services.$id'
 import { Route as StoresIndexRouteImport } from './routes/stores.index'
 import { Route as StoresIdRouteImport } from './routes/stores.$id'
 import { Route as ApiPublicMaintenanceRouteImport } from './routes/api/public/maintenance'
@@ -79,6 +82,21 @@ const RestaurantsIdRoute = RestaurantsIdRouteImport.update({
   path: '/restaurants/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ServiceRequestsIndexRoute = ServiceRequestsIndexRouteImport.update({
+  id: '/service-requests/',
+  path: '/service-requests/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesIndexRoute = ServicesIndexRouteImport.update({
+  id: '/services/',
+  path: '/services/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesIdRoute = ServicesIdRouteImport.update({
+  id: '/services/$id',
+  path: '/services/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StoresIndexRoute = StoresIndexRouteImport.update({
   id: '/stores/',
   path: '/stores/',
@@ -105,9 +123,12 @@ export interface FileRoutesByFullPath {
   '/join/provider': typeof JoinProviderRoute
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
+  '/services/$id': typeof ServicesIdRoute
   '/stores/$id': typeof StoresIdRoute
   '/orders/': typeof OrdersIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
+  '/service-requests/': typeof ServiceRequestsIndexRoute
+  '/services/': typeof ServicesIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
 }
@@ -121,9 +142,12 @@ export interface FileRoutesByTo {
   '/join/provider': typeof JoinProviderRoute
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
+  '/services/$id': typeof ServicesIdRoute
   '/stores/$id': typeof StoresIdRoute
   '/orders': typeof OrdersIndexRoute
   '/restaurants': typeof RestaurantsIndexRoute
+  '/service-requests': typeof ServiceRequestsIndexRoute
+  '/services': typeof ServicesIndexRoute
   '/stores': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
 }
@@ -138,9 +162,12 @@ export interface FileRoutesById {
   '/join/provider': typeof JoinProviderRoute
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
+  '/services/$id': typeof ServicesIdRoute
   '/stores/$id': typeof StoresIdRoute
   '/orders/': typeof OrdersIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
+  '/service-requests/': typeof ServiceRequestsIndexRoute
+  '/services/': typeof ServicesIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
 }
@@ -156,9 +183,12 @@ export interface FileRouteTypes {
     | '/join/provider'
     | '/orders/$id'
     | '/restaurants/$id'
+    | '/services/$id'
     | '/stores/$id'
     | '/orders/'
     | '/restaurants/'
+    | '/service-requests/'
+    | '/services/'
     | '/stores/'
     | '/api/public/maintenance'
   fileRoutesByTo: FileRoutesByTo
@@ -172,9 +202,12 @@ export interface FileRouteTypes {
     | '/join/provider'
     | '/orders/$id'
     | '/restaurants/$id'
+    | '/services/$id'
     | '/stores/$id'
     | '/orders'
     | '/restaurants'
+    | '/service-requests'
+    | '/services'
     | '/stores'
     | '/api/public/maintenance'
   id:
@@ -188,9 +221,12 @@ export interface FileRouteTypes {
     | '/join/provider'
     | '/orders/$id'
     | '/restaurants/$id'
+    | '/services/$id'
     | '/stores/$id'
     | '/orders/'
     | '/restaurants/'
+    | '/service-requests/'
+    | '/services/'
     | '/stores/'
     | '/api/public/maintenance'
   fileRoutesById: FileRoutesById
@@ -205,9 +241,12 @@ export interface RootRouteChildren {
   JoinProviderRoute: typeof JoinProviderRoute
   OrdersIdRoute: typeof OrdersIdRoute
   RestaurantsIdRoute: typeof RestaurantsIdRoute
+  ServicesIdRoute: typeof ServicesIdRoute
   StoresIdRoute: typeof StoresIdRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
   RestaurantsIndexRoute: typeof RestaurantsIndexRoute
+  ServiceRequestsIndexRoute: typeof ServiceRequestsIndexRoute
+  ServicesIndexRoute: typeof ServicesIndexRoute
   StoresIndexRoute: typeof StoresIndexRoute
   ApiPublicMaintenanceRoute: typeof ApiPublicMaintenanceRoute
 }
@@ -291,6 +330,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RestaurantsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/service-requests/': {
+      id: '/service-requests/'
+      path: '/service-requests'
+      fullPath: '/service-requests/'
+      preLoaderRoute: typeof ServiceRequestsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/': {
+      id: '/services/'
+      path: '/services'
+      fullPath: '/services/'
+      preLoaderRoute: typeof ServicesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/$id': {
+      id: '/services/$id'
+      path: '/services/$id'
+      fullPath: '/services/$id'
+      preLoaderRoute: typeof ServicesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/stores/': {
       id: '/stores/'
       path: '/stores'
@@ -325,9 +385,12 @@ const rootRouteChildren: RootRouteChildren = {
   JoinProviderRoute: JoinProviderRoute,
   OrdersIdRoute: OrdersIdRoute,
   RestaurantsIdRoute: RestaurantsIdRoute,
+  ServicesIdRoute: ServicesIdRoute,
   StoresIdRoute: StoresIdRoute,
   OrdersIndexRoute: OrdersIndexRoute,
   RestaurantsIndexRoute: RestaurantsIndexRoute,
+  ServiceRequestsIndexRoute: ServiceRequestsIndexRoute,
+  ServicesIndexRoute: ServicesIndexRoute,
   StoresIndexRoute: StoresIndexRoute,
   ApiPublicMaintenanceRoute: ApiPublicMaintenanceRoute,
 }
