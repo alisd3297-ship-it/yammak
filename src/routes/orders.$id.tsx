@@ -135,9 +135,17 @@ function OrderTrackPage() {
       toast.success("شكراً! تم إغلاق الطلب");
       qc.invalidateQueries({ queryKey: ["order", id] });
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "تعذر تأكيد الاستلام");
+      const raw = e instanceof Error ? e.message : "";
+      if (raw.includes("phone_verification_required")) {
+        toast.error("لازم تأكد رقم هاتفك قبل تأكيد الاستلام", {
+          action: { label: "تأكيد الرقم", onClick: () => navigate({ to: "/verify-phone" }) },
+        });
+        return;
+      }
+      toast.error(raw || "تعذر تأكيد الاستلام");
     }
   }
+
 
   async function cancelOrder() {
     try {
