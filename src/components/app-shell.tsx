@@ -1,5 +1,8 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Home, ClipboardList, ShoppingCart, User, WifiOff } from "lucide-react";
+import { Home, ClipboardList, ShoppingCart, User, WifiOff, ShieldCheck } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { superAdminExists } from "@/lib/admin-setup.functions";
 import type { ReactNode } from "react";
 import { useCart } from "@/lib/cart";
 import { useOnline } from "@/lib/offline-cache";
@@ -102,4 +105,50 @@ export function StatusDot({ tone }: { tone: "success" | "danger" | "muted" | "wa
       )}
     />
   );
+}
+
+export function AdminEntry() {
+  const { data: account } = useAccount();
+  const check = useServerFn(superAdminExists);
+  const isAdmin = !!account?.roles.some((r) =>
+    r === "super_admin" || r === "admin" || r === "supervisor",
+  );
+  const { data: status } = useQuery({
+    queryKey: ["super-admin-exists"],
+    queryFn: () => check({}),
+    enabled: !!account?.userId && !isAdmin,
+    staleTime: 5 * 60_000,
+  });
+
+  if (!account?.userId) return null;
+
+  if (isAdmin) {
+    return (
+      <div className="mx-4 mt-3">
+        <Link
+          to="/admin/providers"
+          className="flex items-center gap-2 rounded-2xl bg-card px-4 py-3 text-sm font-semibold text-primary shadow-card"
+        >
+          <ShieldCheck className="size-5" />
+          الدخول إلى لوحة المدير
+        </Link>
+      </div>
+    );
+  }
+
+  if (status && !status.exists) {
+    return (
+      <div className="mx-4 mt-3">
+        <Link
+          to="/setup-admin"
+          className="flex items-center gap-2 rounded-2xl bg-card px-4 py-3 text-sm font-semibold text-primary shadow-card"
+        >
+          <ShieldCheck className="size-5" />
+          إعداد المدير العام
+        </Link>
+      </div>
+    );
+  }
+
+  return null;
 }

@@ -4,7 +4,7 @@ import { Search, Star, Clock } from "lucide-react";
 import * as Icons from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCachedQuery } from "@/lib/offline-cache";
-import { BottomNav, BrandHeader, OfflineBanner, PageShell } from "@/components/app-shell";
+import { AdminEntry, BottomNav, BrandHeader, OfflineBanner, PageShell } from "@/components/app-shell";
 import { Input } from "@/components/ui/input";
 import { normalizeArabic, fuzzyScore } from "@/lib/search";
 import { AdsTickerBoard } from "@/components/ads-ticker";
@@ -109,6 +109,8 @@ function CustomerHome() {
       </div>
 
       <OfflineBanner stale={catalog.isStaleCache} />
+
+      <AdminEntry />
 
       <section className="mt-4 px-4">
         <div className="mb-2 flex items-center justify-between">
