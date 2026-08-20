@@ -48,17 +48,22 @@ function OrderTrackPage() {
     queryKey: ["order", id],
     refetchInterval: 15_000,
     queryFn: async () => {
-      const [order, items] = await Promise.all([
+      const [order, items, stops] = await Promise.all([
         supabase
           .from("orders")
           .select(
-            "id, code, status, order_type, total, subtotal, delivery_fee, pickup_text, dropoff_text, notes, created_at, providers(name, phone), driver_id",
+            "id, code, status, order_type, total, subtotal, delivery_fee, pickup_text, dropoff_text, notes, created_at, vehicle_type, cargo_description, cargo_weight_kg, scheduled_at, providers(name, phone), driver_id",
           )
           .eq("id", id)
           .maybeSingle(),
         supabase.from("order_items").select("id, name, quantity, unit_price").eq("order_id", id),
+        supabase
+          .from("order_stops")
+          .select("id, sort_order, address_text, recipient_name, recipient_phone, notes, completed_at")
+          .eq("order_id", id)
+          .order("sort_order"),
       ]);
-      return { order: order.data, items: items.data ?? [] };
+      return { order: order.data, items: items.data ?? [], stops: stops.data ?? [] };
     },
   });
 
