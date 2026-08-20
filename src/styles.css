@@ -151,3 +151,44 @@
   max-width: 34rem;
   min-height: 100dvh;
 }
+
+/* ===== شريط الإعلانات (ticker) ===== */
+.ad-ticker {
+  --ad-bg: oklch(0.6 0.21 27);
+  --ad-fg: oklch(0.99 0 0);
+  background-color: var(--ad-bg);
+  color: var(--ad-fg);
+}
+.ad-tone-brand { --ad-bg: oklch(0.55 0.21 27); }
+.ad-tone-emerald { --ad-bg: oklch(0.52 0.13 165); }
+.ad-tone-sky { --ad-bg: oklch(0.52 0.13 245); }
+.ad-tone-amber { --ad-bg: oklch(0.55 0.13 75); }
+.ad-tone-violet { --ad-bg: oklch(0.5 0.16 300); }
+.ad-tone-rose { --ad-bg: oklch(0.55 0.17 10); }
+
+.ad-ticker-label {
+  background-color: color-mix(in oklab, black 22%, var(--ad-bg));
+}
+.ad-ticker-item {
+  background-color: color-mix(in oklab, white 14%, var(--ad-bg));
+  color: var(--ad-fg);
+}
+.ad-ticker-price {
+  background-color: color-mix(in oklab, black 25%, var(--ad-bg));
+}
+
+@keyframes ad-ticker-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+.ad-ticker-track {
+  direction: ltr;
+  animation-name: ad-ticker-scroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.ad-ticker-track > * { direction: rtl; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ad-ticker-track { animation: none; }
+}

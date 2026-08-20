@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_categories: {
+        Row: {
+          color: string
+          created_at: string
+          icon: string
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       addresses: {
         Row: {
           address_text: string
@@ -46,6 +76,87 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      ads: {
+        Row: {
+          address_text: string
+          body: string
+          category_id: string
+          city_id: string | null
+          contact_phone: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          images: string[]
+          owner_id: string
+          price: number | null
+          published_at: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          sort_order: number
+          status: Database["public"]["Enums"]["ad_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          address_text: string
+          body: string
+          category_id: string
+          city_id?: string | null
+          contact_phone: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          images?: string[]
+          owner_id: string
+          price?: number | null
+          published_at?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sort_order?: number
+          status?: Database["public"]["Enums"]["ad_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          address_text?: string
+          body?: string
+          category_id?: string
+          city_id?: string | null
+          contact_phone?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          images?: string[]
+          owner_id?: string
+          price?: number | null
+          published_at?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sort_order?: number
+          status?: Database["public"]["Enums"]["ad_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ads_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "ad_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ads_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       app_settings: {
         Row: {
@@ -2096,6 +2207,45 @@ export type Database = {
         }
         Returns: number
       }
+      create_ad: {
+        Args: {
+          _address_text: string
+          _body: string
+          _category_id: string
+          _city_id?: string
+          _contact_phone: string
+          _images: string[]
+          _price?: number
+          _title: string
+        }
+        Returns: {
+          address_text: string
+          body: string
+          category_id: string
+          city_id: string | null
+          contact_phone: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          images: string[]
+          owner_id: string
+          price: number | null
+          published_at: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          sort_order: number
+          status: Database["public"]["Enums"]["ad_status"]
+          title: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "ads"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       create_courier_order: {
         Args: {
           _dropoff_lat?: number
@@ -2351,6 +2501,8 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      expire_ads: { Args: never; Returns: number }
+      expire_due_ads: { Args: never; Returns: number }
       expire_stale_offers: { Args: { _order_id?: string }; Returns: number }
       expire_stale_trip_offers: { Args: { _trip_id?: string }; Returns: number }
       has_role: {
@@ -2537,6 +2689,43 @@ export type Database = {
         Args: { _request_id: string; _user_id: string }
         Returns: string
       }
+      set_ad_status: {
+        Args: {
+          _ad_id: string
+          _category_id?: string
+          _expires_at?: string
+          _reason?: string
+          _sort_order?: number
+          _status: Database["public"]["Enums"]["ad_status"]
+        }
+        Returns: {
+          address_text: string
+          body: string
+          category_id: string
+          city_id: string | null
+          contact_phone: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          images: string[]
+          owner_id: string
+          price: number | null
+          published_at: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          sort_order: number
+          status: Database["public"]["Enums"]["ad_status"]
+          title: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "ads"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       set_provider_status: {
         Args: {
           _provider_id: string
@@ -2714,6 +2903,7 @@ export type Database = {
       }
     }
     Enums: {
+      ad_status: "pending" | "published" | "rejected" | "paused" | "expired"
       app_role:
         | "super_admin"
         | "admin"
@@ -2903,6 +3093,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      ad_status: ["pending", "published", "rejected", "paused", "expired"],
       app_role: [
         "super_admin",
         "admin",

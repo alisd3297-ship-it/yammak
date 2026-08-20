@@ -7,6 +7,8 @@ import { useCachedQuery } from "@/lib/offline-cache";
 import { BottomNav, BrandHeader, OfflineBanner, PageShell } from "@/components/app-shell";
 import { Input } from "@/components/ui/input";
 import { normalizeArabic, fuzzyScore } from "@/lib/search";
+import { AdsTickerBoard } from "@/components/ads-ticker";
+import { useAdsBoard } from "@/routes/ads.index";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -47,6 +49,7 @@ type ProviderRow = {
 
 function CustomerHome() {
   const [term, setTerm] = useState("");
+  const adsBoard = useAdsBoard();
 
   const catalog = useCachedQuery(["home-catalog"], async () => {
     const [sections, services, providers] = await Promise.all([
@@ -106,6 +109,16 @@ function CustomerHome() {
       </div>
 
       <OfflineBanner stale={catalog.isStaleCache} />
+
+      <section className="mt-4 px-4">
+        <div className="mb-2 flex items-center justify-between">
+          <h2 className="text-base font-bold">إعلانات</h2>
+          <Link to="/ads" className="text-sm font-semibold text-primary">
+            أعلن معنا
+          </Link>
+        </div>
+        <AdsTickerBoard categories={adsBoard.data?.categories ?? []} ads={adsBoard.data?.ads ?? []} />
+      </section>
 
       {results ? (
         <section className="mt-6 space-y-6 px-4">
@@ -190,7 +203,7 @@ function ServiceTile({ service }: { service: ServiceRow }) {
       <span className="text-xs font-semibold leading-tight">{service.name}</span>
     </div>
   );
-  const KNOWN = ["/restaurants", "/stores", "/services", "/courier", "/special-delivery", "/taxi"] as const;
+  const KNOWN = ["/restaurants", "/stores", "/services", "/courier", "/special-delivery", "/taxi", "/ads"] as const;
   if ((KNOWN as readonly string[]).includes(to)) {
     return <Link to={to as (typeof KNOWN)[number]}>{content}</Link>;
   }

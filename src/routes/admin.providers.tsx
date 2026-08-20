@@ -145,6 +145,8 @@ function AdminProvidersPage() {
           <Link to="/admin/courier">طلبات المندوب المستقل</Link>
           <Link to="/admin/drivers">السائقون والرحلات</Link>
           <Link to="/admin/payments">المدفوعات</Link>
+          <Link to="/admin/ads">الإعلانات</Link>
+
 
         </div>
       </header>

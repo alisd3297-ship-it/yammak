@@ -19,10 +19,14 @@ import { Route as ProviderRouteImport } from './routes/provider'
 import { Route as SpecialDeliveryRouteImport } from './routes/special-delivery'
 import { Route as TaxiRouteImport } from './routes/taxi'
 import { Route as VerifyPhoneRouteImport } from './routes/verify-phone'
+import { Route as AdminAdsRouteImport } from './routes/admin.ads'
 import { Route as AdminCourierRouteImport } from './routes/admin.courier'
 import { Route as AdminDriversRouteImport } from './routes/admin.drivers'
 import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
 import { Route as AdminProvidersRouteImport } from './routes/admin.providers'
+import { Route as AdsIndexRouteImport } from './routes/ads.index'
+import { Route as AdsIdRouteImport } from './routes/ads.$id'
+import { Route as AdsNewRouteImport } from './routes/ads.new'
 import { Route as JoinDriverRouteImport } from './routes/join.driver'
 import { Route as JoinProviderRouteImport } from './routes/join.provider'
 import { Route as OrdersIndexRouteImport } from './routes/orders.index'
@@ -35,6 +39,7 @@ import { Route as ServicesIdRouteImport } from './routes/services.$id'
 import { Route as StoresIndexRouteImport } from './routes/stores.index'
 import { Route as StoresIdRouteImport } from './routes/stores.$id'
 import { Route as ApiPublicMaintenanceRouteImport } from './routes/api/public/maintenance'
+import { Route as ApiPublicAdImageSplatRouteImport } from './routes/api/public/ad-image.$'
 import { Route as ApiPublicPaymentsStripeRouteImport } from './routes/api/public/payments.stripe'
 
 const IndexRoute = IndexRouteImport.update({
@@ -87,6 +92,11 @@ const VerifyPhoneRoute = VerifyPhoneRouteImport.update({
   path: '/verify-phone',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminAdsRoute = AdminAdsRouteImport.update({
+  id: '/admin/ads',
+  path: '/admin/ads',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminCourierRoute = AdminCourierRouteImport.update({
   id: '/admin/courier',
   path: '/admin/courier',
@@ -105,6 +115,21 @@ const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
 const AdminProvidersRoute = AdminProvidersRouteImport.update({
   id: '/admin/providers',
   path: '/admin/providers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdsIndexRoute = AdsIndexRouteImport.update({
+  id: '/ads/',
+  path: '/ads/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdsIdRoute = AdsIdRouteImport.update({
+  id: '/ads/$id',
+  path: '/ads/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdsNewRoute = AdsNewRouteImport.update({
+  id: '/ads/new',
+  path: '/ads/new',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JoinDriverRoute = JoinDriverRouteImport.update({
@@ -167,6 +192,11 @@ const ApiPublicMaintenanceRoute = ApiPublicMaintenanceRouteImport.update({
   path: '/api/public/maintenance',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicAdImageSplatRoute = ApiPublicAdImageSplatRouteImport.update({
+  id: '/api/public/ad-image/$',
+  path: '/api/public/ad-image/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicPaymentsStripeRoute = ApiPublicPaymentsStripeRouteImport.update({
   id: '/api/public/payments/stripe',
   path: '/api/public/payments/stripe',
@@ -184,22 +214,27 @@ export interface FileRoutesByFullPath {
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
+  '/admin/ads': typeof AdminAdsRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
+  '/ads/$id': typeof AdsIdRoute
+  '/ads/new': typeof AdsNewRoute
   '/join/driver': typeof JoinDriverRoute
   '/join/provider': typeof JoinProviderRoute
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/services/$id': typeof ServicesIdRoute
   '/stores/$id': typeof StoresIdRoute
+  '/ads/': typeof AdsIndexRoute
   '/orders/': typeof OrdersIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
   '/service-requests/': typeof ServiceRequestsIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
+  '/api/public/ad-image/$': typeof ApiPublicAdImageSplatRoute
   '/api/public/payments/stripe': typeof ApiPublicPaymentsStripeRoute
 }
 export interface FileRoutesByTo {
@@ -213,22 +248,27 @@ export interface FileRoutesByTo {
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
+  '/admin/ads': typeof AdminAdsRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
+  '/ads/$id': typeof AdsIdRoute
+  '/ads/new': typeof AdsNewRoute
   '/join/driver': typeof JoinDriverRoute
   '/join/provider': typeof JoinProviderRoute
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/services/$id': typeof ServicesIdRoute
   '/stores/$id': typeof StoresIdRoute
+  '/ads': typeof AdsIndexRoute
   '/orders': typeof OrdersIndexRoute
   '/restaurants': typeof RestaurantsIndexRoute
   '/service-requests': typeof ServiceRequestsIndexRoute
   '/services': typeof ServicesIndexRoute
   '/stores': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
+  '/api/public/ad-image/$': typeof ApiPublicAdImageSplatRoute
   '/api/public/payments/stripe': typeof ApiPublicPaymentsStripeRoute
 }
 export interface FileRoutesById {
@@ -243,22 +283,27 @@ export interface FileRoutesById {
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
+  '/admin/ads': typeof AdminAdsRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
+  '/ads/$id': typeof AdsIdRoute
+  '/ads/new': typeof AdsNewRoute
   '/join/driver': typeof JoinDriverRoute
   '/join/provider': typeof JoinProviderRoute
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/services/$id': typeof ServicesIdRoute
   '/stores/$id': typeof StoresIdRoute
+  '/ads/': typeof AdsIndexRoute
   '/orders/': typeof OrdersIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
   '/service-requests/': typeof ServiceRequestsIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
+  '/api/public/ad-image/$': typeof ApiPublicAdImageSplatRoute
   '/api/public/payments/stripe': typeof ApiPublicPaymentsStripeRoute
 }
 export interface FileRouteTypes {
@@ -274,22 +319,27 @@ export interface FileRouteTypes {
     | '/special-delivery'
     | '/taxi'
     | '/verify-phone'
+    | '/admin/ads'
     | '/admin/courier'
     | '/admin/drivers'
     | '/admin/payments'
     | '/admin/providers'
+    | '/ads/$id'
+    | '/ads/new'
     | '/join/driver'
     | '/join/provider'
     | '/orders/$id'
     | '/restaurants/$id'
     | '/services/$id'
     | '/stores/$id'
+    | '/ads/'
     | '/orders/'
     | '/restaurants/'
     | '/service-requests/'
     | '/services/'
     | '/stores/'
     | '/api/public/maintenance'
+    | '/api/public/ad-image/$'
     | '/api/public/payments/stripe'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -303,22 +353,27 @@ export interface FileRouteTypes {
     | '/special-delivery'
     | '/taxi'
     | '/verify-phone'
+    | '/admin/ads'
     | '/admin/courier'
     | '/admin/drivers'
     | '/admin/payments'
     | '/admin/providers'
+    | '/ads/$id'
+    | '/ads/new'
     | '/join/driver'
     | '/join/provider'
     | '/orders/$id'
     | '/restaurants/$id'
     | '/services/$id'
     | '/stores/$id'
+    | '/ads'
     | '/orders'
     | '/restaurants'
     | '/service-requests'
     | '/services'
     | '/stores'
     | '/api/public/maintenance'
+    | '/api/public/ad-image/$'
     | '/api/public/payments/stripe'
   id:
     | '__root__'
@@ -332,22 +387,27 @@ export interface FileRouteTypes {
     | '/special-delivery'
     | '/taxi'
     | '/verify-phone'
+    | '/admin/ads'
     | '/admin/courier'
     | '/admin/drivers'
     | '/admin/payments'
     | '/admin/providers'
+    | '/ads/$id'
+    | '/ads/new'
     | '/join/driver'
     | '/join/provider'
     | '/orders/$id'
     | '/restaurants/$id'
     | '/services/$id'
     | '/stores/$id'
+    | '/ads/'
     | '/orders/'
     | '/restaurants/'
     | '/service-requests/'
     | '/services/'
     | '/stores/'
     | '/api/public/maintenance'
+    | '/api/public/ad-image/$'
     | '/api/public/payments/stripe'
   fileRoutesById: FileRoutesById
 }
@@ -362,22 +422,27 @@ export interface RootRouteChildren {
   SpecialDeliveryRoute: typeof SpecialDeliveryRoute
   TaxiRoute: typeof TaxiRoute
   VerifyPhoneRoute: typeof VerifyPhoneRoute
+  AdminAdsRoute: typeof AdminAdsRoute
   AdminCourierRoute: typeof AdminCourierRoute
   AdminDriversRoute: typeof AdminDriversRoute
   AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminProvidersRoute: typeof AdminProvidersRoute
+  AdsIdRoute: typeof AdsIdRoute
+  AdsNewRoute: typeof AdsNewRoute
   JoinDriverRoute: typeof JoinDriverRoute
   JoinProviderRoute: typeof JoinProviderRoute
   OrdersIdRoute: typeof OrdersIdRoute
   RestaurantsIdRoute: typeof RestaurantsIdRoute
   ServicesIdRoute: typeof ServicesIdRoute
   StoresIdRoute: typeof StoresIdRoute
+  AdsIndexRoute: typeof AdsIndexRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
   RestaurantsIndexRoute: typeof RestaurantsIndexRoute
   ServiceRequestsIndexRoute: typeof ServiceRequestsIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
   StoresIndexRoute: typeof StoresIndexRoute
   ApiPublicMaintenanceRoute: typeof ApiPublicMaintenanceRoute
+  ApiPublicAdImageSplatRoute: typeof ApiPublicAdImageSplatRoute
   ApiPublicPaymentsStripeRoute: typeof ApiPublicPaymentsStripeRoute
 }
 
@@ -453,6 +518,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerifyPhoneRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/ads': {
+      id: '/admin/ads'
+      path: '/admin/ads'
+      fullPath: '/admin/ads'
+      preLoaderRoute: typeof AdminAdsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/courier': {
       id: '/admin/courier'
       path: '/admin/courier'
@@ -479,6 +551,27 @@ declare module '@tanstack/react-router' {
       path: '/admin/providers'
       fullPath: '/admin/providers'
       preLoaderRoute: typeof AdminProvidersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ads/': {
+      id: '/ads/'
+      path: '/ads'
+      fullPath: '/ads/'
+      preLoaderRoute: typeof AdsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ads/$id': {
+      id: '/ads/$id'
+      path: '/ads/$id'
+      fullPath: '/ads/$id'
+      preLoaderRoute: typeof AdsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ads/new': {
+      id: '/ads/new'
+      path: '/ads/new'
+      fullPath: '/ads/new'
+      preLoaderRoute: typeof AdsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/join/driver': {
@@ -565,6 +658,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicMaintenanceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/ad-image/$': {
+      id: '/api/public/ad-image/$'
+      path: '/api/public/ad-image/$'
+      fullPath: '/api/public/ad-image/$'
+      preLoaderRoute: typeof ApiPublicAdImageSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/payments/stripe': {
       id: '/api/public/payments/stripe'
       path: '/api/public/payments/stripe'
@@ -586,22 +686,27 @@ const rootRouteChildren: RootRouteChildren = {
   SpecialDeliveryRoute: SpecialDeliveryRoute,
   TaxiRoute: TaxiRoute,
   VerifyPhoneRoute: VerifyPhoneRoute,
+  AdminAdsRoute: AdminAdsRoute,
   AdminCourierRoute: AdminCourierRoute,
   AdminDriversRoute: AdminDriversRoute,
   AdminPaymentsRoute: AdminPaymentsRoute,
   AdminProvidersRoute: AdminProvidersRoute,
+  AdsIdRoute: AdsIdRoute,
+  AdsNewRoute: AdsNewRoute,
   JoinDriverRoute: JoinDriverRoute,
   JoinProviderRoute: JoinProviderRoute,
   OrdersIdRoute: OrdersIdRoute,
   RestaurantsIdRoute: RestaurantsIdRoute,
   ServicesIdRoute: ServicesIdRoute,
   StoresIdRoute: StoresIdRoute,
+  AdsIndexRoute: AdsIndexRoute,
   OrdersIndexRoute: OrdersIndexRoute,
   RestaurantsIndexRoute: RestaurantsIndexRoute,
   ServiceRequestsIndexRoute: ServiceRequestsIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
   StoresIndexRoute: StoresIndexRoute,
   ApiPublicMaintenanceRoute: ApiPublicMaintenanceRoute,
+  ApiPublicAdImageSplatRoute: ApiPublicAdImageSplatRoute,
   ApiPublicPaymentsStripeRoute: ApiPublicPaymentsStripeRoute,
 }
 export const routeTree = rootRouteImport
