@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -129,15 +129,25 @@ function OrderTrackPage() {
     };
   }, [tracking, driverId, qc]);
 
+  const navigate = useNavigate();
+
   async function confirmReceived() {
     try {
       await setStatus({ data: { orderId: id, status: "completed" } });
       toast.success("شكراً! تم إغلاق الطلب");
       qc.invalidateQueries({ queryKey: ["order", id] });
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "تعذر تأكيد الاستلام");
+      const raw = e instanceof Error ? e.message : "";
+      if (raw.includes("phone_verification_required")) {
+        toast.error("لازم تأكد رقم هاتفك قبل تأكيد الاستلام", {
+          action: { label: "تأكيد الرقم", onClick: () => navigate({ to: "/verify-phone" }) },
+        });
+        return;
+      }
+      toast.error(raw || "تعذر تأكيد الاستلام");
     }
   }
+
 
   async function cancelOrder() {
     try {

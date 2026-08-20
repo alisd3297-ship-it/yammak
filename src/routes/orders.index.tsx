@@ -3,6 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { BottomNav, PageShell, StatusDot } from "@/components/app-shell";
 import { useAccount } from "@/lib/auth";
+import { useServerFn } from "@tanstack/react-start";
+import { ShieldAlert } from "lucide-react";
+import { getPhoneVerification } from "@/lib/otp.functions";
 import { ORDER_STATUS_LABELS, formatIQD, statusTone, type OrderStatus } from "@/lib/orders";
 import { TRIP_STATUS_LABELS, taxiClassLabel, tripTone, type TripStatus } from "@/lib/taxi";
 
@@ -20,6 +23,14 @@ export const Route = createFileRoute("/orders/")({
 
 function OrdersPage() {
   const { data: account } = useAccount();
+
+  const phoneStatus = useServerFn(getPhoneVerification);
+  const { data: verification } = useQuery({
+    queryKey: ["phone-verification"],
+    enabled: !!account?.userId,
+    retry: false,
+    queryFn: () => phoneStatus(),
+  });
 
   const { data: orders } = useQuery({
     queryKey: ["my-orders", account?.userId],
@@ -65,6 +76,18 @@ function OrdersPage() {
       </header>
 
       <div className="space-y-3 px-4 py-5">
+        {account?.userId && verification && !verification.verified && (
+          <Link
+            to="/verify-phone"
+            className="flex items-start gap-2 rounded-2xl bg-warning/10 p-4 text-xs shadow-soft"
+          >
+            <ShieldAlert className="mt-0.5 size-4 shrink-0 text-warning" />
+            <span>
+              <span className="block font-bold">رقم هاتفك غير مؤكَّد</span>
+              أكّد رقمك برمز تحقق حتى تقدر تكمل الإجراءات الحساسة بدون تعطيل.
+            </span>
+          </Link>
+        )}
         {!!trips?.length && (
           <section className="space-y-3">
             <h2 className="font-bold">رحلات التكسي</h2>
