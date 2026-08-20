@@ -15,7 +15,9 @@ export function AdsTicker({ category, ads }: { category: AdCategory; ads: AdRow[
   const Icon = (Icons as unknown as Record<string, Icons.LucideIcon>)[category.icon] ?? Icons.Megaphone;
   // سرعة ثابتة ومقروءة: نحو 10 ثوانٍ لكل إعلان مع حد أدنى 24 ثانية للدورة الكاملة
   const duration = Math.max(24, ads.length * 10);
-  const items = [...ads, ...ads];
+  // نكرر القائمة أكثر عند قلة الإعلانات حتى لا تظهر فراغات في الشريط
+  const repeats = ads.length < 3 ? 6 : 2;
+  const items = Array.from({ length: repeats }, () => ads).flat();
 
   return (
     <section
