@@ -220,6 +220,19 @@ function AuthPage() {
         </TabsContent>
       </Tabs>
 
+      {import.meta.env.DEV && (
+        <div className="mt-5 rounded-2xl border border-dashed border-muted-foreground/40 p-4 text-center">
+          <p className="mb-3 text-xs text-muted-foreground">
+            وضع التطوير: حساب مؤقت بصلاحيات زبون فقط، بدون أي بيانات اعتماد ثابتة.
+          </p>
+          <Button type="button" variant="outline" className="h-12 w-full text-base" disabled={loading} onClick={createTestAccount}>
+            إنشاء حساب اختبار
+          </Button>
+        </div>
+      )}
+
+
+
       <Link to="/" className="mt-6 text-center text-sm text-muted-foreground">
         تصفح التطبيق بدون تسجيل
       </Link>
