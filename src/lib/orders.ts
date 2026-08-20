@@ -70,3 +70,15 @@ export function distanceKm(
     Math.cos((aLat * Math.PI) / 180) * Math.cos((bLat * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(s));
 }
+
+export const CUSTOMER_STATUS_FLOW: OrderStatus[] = [
+  "awaiting_provider",
+  "accepted",
+  "preparing",
+  "ready_for_pickup",
+  "searching_driver",
+  "driver_accepted",
+  "picked_up",
+  "on_the_way",
+  "delivered",
+];

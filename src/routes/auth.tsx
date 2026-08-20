@@ -38,7 +38,10 @@ function AuthPage() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    if (error) return toast.error("تعذر تسجيل الدخول: تأكد من البريد وكلمة المرور");
+    if (error) {
+      toast.error("تعذر تسجيل الدخول: تأكد من البريد وكلمة المرور");
+      return;
+    }
     toast.success("أهلاً بيك بيمّك");
   }
 
@@ -54,16 +57,25 @@ function AuthPage() {
       },
     });
     setLoading(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     if (!data.session) toast.success("تم إنشاء الحساب، راجع بريدك لتأكيد التسجيل");
   }
 
   async function resetPassword() {
-    if (!email) return toast.error("اكتب بريدك أولاً");
+    if (!email) {
+      toast.error("اكتب بريدك أولاً");
+      return;
+    }
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     });
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     toast.success("أرسلنا رابط استعادة كلمة المرور إلى بريدك");
   }
 

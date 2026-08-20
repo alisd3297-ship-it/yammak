@@ -35,7 +35,7 @@ function OrderTrackPage() {
         supabase
           .from("orders")
           .select(
-            "id, code, status, total, subtotal, delivery_fee, dropoff_text, notes, created_at, providers(name, phone), worker_id",
+            "id, code, status, total, subtotal, delivery_fee, dropoff_text, notes, created_at, providers(name, phone), driver_id",
           )
           .eq("id", id)
           .maybeSingle(),
