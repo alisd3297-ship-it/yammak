@@ -33,6 +33,7 @@ function ProviderDashboard() {
   const { data: account } = useAccount();
   const qc = useQueryClient();
   const dispatch = useServerFn(dispatchOrder);
+  const setStatus = useServerFn(changeOrderStatus);
 
   const { data: provider } = useQuery({
     queryKey: ["my-provider", account?.userId],
