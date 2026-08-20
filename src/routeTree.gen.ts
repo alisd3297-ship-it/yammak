@@ -18,6 +18,7 @@ import { Route as OrdersIndexRouteImport } from './routes/orders.index'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as RestaurantsIndexRouteImport } from './routes/restaurants.index'
 import { Route as RestaurantsIdRouteImport } from './routes/restaurants.$id'
+import { Route as ApiPublicMaintenanceRouteImport } from './routes/api/public/maintenance'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -64,6 +65,11 @@ const RestaurantsIdRoute = RestaurantsIdRouteImport.update({
   path: '/restaurants/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMaintenanceRoute = ApiPublicMaintenanceRouteImport.update({
+  id: '/api/public/maintenance',
+  path: '/api/public/maintenance',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/orders/': typeof OrdersIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
+  '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByTo {
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/orders': typeof OrdersIndexRoute
   '/restaurants': typeof RestaurantsIndexRoute
+  '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -98,6 +106,7 @@ export interface FileRoutesById {
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/orders/': typeof OrdersIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
+  '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +120,7 @@ export interface FileRouteTypes {
     | '/restaurants/$id'
     | '/orders/'
     | '/restaurants/'
+    | '/api/public/maintenance'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
     | '/restaurants/$id'
     | '/orders'
     | '/restaurants'
+    | '/api/public/maintenance'
   id:
     | '__root__'
     | '/'
@@ -133,6 +144,7 @@ export interface FileRouteTypes {
     | '/restaurants/$id'
     | '/orders/'
     | '/restaurants/'
+    | '/api/public/maintenance'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -145,6 +157,7 @@ export interface RootRouteChildren {
   RestaurantsIdRoute: typeof RestaurantsIdRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
   RestaurantsIndexRoute: typeof RestaurantsIndexRoute
+  ApiPublicMaintenanceRoute: typeof ApiPublicMaintenanceRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -212,6 +225,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RestaurantsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/maintenance': {
+      id: '/api/public/maintenance'
+      path: '/api/public/maintenance'
+      fullPath: '/api/public/maintenance'
+      preLoaderRoute: typeof ApiPublicMaintenanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -225,6 +245,7 @@ const rootRouteChildren: RootRouteChildren = {
   RestaurantsIdRoute: RestaurantsIdRoute,
   OrdersIndexRoute: OrdersIndexRoute,
   RestaurantsIndexRoute: RestaurantsIndexRoute,
+  ApiPublicMaintenanceRoute: ApiPublicMaintenanceRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
