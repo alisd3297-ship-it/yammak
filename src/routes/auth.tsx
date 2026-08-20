@@ -33,13 +33,35 @@ function AuthPage() {
     if (account?.userId) navigate({ to: homeRouteForAccount(account), replace: true });
   }, [account, navigate]);
 
+  function authErrorMessage(message: string): string {
+    const m = message.toLowerCase();
+    if (m.includes("invalid login credentials")) return "البريد الإلكتروني أو كلمة المرور غير صحيحة";
+    if (m.includes("email not confirmed")) return "لم يتم تأكيد البريد بعد، راجع بريدك الإلكتروني";
+    if (m.includes("weak") || m.includes("pwned"))
+      return "كلمة المرور ضعيفة أو مسربة، اختر كلمة مرور أقوى (أحرف وأرقام ورموز)";
+    if (m.includes("already registered") || m.includes("user already"))
+      return "هذا البريد مسجّل مسبقاً، جرّب تسجيل الدخول أو استعادة كلمة المرور";
+    if (m.includes("password should be at least") || m.includes("at least 6"))
+      return "كلمة المرور يجب أن تكون 6 أحرف على الأقل";
+    if (m.includes("rate limit") || m.includes("too many"))
+      return "محاولات كثيرة، انتظر قليلاً ثم أعد المحاولة";
+    if (m.includes("invalid email") || m.includes("unable to validate email"))
+      return "صيغة البريد الإلكتروني غير صحيحة";
+    if (m.includes("failed to fetch") || m.includes("network"))
+      return "تعذر الاتصال بالخادم، تأكد من الإنترنت";
+    return message || "حدث خطأ غير متوقع، حاول مرة أخرى";
+  }
+
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
     setLoading(false);
     if (error) {
-      toast.error("تعذر تسجيل الدخول: تأكد من البريد وكلمة المرور");
+      toast.error(authErrorMessage(error.message));
       return;
     }
     toast.success("أهلاً بيك بيمّك");
@@ -49,7 +71,7 @@ function AuthPage() {
     e.preventDefault();
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: email.trim(),
       password,
       options: {
         emailRedirectTo: window.location.origin,
@@ -58,11 +80,25 @@ function AuthPage() {
     });
     setLoading(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(authErrorMessage(error.message));
       return;
     }
-    if (!data.session) toast.success("تم إنشاء الحساب، راجع بريدك لتأكيد التسجيل");
+    if (data.session) {
+      toast.success("تم إنشاء حسابك، أهلاً بيك بيمّك");
+      return;
+    }
+    // No session returned: sign in directly (auto-confirm) or ask to confirm email.
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+    if (signInError) {
+      toast.success("تم إنشاء الحساب، راجع بريدك لتأكيد التسجيل");
+      return;
+    }
+    toast.success("تم إنشاء حسابك، أهلاً بيك بيمّك");
   }
+
 
   async function resetPassword() {
     if (!email) {
