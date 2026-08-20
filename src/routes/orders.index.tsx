@@ -42,7 +42,7 @@ function OrdersPage() {
       const { data } = await supabase
         .from("trips")
         .select("id, code, status, fare, taxi_class, pickup_text, destination_text, created_at")
-        .eq("passenger_id", account!.userId!)
+        .eq("customer_id", account!.userId!)
         .order("created_at", { ascending: false })
         .limit(20);
       return data ?? [];
