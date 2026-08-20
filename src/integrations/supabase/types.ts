@@ -2502,6 +2502,7 @@ export type Database = {
         }
       }
       expire_ads: { Args: never; Returns: number }
+      expire_due_ads: { Args: never; Returns: number }
       expire_stale_offers: { Args: { _order_id?: string }; Returns: number }
       expire_stale_trip_offers: { Args: { _trip_id?: string }; Returns: number }
       has_role: {
