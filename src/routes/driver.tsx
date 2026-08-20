@@ -106,7 +106,7 @@ function DriverDashboard() {
 
   async function answer(offerId: string, accept: boolean) {
     try {
-      await respond({ data: { offerId, accept, reason: accept ? undefined : "رفض المندوب" } });
+      await respond({ data: accept ? { offerId, accept } : { offerId, accept, reason: "رفض المندوب" } });
       toast.success(accept ? "قبلت المهمة" : "تم رفض العرض");
       qc.invalidateQueries({ queryKey: ["driver-offers"] });
       qc.invalidateQueries({ queryKey: ["driver-orders"] });
