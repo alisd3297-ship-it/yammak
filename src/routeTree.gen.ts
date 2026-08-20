@@ -14,11 +14,13 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CourierRouteImport } from './routes/courier'
 import { Route as DriverRouteImport } from './routes/driver'
+import { Route as PaymentsRouteImport } from './routes/payments'
 import { Route as ProviderRouteImport } from './routes/provider'
 import { Route as SpecialDeliveryRouteImport } from './routes/special-delivery'
 import { Route as TaxiRouteImport } from './routes/taxi'
 import { Route as AdminCourierRouteImport } from './routes/admin.courier'
 import { Route as AdminDriversRouteImport } from './routes/admin.drivers'
+import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
 import { Route as AdminProvidersRouteImport } from './routes/admin.providers'
 import { Route as JoinDriverRouteImport } from './routes/join.driver'
 import { Route as JoinProviderRouteImport } from './routes/join.provider'
@@ -32,6 +34,7 @@ import { Route as ServicesIdRouteImport } from './routes/services.$id'
 import { Route as StoresIndexRouteImport } from './routes/stores.index'
 import { Route as StoresIdRouteImport } from './routes/stores.$id'
 import { Route as ApiPublicMaintenanceRouteImport } from './routes/api/public/maintenance'
+import { Route as ApiPublicPaymentsStripeRouteImport } from './routes/api/public/payments.stripe'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,6 +61,11 @@ const DriverRoute = DriverRouteImport.update({
   path: '/driver',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PaymentsRoute = PaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProviderRoute = ProviderRouteImport.update({
   id: '/provider',
   path: '/provider',
@@ -81,6 +89,11 @@ const AdminCourierRoute = AdminCourierRouteImport.update({
 const AdminDriversRoute = AdminDriversRouteImport.update({
   id: '/admin/drivers',
   path: '/admin/drivers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
+  id: '/admin/payments',
+  path: '/admin/payments',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminProvidersRoute = AdminProvidersRouteImport.update({
@@ -148,6 +161,11 @@ const ApiPublicMaintenanceRoute = ApiPublicMaintenanceRouteImport.update({
   path: '/api/public/maintenance',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPaymentsStripeRoute = ApiPublicPaymentsStripeRouteImport.update({
+  id: '/api/public/payments/stripe',
+  path: '/api/public/payments/stripe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -155,11 +173,13 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
   '/driver': typeof DriverRoute
+  '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
+  '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/join/driver': typeof JoinDriverRoute
   '/join/provider': typeof JoinProviderRoute
@@ -173,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/services/': typeof ServicesIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
+  '/api/public/payments/stripe': typeof ApiPublicPaymentsStripeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -180,11 +201,13 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
   '/driver': typeof DriverRoute
+  '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
+  '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/join/driver': typeof JoinDriverRoute
   '/join/provider': typeof JoinProviderRoute
@@ -198,6 +221,7 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesIndexRoute
   '/stores': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
+  '/api/public/payments/stripe': typeof ApiPublicPaymentsStripeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -206,11 +230,13 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
   '/driver': typeof DriverRoute
+  '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
+  '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/join/driver': typeof JoinDriverRoute
   '/join/provider': typeof JoinProviderRoute
@@ -224,6 +250,7 @@ export interface FileRoutesById {
   '/services/': typeof ServicesIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
+  '/api/public/payments/stripe': typeof ApiPublicPaymentsStripeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -233,11 +260,13 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/courier'
     | '/driver'
+    | '/payments'
     | '/provider'
     | '/special-delivery'
     | '/taxi'
     | '/admin/courier'
     | '/admin/drivers'
+    | '/admin/payments'
     | '/admin/providers'
     | '/join/driver'
     | '/join/provider'
@@ -251,6 +280,7 @@ export interface FileRouteTypes {
     | '/services/'
     | '/stores/'
     | '/api/public/maintenance'
+    | '/api/public/payments/stripe'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -258,11 +288,13 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/courier'
     | '/driver'
+    | '/payments'
     | '/provider'
     | '/special-delivery'
     | '/taxi'
     | '/admin/courier'
     | '/admin/drivers'
+    | '/admin/payments'
     | '/admin/providers'
     | '/join/driver'
     | '/join/provider'
@@ -276,6 +308,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/stores'
     | '/api/public/maintenance'
+    | '/api/public/payments/stripe'
   id:
     | '__root__'
     | '/'
@@ -283,11 +316,13 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/courier'
     | '/driver'
+    | '/payments'
     | '/provider'
     | '/special-delivery'
     | '/taxi'
     | '/admin/courier'
     | '/admin/drivers'
+    | '/admin/payments'
     | '/admin/providers'
     | '/join/driver'
     | '/join/provider'
@@ -301,6 +336,7 @@ export interface FileRouteTypes {
     | '/services/'
     | '/stores/'
     | '/api/public/maintenance'
+    | '/api/public/payments/stripe'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -309,11 +345,13 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   CourierRoute: typeof CourierRoute
   DriverRoute: typeof DriverRoute
+  PaymentsRoute: typeof PaymentsRoute
   ProviderRoute: typeof ProviderRoute
   SpecialDeliveryRoute: typeof SpecialDeliveryRoute
   TaxiRoute: typeof TaxiRoute
   AdminCourierRoute: typeof AdminCourierRoute
   AdminDriversRoute: typeof AdminDriversRoute
+  AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminProvidersRoute: typeof AdminProvidersRoute
   JoinDriverRoute: typeof JoinDriverRoute
   JoinProviderRoute: typeof JoinProviderRoute
@@ -327,6 +365,7 @@ export interface RootRouteChildren {
   ServicesIndexRoute: typeof ServicesIndexRoute
   StoresIndexRoute: typeof StoresIndexRoute
   ApiPublicMaintenanceRoute: typeof ApiPublicMaintenanceRoute
+  ApiPublicPaymentsStripeRoute: typeof ApiPublicPaymentsStripeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -366,6 +405,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DriverRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/payments': {
+      id: '/payments'
+      path: '/payments'
+      fullPath: '/payments'
+      preLoaderRoute: typeof PaymentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/provider': {
       id: '/provider'
       path: '/provider'
@@ -399,6 +445,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/drivers'
       fullPath: '/admin/drivers'
       preLoaderRoute: typeof AdminDriversRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/payments': {
+      id: '/admin/payments'
+      path: '/admin/payments'
+      fullPath: '/admin/payments'
+      preLoaderRoute: typeof AdminPaymentsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/providers': {
@@ -492,6 +545,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicMaintenanceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/payments/stripe': {
+      id: '/api/public/payments/stripe'
+      path: '/api/public/payments/stripe'
+      fullPath: '/api/public/payments/stripe'
+      preLoaderRoute: typeof ApiPublicPaymentsStripeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -501,11 +561,13 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   CourierRoute: CourierRoute,
   DriverRoute: DriverRoute,
+  PaymentsRoute: PaymentsRoute,
   ProviderRoute: ProviderRoute,
   SpecialDeliveryRoute: SpecialDeliveryRoute,
   TaxiRoute: TaxiRoute,
   AdminCourierRoute: AdminCourierRoute,
   AdminDriversRoute: AdminDriversRoute,
+  AdminPaymentsRoute: AdminPaymentsRoute,
   AdminProvidersRoute: AdminProvidersRoute,
   JoinDriverRoute: JoinDriverRoute,
   JoinProviderRoute: JoinProviderRoute,
@@ -519,6 +581,7 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesIndexRoute: ServicesIndexRoute,
   StoresIndexRoute: StoresIndexRoute,
   ApiPublicMaintenanceRoute: ApiPublicMaintenanceRoute,
+  ApiPublicPaymentsStripeRoute: ApiPublicPaymentsStripeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

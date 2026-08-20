@@ -1,0 +1,94 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { ArrowRight, CreditCard } from "lucide-react";
+import { BottomNav, PageShell, StatusDot } from "@/components/app-shell";
+import { listMyPayments } from "@/lib/payments.functions";
+import {
+  PAYMENT_STATUS_LABELS,
+  PAYMENT_SUBJECT_LABELS,
+  formatIQD,
+  paymentTone,
+} from "@/lib/payments";
+
+export const Route = createFileRoute("/payments")({
+  head: () => ({
+    meta: [
+      { title: "عمليات الدفع | يمّك" },
+      {
+        name: "description",
+        content: "تابع عمليات الدفع الإلكتروني والمبالغ المسترجعة لطلباتك ورحلاتك في يمّك.",
+      },
+      { property: "og:title", content: "عمليات الدفع | يمّك" },
+      { property: "og:description", content: "سجل مدفوعاتك وحالتها لحظة بلحظة." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: PaymentsPage,
+});
+
+const TONE_MAP = { ok: "success", warn: "warning", bad: "danger" } as const;
+
+function PaymentsPage() {
+  const fetchPayments = useServerFn(listMyPayments);
+  const { data, isLoading } = useQuery({
+    queryKey: ["my-payments"],
+    queryFn: () => fetchPayments(),
+    refetchInterval: 30_000,
+  });
+
+  return (
+    <PageShell>
+      <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
+        <Link to="/orders" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
+          <ArrowRight className="size-4" /> طلباتي
+        </Link>
+        <h1 className="text-2xl font-black">عمليات الدفع</h1>
+        <p className="mt-1 text-sm opacity-90">كل مدفوعاتك وحالتها ومبالغ الاسترجاع</p>
+      </header>
+
+      <div className="space-y-3 px-4 py-5">
+        {isLoading && <p className="text-sm text-muted-foreground">جاري التحميل…</p>}
+        {!isLoading && !data?.length && (
+          <p className="rounded-2xl bg-card p-6 text-center text-sm text-muted-foreground shadow-soft">
+            ماكو عمليات دفع إلكتروني لحد الآن.
+          </p>
+        )}
+        {data?.map((p) => (
+          <article key={p.id} className="rounded-2xl bg-card p-4 shadow-soft">
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-2 text-sm font-bold">
+                <CreditCard className="size-4 text-primary" />
+                {PAYMENT_SUBJECT_LABELS[p.subjectType]}
+              </span>
+              <span className="font-black">{formatIQD(p.amount)}</span>
+            </div>
+            <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+              <span className="flex items-center gap-2">
+                <StatusDot tone={TONE_MAP[paymentTone(p.status)]} />
+                {PAYMENT_STATUS_LABELS[p.status]}
+              </span>
+              <span>{new Date(p.createdAt).toLocaleString("ar-IQ")}</span>
+            </div>
+            {p.refundedAmount > 0 && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                مسترجع: {formatIQD(p.refundedAmount)}
+              </p>
+            )}
+            {p.subjectType === "order" && (
+              <Link
+                to="/orders/$id"
+                params={{ id: p.subjectId }}
+                className="mt-3 inline-block text-xs font-semibold text-primary"
+              >
+                عرض الطلب
+              </Link>
+            )}
+          </article>
+        ))}
+      </div>
+      <BottomNav />
+    </PageShell>
+  );
+}

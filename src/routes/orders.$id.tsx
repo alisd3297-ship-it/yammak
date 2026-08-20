@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { ArrowRight, MapPin, Phone, Navigation } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell, StatusDot } from "@/components/app-shell";
+import { PaymentPanel } from "@/components/payment-panel";
 import { Button } from "@/components/ui/button";
 import { changeOrderStatus } from "@/lib/orders.functions";
 import {
@@ -204,6 +205,10 @@ function OrderTrackPage() {
             </Button>
           )}
         </section>
+
+        {order?.id && Number(order.total) > 0 && (
+          <PaymentPanel subjectType="order" subjectId={order.id} amount={Number(order.total)} />
+        )}
 
         {tracking && (
           <section className="rounded-2xl bg-card p-4 shadow-soft">
