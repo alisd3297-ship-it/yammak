@@ -608,6 +608,7 @@ export type Database = {
           order_type: Database["public"]["Enums"]["order_type"]
           per_km_fee: number
           provider_id: string | null
+          taxi_class: Database["public"]["Enums"]["taxi_class"] | null
           vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
         }
         Insert: {
@@ -621,6 +622,7 @@ export type Database = {
           order_type?: Database["public"]["Enums"]["order_type"]
           per_km_fee?: number
           provider_id?: string | null
+          taxi_class?: Database["public"]["Enums"]["taxi_class"] | null
           vehicle_type?: Database["public"]["Enums"]["vehicle_type"] | null
         }
         Update: {
@@ -634,6 +636,7 @@ export type Database = {
           order_type?: Database["public"]["Enums"]["order_type"]
           per_km_fee?: number
           provider_id?: string | null
+          taxi_class?: Database["public"]["Enums"]["taxi_class"] | null
           vehicle_type?: Database["public"]["Enums"]["vehicle_type"] | null
         }
         Relationships: [
@@ -1236,6 +1239,206 @@ export type Database = {
           },
         ]
       }
+      trip_offers: {
+        Row: {
+          distance_km: number | null
+          driver_id: string
+          expires_at: string
+          id: string
+          rejection_reason: string | null
+          responded_at: string | null
+          sent_at: string
+          status: Database["public"]["Enums"]["offer_status"]
+          trip_id: string
+        }
+        Insert: {
+          distance_km?: number | null
+          driver_id: string
+          expires_at: string
+          id?: string
+          rejection_reason?: string | null
+          responded_at?: string | null
+          sent_at?: string
+          status?: Database["public"]["Enums"]["offer_status"]
+          trip_id: string
+        }
+        Update: {
+          distance_km?: number | null
+          driver_id?: string
+          expires_at?: string
+          id?: string
+          rejection_reason?: string | null
+          responded_at?: string | null
+          sent_at?: string
+          status?: Database["public"]["Enums"]["offer_status"]
+          trip_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_offers_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_ratings: {
+        Row: {
+          comment: string | null
+          created_at: string
+          driver_id: string
+          id: string
+          rater_id: string
+          stars: number
+          trip_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          driver_id: string
+          id?: string
+          rater_id: string
+          stars: number
+          trip_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          driver_id?: string
+          id?: string
+          rater_id?: string
+          stars?: number
+          trip_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_ratings_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: true
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_status_history: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          id: string
+          status: Database["public"]["Enums"]["trip_status"]
+          trip_id: string
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          status: Database["public"]["Enums"]["trip_status"]
+          trip_id: string
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          status?: Database["public"]["Enums"]["trip_status"]
+          trip_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_status_history_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trips: {
+        Row: {
+          cancel_reason: string | null
+          city_id: string | null
+          code: string
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          destination_lat: number | null
+          destination_lng: number | null
+          destination_text: string
+          distance_km: number
+          driver_id: string | null
+          fare: number
+          id: string
+          notes: string | null
+          passengers: number
+          payment_method: string
+          pickup_lat: number | null
+          pickup_lng: number | null
+          pickup_text: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["trip_status"]
+          taxi_class: Database["public"]["Enums"]["taxi_class"]
+          updated_at: string
+        }
+        Insert: {
+          cancel_reason?: string | null
+          city_id?: string | null
+          code?: string
+          completed_at?: string | null
+          created_at?: string
+          customer_id: string
+          destination_lat?: number | null
+          destination_lng?: number | null
+          destination_text: string
+          distance_km?: number
+          driver_id?: string | null
+          fare?: number
+          id?: string
+          notes?: string | null
+          passengers?: number
+          payment_method?: string
+          pickup_lat?: number | null
+          pickup_lng?: number | null
+          pickup_text: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["trip_status"]
+          taxi_class?: Database["public"]["Enums"]["taxi_class"]
+          updated_at?: string
+        }
+        Update: {
+          cancel_reason?: string | null
+          city_id?: string | null
+          code?: string
+          completed_at?: string | null
+          created_at?: string
+          customer_id?: string
+          destination_lat?: number | null
+          destination_lng?: number | null
+          destination_text?: string
+          distance_km?: number
+          driver_id?: string | null
+          fare?: number
+          id?: string
+          notes?: string | null
+          passengers?: number
+          payment_method?: string
+          pickup_lat?: number | null
+          pickup_lng?: number | null
+          pickup_text?: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["trip_status"]
+          taxi_class?: Database["public"]["Enums"]["taxi_class"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trips_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -1288,12 +1491,18 @@ export type Database = {
           is_approved: boolean
           is_available: boolean
           max_active_orders: number
+          plate_number: string | null
           rating: number
           ratings_count: number
           requested_kind: Database["public"]["Enums"]["worker_kind"] | null
+          taxi_class: Database["public"]["Enums"]["taxi_class"] | null
+          taxi_seats: number
           updated_at: string
           user_id: string
           vehicle: string | null
+          vehicle_color: string | null
+          vehicle_make: string | null
+          vehicle_model: string | null
           vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
           worker_kind: Database["public"]["Enums"]["worker_kind"] | null
         }
@@ -1303,12 +1512,18 @@ export type Database = {
           is_approved?: boolean
           is_available?: boolean
           max_active_orders?: number
+          plate_number?: string | null
           rating?: number
           ratings_count?: number
           requested_kind?: Database["public"]["Enums"]["worker_kind"] | null
+          taxi_class?: Database["public"]["Enums"]["taxi_class"] | null
+          taxi_seats?: number
           updated_at?: string
           user_id: string
           vehicle?: string | null
+          vehicle_color?: string | null
+          vehicle_make?: string | null
+          vehicle_model?: string | null
           vehicle_type?: Database["public"]["Enums"]["vehicle_type"] | null
           worker_kind?: Database["public"]["Enums"]["worker_kind"] | null
         }
@@ -1318,12 +1533,18 @@ export type Database = {
           is_approved?: boolean
           is_available?: boolean
           max_active_orders?: number
+          plate_number?: string | null
           rating?: number
           ratings_count?: number
           requested_kind?: Database["public"]["Enums"]["worker_kind"] | null
+          taxi_class?: Database["public"]["Enums"]["taxi_class"] | null
+          taxi_seats?: number
           updated_at?: string
           user_id?: string
           vehicle?: string | null
+          vehicle_color?: string | null
+          vehicle_make?: string | null
+          vehicle_model?: string | null
           vehicle_type?: Database["public"]["Enums"]["vehicle_type"] | null
           worker_kind?: Database["public"]["Enums"]["worker_kind"] | null
         }
@@ -1376,6 +1597,81 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      accept_trip_offer: {
+        Args: { _offer_id: string }
+        Returns: {
+          cancel_reason: string | null
+          city_id: string | null
+          code: string
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          destination_lat: number | null
+          destination_lng: number | null
+          destination_text: string
+          distance_km: number
+          driver_id: string | null
+          fare: number
+          id: string
+          notes: string | null
+          passengers: number
+          payment_method: string
+          pickup_lat: number | null
+          pickup_lng: number | null
+          pickup_text: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["trip_status"]
+          taxi_class: Database["public"]["Enums"]["taxi_class"]
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "trips"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      apply_as_driver: {
+        Args: {
+          _city_id?: string
+          _phone?: string
+          _plate_number?: string
+          _taxi_class?: Database["public"]["Enums"]["taxi_class"]
+          _taxi_seats?: number
+          _vehicle_color?: string
+          _vehicle_make?: string
+          _vehicle_model?: string
+          _vehicle_type?: Database["public"]["Enums"]["vehicle_type"]
+          _worker_kind: Database["public"]["Enums"]["worker_kind"]
+        }
+        Returns: {
+          city_id: string | null
+          created_at: string
+          is_approved: boolean
+          is_available: boolean
+          max_active_orders: number
+          plate_number: string | null
+          rating: number
+          ratings_count: number
+          requested_kind: Database["public"]["Enums"]["worker_kind"] | null
+          taxi_class: Database["public"]["Enums"]["taxi_class"] | null
+          taxi_seats: number
+          updated_at: string
+          user_id: string
+          vehicle: string | null
+          vehicle_color: string | null
+          vehicle_make: string | null
+          vehicle_model: string | null
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
+          worker_kind: Database["public"]["Enums"]["worker_kind"] | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "worker_profiles"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -1483,6 +1779,10 @@ export type Database = {
         Args: { _request_id: string; _user_id: string }
         Returns: boolean
       }
+      can_see_trip: {
+        Args: { _trip_id: string; _user_id: string }
+        Returns: boolean
+      }
       change_order_status: {
         Args: {
           _new_status: Database["public"]["Enums"]["order_status"]
@@ -1560,6 +1860,44 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      change_trip_status: {
+        Args: {
+          _new_status: Database["public"]["Enums"]["trip_status"]
+          _reason?: string
+          _trip_id: string
+        }
+        Returns: {
+          cancel_reason: string | null
+          city_id: string | null
+          code: string
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          destination_lat: number | null
+          destination_lng: number | null
+          destination_text: string
+          distance_km: number
+          driver_id: string | null
+          fare: number
+          id: string
+          notes: string | null
+          passengers: number
+          payment_method: string
+          pickup_lat: number | null
+          pickup_lng: number | null
+          pickup_text: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["trip_status"]
+          taxi_class: Database["public"]["Enums"]["taxi_class"]
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "trips"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       claim_maintenance_slot: {
         Args: { _min_seconds?: number; _name?: string }
         Returns: boolean
@@ -1602,6 +1940,14 @@ export type Database = {
           _distance_km: number
           _order_type: Database["public"]["Enums"]["order_type"]
           _vehicle_type: Database["public"]["Enums"]["vehicle_type"]
+        }
+        Returns: number
+      }
+      compute_taxi_fare: {
+        Args: {
+          _city_id: string
+          _distance_km: number
+          _taxi_class: Database["public"]["Enums"]["taxi_class"]
         }
         Returns: number
       }
@@ -1781,7 +2127,52 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      create_taxi_trip: {
+        Args: {
+          _dest_lat: number
+          _dest_lng: number
+          _destination_text: string
+          _notes?: string
+          _passengers?: number
+          _pickup_lat: number
+          _pickup_lng: number
+          _pickup_text: string
+          _taxi_class: Database["public"]["Enums"]["taxi_class"]
+        }
+        Returns: {
+          cancel_reason: string | null
+          city_id: string | null
+          code: string
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          destination_lat: number | null
+          destination_lng: number | null
+          destination_text: string
+          distance_km: number
+          driver_id: string | null
+          fare: number
+          id: string
+          notes: string | null
+          passengers: number
+          payment_method: string
+          pickup_lat: number | null
+          pickup_lng: number | null
+          pickup_text: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["trip_status"]
+          taxi_class: Database["public"]["Enums"]["taxi_class"]
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "trips"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       expire_stale_offers: { Args: { _order_id?: string }; Returns: number }
+      expire_stale_trip_offers: { Args: { _trip_id?: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1820,6 +2211,14 @@ export type Database = {
             }
             Returns: boolean
           }
+      is_allowed_trip_transition: {
+        Args: {
+          _actor: string
+          _from: Database["public"]["Enums"]["trip_status"]
+          _to: Database["public"]["Enums"]["trip_status"]
+        }
+        Returns: boolean
+      }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
       order_actor: {
         Args: { _order_id: string; _user_id: string }
@@ -1835,6 +2234,16 @@ export type Database = {
           _pickup_lng: number
           _stops: Json
           _vehicle_type: Database["public"]["Enums"]["vehicle_type"]
+        }
+        Returns: Json
+      }
+      quote_taxi_trip: {
+        Args: {
+          _dest_lat: number
+          _dest_lng: number
+          _pickup_lat: number
+          _pickup_lng: number
+          _taxi_class: Database["public"]["Enums"]["taxi_class"]
         }
         Returns: Json
       }
@@ -1856,7 +2265,29 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      rate_trip: {
+        Args: { _comment?: string; _stars: number; _trip_id: string }
+        Returns: {
+          comment: string | null
+          created_at: string
+          driver_id: string
+          id: string
+          rater_id: string
+          stars: number
+          trip_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "trip_ratings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       reject_delivery_offer: {
+        Args: { _offer_id: string; _reason?: string }
+        Returns: string
+      }
+      reject_trip_offer: {
         Args: { _offer_id: string; _reason?: string }
         Returns: string
       }
@@ -1901,6 +2332,36 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "providers"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      set_worker_approval: {
+        Args: { _approve: boolean; _reason?: string; _user_id: string }
+        Returns: {
+          city_id: string | null
+          created_at: string
+          is_approved: boolean
+          is_available: boolean
+          max_active_orders: number
+          plate_number: string | null
+          rating: number
+          ratings_count: number
+          requested_kind: Database["public"]["Enums"]["worker_kind"] | null
+          taxi_class: Database["public"]["Enums"]["taxi_class"] | null
+          taxi_seats: number
+          updated_at: string
+          user_id: string
+          vehicle: string | null
+          vehicle_color: string | null
+          vehicle_make: string | null
+          vehicle_model: string | null
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
+          worker_kind: Database["public"]["Enums"]["worker_kind"] | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "worker_profiles"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -1952,6 +2413,51 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      system_change_trip_status: {
+        Args: {
+          _new_status: Database["public"]["Enums"]["trip_status"]
+          _trip_id: string
+        }
+        Returns: {
+          cancel_reason: string | null
+          city_id: string | null
+          code: string
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          destination_lat: number | null
+          destination_lng: number | null
+          destination_text: string
+          distance_km: number
+          driver_id: string | null
+          fare: number
+          id: string
+          notes: string | null
+          passengers: number
+          payment_method: string
+          pickup_lat: number | null
+          pickup_lng: number | null
+          pickup_text: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["trip_status"]
+          taxi_class: Database["public"]["Enums"]["taxi_class"]
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "trips"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      taxi_class_rank: {
+        Args: { _c: Database["public"]["Enums"]["taxi_class"] }
+        Returns: number
+      }
+      trip_actor: {
+        Args: { _trip_id: string; _user_id: string }
+        Returns: string
+      }
     }
     Enums: {
       app_role:
@@ -1996,6 +2502,16 @@ export type Database = {
         | "completed"
         | "cancelled"
         | "rejected"
+      taxi_class: "economy" | "comfort" | "van"
+      trip_status:
+        | "requested"
+        | "searching_driver"
+        | "driver_assigned"
+        | "driver_arriving"
+        | "driver_arrived"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
       vehicle_type: "bike" | "car" | "pickup" | "small_truck"
       worker_kind: "delivery" | "taxi"
     }
@@ -2170,6 +2686,17 @@ export const Constants = {
         "completed",
         "cancelled",
         "rejected",
+      ],
+      taxi_class: ["economy", "comfort", "van"],
+      trip_status: [
+        "requested",
+        "searching_driver",
+        "driver_assigned",
+        "driver_arriving",
+        "driver_arrived",
+        "in_progress",
+        "completed",
+        "cancelled",
       ],
       vehicle_type: ["bike", "car", "pickup", "small_truck"],
       worker_kind: ["delivery", "taxi"],
