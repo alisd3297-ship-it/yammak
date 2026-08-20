@@ -99,6 +99,41 @@ function AuthPage() {
     toast.success("تم إنشاء حسابك، أهلاً بيك بيمّك");
   }
 
+  function randomString(bytes: number): string {
+    const arr = new Uint8Array(bytes);
+    crypto.getRandomValues(arr);
+    return Array.from(arr, (b) => b.toString(36).padStart(2, "0")).join("").slice(0, bytes * 2);
+  }
+
+  async function createTestAccount() {
+    setLoading(true);
+    const testEmail = `test.${randomString(6)}@yammak-test.dev`;
+    const testPassword = `Yk!${randomString(12)}Aa1`;
+    const { error } = await supabase.auth.signUp({
+      email: testEmail,
+      password: testPassword,
+      options: {
+        emailRedirectTo: window.location.origin,
+        data: { full_name: "حساب اختبار", is_test_account: true },
+      },
+    });
+    if (error) {
+      setLoading(false);
+      toast.error(authErrorMessage(error.message));
+      return;
+    }
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: testEmail,
+      password: testPassword,
+    });
+    setLoading(false);
+    if (signInError) {
+      toast.error(authErrorMessage(signInError.message));
+      return;
+    }
+    toast.success(`تم إنشاء حساب اختبار مؤقت (${testEmail}) — صلاحيات زبون فقط`);
+  }
+
 
   async function resetPassword() {
     if (!email) {
@@ -184,6 +219,19 @@ function AuthPage() {
           </form>
         </TabsContent>
       </Tabs>
+
+      {import.meta.env.DEV && (
+        <div className="mt-5 rounded-2xl border border-dashed border-muted-foreground/40 p-4 text-center">
+          <p className="mb-3 text-xs text-muted-foreground">
+            وضع التطوير: حساب مؤقت بصلاحيات زبون فقط، بدون أي بيانات اعتماد ثابتة.
+          </p>
+          <Button type="button" variant="outline" className="h-12 w-full text-base" disabled={loading} onClick={createTestAccount}>
+            إنشاء حساب اختبار
+          </Button>
+        </div>
+      )}
+
+
 
       <Link to="/" className="mt-6 text-center text-sm text-muted-foreground">
         تصفح التطبيق بدون تسجيل
