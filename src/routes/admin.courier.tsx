@@ -74,11 +74,18 @@ function AdminCourierPage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("worker_profiles")
-        .select("user_id, vehicle, is_available, profiles:user_id(full_name)")
+        .select("user_id, vehicle, is_available")
         .eq("worker_kind", "delivery")
         .eq("is_approved", true)
         .limit(50);
-      return data ?? [];
+      const ids = (data ?? []).map((d) => d.user_id);
+      const { data: names } = ids.length
+        ? await supabase.from("profiles").select("id, full_name").in("id", ids)
+        : { data: [] };
+      return (data ?? []).map((d) => ({
+        ...d,
+        fullName: (names ?? []).find((n) => n.id === d.user_id)?.full_name ?? null,
+      }));
     },
   });
 
@@ -171,14 +178,11 @@ function AdminCourierPage() {
                       aria-label="تعيين مندوب"
                     >
                       <option value="">تعيين مندوب يدوياً…</option>
-                      {(drivers ?? []).map((d) => {
-                        const p = d.profiles as { full_name: string } | null;
-                        return (
-                          <option key={d.user_id} value={d.user_id}>
-                            {p?.full_name ?? d.user_id.slice(0, 8)} {d.is_available ? "· متاح" : "· غير متاح"}
-                          </option>
-                        );
-                      })}
+                      {(drivers ?? []).map((d) => (
+                        <option key={d.user_id} value={d.user_id}>
+                          {d.fullName ?? d.user_id.slice(0, 8)} {d.is_available ? "· متاح" : "· غير متاح"}
+                        </option>
+                      ))}
                     </select>
                   )}
                   <Button variant="outline" className="h-10 w-full" onClick={() => cancel(o.id)}>

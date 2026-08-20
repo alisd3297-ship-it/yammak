@@ -15,6 +15,7 @@ import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CourierRouteImport } from './routes/courier'
 import { Route as DriverRouteImport } from './routes/driver'
 import { Route as ProviderRouteImport } from './routes/provider'
+import { Route as AdminCourierRouteImport } from './routes/admin.courier'
 import { Route as AdminProvidersRouteImport } from './routes/admin.providers'
 import { Route as JoinProviderRouteImport } from './routes/join.provider'
 import { Route as OrdersIndexRouteImport } from './routes/orders.index'
@@ -56,6 +57,11 @@ const DriverRoute = DriverRouteImport.update({
 const ProviderRoute = ProviderRouteImport.update({
   id: '/provider',
   path: '/provider',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCourierRoute = AdminCourierRouteImport.update({
+  id: '/admin/courier',
+  path: '/admin/courier',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminProvidersRoute = AdminProvidersRouteImport.update({
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/courier': typeof CourierRoute
   '/driver': typeof DriverRoute
   '/provider': typeof ProviderRoute
+  '/admin/courier': typeof AdminCourierRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/join/provider': typeof JoinProviderRoute
   '/orders/$id': typeof OrdersIdRoute
@@ -146,6 +153,7 @@ export interface FileRoutesByTo {
   '/courier': typeof CourierRoute
   '/driver': typeof DriverRoute
   '/provider': typeof ProviderRoute
+  '/admin/courier': typeof AdminCourierRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/join/provider': typeof JoinProviderRoute
   '/orders/$id': typeof OrdersIdRoute
@@ -167,6 +175,7 @@ export interface FileRoutesById {
   '/courier': typeof CourierRoute
   '/driver': typeof DriverRoute
   '/provider': typeof ProviderRoute
+  '/admin/courier': typeof AdminCourierRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/join/provider': typeof JoinProviderRoute
   '/orders/$id': typeof OrdersIdRoute
@@ -189,6 +198,7 @@ export interface FileRouteTypes {
     | '/courier'
     | '/driver'
     | '/provider'
+    | '/admin/courier'
     | '/admin/providers'
     | '/join/provider'
     | '/orders/$id'
@@ -209,6 +219,7 @@ export interface FileRouteTypes {
     | '/courier'
     | '/driver'
     | '/provider'
+    | '/admin/courier'
     | '/admin/providers'
     | '/join/provider'
     | '/orders/$id'
@@ -229,6 +240,7 @@ export interface FileRouteTypes {
     | '/courier'
     | '/driver'
     | '/provider'
+    | '/admin/courier'
     | '/admin/providers'
     | '/join/provider'
     | '/orders/$id'
@@ -250,6 +262,7 @@ export interface RootRouteChildren {
   CourierRoute: typeof CourierRoute
   DriverRoute: typeof DriverRoute
   ProviderRoute: typeof ProviderRoute
+  AdminCourierRoute: typeof AdminCourierRoute
   AdminProvidersRoute: typeof AdminProvidersRoute
   JoinProviderRoute: typeof JoinProviderRoute
   OrdersIdRoute: typeof OrdersIdRoute
@@ -306,6 +319,13 @@ declare module '@tanstack/react-router' {
       path: '/provider'
       fullPath: '/provider'
       preLoaderRoute: typeof ProviderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/courier': {
+      id: '/admin/courier'
+      path: '/admin/courier'
+      fullPath: '/admin/courier'
+      preLoaderRoute: typeof AdminCourierRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/providers': {
@@ -402,6 +422,7 @@ const rootRouteChildren: RootRouteChildren = {
   CourierRoute: CourierRoute,
   DriverRoute: DriverRoute,
   ProviderRoute: ProviderRoute,
+  AdminCourierRoute: AdminCourierRoute,
   AdminProvidersRoute: AdminProvidersRoute,
   JoinProviderRoute: JoinProviderRoute,
   OrdersIdRoute: OrdersIdRoute,
