@@ -1,0 +1,2 @@
+UPDATE public.services SET name = 'مطاعم وكافتريات', updated_at = now() WHERE service_type = 'restaurant' AND route_path = '/restaurants';
+UPDATE public.services SET name = 'توصيل سريع', updated_at = now() WHERE service_type = 'courier' AND route_path = '/courier';
