@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as OrdersIndexRouteImport } from './routes/orders.index'
+import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as RestaurantsIndexRouteImport } from './routes/restaurants.index'
 import { Route as RestaurantsIdRouteImport } from './routes/restaurants.$id'
 
@@ -36,6 +37,11 @@ const OrdersIndexRoute = OrdersIndexRouteImport.update({
   path: '/orders/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrdersIdRoute = OrdersIdRouteImport.update({
+  id: '/orders/$id',
+  path: '/orders/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RestaurantsIndexRoute = RestaurantsIndexRouteImport.update({
   id: '/restaurants/',
   path: '/restaurants/',
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/orders/': typeof OrdersIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/orders': typeof OrdersIndexRoute
   '/restaurants': typeof RestaurantsIndexRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/orders/': typeof OrdersIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
@@ -78,6 +87,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/checkout'
+    | '/orders/$id'
     | '/restaurants/$id'
     | '/orders/'
     | '/restaurants/'
@@ -86,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/checkout'
+    | '/orders/$id'
     | '/restaurants/$id'
     | '/orders'
     | '/restaurants'
@@ -94,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/checkout'
+    | '/orders/$id'
     | '/restaurants/$id'
     | '/orders/'
     | '/restaurants/'
@@ -103,6 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
   CheckoutRoute: typeof CheckoutRoute
+  OrdersIdRoute: typeof OrdersIdRoute
   RestaurantsIdRoute: typeof RestaurantsIdRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
   RestaurantsIndexRoute: typeof RestaurantsIndexRoute
@@ -138,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrdersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/orders/$id': {
+      id: '/orders/$id'
+      path: '/orders/$id'
+      fullPath: '/orders/$id'
+      preLoaderRoute: typeof OrdersIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/restaurants/': {
       id: '/restaurants/'
       path: '/restaurants'
@@ -159,6 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   CheckoutRoute: CheckoutRoute,
+  OrdersIdRoute: OrdersIdRoute,
   RestaurantsIdRoute: RestaurantsIdRoute,
   OrdersIndexRoute: OrdersIndexRoute,
   RestaurantsIndexRoute: RestaurantsIndexRoute,
