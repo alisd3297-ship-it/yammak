@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as Icons from "lucide-react";
 import { adImageUrl, adTone, formatAdPrice, type AdCategory, type AdRow } from "@/lib/ads";
 import { cn } from "@/lib/utils";
@@ -10,7 +10,29 @@ import { cn } from "@/lib/utils";
  */
 export function AdsTicker({ category, ads }: { category: AdCategory; ads: AdRow[] }) {
   const [paused, setPaused] = useState(false);
+  const resumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearTimer = useCallback(() => {
+    if (resumeTimer.current) {
+      clearTimeout(resumeTimer.current);
+      resumeTimer.current = null;
+    }
+  }, []);
+  const hold = useCallback(() => {
+    clearTimer();
+    setPaused(true);
+  }, [clearTimer]);
+  const release = useCallback(
+    (delayMs: number) => {
+      clearTimer();
+      resumeTimer.current = setTimeout(() => setPaused(false), delayMs);
+    },
+    [clearTimer],
+  );
+  useEffect(() => clearTimer, [clearTimer]);
+
   if (ads.length === 0) return null;
+
 
   const Icon = (Icons as unknown as Record<string, Icons.LucideIcon>)[category.icon] ?? Icons.Megaphone;
   // سرعة ثابتة ومقروءة: نحو 10 ثوانٍ لكل إعلان مع حد أدنى 24 ثانية للدورة الكاملة
