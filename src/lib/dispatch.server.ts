@@ -1,5 +1,6 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { distanceKm } from "@/lib/orders";
+import { VEHICLE_RANK, type VehicleType } from "@/lib/vehicles";
 
 export type DispatchResult = { assignedTo: string | null; status: string; message: string };
 
