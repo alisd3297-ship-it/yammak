@@ -20,6 +20,7 @@ import { Route as SpecialDeliveryRouteImport } from './routes/special-delivery'
 import { Route as TaxiRouteImport } from './routes/taxi'
 import { Route as AdminCourierRouteImport } from './routes/admin.courier'
 import { Route as AdminDriversRouteImport } from './routes/admin.drivers'
+import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
 import { Route as AdminProvidersRouteImport } from './routes/admin.providers'
 import { Route as JoinDriverRouteImport } from './routes/join.driver'
 import { Route as JoinProviderRouteImport } from './routes/join.provider'
@@ -88,6 +89,11 @@ const AdminCourierRoute = AdminCourierRouteImport.update({
 const AdminDriversRoute = AdminDriversRouteImport.update({
   id: '/admin/drivers',
   path: '/admin/drivers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
+  id: '/admin/payments',
+  path: '/admin/payments',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminProvidersRoute = AdminProvidersRouteImport.update({
@@ -173,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/taxi': typeof TaxiRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
+  '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/join/driver': typeof JoinDriverRoute
   '/join/provider': typeof JoinProviderRoute
@@ -200,6 +207,7 @@ export interface FileRoutesByTo {
   '/taxi': typeof TaxiRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
+  '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/join/driver': typeof JoinDriverRoute
   '/join/provider': typeof JoinProviderRoute
@@ -228,6 +236,7 @@ export interface FileRoutesById {
   '/taxi': typeof TaxiRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
+  '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/join/driver': typeof JoinDriverRoute
   '/join/provider': typeof JoinProviderRoute
@@ -257,6 +266,7 @@ export interface FileRouteTypes {
     | '/taxi'
     | '/admin/courier'
     | '/admin/drivers'
+    | '/admin/payments'
     | '/admin/providers'
     | '/join/driver'
     | '/join/provider'
@@ -284,6 +294,7 @@ export interface FileRouteTypes {
     | '/taxi'
     | '/admin/courier'
     | '/admin/drivers'
+    | '/admin/payments'
     | '/admin/providers'
     | '/join/driver'
     | '/join/provider'
@@ -311,6 +322,7 @@ export interface FileRouteTypes {
     | '/taxi'
     | '/admin/courier'
     | '/admin/drivers'
+    | '/admin/payments'
     | '/admin/providers'
     | '/join/driver'
     | '/join/provider'
@@ -339,6 +351,7 @@ export interface RootRouteChildren {
   TaxiRoute: typeof TaxiRoute
   AdminCourierRoute: typeof AdminCourierRoute
   AdminDriversRoute: typeof AdminDriversRoute
+  AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminProvidersRoute: typeof AdminProvidersRoute
   JoinDriverRoute: typeof JoinDriverRoute
   JoinProviderRoute: typeof JoinProviderRoute
@@ -432,6 +445,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/drivers'
       fullPath: '/admin/drivers'
       preLoaderRoute: typeof AdminDriversRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/payments': {
+      id: '/admin/payments'
+      path: '/admin/payments'
+      fullPath: '/admin/payments'
+      preLoaderRoute: typeof AdminPaymentsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/providers': {
@@ -547,6 +567,7 @@ const rootRouteChildren: RootRouteChildren = {
   TaxiRoute: TaxiRoute,
   AdminCourierRoute: AdminCourierRoute,
   AdminDriversRoute: AdminDriversRoute,
+  AdminPaymentsRoute: AdminPaymentsRoute,
   AdminProvidersRoute: AdminProvidersRoute,
   JoinDriverRoute: JoinDriverRoute,
   JoinProviderRoute: JoinProviderRoute,
