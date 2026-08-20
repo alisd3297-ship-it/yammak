@@ -8,14 +8,33 @@ import { useEffect, useState } from "react";
  */
 export const CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 
+/** يُرفع عند تغيير محتوى البيانات الثابتة حتى لا يبقى المستخدم على نسخة قديمة. */
+const CACHE_VERSION = "v2";
+const CACHE_PREFIX = "yammak.cache.";
+
 type Envelope<T> = { at: number; data: T };
 
 function storageKey(key: QueryKey) {
-  return `yammak.cache.${JSON.stringify(key)}`;
+  return `${CACHE_PREFIX}${CACHE_VERSION}.${JSON.stringify(key)}`;
+}
+
+let purged = false;
+function purgeOldVersions() {
+  if (purged || typeof window === "undefined") return;
+  purged = true;
+  try {
+    const keep = `${CACHE_PREFIX}${CACHE_VERSION}.`;
+    for (const k of Object.keys(localStorage)) {
+      if (k.startsWith(CACHE_PREFIX) && !k.startsWith(keep)) localStorage.removeItem(k);
+    }
+  } catch {
+    /* تخزين غير متاح */
+  }
 }
 
 export function readCache<T>(key: QueryKey): Envelope<T> | null {
   if (typeof window === "undefined") return null;
+  purgeOldVersions();
   try {
     const raw = localStorage.getItem(storageKey(key));
     return raw ? (JSON.parse(raw) as Envelope<T>) : null;
@@ -32,6 +51,7 @@ function writeCache<T>(key: QueryKey, data: T) {
     /* المساحة ممتلئة */
   }
 }
+
 
 export function useOnline() {
   const [online, setOnline] = useState(true);
@@ -63,10 +83,12 @@ export function useCachedQuery<T>(key: QueryKey, fetcher: () => Promise<T>) {
       }
     },
     initialData: () => readCache<T>(key)?.data,
-    initialDataUpdatedAt: () => readCache<T>(key)?.at,
-    staleTime: CACHE_TTL_MS,
+    initialDataUpdatedAt: () => 0, // نعرض النسخة المخزنة فوراً لكن نحدّثها من الخادم دائماً
+    staleTime: 60 * 1000,
+    refetchOnMount: "always",
     refetchInterval: CACHE_TTL_MS,
     refetchOnWindowFocus: false,
+
   });
 
   const cached = readCache<T>(key);
