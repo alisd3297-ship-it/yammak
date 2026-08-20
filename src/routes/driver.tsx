@@ -316,6 +316,99 @@ function DriverDashboard() {
           </section>
         )}
 
+        {!!tripOffers?.length && (
+          <section>
+            <h2 className="mb-3 font-bold">عروض رحلات تكسي</h2>
+            <div className="space-y-3">
+              {tripOffers.map((o) => {
+                const tr = o.trips as {
+                  code: string;
+                  fare: number;
+                  taxi_class: string;
+                  passengers: number;
+                  pickup_text: string;
+                  destination_text: string;
+                  distance_km: number;
+                  notes: string | null;
+                } | null;
+                return (
+                  <article key={o.id} className="rounded-2xl border-2 border-primary/40 bg-card p-4 shadow-card">
+                    <div className="flex items-center justify-between">
+                      <p className="font-bold">رحلة #{tr?.code}</p>
+                      <span className="text-sm font-bold text-primary">{formatIQD(Number(tr?.fare ?? 0))}</span>
+                    </div>
+                    <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                      <Navigation className="size-3.5" /> يبعد {Number(o.distance_km ?? 0).toFixed(1)} كم عنك ·{" "}
+                      طول الرحلة {Number(tr?.distance_km ?? 0).toFixed(1)} كم
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">من: {tr?.pickup_text}</p>
+                    <p className="text-xs text-muted-foreground">إلى: {tr?.destination_text}</p>
+                    <p className="mt-1 text-xs font-semibold text-primary">
+                      {taxiClassLabel(tr?.taxi_class)} · {tr?.passengers} راكب
+                    </p>
+                    {tr?.notes && <p className="mt-1 text-xs text-muted-foreground">ملاحظات: {tr.notes}</p>}
+                    <div className="mt-3 flex gap-2">
+                      <Button className="h-10 flex-1" onClick={() => answerTrip(o.id, true)}>
+                        قبول
+                      </Button>
+                      <Button variant="outline" className="h-10" onClick={() => answerTrip(o.id, false)}>
+                        رفض
+                      </Button>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {!!activeTrips?.length && (
+          <section>
+            <h2 className="mb-3 font-bold">رحلتي الحالية</h2>
+            <div className="space-y-3">
+              {activeTrips.map((t) => {
+                const step = TAXI_DRIVER_STEPS[t.status as TripStatus];
+                return (
+                  <article key={t.id} className="rounded-2xl bg-card p-4 shadow-soft">
+                    <div className="flex items-center justify-between">
+                      <p className="font-bold">رحلة #{t.code}</p>
+                      <span className="text-sm font-bold text-primary">{formatIQD(Number(t.fare))}</span>
+                    </div>
+                    <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                      <StatusDot tone={tripTone(t.status as TripStatus)} />
+                      {TRIP_STATUS_LABELS[t.status as TripStatus]} · {taxiClassLabel(t.taxi_class)} ·{" "}
+                      {t.passengers} راكب
+                    </p>
+                    <p className="mt-2 flex items-start gap-2 text-xs text-muted-foreground">
+                      <MapPin className="mt-0.5 size-3.5 shrink-0" /> من: {t.pickup_text}
+                    </p>
+                    <p className="text-xs text-muted-foreground">إلى: {t.destination_text}</p>
+                    {t.pickup_lat != null && (
+                      <a
+                        className="mt-1 inline-block text-xs font-semibold text-primary"
+                        href={`https://www.google.com/maps/dir/?api=1&destination=${
+                          t.status === "in_progress" ? t.destination_lat : t.pickup_lat
+                        },${t.status === "in_progress" ? t.destination_lng : t.pickup_lng}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        فتح الاتجاهات
+                      </a>
+                    )}
+                    {t.notes && <p className="mt-1 text-xs text-muted-foreground">ملاحظات: {t.notes}</p>}
+                    {step && (
+                      <Button className="mt-3 h-10 w-full" onClick={() => advanceTrip(t.id, step.next)}>
+                        {step.label}
+                      </Button>
+                    )}
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+
         <section>
           <h2 className="mb-3 font-bold">مهامي النشطة</h2>
           <div className="space-y-3">
