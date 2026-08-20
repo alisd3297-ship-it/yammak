@@ -155,6 +155,8 @@ export async function runMaintenance(source = "manual", minSeconds = 30) {
 
   const { data: expired } = await supabaseAdmin.rpc("expire_stale_offers", {});
   const { data: completed } = await supabaseAdmin.rpc("auto_complete_delivered_orders");
+  // إنهاء الإعلانات التي انتهت مدة نشرها
+  await supabaseAdmin.rpc("expire_due_ads");
 
   // إطلاق طلبات التوصيل الخاص المجدولة عند اقتراب موعدها
   const { data: due } = await supabaseAdmin
