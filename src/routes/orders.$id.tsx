@@ -59,9 +59,9 @@ function OrderTrackPage() {
         supabase.from("order_items").select("id, name, quantity, unit_price").eq("order_id", id),
         supabase
           .from("order_stops")
-          .select("id, sort_order, address_text, recipient_name, recipient_phone, notes, completed_at")
+          .select("id, position, address_text, recipient_name, recipient_phone, notes, is_delivered")
           .eq("order_id", id)
-          .order("sort_order"),
+          .order("position"),
       ]);
       return { order: order.data, items: items.data ?? [], stops: stops.data ?? [] };
     },
@@ -255,8 +255,8 @@ function OrderTrackPage() {
                   <li key={s.id} className="rounded-xl bg-muted/60 p-3 text-sm">
                     <div className="flex items-center justify-between">
                       <span className="font-semibold">النقطة {i + 1}</span>
-                      <span className={s.completed_at ? "text-xs text-success" : "text-xs text-muted-foreground"}>
-                        {s.completed_at ? "تم التسليم" : "بالانتظار"}
+                      <span className={s.is_delivered ? "text-xs text-success" : "text-xs text-muted-foreground"}>
+                        {s.is_delivered ? "تم التسليم" : "بالانتظار"}
                       </span>
                     </div>
                     <p className="mt-1">{s.address_text}</p>
