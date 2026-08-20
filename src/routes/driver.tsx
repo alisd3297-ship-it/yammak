@@ -48,6 +48,8 @@ function DriverDashboard() {
   const respond = useServerFn(respondToOffer);
   const setStatus = useServerFn(changeOrderStatus);
   const finishStop = useServerFn(completeOrderStop);
+  const respondTrip = useServerFn(respondToTripOffer);
+  const setTripStatus = useServerFn(changeTripStatus);
 
   const { data: worker } = useQuery({
     queryKey: ["worker-profile", account?.userId],
