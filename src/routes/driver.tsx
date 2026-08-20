@@ -188,6 +188,30 @@ function DriverDashboard() {
     qc.invalidateQueries({ queryKey: ["driver-orders"] });
   }
 
+  async function answerTrip(offerId: string, accept: boolean) {
+    try {
+      await respondTrip({
+        data: accept ? { offerId, accept } : { offerId, accept, reason: "رفض السائق" },
+      });
+      toast.success(accept ? "قبلت الرحلة" : "تم رفض العرض");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر تنفيذ الرد على العرض");
+    }
+    qc.invalidateQueries({ queryKey: ["driver-trip-offers"] });
+    qc.invalidateQueries({ queryKey: ["driver-trips"] });
+  }
+
+  async function advanceTrip(tripId: string, next: TripStatus) {
+    try {
+      await setTripStatus({ data: { tripId, status: next } });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر تحديث حالة الرحلة");
+      return;
+    }
+    qc.invalidateQueries({ queryKey: ["driver-trips"] });
+  }
+
+
   if (!account?.userId)
     return (
       <PageShell>
