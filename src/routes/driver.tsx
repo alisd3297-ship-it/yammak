@@ -36,6 +36,7 @@ function DriverDashboard() {
   const { data: account } = useAccount();
   const qc = useQueryClient();
   const respond = useServerFn(respondToOffer);
+  const setStatus = useServerFn(changeOrderStatus);
 
   const { data: worker } = useQuery({
     queryKey: ["worker-profile", account?.userId],
