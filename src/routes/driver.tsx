@@ -57,7 +57,7 @@ function DriverDashboard() {
     queryFn: async () => {
       const { data } = await supabase
         .from("worker_profiles")
-        .select("user_id, is_approved, is_available, worker_kind, rating, vehicle")
+        .select("user_id, is_approved, is_available, worker_kind, rating, vehicle, taxi_class, taxi_seats")
         .eq("user_id", account!.userId!)
         .maybeSingle();
       return data;
