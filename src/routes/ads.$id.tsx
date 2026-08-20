@@ -5,7 +5,9 @@ import { ArrowRight, MapPin, Phone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { BottomNav, PageShell, StatusDot } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
-import { AD_STATUS_LABEL, AD_STATUS_TONE, adImageUrl, formatAdPrice, type AdRow } from "@/lib/ads";
+import { AD_STATUS_LABEL, AD_STATUS_TONE, formatAdPrice, type AdRow } from "@/lib/ads";
+import { AdImage } from "@/components/ad-image";
+
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/ads/$id")({
@@ -62,11 +64,13 @@ function AdDetailPage() {
           <>
             {data.images.length > 0 ? (
               <div className="space-y-2">
-                <img
-                  src={adImageUrl(data.images[active] ?? data.images[0]!)}
+                <AdImage
+                  path={data.images[active] ?? data.images[0]}
                   alt={data.title}
+                  lazy={false}
                   className="aspect-[4/3] w-full rounded-2xl object-cover shadow-card"
                 />
+
                 {data.images.length > 1 ? (
                   <div className="flex gap-2 overflow-x-auto">
                     {data.images.map((path, index) => (
@@ -80,7 +84,7 @@ function AdDetailPage() {
                           index === active ? "border-primary" : "border-transparent",
                         )}
                       >
-                        <img src={adImageUrl(path)} alt="" className="size-full object-cover" />
+                        <AdImage path={path} className="size-full object-cover" />
                       </button>
                     ))}
                   </div>

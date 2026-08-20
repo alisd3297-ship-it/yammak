@@ -10,7 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { setAdStatus } from "@/lib/ads.functions";
-import { AD_STATUS_LABEL, AD_STATUS_TONE, adImageUrl, formatAdPrice, type AdRow, type AdStatus } from "@/lib/ads";
+import { AD_STATUS_LABEL, AD_STATUS_TONE, formatAdPrice, type AdRow, type AdStatus } from "@/lib/ads";
+import { AdImage } from "@/components/ad-image";
+import { useAccount } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/ads")({
@@ -42,6 +44,8 @@ function AdminAdsPage() {
   const [filter, setFilter] = useState<AdStatus | "all">("pending");
   const [busy, setBusy] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, { sort?: string; expires?: string; reason?: string }>>({});
+  const { data: account } = useAccount();
+  const isStaff = (account?.roles ?? []).some((r) => ["super_admin", "admin", "supervisor"].includes(r));
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-ads", filter],
@@ -57,6 +61,7 @@ function AdminAdsPage() {
       const { data: rows } = await query;
       return (rows ?? []) as Array<AdRow & { ad_categories: { name: string } | null }>;
     },
+    enabled: isStaff,
   });
 
   async function act(ad: AdRow, status: AdStatus) {
@@ -85,6 +90,18 @@ function AdminAdsPage() {
       setBusy(null);
     }
   }
+
+  if (!isStaff)
+    return (
+      <PageShell>
+        <div className="px-5 py-16 text-center">
+          <p className="text-sm text-muted-foreground">هذه الصفحة مخصصة لفريق إدارة يمّك.</p>
+          <Link to="/" className="mt-3 inline-block font-semibold text-primary">
+            رجوع للرئيسية
+          </Link>
+        </div>
+      </PageShell>
+    );
 
   return (
     <PageShell>
@@ -135,7 +152,7 @@ function AdminAdsPage() {
 
                 <div className="flex gap-3">
                   {ad.images[0] ? (
-                    <img src={adImageUrl(ad.images[0])} alt="" className="size-20 rounded-xl object-cover" />
+                    <AdImage path={ad.images[0]} className="size-20 rounded-xl object-cover" />
                   ) : null}
                   <div className="min-w-0 flex-1">
                     <Link to="/ads/$id" params={{ id: ad.id }} className="font-bold underline-offset-4 hover:underline">
