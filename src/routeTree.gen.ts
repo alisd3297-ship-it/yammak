@@ -18,6 +18,7 @@ import { Route as OrdersIndexRouteImport } from './routes/orders.index'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as RestaurantsIndexRouteImport } from './routes/restaurants.index'
 import { Route as RestaurantsIdRouteImport } from './routes/restaurants.$id'
+import { Route as StoresIndexRouteImport } from './routes/stores.index'
 import { Route as ApiPublicMaintenanceRouteImport } from './routes/api/public/maintenance'
 
 const IndexRoute = IndexRouteImport.update({
@@ -65,6 +66,11 @@ const RestaurantsIdRoute = RestaurantsIdRouteImport.update({
   path: '/restaurants/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StoresIndexRoute = StoresIndexRouteImport.update({
+  id: '/stores/',
+  path: '/stores/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicMaintenanceRoute = ApiPublicMaintenanceRouteImport.update({
   id: '/api/public/maintenance',
   path: '/api/public/maintenance',
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/orders/': typeof OrdersIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
+  '/stores/': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
 }
 export interface FileRoutesByTo {
@@ -93,6 +100,7 @@ export interface FileRoutesByTo {
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/orders': typeof OrdersIndexRoute
   '/restaurants': typeof RestaurantsIndexRoute
+  '/stores': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
 }
 export interface FileRoutesById {
@@ -106,6 +114,7 @@ export interface FileRoutesById {
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/orders/': typeof OrdersIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
+  '/stores/': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
 }
 export interface FileRouteTypes {
@@ -120,6 +129,7 @@ export interface FileRouteTypes {
     | '/restaurants/$id'
     | '/orders/'
     | '/restaurants/'
+    | '/stores/'
     | '/api/public/maintenance'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
     | '/restaurants/$id'
     | '/orders'
     | '/restaurants'
+    | '/stores'
     | '/api/public/maintenance'
   id:
     | '__root__'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/restaurants/$id'
     | '/orders/'
     | '/restaurants/'
+    | '/stores/'
     | '/api/public/maintenance'
   fileRoutesById: FileRoutesById
 }
@@ -157,6 +169,7 @@ export interface RootRouteChildren {
   RestaurantsIdRoute: typeof RestaurantsIdRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
   RestaurantsIndexRoute: typeof RestaurantsIndexRoute
+  StoresIndexRoute: typeof StoresIndexRoute
   ApiPublicMaintenanceRoute: typeof ApiPublicMaintenanceRoute
 }
 
@@ -225,6 +238,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RestaurantsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/stores/': {
+      id: '/stores/'
+      path: '/stores'
+      fullPath: '/stores/'
+      preLoaderRoute: typeof StoresIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/maintenance': {
       id: '/api/public/maintenance'
       path: '/api/public/maintenance'
@@ -245,6 +265,7 @@ const rootRouteChildren: RootRouteChildren = {
   RestaurantsIdRoute: RestaurantsIdRoute,
   OrdersIndexRoute: OrdersIndexRoute,
   RestaurantsIndexRoute: RestaurantsIndexRoute,
+  StoresIndexRoute: StoresIndexRoute,
   ApiPublicMaintenanceRoute: ApiPublicMaintenanceRoute,
 }
 export const routeTree = rootRouteImport
