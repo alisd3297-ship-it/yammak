@@ -9,16 +9,17 @@ import { useAccount, homeRouteForAccount } from "@/lib/auth";
 export function BrandHeader({ subtitle }: { subtitle?: string }) {
   return (
     <header className="brand-gradient rounded-b-3xl px-5 pb-6 pt-7 text-primary-foreground shadow-card">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight">يمّك</h1>
-          <p className="mt-1 text-sm/6 opacity-90">{subtitle ?? "ويّانه كلشي صار يمّك"}</p>
+      <div className="relative flex min-h-11 flex-col items-center justify-center text-center">
+        <div className="absolute inset-y-0 start-0 flex items-center">
+          <AccountButton />
         </div>
-        <AccountButton />
+        <h1 className="text-3xl font-black leading-none tracking-tight">يمّك</h1>
+        <p className="mt-1 max-w-[62%] text-sm/6 opacity-90">{subtitle ?? "ويّانه كلشي صار يمّك"}</p>
       </div>
     </header>
   );
 }
+
 
 function AccountButton() {
   const { data: account } = useAccount();
