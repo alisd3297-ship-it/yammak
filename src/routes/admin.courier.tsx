@@ -10,6 +10,7 @@ import { useAccount } from "@/lib/auth";
 import { assignDriverManually } from "@/lib/dispatch.functions";
 import { changeOrderStatus } from "@/lib/orders.functions";
 import { ORDER_STATUS_LABELS, formatIQD, statusTone, type OrderStatus } from "@/lib/orders";
+import { vehicleLabel } from "@/lib/vehicles";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/courier")({
@@ -46,18 +47,19 @@ function AdminCourierPage() {
   const assign = useServerFn(assignDriverManually);
   const setStatus = useServerFn(changeOrderStatus);
   const [tab, setTab] = useState<"open" | "closed">("open");
+  const [kind, setKind] = useState<"courier" | "special_delivery">("courier");
 
   const isStaff = (account?.roles ?? []).some((r) => ["super_admin", "admin", "supervisor"].includes(r));
 
   const { data: orders } = useQuery({
-    queryKey: ["admin-courier-orders", tab],
+    queryKey: ["admin-courier-orders", tab, kind],
     enabled: isStaff,
     refetchInterval: 20_000,
     queryFn: async () => {
       const query = supabase
         .from("orders")
-        .select("id, code, status, total, pickup_text, dropoff_text, notes, driver_id, created_at")
-        .eq("order_type", "courier")
+        .select("id, code, status, total, pickup_text, dropoff_text, notes, driver_id, created_at, vehicle_type, cargo_description, scheduled_at, order_stops(id, position, address_text, is_delivered)")
+        .eq("order_type", kind)
         .order("created_at", { ascending: false })
         .limit(50);
       const { data } =
@@ -124,7 +126,7 @@ function AdminCourierPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <h1 className="text-2xl font-black">طلبات المندوب المستقل</h1>
+        <h1 className="text-2xl font-black">التوصيل والمندوب المستقل</h1>
         <p className="mt-1 text-sm opacity-90">متابعة الإرسال والاستلام وتعيين المندوبين.</p>
         <Link to="/admin/providers" className="mt-3 inline-block text-sm font-semibold underline">
           اعتماد المزوّدين
@@ -132,6 +134,21 @@ function AdminCourierPage() {
       </header>
 
       <div className="space-y-4 px-4 py-5">
+        <div className="flex gap-2">
+          {(["courier", "special_delivery"] as const).map((k) => (
+            <button
+              key={k}
+              onClick={() => setKind(k)}
+              className={cn(
+                "flex-1 rounded-xl px-3 py-2 text-sm font-semibold",
+                kind === k ? "bg-foreground text-background" : "bg-muted text-muted-foreground",
+              )}
+            >
+              {k === "courier" ? "مندوب مستقل" : "توصيل خاص"}
+            </button>
+          ))}
+        </div>
+
         <div className="flex gap-2">
           {(["open", "closed"] as const).map((t) => (
             <button
@@ -165,6 +182,18 @@ function AdminCourierPage() {
               <p className="mt-2 text-xs text-muted-foreground">من: {o.pickup_text}</p>
               <p className="text-xs text-muted-foreground">إلى: {o.dropoff_text}</p>
               {o.notes && <p className="mt-1 text-xs text-muted-foreground">الوصف: {o.notes}</p>}
+              {o.vehicle_type && (
+                <p className="mt-1 text-xs font-semibold text-primary">
+                  المركبة: {vehicleLabel(o.vehicle_type)}
+                  {o.scheduled_at ? ` · موعد ${new Date(o.scheduled_at).toLocaleString("ar-IQ")}` : ""}
+                </p>
+              )}
+              {!!(o.order_stops ?? []).length && (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  نقاط التسليم: {(o.order_stops ?? []).filter((s) => s.is_delivered).length} /{" "}
+                  {(o.order_stops ?? []).length}
+                </p>
+              )}
 
               {tab === "open" && (
                 <div className="mt-3 space-y-2">

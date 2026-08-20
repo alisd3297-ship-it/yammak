@@ -1,5 +1,6 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { distanceKm } from "@/lib/orders";
+import { VEHICLE_RANK, type VehicleType } from "@/lib/vehicles";
 
 export type DispatchResult = { assignedTo: string | null; status: string; message: string };
 
@@ -20,7 +21,7 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
 
   const { data: order } = await supabaseAdmin
     .from("orders")
-    .select("id, status, provider_id, driver_id, pickup_lat, pickup_lng")
+    .select("id, status, provider_id, driver_id, pickup_lat, pickup_lng, vehicle_type, scheduled_at, order_type")
     .eq("id", orderId)
     .maybeSingle();
   if (!order) throw new Error("الطلب غير موجود");
@@ -28,6 +29,9 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
     return { assignedTo: order.driver_id, status: order.status, message: "الطلب مسند مسبقاً" };
   if (order.status === "cancelled" || order.status === "completed")
     return { assignedTo: null, status: order.status, message: "الطلب منتهي" };
+  // الطلب المجدول لا يدخل التوزيع قبل اقتراب موعده
+  if (order.scheduled_at && new Date(order.scheduled_at).getTime() - Date.now() > 15 * 60_000)
+    return { assignedTo: null, status: order.status, message: "الطلب مجدول لوقت لاحق" };
 
   const { data: settings } = await supabaseAdmin
     .from("app_settings")
@@ -49,7 +53,7 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
   if (liveOffer)
     return { assignedTo: null, status: "offered_to_driver", message: "هناك عرض قائم بانتظار رد المندوب" };
 
-  if (order.status === "ready_for_pickup") {
+  if (order.status === "ready_for_pickup" || order.status === "new") {
     await supabaseAdmin.rpc("system_change_order_status", {
       _order_id: order.id,
       _new_status: "searching_driver",
@@ -65,10 +69,13 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
 
   const { data: workers } = await supabaseAdmin
     .from("worker_profiles")
-    .select("user_id, max_active_orders")
+    .select("user_id, max_active_orders, vehicle_type")
     .eq("worker_kind", "delivery")
     .eq("is_approved", true)
     .eq("is_available", true);
+
+  // تصفية حسب سعة المركبة المطلوبة (التوصيل الخاص)
+  const requiredRank = order.vehicle_type ? VEHICLE_RANK[order.vehicle_type as VehicleType] : 0;
 
   const freshAfter = new Date(Date.now() - maxAgeMin * 60_000).toISOString();
   const { data: locations } = await supabaseAdmin
@@ -88,6 +95,11 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
 
   const candidates = (workers ?? [])
     .filter((w) => !excluded.has(w.user_id))
+    .filter((w) => {
+      if (!requiredRank) return true;
+      const rank = w.vehicle_type ? VEHICLE_RANK[w.vehicle_type as VehicleType] : 1;
+      return rank >= requiredRank;
+    })
     .map((w) => {
       const loc = locations?.find((l) => l.user_id === w.user_id);
       if (!loc) return null;
@@ -144,6 +156,16 @@ export async function runMaintenance(source = "manual", minSeconds = 30) {
   const { data: expired } = await supabaseAdmin.rpc("expire_stale_offers", {});
   const { data: completed } = await supabaseAdmin.rpc("auto_complete_delivered_orders");
 
+  // إطلاق طلبات التوصيل الخاص المجدولة عند اقتراب موعدها
+  const { data: due } = await supabaseAdmin
+    .from("orders")
+    .select("id")
+    .eq("order_type", "special_delivery")
+    .eq("status", "new")
+    .is("driver_id", null)
+    .lte("scheduled_at", new Date(Date.now() + 15 * 60_000).toISOString())
+    .limit(20);
+
   const { data: stuck } = await supabaseAdmin
     .from("orders")
     .select("id")
@@ -152,7 +174,7 @@ export async function runMaintenance(source = "manual", minSeconds = 30) {
     .limit(20);
 
   let redispatched = 0;
-  for (const o of stuck ?? []) {
+  for (const o of [...(due ?? []), ...(stuck ?? [])]) {
     try {
       await runDispatch(o.id);
       redispatched += 1;
