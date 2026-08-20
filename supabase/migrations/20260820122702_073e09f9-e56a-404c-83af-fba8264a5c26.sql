@@ -1,0 +1,26 @@
+REVOKE EXECUTE ON FUNCTION public.quote_taxi_trip(public.taxi_class, double precision, double precision, double precision, double precision) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.create_taxi_trip(public.taxi_class, text, double precision, double precision, text, double precision, double precision, integer, text) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.change_trip_status(uuid, public.trip_status, text) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.accept_trip_offer(uuid) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.reject_trip_offer(uuid, text) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.rate_trip(uuid, integer, text) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.apply_as_driver(public.worker_kind, uuid, text, text, text, text, public.taxi_class, integer, public.vehicle_type, text) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.set_worker_approval(uuid, boolean, text) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.expire_stale_trip_offers(uuid) FROM anon, public, authenticated;
+REVOKE EXECUTE ON FUNCTION public.system_change_trip_status(uuid, public.trip_status) FROM public;
+REVOKE EXECUTE ON FUNCTION public.can_see_trip(uuid, uuid) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.trip_actor(uuid, uuid) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.compute_taxi_fare(uuid, public.taxi_class, double precision) FROM anon, public;
+
+GRANT EXECUTE ON FUNCTION public.quote_taxi_trip(public.taxi_class, double precision, double precision, double precision, double precision) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.create_taxi_trip(public.taxi_class, text, double precision, double precision, text, double precision, double precision, integer, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.change_trip_status(uuid, public.trip_status, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.accept_trip_offer(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.reject_trip_offer(uuid, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.rate_trip(uuid, integer, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.apply_as_driver(public.worker_kind, uuid, text, text, text, text, public.taxi_class, integer, public.vehicle_type, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.set_worker_approval(uuid, boolean, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.can_see_trip(uuid, uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.trip_actor(uuid, uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.expire_stale_trip_offers(uuid) TO service_role;
+GRANT EXECUTE ON FUNCTION public.system_change_trip_status(uuid, public.trip_status) TO service_role;

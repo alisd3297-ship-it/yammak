@@ -13,6 +13,14 @@ import { respondToOffer } from "@/lib/dispatch.functions";
 import { changeOrderStatus } from "@/lib/orders.functions";
 import { vehicleLabel } from "@/lib/vehicles";
 import { completeOrderStop } from "@/lib/special-delivery.functions";
+import { changeTripStatus, respondToTripOffer } from "@/lib/taxi.functions";
+import {
+  TAXI_DRIVER_STEPS,
+  TRIP_STATUS_LABELS,
+  taxiClassLabel,
+  tripTone,
+  type TripStatus,
+} from "@/lib/taxi";
 import { ORDER_STATUS_LABELS, formatIQD, isCourierType, statusTone, type OrderStatus } from "@/lib/orders";
 
 export const Route = createFileRoute("/driver")({
@@ -40,6 +48,8 @@ function DriverDashboard() {
   const respond = useServerFn(respondToOffer);
   const setStatus = useServerFn(changeOrderStatus);
   const finishStop = useServerFn(completeOrderStop);
+  const respondTrip = useServerFn(respondToTripOffer);
+  const setTripStatus = useServerFn(changeTripStatus);
 
   const { data: worker } = useQuery({
     queryKey: ["worker-profile", account?.userId],
@@ -47,7 +57,7 @@ function DriverDashboard() {
     queryFn: async () => {
       const { data } = await supabase
         .from("worker_profiles")
-        .select("user_id, is_approved, is_available, worker_kind, rating, vehicle")
+        .select("user_id, is_approved, is_available, worker_kind, rating, vehicle, taxi_class, taxi_seats")
         .eq("user_id", account!.userId!)
         .maybeSingle();
       return data;
@@ -82,6 +92,43 @@ function DriverDashboard() {
       return data ?? [];
     },
   });
+
+  const isTaxi = worker?.worker_kind === "taxi";
+
+  const { data: tripOffers } = useQuery({
+    queryKey: ["driver-trip-offers", account?.userId],
+    enabled: !!account?.userId && isTaxi,
+    refetchInterval: 8_000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("trip_offers")
+        .select(
+          "id, trip_id, distance_km, expires_at, trips(code, fare, taxi_class, passengers, pickup_text, destination_text, distance_km, notes)",
+        )
+        .eq("driver_id", account!.userId!)
+        .eq("status", "sent")
+        .gt("expires_at", new Date().toISOString());
+      return data ?? [];
+    },
+  });
+
+  const { data: activeTrips } = useQuery({
+    queryKey: ["driver-trips", account?.userId],
+    enabled: !!account?.userId && isTaxi,
+    refetchInterval: 10_000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("trips")
+        .select(
+          "id, code, status, fare, taxi_class, passengers, pickup_text, pickup_lat, pickup_lng, destination_text, destination_lat, destination_lng, notes, customer_id",
+        )
+        .eq("driver_id", account!.userId!)
+        .in("status", ["driver_assigned", "driver_arriving", "driver_arrived", "in_progress"]);
+      return data ?? [];
+    },
+  });
+
+
 
   // بث موقع المندوب أثناء التوفر
   useEffect(() => {
@@ -141,6 +188,30 @@ function DriverDashboard() {
     qc.invalidateQueries({ queryKey: ["driver-orders"] });
   }
 
+  async function answerTrip(offerId: string, accept: boolean) {
+    try {
+      await respondTrip({
+        data: accept ? { offerId, accept } : { offerId, accept, reason: "رفض السائق" },
+      });
+      toast.success(accept ? "قبلت الرحلة" : "تم رفض العرض");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر تنفيذ الرد على العرض");
+    }
+    qc.invalidateQueries({ queryKey: ["driver-trip-offers"] });
+    qc.invalidateQueries({ queryKey: ["driver-trips"] });
+  }
+
+  async function advanceTrip(tripId: string, next: TripStatus) {
+    try {
+      await setTripStatus({ data: { tripId, status: next } });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر تحديث حالة الرحلة");
+      return;
+    }
+    qc.invalidateQueries({ queryKey: ["driver-trips"] });
+  }
+
+
   if (!account?.userId)
     return (
       <PageShell>
@@ -171,9 +242,12 @@ function DriverDashboard() {
 
       <div className="space-y-5 px-4 py-5">
         {!worker && (
-          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
-            ما عندك ملف مندوب. قدّم طلب انضمام وتواصل مع إدارة يمّك.
-          </p>
+          <div className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+            ما عندك ملف سائق أو مندوب.{" "}
+            <Link to="/join/driver" className="font-semibold text-primary">
+              قدّم طلب انضمام الآن
+            </Link>
+          </div>
         )}
         {worker && !worker.is_approved && (
           <p className="rounded-2xl bg-warning/15 p-4 text-sm">حسابك قيد المراجعة من الإدارة.</p>
@@ -241,6 +315,99 @@ function DriverDashboard() {
             </div>
           </section>
         )}
+
+        {!!tripOffers?.length && (
+          <section>
+            <h2 className="mb-3 font-bold">عروض رحلات تكسي</h2>
+            <div className="space-y-3">
+              {tripOffers.map((o) => {
+                const tr = o.trips as {
+                  code: string;
+                  fare: number;
+                  taxi_class: string;
+                  passengers: number;
+                  pickup_text: string;
+                  destination_text: string;
+                  distance_km: number;
+                  notes: string | null;
+                } | null;
+                return (
+                  <article key={o.id} className="rounded-2xl border-2 border-primary/40 bg-card p-4 shadow-card">
+                    <div className="flex items-center justify-between">
+                      <p className="font-bold">رحلة #{tr?.code}</p>
+                      <span className="text-sm font-bold text-primary">{formatIQD(Number(tr?.fare ?? 0))}</span>
+                    </div>
+                    <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                      <Navigation className="size-3.5" /> يبعد {Number(o.distance_km ?? 0).toFixed(1)} كم عنك ·{" "}
+                      طول الرحلة {Number(tr?.distance_km ?? 0).toFixed(1)} كم
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">من: {tr?.pickup_text}</p>
+                    <p className="text-xs text-muted-foreground">إلى: {tr?.destination_text}</p>
+                    <p className="mt-1 text-xs font-semibold text-primary">
+                      {taxiClassLabel(tr?.taxi_class)} · {tr?.passengers} راكب
+                    </p>
+                    {tr?.notes && <p className="mt-1 text-xs text-muted-foreground">ملاحظات: {tr.notes}</p>}
+                    <div className="mt-3 flex gap-2">
+                      <Button className="h-10 flex-1" onClick={() => answerTrip(o.id, true)}>
+                        قبول
+                      </Button>
+                      <Button variant="outline" className="h-10" onClick={() => answerTrip(o.id, false)}>
+                        رفض
+                      </Button>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {!!activeTrips?.length && (
+          <section>
+            <h2 className="mb-3 font-bold">رحلتي الحالية</h2>
+            <div className="space-y-3">
+              {activeTrips.map((t) => {
+                const step = TAXI_DRIVER_STEPS[t.status as TripStatus];
+                return (
+                  <article key={t.id} className="rounded-2xl bg-card p-4 shadow-soft">
+                    <div className="flex items-center justify-between">
+                      <p className="font-bold">رحلة #{t.code}</p>
+                      <span className="text-sm font-bold text-primary">{formatIQD(Number(t.fare))}</span>
+                    </div>
+                    <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                      <StatusDot tone={tripTone(t.status as TripStatus)} />
+                      {TRIP_STATUS_LABELS[t.status as TripStatus]} · {taxiClassLabel(t.taxi_class)} ·{" "}
+                      {t.passengers} راكب
+                    </p>
+                    <p className="mt-2 flex items-start gap-2 text-xs text-muted-foreground">
+                      <MapPin className="mt-0.5 size-3.5 shrink-0" /> من: {t.pickup_text}
+                    </p>
+                    <p className="text-xs text-muted-foreground">إلى: {t.destination_text}</p>
+                    {t.pickup_lat != null && (
+                      <a
+                        className="mt-1 inline-block text-xs font-semibold text-primary"
+                        href={`https://www.google.com/maps/dir/?api=1&destination=${
+                          t.status === "in_progress" ? t.destination_lat : t.pickup_lat
+                        },${t.status === "in_progress" ? t.destination_lng : t.pickup_lng}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        فتح الاتجاهات
+                      </a>
+                    )}
+                    {t.notes && <p className="mt-1 text-xs text-muted-foreground">ملاحظات: {t.notes}</p>}
+                    {step && (
+                      <Button className="mt-3 h-10 w-full" onClick={() => advanceTrip(t.id, step.next)}>
+                        {step.label}
+                      </Button>
+                    )}
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
 
         <section>
           <h2 className="mb-3 font-bold">مهامي النشطة</h2>
