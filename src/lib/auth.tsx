@@ -70,7 +70,7 @@ export function homeRouteForAccount(account: AccountContext | undefined): string
   if (!account?.userId) return "/";
   const roles = account.roles;
   if (roles.includes("super_admin") || roles.includes("admin") || roles.includes("supervisor"))
-    return "/admin";
+    return "/admin/providers";
   if (account.provider) return "/provider";
   if (account.worker) return "/driver";
   return "/";
