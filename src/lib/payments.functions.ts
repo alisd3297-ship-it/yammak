@@ -102,7 +102,7 @@ export const startPayment = createServerFn({ method: "POST" })
     const { error: attachError } = await supabaseAdmin.rpc("attach_payment_intent", {
       _payment_id: payment.id,
       _intent_id: intent.id,
-      _client_secret: intent.clientSecret,
+      _client_secret: intent.clientSecret ?? "",
     });
     if (attachError) throw new Error(friendly(attachError.message));
 
