@@ -9,10 +9,12 @@ import { PageShell, StatusDot } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { changeOrderStatus } from "@/lib/orders.functions";
 import {
+  COURIER_STATUS_FLOW,
   CUSTOMER_STATUS_FLOW,
   ORDER_STATUS_LABELS,
   formatIQD,
   statusTone,
+  isCourierType,
   type OrderStatus,
 } from "@/lib/orders";
 import { cn } from "@/lib/utils";
@@ -50,7 +52,7 @@ function OrderTrackPage() {
         supabase
           .from("orders")
           .select(
-            "id, code, status, total, subtotal, delivery_fee, dropoff_text, notes, created_at, providers(name, phone), driver_id",
+            "id, code, status, order_type, total, subtotal, delivery_fee, pickup_text, dropoff_text, notes, created_at, providers(name, phone), driver_id",
           )
           .eq("id", id)
           .maybeSingle(),
@@ -62,7 +64,9 @@ function OrderTrackPage() {
 
   const order = data?.order;
   const status = (order?.status ?? "awaiting_provider") as OrderStatus;
-  const activeIndex = CUSTOMER_STATUS_FLOW.indexOf(status);
+  const courier = isCourierType(order?.order_type);
+  const flow = courier ? COURIER_STATUS_FLOW : CUSTOMER_STATUS_FLOW;
+  const activeIndex = flow.indexOf(status);
   const provider = order?.providers as { name: string; phone: string | null } | null;
   const driverId = order?.driver_id ?? null;
   const tracking = !!driverId && TRACKING_STATUSES.includes(status);
@@ -138,7 +142,9 @@ function OrderTrackPage() {
     }
   }
 
-  const canCancel = (["new", "awaiting_provider", "accepted"] as OrderStatus[]).includes(status);
+  const canCancel = courier
+    ? (["new", "searching_driver", "offered_to_driver", "driver_accepted"] as OrderStatus[]).includes(status)
+    : (["new", "awaiting_provider", "accepted"] as OrderStatus[]).includes(status);
 
   return (
     <PageShell>
@@ -156,7 +162,7 @@ function OrderTrackPage() {
         <section className="rounded-2xl bg-card p-4 shadow-soft">
           <h2 className="mb-4 font-bold">مراحل الطلب</h2>
           <ol className="space-y-3">
-            {CUSTOMER_STATUS_FLOW.map((s, i) => {
+            {flow.map((s, i) => {
               const done = activeIndex >= i && activeIndex !== -1;
               return (
                 <li key={s} className="flex items-center gap-3">
@@ -221,6 +227,28 @@ function OrderTrackPage() {
           </section>
         )}
 
+        {courier ? (
+          <section className="rounded-2xl bg-card p-4 shadow-soft">
+            <h2 className="mb-3 font-bold">تفاصيل الإرسال والاستلام</h2>
+            <p className="flex items-start gap-2 text-sm">
+              <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
+              <span>
+                <span className="block text-xs text-muted-foreground">نقطة الاستلام</span>
+                {order?.pickup_text}
+              </span>
+            </p>
+            <p className="mt-3 flex items-start gap-2 text-sm">
+              <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
+              <span>
+                <span className="block text-xs text-muted-foreground">نقطة التسليم</span>
+                {order?.dropoff_text}
+              </span>
+            </p>
+            {order?.notes && (
+              <p className="mt-3 text-xs text-muted-foreground">الوصف والملاحظات: {order.notes}</p>
+            )}
+          </section>
+        ) : (
         <section className="rounded-2xl bg-card p-4 shadow-soft">
           <h2 className="mb-3 font-bold">{provider?.name}</h2>
           {provider?.phone && (
@@ -233,6 +261,7 @@ function OrderTrackPage() {
           </p>
           {order?.notes && <p className="mt-2 text-xs text-muted-foreground">ملاحظات: {order.notes}</p>}
         </section>
+        )}
 
         <section className="rounded-2xl bg-card p-4 text-sm shadow-soft">
           <h2 className="mb-3 font-bold">تفاصيل الفاتورة</h2>

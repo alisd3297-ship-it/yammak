@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { useAccount } from "@/lib/auth";
 import { respondToOffer } from "@/lib/dispatch.functions";
 import { changeOrderStatus } from "@/lib/orders.functions";
-import { ORDER_STATUS_LABELS, formatIQD, statusTone, type OrderStatus } from "@/lib/orders";
+import { ORDER_STATUS_LABELS, formatIQD, isCourierType, statusTone, type OrderStatus } from "@/lib/orders";
 
 export const Route = createFileRoute("/driver")({
   head: () => ({
@@ -58,7 +58,7 @@ function DriverDashboard() {
     queryFn: async () => {
       const { data } = await supabase
         .from("delivery_offers")
-        .select("id, order_id, distance_km, expires_at, status, orders(code, total, pickup_text, dropoff_text)")
+        .select("id, order_id, distance_km, expires_at, status, orders(code, total, order_type, notes, pickup_text, dropoff_text)")
         .eq("driver_id", account!.userId!)
         .eq("status", "sent")
         .gt("expires_at", new Date().toISOString());
@@ -73,7 +73,7 @@ function DriverDashboard() {
     queryFn: async () => {
       const { data } = await supabase
         .from("orders")
-        .select("id, code, status, total, pickup_text, dropoff_text, dropoff_lat, dropoff_lng")
+        .select("id, code, status, total, order_type, notes, pickup_text, dropoff_text, dropoff_lat, dropoff_lng")
         .eq("driver_id", account!.userId!)
         .in("status", ["driver_accepted", "driver_heading_pickup", "picked_up", "on_the_way"]);
       return data ?? [];
@@ -174,13 +174,18 @@ function DriverDashboard() {
                 const ord = o.orders as {
                   code: string;
                   total: number;
+                  order_type: string;
+                  notes: string | null;
                   pickup_text: string | null;
                   dropoff_text: string | null;
                 } | null;
                 return (
                   <article key={o.id} className="rounded-2xl border-2 border-primary/40 bg-card p-4 shadow-card">
                     <div className="flex items-center justify-between">
-                      <p className="font-bold">طلب #{ord?.code}</p>
+                      <p className="font-bold">
+                        {isCourierType(ord?.order_type) ? "طلب مندوب #" : "طلب #"}
+                        {ord?.code}
+                      </p>
                       <span className="text-sm font-bold text-primary">{formatIQD(Number(ord?.total ?? 0))}</span>
                     </div>
                     <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
@@ -188,6 +193,9 @@ function DriverDashboard() {
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">من: {ord?.pickup_text}</p>
                     <p className="text-xs text-muted-foreground">إلى: {ord?.dropoff_text}</p>
+                    {isCourierType(ord?.order_type) && ord?.notes && (
+                      <p className="mt-1 text-xs text-muted-foreground">الوصف: {ord.notes}</p>
+                    )}
                     <div className="mt-3 flex gap-2">
                       <Button className="h-10 flex-1" onClick={() => answer(o.id, true)}>
                         قبول

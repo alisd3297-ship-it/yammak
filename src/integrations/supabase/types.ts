@@ -1494,6 +1494,48 @@ export type Database = {
         }
         Returns: number
       }
+      create_courier_order: {
+        Args: {
+          _dropoff_lat?: number
+          _dropoff_lng?: number
+          _dropoff_text: string
+          _notes?: string
+          _pickup_lat?: number
+          _pickup_lng?: number
+          _pickup_text: string
+        }
+        Returns: {
+          cancel_reason: string | null
+          city_id: string | null
+          code: string
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          delivery_fee: number
+          driver_id: string | null
+          dropoff_lat: number | null
+          dropoff_lng: number | null
+          dropoff_text: string | null
+          id: string
+          notes: string | null
+          order_type: Database["public"]["Enums"]["order_type"]
+          payment_method: string
+          pickup_lat: number | null
+          pickup_lng: number | null
+          pickup_text: string | null
+          provider_id: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total: number
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       create_customer_order: {
         Args: {
           _dropoff_lat?: number
@@ -1593,14 +1635,24 @@ export type Database = {
         }
         Returns: boolean
       }
-      is_allowed_transition: {
-        Args: {
-          _actor: string
-          _from: Database["public"]["Enums"]["order_status"]
-          _to: Database["public"]["Enums"]["order_status"]
-        }
-        Returns: boolean
-      }
+      is_allowed_transition:
+        | {
+            Args: {
+              _actor: string
+              _from: Database["public"]["Enums"]["order_status"]
+              _to: Database["public"]["Enums"]["order_status"]
+            }
+            Returns: boolean
+          }
+        | {
+            Args: {
+              _actor: string
+              _from: Database["public"]["Enums"]["order_status"]
+              _order_type: Database["public"]["Enums"]["order_type"]
+              _to: Database["public"]["Enums"]["order_status"]
+            }
+            Returns: boolean
+          }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
       order_actor: {
         Args: { _order_id: string; _user_id: string }
