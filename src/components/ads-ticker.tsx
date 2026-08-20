@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as Icons from "lucide-react";
-import { adImageUrl, adTone, formatAdPrice, type AdCategory, type AdRow } from "@/lib/ads";
+import { adTone, formatAdPrice, type AdCategory, type AdRow } from "@/lib/ads";
+import { AdImage } from "@/components/ad-image";
 import { cn } from "@/lib/utils";
 
 /**
@@ -80,12 +81,7 @@ export function AdsTicker({ category, ads }: { category: AdCategory; ads: AdRow[
                 tabIndex={index >= ads.length ? -1 : 0}
               >
                 {ad.images[0] ? (
-                  <img
-                    src={adImageUrl(ad.images[0])}
-                    alt={ad.title}
-                    loading="lazy"
-                    className="size-8 shrink-0 rounded-lg object-cover"
-                  />
+                  <AdImage path={ad.images[0]} alt={ad.title} className="size-8 shrink-0 rounded-lg object-cover" />
                 ) : null}
                 <span className="whitespace-nowrap text-sm font-bold">{ad.title}</span>
                 <span className="ad-ticker-price whitespace-nowrap rounded-lg px-2 py-0.5 text-[11px] font-bold">

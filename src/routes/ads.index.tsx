@@ -7,7 +7,8 @@ import { BottomNav, PageShell, StatusDot } from "@/components/app-shell";
 import { AdsTickerBoard } from "@/components/ads-ticker";
 import { Button } from "@/components/ui/button";
 import { useAccount } from "@/lib/auth";
-import { AD_STATUS_LABEL, AD_STATUS_TONE, adImageUrl, formatAdPrice, type AdCategory, type AdRow } from "@/lib/ads";
+import { AD_STATUS_LABEL, AD_STATUS_TONE, formatAdPrice, type AdCategory, type AdRow } from "@/lib/ads";
+import { AdImage } from "@/components/ad-image";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/ads/")({
@@ -123,7 +124,7 @@ function AdsPage() {
                 className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft transition active:scale-[0.99]"
               >
                 {ad.images[0] ? (
-                  <img src={adImageUrl(ad.images[0])} alt={ad.title} loading="lazy" className="size-16 rounded-xl object-cover" />
+                  <AdImage path={ad.images[0]} alt={ad.title} className="size-16 rounded-xl object-cover" />
                 ) : null}
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-bold">{ad.title}</p>

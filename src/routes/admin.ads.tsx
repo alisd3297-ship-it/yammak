@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { setAdStatus } from "@/lib/ads.functions";
-import { AD_STATUS_LABEL, AD_STATUS_TONE, adImageUrl, formatAdPrice, type AdRow, type AdStatus } from "@/lib/ads";
+import { AD_STATUS_LABEL, AD_STATUS_TONE, formatAdPrice, type AdRow, type AdStatus } from "@/lib/ads";
+import { AdImage } from "@/components/ad-image";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/ads")({
@@ -135,7 +136,7 @@ function AdminAdsPage() {
 
                 <div className="flex gap-3">
                   {ad.images[0] ? (
-                    <img src={adImageUrl(ad.images[0])} alt="" className="size-20 rounded-xl object-cover" />
+                    <AdImage path={ad.images[0]} className="size-20 rounded-xl object-cover" />
                   ) : null}
                   <div className="min-w-0 flex-1">
                     <Link to="/ads/$id" params={{ id: ad.id }} className="font-bold underline-offset-4 hover:underline">
