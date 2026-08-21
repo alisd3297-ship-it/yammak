@@ -129,6 +129,18 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  // تسجيل عامل الخدمة لتوفير صفحة بديلة عند انقطاع الاتصال (غلاف Capacitor والويب)
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
+    const register = () => {
+      void navigator.serviceWorker.register("/sw.js").catch(() => {
+        // لا نوقف التطبيق إذا فشل التسجيل
+      });
+    };
+    if (document.readyState === "complete") register();
+    else window.addEventListener("load", register, { once: true });
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <CartProvider>
