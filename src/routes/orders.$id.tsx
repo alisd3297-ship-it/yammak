@@ -46,9 +46,13 @@ function OrderTrackPage() {
   const qc = useQueryClient();
   const setStatus = useServerFn(changeOrderStatus);
 
-  const { data } = useQuery({
+  const { data, isError, refetch } = useQuery({
     queryKey: ["order", id],
-    refetchInterval: 15_000,
+    // يتوقف الاستطلاع نهائياً عند الحالات النهائية (تسليم/إكمال/إلغاء)
+    refetchInterval: (query) => {
+      const s = query.state.data?.order?.status as OrderStatus | undefined;
+      return s && TERMINAL.includes(s) ? false : 15_000;
+    },
     queryFn: async () => {
       const [order, items, stops] = await Promise.all([
         supabase

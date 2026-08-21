@@ -79,7 +79,8 @@ function TaxiPage() {
   const { data: activeTrip } = useQuery({
     queryKey: ["my-active-trip", account?.userId],
     enabled: !!account?.userId,
-    refetchInterval: 8_000,
+    // الاستعلام يجلب الرحلات المفتوحة فقط، فيتوقف الاستطلاع عند انتهاء الرحلة
+    refetchInterval: (query) => (query.state.data ? 8_000 : 20_000),
     queryFn: async () => {
       const { data } = await supabase
         .from("trips")

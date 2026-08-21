@@ -36,7 +36,11 @@ export function PaymentPanel({
   const { data: payment } = useQuery({
     queryKey: ["payment", subjectType, subjectId],
     queryFn: () => fetchPayment({ data: { subjectType, subjectId } }),
-    refetchInterval: 20_000,
+    // إيقاف الاستطلاع بعد وصول الدفع لحالة نهائية
+    refetchInterval: (query) => {
+      const st = query.state.data?.status as string | undefined;
+      return st && ["succeeded", "failed", "cancelled", "refunded"].includes(st) ? false : 20_000;
+    },
   });
 
   const refresh = () => qc.invalidateQueries({ queryKey: ["payment", subjectType, subjectId] });
