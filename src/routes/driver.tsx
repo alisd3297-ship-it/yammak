@@ -137,16 +137,25 @@ function DriverDashboard() {
   // بث موقع المندوب أثناء التوفر
   useEffect(() => {
     if (!account?.userId || !worker?.is_available || !navigator.geolocation) return;
+    let warned = false;
     const push = () =>
-      navigator.geolocation.getCurrentPosition((pos) => {
-        void supabase.from("worker_locations").upsert({
-          user_id: account.userId!,
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-          is_online: true,
-          updated_at: new Date().toISOString(),
-        });
-      });
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          void supabase.from("worker_locations").upsert({
+            user_id: account.userId!,
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+            is_online: true,
+            updated_at: new Date().toISOString(),
+          });
+        },
+        () => {
+          if (warned) return;
+          warned = true;
+          toast.error("تعذر قراءة موقعك، فعّل صلاحية الموقع حتى تصلك العروض القريبة");
+        },
+        { enableHighAccuracy: true, timeout: 15_000, maximumAge: 30_000 },
+      );
     push();
     const timer = setInterval(push, 30_000);
     return () => clearInterval(timer);
