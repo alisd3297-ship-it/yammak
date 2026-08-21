@@ -235,7 +235,7 @@ function OrderTrackPage() {
                   الموقع الحالي: {driverLoc.lat.toFixed(4)}، {driverLoc.lng.toFixed(4)}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  آخر تحديث: {new Date(driverLoc.updated_at).toLocaleTimeString("ar-IQ")}
+                  آخر تحديث: {new Date(driverLoc.updated_at).toLocaleTimeString("ar-IQ-u-nu-latn")}
                 </p>
                 <a
                   className="mt-2 inline-block text-xs font-semibold text-primary"
@@ -298,7 +298,7 @@ function OrderTrackPage() {
             )}
             {order?.scheduled_at && (
               <p className="mt-1 text-xs text-muted-foreground">
-                الموعد: {new Date(order.scheduled_at).toLocaleString("ar-IQ")}
+                الموعد: {new Date(order.scheduled_at).toLocaleString("ar-IQ-u-nu-latn")}
               </p>
             )}
             {order?.notes && (

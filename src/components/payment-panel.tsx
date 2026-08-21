@@ -98,7 +98,7 @@ export function PaymentPanel({
               {PAYMENT_STATUS_LABELS[payment.status]}
             </span>
             <span className="text-xs text-muted-foreground">
-              {new Date(payment.createdAt).toLocaleString("ar-IQ")}
+              {new Date(payment.createdAt).toLocaleString("ar-IQ-u-nu-latn")}
             </span>
           </div>
           {payment.refundedAmount > 0 && (

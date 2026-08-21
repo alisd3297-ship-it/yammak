@@ -70,7 +70,7 @@ export function ProviderServiceRequests({ providerId }: { providerId: string }) 
             <p className="mt-1 text-xs text-muted-foreground">العنوان: {r.address_text}</p>
             {r.scheduled_at && (
               <p className="text-xs text-muted-foreground">
-                الموعد: {new Date(r.scheduled_at).toLocaleString("ar-IQ")}
+                الموعد: {new Date(r.scheduled_at).toLocaleString("ar-IQ-u-nu-latn")}
               </p>
             )}
             {r.description && <p className="text-xs text-muted-foreground">التفاصيل: {r.description}</p>}

@@ -296,7 +296,7 @@ function DriverDashboard() {
                     )}
                     {ord?.scheduled_at && (
                       <p className="text-xs text-muted-foreground">
-                        الموعد: {new Date(ord.scheduled_at).toLocaleString("ar-IQ")}
+                        الموعد: {new Date(ord.scheduled_at).toLocaleString("ar-IQ-u-nu-latn")}
                       </p>
                     )}
                     {ord?.cargo_description && (

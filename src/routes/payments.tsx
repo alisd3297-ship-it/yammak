@@ -69,7 +69,7 @@ function PaymentsPage() {
                 <StatusDot tone={TONE_MAP[paymentTone(p.status)]} />
                 {PAYMENT_STATUS_LABELS[p.status]}
               </span>
-              <span>{new Date(p.createdAt).toLocaleString("ar-IQ")}</span>
+              <span>{new Date(p.createdAt).toLocaleString("ar-IQ-u-nu-latn")}</span>
             </div>
             {p.refundedAmount > 0 && (
               <p className="mt-2 text-xs text-muted-foreground">

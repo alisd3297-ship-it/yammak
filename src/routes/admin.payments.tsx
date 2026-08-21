@@ -142,7 +142,7 @@ function AdminPaymentsPage() {
                 <StatusDot tone={TONE_MAP[paymentTone(p.status)]} />
                 {PAYMENT_STATUS_LABELS[p.status]}
               </span>
-              <span>{new Date(p.createdAt).toLocaleString("ar-IQ")}</span>
+              <span>{new Date(p.createdAt).toLocaleString("ar-IQ-u-nu-latn")}</span>
             </div>
             <p className="mt-2 break-all text-[11px] text-muted-foreground">
               مرجع المزود: {p.intentId ?? "—"}
