@@ -15,6 +15,7 @@ import {
   type PaymentStatus,
 } from "@/lib/payments";
 import { cn } from "@/lib/utils";
+import { useAccount } from "@/lib/auth";
 
 import { requireStaff } from "@/lib/route-guards";
 
@@ -47,16 +48,21 @@ const FILTERS: (PaymentStatus | "all")[] = [
 ];
 
 function AdminPaymentsPage() {
+  const { data: account, isLoading: accountLoading } = useAccount();
+  const isStaff = (account?.roles ?? []).some((r) =>
+    ["super_admin", "admin", "supervisor"].includes(r),
+  );
   const qc = useQueryClient();
   const list = useServerFn(adminListPayments);
   const refund = useServerFn(refundPayment);
   const [filter, setFilter] = useState<PaymentStatus | "all">("all");
   const [busy, setBusy] = useState<string | null>(null);
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["admin-payments", filter],
+    enabled: isStaff,
     queryFn: () => list({ data: { status: filter } }),
-    retry: false,
+    retry: 1,
   });
 
   const doRefund = async (paymentId: string) => {
@@ -71,6 +77,18 @@ function AdminPaymentsPage() {
       setBusy(null);
     }
   };
+
+  if (!accountLoading && !isStaff)
+    return (
+      <PageShell>
+        <div className="px-5 py-16 text-center">
+          <p className="text-sm text-muted-foreground">هذه الصفحة مخصصة لفريق إدارة يمّك.</p>
+          <Link to="/" className="mt-3 inline-block font-semibold text-primary">
+            رجوع للرئيسية
+          </Link>
+        </div>
+      </PageShell>
+    );
 
   return (
     <PageShell>
@@ -99,9 +117,12 @@ function AdminPaymentsPage() {
         </div>
 
         {error && (
-          <p className="rounded-2xl bg-destructive/10 p-4 text-sm text-destructive">
-            غير مصرح لك بعرض المدفوعات.
-          </p>
+          <div className="rounded-2xl bg-destructive/10 p-4 text-sm text-destructive">
+            <p>تعذر تحميل المدفوعات. تحقق من الاتصال ثم أعد المحاولة.</p>
+            <Button variant="outline" size="sm" className="mt-3" onClick={() => void refetch()}>
+              إعادة المحاولة
+            </Button>
+          </div>
         )}
         {isLoading && <p className="text-sm text-muted-foreground">جاري التحميل…</p>}
         {!isLoading && !error && !data?.length && (
