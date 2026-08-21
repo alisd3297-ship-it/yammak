@@ -120,13 +120,23 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
     return { assignedTo: null, status: "searching_driver", message: "لا يوجد مندوب مناسب حالياً" };
   }
 
-  const chosen = candidates[0]!;
-  await supabaseAdmin.from("delivery_offers").insert({
-    order_id: order.id,
-    driver_id: chosen.driverId,
-    distance_km: Number(chosen.km.toFixed(2)),
-    expires_at: new Date(Date.now() + timeout * 1000).toISOString(),
-  });
+  // إرسال العرض بشكل ذري داخل قاعدة البيانات: قفل على الطلب والسائق مع إعادة فحص
+  // العروض القائمة وسعة السائق، فلا يمكن إرسال عرضين للطلب نفسه أو تجاوز السعة عند التزامن.
+  let chosen: { driverId: string; km: number } | null = null;
+  for (const candidate of candidates.slice(0, 5)) {
+    const { data: ok } = await supabaseAdmin.rpc("try_offer_delivery", {
+      _order_id: order.id,
+      _driver_id: candidate.driverId,
+      _distance_km: Number(candidate.km.toFixed(2)),
+      _timeout_seconds: timeout,
+    });
+    if (ok === true) {
+      chosen = candidate;
+      break;
+    }
+  }
+  if (!chosen)
+    return { assignedTo: null, status: "searching_driver", message: "لا يوجد مندوب مناسب حالياً" };
   await supabaseAdmin.rpc("system_change_order_status", {
     _order_id: order.id,
     _new_status: "offered_to_driver",

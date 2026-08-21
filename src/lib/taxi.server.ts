@@ -106,13 +106,22 @@ export async function runTripDispatch(tripId: string): Promise<TripDispatchResul
   if (!candidates.length)
     return { assignedTo: null, status: "searching_driver", message: "ماكو سائق متاح حالياً، نكمل البحث" };
 
-  const chosen = candidates[0]!;
-  await supabaseAdmin.from("trip_offers").insert({
-    trip_id: trip.id,
-    driver_id: chosen.driverId,
-    distance_km: Number(chosen.km.toFixed(2)),
-    expires_at: new Date(Date.now() + timeout * 1000).toISOString(),
-  });
+  // إرسال العرض ذرياً داخل قاعدة البيانات لمنع عرضين على نفس الرحلة أو نفس السائق
+  let chosen: { driverId: string; km: number } | null = null;
+  for (const candidate of candidates.slice(0, 5)) {
+    const { data: ok } = await supabaseAdmin.rpc("try_offer_trip", {
+      _trip_id: trip.id,
+      _driver_id: candidate.driverId,
+      _distance_km: Number(candidate.km.toFixed(2)),
+      _timeout_seconds: timeout,
+    });
+    if (ok === true) {
+      chosen = candidate;
+      break;
+    }
+  }
+  if (!chosen)
+    return { assignedTo: null, status: "searching_driver", message: "ماكو سائق متاح حالياً، نكمل البحث" };
   await supabaseAdmin.from("notifications").insert({
     user_id: chosen.driverId,
     title: "طلب رحلة جديد",
