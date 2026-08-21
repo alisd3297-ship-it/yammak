@@ -19,7 +19,11 @@ import {
 import { changeTripStatus, redispatchTrip, setDriverApproval } from "@/lib/taxi.functions";
 import { vehicleLabel } from "@/lib/vehicles";
 
+import { requireStaff } from "@/lib/route-guards";
+
 export const Route = createFileRoute("/admin/drivers")({
+  ssr: false,
+  beforeLoad: requireStaff,
   head: () => ({
     meta: [
       { title: "إدارة السائقين والرحلات | يمّك" },

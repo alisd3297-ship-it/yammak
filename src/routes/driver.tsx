@@ -23,7 +23,11 @@ import {
 } from "@/lib/taxi";
 import { ORDER_STATUS_LABELS, formatIQD, isCourierType, statusTone, type OrderStatus } from "@/lib/orders";
 
+import { requireSignedIn } from "@/lib/route-guards";
+
 export const Route = createFileRoute("/driver")({
+  ssr: false,
+  beforeLoad: requireSignedIn,
   head: () => ({
     meta: [
       { title: "لوحة المندوب | يمّك" },

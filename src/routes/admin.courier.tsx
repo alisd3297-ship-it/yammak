@@ -13,7 +13,11 @@ import { ORDER_STATUS_LABELS, formatIQD, statusTone, type OrderStatus } from "@/
 import { vehicleLabel } from "@/lib/vehicles";
 import { cn } from "@/lib/utils";
 
+import { requireStaff } from "@/lib/route-guards";
+
 export const Route = createFileRoute("/admin/courier")({
+  ssr: false,
+  beforeLoad: requireStaff,
   head: () => ({
     meta: [
       { title: "إدارة طلبات المندوب | يمّك" },

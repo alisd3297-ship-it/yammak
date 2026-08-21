@@ -9,7 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+import { requireSignedIn } from "@/lib/route-guards";
+
 export const Route = createFileRoute("/setup-admin")({
+  ssr: false,
+  beforeLoad: requireSignedIn,
   head: () => ({
     meta: [
       { title: "إعداد المدير العام | يمّك" },

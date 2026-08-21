@@ -16,7 +16,11 @@ import {
 } from "@/lib/payments";
 import { cn } from "@/lib/utils";
 
+import { requireStaff } from "@/lib/route-guards";
+
 export const Route = createFileRoute("/admin/payments")({
+  ssr: false,
+  beforeLoad: requireStaff,
   head: () => ({
     meta: [
       { title: "إدارة المدفوعات | يمّك" },
