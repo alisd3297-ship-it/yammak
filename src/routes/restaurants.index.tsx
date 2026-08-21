@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search, Star, Clock, ArrowRight } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useCachedQuery } from "@/lib/offline-cache";
 import { BottomNav, OfflineBanner, PageShell } from "@/components/app-shell";
