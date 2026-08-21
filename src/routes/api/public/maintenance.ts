@@ -2,28 +2,54 @@ import { createFileRoute } from "@tanstack/react-router";
 
 /**
  * نقطة صيانة دورية يستدعيها المجدول الداخلي (pg_cron + pg_net) كل دقيقة.
- * القبول: ترويسة apikey مطابقة للمفتاح العام، أو x-cron-secret مطابقة لسر LOVABLE_CRON_SECRET.
- * المهام: إنهاء العروض المنتهية، إعادة توزيع الطلبات العالقة، إكمال الطلبات المسلَّمة.
- * الحماية من التكرار/التزامن تتم عبر claim_maintenance_slot في قاعدة البيانات.
+ * التفويض: ترويسة x-cron-secret فقط، تُطابَق مع سر الخادم LOVABLE_CRON_SECRET
+ * أو السر الداخلي المخزّن في قاعدة البيانات (internal_secrets) بمقارنة ثابتة الزمن.
+ * لم يعد المفتاح العام (publishable key) مقبولاً للتفويض إطلاقاً.
  */
-function authorize(request: Request): boolean {
-  const apiKey = process.env["SUPABASE_PUBLISHABLE_KEY"];
-  const providedKey = request.headers.get("apikey");
-  if (apiKey && providedKey && providedKey === apiKey) return true;
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i += 1) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
 
-  const secret = process.env["LOVABLE_CRON_SECRET"];
+async function authorize(request: Request): Promise<boolean> {
   const provided = request.headers.get("x-cron-secret");
-  return Boolean(secret && provided && provided === secret);
+  if (!provided) return false;
+
+  const envSecret = process.env["LOVABLE_CRON_SECRET"];
+  if (envSecret && timingSafeEqual(provided, envSecret)) return true;
+
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("internal_secrets")
+      .select("value")
+      .eq("name", "maintenance_cron_secret")
+      .maybeSingle();
+    const dbSecret = data?.value;
+    return Boolean(dbSecret && timingSafeEqual(provided, dbSecret));
+  } catch {
+    return false;
+  }
 }
 
 export const Route = createFileRoute("/api/public/maintenance")({
   server: {
     handlers: {
+      // فحص صحة بسيط لا يكشف أي بيانات
+      GET: async () =>
+        Response.json({ ok: true, service: "maintenance" }, { headers: { "cache-control": "no-store" } }),
       POST: async ({ request }) => {
-        if (!authorize(request)) return new Response("Unauthorized", { status: 401 });
-        const { runMaintenance } = await import("@/lib/dispatch.server");
-        const result = await runMaintenance("pg_cron_http", 30);
-        return Response.json(result, { headers: { "cache-control": "no-store" } });
+        if (!(await authorize(request)))
+          return new Response("Unauthorized", { status: 401, headers: { "cache-control": "no-store" } });
+        try {
+          const { runMaintenance } = await import("@/lib/dispatch.server");
+          const result = await runMaintenance("pg_cron_http", 30);
+          return Response.json(result, { headers: { "cache-control": "no-store" } });
+        } catch {
+          return new Response("maintenance_failed", { status: 500 });
+        }
       },
     },
   },
