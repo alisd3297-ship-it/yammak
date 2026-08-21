@@ -19,7 +19,11 @@ import {
 import { changeTripStatus, redispatchTrip, setDriverApproval } from "@/lib/taxi.functions";
 import { vehicleLabel } from "@/lib/vehicles";
 
+import { requireStaff } from "@/lib/route-guards";
+
 export const Route = createFileRoute("/admin/drivers")({
+  ssr: false,
+  beforeLoad: requireStaff,
   head: () => ({
     meta: [
       { title: "إدارة السائقين والرحلات | يمّك" },
@@ -212,7 +216,7 @@ function AdminDriversPage() {
                 <p className="mt-2 text-xs text-muted-foreground">من: {t.pickup_text}</p>
                 <p className="text-xs text-muted-foreground">إلى: {t.destination_text}</p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {Number(t.distance_km).toFixed(1)} كم · {new Date(t.created_at).toLocaleString("ar-IQ")}
+                  {Number(t.distance_km).toFixed(1)} كم · {new Date(t.created_at).toLocaleString("ar-IQ-u-nu-latn")}
                 </p>
                 {OPEN_TRIP_STATUSES.includes(t.status as TripStatus) && (
                   <div className="mt-3 flex gap-2">

@@ -36,7 +36,11 @@ export function PaymentPanel({
   const { data: payment } = useQuery({
     queryKey: ["payment", subjectType, subjectId],
     queryFn: () => fetchPayment({ data: { subjectType, subjectId } }),
-    refetchInterval: 20_000,
+    // إيقاف الاستطلاع بعد وصول الدفع لحالة نهائية
+    refetchInterval: (query) => {
+      const st = query.state.data?.status as string | undefined;
+      return st && ["succeeded", "failed", "cancelled", "refunded"].includes(st) ? false : 20_000;
+    },
   });
 
   const refresh = () => qc.invalidateQueries({ queryKey: ["payment", subjectType, subjectId] });
@@ -94,7 +98,7 @@ export function PaymentPanel({
               {PAYMENT_STATUS_LABELS[payment.status]}
             </span>
             <span className="text-xs text-muted-foreground">
-              {new Date(payment.createdAt).toLocaleString("ar-IQ")}
+              {new Date(payment.createdAt).toLocaleString("ar-IQ-u-nu-latn")}
             </span>
           </div>
           {payment.refundedAmount > 0 && (

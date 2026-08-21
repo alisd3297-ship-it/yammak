@@ -16,7 +16,11 @@ import { dispatchOrder } from "@/lib/dispatch.functions";
 import { changeOrderStatus } from "@/lib/orders.functions";
 import { ORDER_STATUS_LABELS, formatIQD, statusTone, type OrderStatus } from "@/lib/orders";
 
+import { requireSignedIn } from "@/lib/route-guards";
+
 export const Route = createFileRoute("/provider")({
+  ssr: false,
+  beforeLoad: requireSignedIn,
   head: () => ({
     meta: [
       { title: "لوحة مقدم الخدمة | يمّك" },

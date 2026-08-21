@@ -17,7 +17,11 @@ import {
 } from "@/lib/services";
 import { cn } from "@/lib/utils";
 
+import { requireStaff } from "@/lib/route-guards";
+
 export const Route = createFileRoute("/admin/providers")({
+  ssr: false,
+  beforeLoad: requireStaff,
   head: () => ({
     meta: [
       { title: "اعتماد مقدمي الخدمة | يمّك" },

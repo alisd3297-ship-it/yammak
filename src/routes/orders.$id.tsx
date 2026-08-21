@@ -46,9 +46,13 @@ function OrderTrackPage() {
   const qc = useQueryClient();
   const setStatus = useServerFn(changeOrderStatus);
 
-  const { data } = useQuery({
+  const { data, isError, refetch } = useQuery({
     queryKey: ["order", id],
-    refetchInterval: 15_000,
+    // يتوقف الاستطلاع نهائياً عند الحالات النهائية (تسليم/إكمال/إلغاء)
+    refetchInterval: (query) => {
+      const s = query.state.data?.order?.status as OrderStatus | undefined;
+      return s && TERMINAL.includes(s) ? false : 15_000;
+    },
     queryFn: async () => {
       const [order, items, stops] = await Promise.all([
         supabase
@@ -231,7 +235,7 @@ function OrderTrackPage() {
                   الموقع الحالي: {driverLoc.lat.toFixed(4)}، {driverLoc.lng.toFixed(4)}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  آخر تحديث: {new Date(driverLoc.updated_at).toLocaleTimeString("ar-IQ")}
+                  آخر تحديث: {new Date(driverLoc.updated_at).toLocaleTimeString("ar-IQ-u-nu-latn")}
                 </p>
                 <a
                   className="mt-2 inline-block text-xs font-semibold text-primary"
@@ -294,7 +298,7 @@ function OrderTrackPage() {
             )}
             {order?.scheduled_at && (
               <p className="mt-1 text-xs text-muted-foreground">
-                الموعد: {new Date(order.scheduled_at).toLocaleString("ar-IQ")}
+                الموعد: {new Date(order.scheduled_at).toLocaleString("ar-IQ-u-nu-latn")}
               </p>
             )}
             {order?.notes && (

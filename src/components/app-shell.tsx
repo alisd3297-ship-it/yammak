@@ -1,9 +1,10 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Home, ClipboardList, ShoppingCart, User, WifiOff, ShieldCheck } from "lucide-react";
+import { Home, ClipboardList, ShoppingCart, User, WifiOff, ShieldCheck, Bell } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { superAdminExists } from "@/lib/admin-setup.functions";
 import type { ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
 import { useOnline } from "@/lib/offline-cache";
 import { cn } from "@/lib/utils";
@@ -15,6 +16,9 @@ export function BrandHeader({ subtitle }: { subtitle?: string }) {
       <div className="relative flex min-h-11 flex-col items-center justify-center text-center">
         <div className="absolute inset-y-0 start-0 flex items-center">
           <AccountButton />
+        </div>
+        <div className="absolute inset-y-0 end-0 flex items-center">
+          <NotificationsButton />
         </div>
         <h1 className="text-3xl font-black leading-none tracking-tight">يمّك</h1>
         <p className="mt-1 max-w-[62%] text-sm/6 opacity-90">{subtitle ?? "ويّانه كلشي صار يمّك"}</p>
@@ -37,6 +41,40 @@ function AccountButton() {
     >
       <User className="size-5" />
     </button>
+  );
+}
+
+function NotificationsButton() {
+  const { data: account } = useAccount();
+  const { data: unread } = useQuery({
+    queryKey: ["notifications-unread", account?.userId],
+    enabled: !!account?.userId,
+    refetchInterval: 60_000,
+    staleTime: 30_000,
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("is_read", false);
+      return count ?? 0;
+    },
+  });
+
+  if (!account?.userId) return null;
+
+  return (
+    <Link
+      to="/notifications"
+      aria-label="الإشعارات"
+      className="relative flex size-11 items-center justify-center rounded-2xl bg-primary-foreground/15 backdrop-blur transition hover:bg-primary-foreground/25"
+    >
+      <Bell className="size-5" />
+      {unread ? (
+        <span className="absolute -top-1 -end-1 min-w-5 rounded-full bg-destructive px-1 text-[10px] font-bold leading-5 text-destructive-foreground">
+          {unread > 9 ? "9+" : unread}
+        </span>
+      ) : null}
+    </Link>
   );
 }
 

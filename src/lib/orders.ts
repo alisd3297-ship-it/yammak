@@ -53,7 +53,7 @@ export function statusTone(status: OrderStatus): "muted" | "warning" | "success"
 }
 
 export function formatIQD(value: number): string {
-  return new Intl.NumberFormat("ar-IQ", { maximumFractionDigits: 0 }).format(value) + " د.ع";
+  return new Intl.NumberFormat("ar-IQ-u-nu-latn", { maximumFractionDigits: 0 }).format(value) + " د.ع";
 }
 
 export function distanceKm(

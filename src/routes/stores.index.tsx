@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search, Star, Store as StoreIcon, ArrowRight } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useCachedQuery } from "@/lib/offline-cache";
 import { BottomNav, OfflineBanner, PageShell } from "@/components/app-shell";
@@ -80,8 +81,18 @@ function StoresPage() {
 
   function pickNearest() {
     setSort("nearest");
-    navigator.geolocation?.getCurrentPosition((pos) =>
-      setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+    if (!navigator.geolocation) {
+      toast.error("خدمة الموقع غير متاحة على هذا الجهاز");
+      setSort("rating");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      () => {
+        toast.error("تعذر تحديد موقعك، فعّل صلاحية الموقع وحاول مجدداً");
+        setSort("rating");
+      },
+      { enableHighAccuracy: false, timeout: 10_000, maximumAge: 60_000 },
     );
   }
 

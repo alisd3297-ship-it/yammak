@@ -14,6 +14,8 @@ import { useAccount } from "@/lib/auth";
 import { createAd } from "@/lib/ads.functions";
 import { AD_IMAGES_MAX, adImageUrl, type AdCategory } from "@/lib/ads";
 
+import { randomId } from "@/lib/utils";
+
 export const Route = createFileRoute("/ads/new")({
   head: () => ({
     meta: [
@@ -72,7 +74,7 @@ function NewAdPage() {
         continue;
       }
       const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-      const path = `${account.userId}/${crypto.randomUUID()}.${ext}`;
+      const path = `${account.userId}/${randomId()}.${ext}`;
       const { error } = await supabase.storage.from("ad-images").upload(path, file, { contentType: file.type });
       if (error) {
         toast.error("تعذر رفع الصورة");

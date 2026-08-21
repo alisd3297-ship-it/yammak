@@ -58,7 +58,7 @@ export function adImageUrl(path: string): string {
 
 export function formatAdPrice(price: number | null): string {
   if (price == null) return "السعر عند التواصل";
-  return `${new Intl.NumberFormat("ar-IQ").format(price)} د.ع`;
+  return `${new Intl.NumberFormat("ar-IQ-u-nu-latn").format(price)} د.ع`;
 }
 
 export const AD_IMAGES_MAX = 5;

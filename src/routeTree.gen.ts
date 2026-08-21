@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CourierRouteImport } from './routes/courier'
 import { Route as DriverRouteImport } from './routes/driver'
+import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PaymentsRouteImport } from './routes/payments'
 import { Route as ProviderRouteImport } from './routes/provider'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -67,6 +68,11 @@ const CourierRoute = CourierRouteImport.update({
 const DriverRoute = DriverRouteImport.update({
   id: '/driver',
   path: '/driver',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PaymentsRoute = PaymentsRouteImport.update({
@@ -221,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
   '/driver': typeof DriverRoute
+  '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -257,6 +264,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
   '/driver': typeof DriverRoute
+  '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -294,6 +302,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
   '/driver': typeof DriverRoute
+  '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -332,6 +341,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/courier'
     | '/driver'
+    | '/notifications'
     | '/payments'
     | '/provider'
     | '/reset-password'
@@ -368,6 +378,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/courier'
     | '/driver'
+    | '/notifications'
     | '/payments'
     | '/provider'
     | '/reset-password'
@@ -404,6 +415,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/courier'
     | '/driver'
+    | '/notifications'
     | '/payments'
     | '/provider'
     | '/reset-password'
@@ -441,6 +453,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   CourierRoute: typeof CourierRoute
   DriverRoute: typeof DriverRoute
+  NotificationsRoute: typeof NotificationsRoute
   PaymentsRoute: typeof PaymentsRoute
   ProviderRoute: typeof ProviderRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -507,6 +520,13 @@ declare module '@tanstack/react-router' {
       path: '/driver'
       fullPath: '/driver'
       preLoaderRoute: typeof DriverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/payments': {
@@ -721,6 +741,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   CourierRoute: CourierRoute,
   DriverRoute: DriverRoute,
+  NotificationsRoute: NotificationsRoute,
   PaymentsRoute: PaymentsRoute,
   ProviderRoute: ProviderRoute,
   ResetPasswordRoute: ResetPasswordRoute,

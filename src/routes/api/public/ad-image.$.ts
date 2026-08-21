@@ -6,12 +6,38 @@ import { createFileRoute } from "@tanstack/react-router";
  * - صور الإعلانات قيد المراجعة/المرفوضة/الموقوفة: تتطلب توكن صاحب الإعلان أو فريق الإدارة.
  * لا يُقدَّم أي ملف غير مسجّل ضمن صور إعلان قائم، فلا يمكن استخدام المسار للوصول لملفات أخرى.
  */
+/** حد بسيط للطلبات لكل عنوان IP لمنع الاستنزاف أو التخمين الآلي. */
+const HITS = new Map<string, { count: number; reset: number }>();
+const WINDOW_MS = 60_000;
+const MAX_HITS = 120;
+
+function rateLimited(request: Request): boolean {
+  const ip =
+    request.headers.get("cf-connecting-ip") ??
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    "unknown";
+  const now = Date.now();
+  const entry = HITS.get(ip);
+  if (!entry || entry.reset < now) {
+    HITS.set(ip, { count: 1, reset: now + WINDOW_MS });
+    if (HITS.size > 5000) HITS.clear();
+    return false;
+  }
+  entry.count += 1;
+  return entry.count > MAX_HITS;
+}
+
 export const Route = createFileRoute("/api/public/ad-image/$")({
   server: {
     handlers: {
       GET: async ({ params, request }) => {
+        if (rateLimited(request))
+          return new Response("Too many requests", { status: 429, headers: { "retry-after": "60" } });
+
         const path = decodeURIComponent(params._splat ?? "");
-        if (!path || path.includes("..")) return new Response("Not found", { status: 404 });
+        // مسار داخل مجلد المالك فقط: uuid/filename بدون أي تنقل بين المجلدات
+        if (!path || !/^[0-9a-f-]{36}\/[A-Za-z0-9._-]{1,120}$/i.test(path))
+          return new Response("Not found", { status: 404 });
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 

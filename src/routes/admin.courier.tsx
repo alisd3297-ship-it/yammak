@@ -13,7 +13,11 @@ import { ORDER_STATUS_LABELS, formatIQD, statusTone, type OrderStatus } from "@/
 import { vehicleLabel } from "@/lib/vehicles";
 import { cn } from "@/lib/utils";
 
+import { requireStaff } from "@/lib/route-guards";
+
 export const Route = createFileRoute("/admin/courier")({
+  ssr: false,
+  beforeLoad: requireStaff,
   head: () => ({
     meta: [
       { title: "إدارة طلبات المندوب | يمّك" },
@@ -185,7 +189,7 @@ function AdminCourierPage() {
               {o.vehicle_type && (
                 <p className="mt-1 text-xs font-semibold text-primary">
                   المركبة: {vehicleLabel(o.vehicle_type)}
-                  {o.scheduled_at ? ` · موعد ${new Date(o.scheduled_at).toLocaleString("ar-IQ")}` : ""}
+                  {o.scheduled_at ? ` · موعد ${new Date(o.scheduled_at).toLocaleString("ar-IQ-u-nu-latn")}` : ""}
                 </p>
               )}
               {!!(o.order_stops ?? []).length && (

@@ -354,6 +354,24 @@ export type Database = {
           },
         ]
       }
+      internal_secrets: {
+        Row: {
+          name: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          name: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          name?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       maintenance_locks: {
         Row: {
           last_started_at: string
@@ -2027,6 +2045,7 @@ export type Database = {
         }
       }
       auto_complete_delivered_orders: { Args: never; Returns: number }
+      call_maintenance_endpoint: { Args: never; Returns: undefined }
       can_see_order: {
         Args: { _order_id: string; _user_id: string }
         Returns: boolean
@@ -2900,6 +2919,24 @@ export type Database = {
       trip_actor: {
         Args: { _trip_id: string; _user_id: string }
         Returns: string
+      }
+      try_offer_delivery: {
+        Args: {
+          _distance_km: number
+          _driver_id: string
+          _order_id: string
+          _timeout_seconds: number
+        }
+        Returns: boolean
+      }
+      try_offer_trip: {
+        Args: {
+          _distance_km: number
+          _driver_id: string
+          _timeout_seconds: number
+          _trip_id: string
+        }
+        Returns: boolean
       }
     }
     Enums: {

@@ -15,7 +15,11 @@ import { AdImage } from "@/components/ad-image";
 import { useAccount } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
+import { requireStaff } from "@/lib/route-guards";
+
 export const Route = createFileRoute("/admin/ads")({
+  ssr: false,
+  beforeLoad: requireStaff,
   head: () => ({
     meta: [
       { title: "إدارة الإعلانات | يمّك" },
