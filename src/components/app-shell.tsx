@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Home, ClipboardList, ShoppingCart, User, WifiOff, ShieldCheck, Bell, LogOut } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { superAdminExists } from "@/lib/admin-setup.functions";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
 import { useOnline } from "@/lib/offline-cache";
