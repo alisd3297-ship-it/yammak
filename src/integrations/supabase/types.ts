@@ -1144,6 +1144,7 @@ export type Database = {
           category_id: string | null
           cost_amount: number | null
           created_at: string
+          currency: string
           description: string | null
           estimated_minutes: number | null
           id: string
@@ -1159,6 +1160,7 @@ export type Database = {
           category_id?: string | null
           cost_amount?: number | null
           created_at?: string
+          currency?: string
           description?: string | null
           estimated_minutes?: number | null
           id?: string
@@ -1174,6 +1176,7 @@ export type Database = {
           category_id?: string | null
           cost_amount?: number | null
           created_at?: string
+          currency?: string
           description?: string | null
           estimated_minutes?: number | null
           id?: string
@@ -1433,7 +1436,9 @@ export type Database = {
           city_id: string | null
           code: string
           completed_at: string | null
+          cost_amount: number | null
           created_at: string
+          currency: string
           customer_id: string
           description: string | null
           id: string
@@ -1454,7 +1459,9 @@ export type Database = {
           city_id?: string | null
           code?: string
           completed_at?: string | null
+          cost_amount?: number | null
           created_at?: string
+          currency?: string
           customer_id: string
           description?: string | null
           id?: string
@@ -1475,7 +1482,9 @@ export type Database = {
           city_id?: string | null
           code?: string
           completed_at?: string | null
+          cost_amount?: number | null
           created_at?: string
+          currency?: string
           customer_id?: string
           description?: string | null
           id?: string
@@ -2251,7 +2260,9 @@ export type Database = {
           city_id: string | null
           code: string
           completed_at: string | null
+          cost_amount: number | null
           created_at: string
+          currency: string
           customer_id: string
           description: string | null
           id: string
@@ -2567,7 +2578,9 @@ export type Database = {
           city_id: string | null
           code: string
           completed_at: string | null
+          cost_amount: number | null
           created_at: string
+          currency: string
           customer_id: string
           description: string | null
           id: string
