@@ -67,10 +67,13 @@ function AccountButton() {
 
 function NotificationsButton() {
   const { data: account } = useAccount();
+  const qc = useQueryClient();
+  const userId = account?.userId ?? null;
   const { data: unread } = useQuery({
-    queryKey: ["notifications-unread", account?.userId],
-    enabled: !!account?.userId,
-    refetchInterval: 60_000,
+    queryKey: ["notifications-unread", userId],
+    enabled: !!userId,
+    // realtime هو المصدر الأساسي، والاستطلاع البطيء احتياطي فقط
+    refetchInterval: 120_000,
     staleTime: 30_000,
     queryFn: async () => {
       const { count } = await supabase
@@ -81,7 +84,26 @@ function NotificationsButton() {
     },
   });
 
-  if (!account?.userId) return null;
+  // اشتراك لحظي واحد فقط على إشعارات المستخدم الحالي
+  useEffect(() => {
+    if (!userId) return;
+    const channel = supabase
+      .channel(`notifications-${userId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
+        () => {
+          qc.invalidateQueries({ queryKey: ["notifications-unread", userId] });
+          qc.invalidateQueries({ queryKey: ["notifications"] });
+        },
+      )
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [userId, qc]);
+
+  if (!userId) return null;
 
   return (
     <Link
