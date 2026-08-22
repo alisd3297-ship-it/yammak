@@ -14,6 +14,7 @@ import { useAccount } from "@/lib/auth";
 import { createAd } from "@/lib/ads.functions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AD_CURRENCIES, AD_IMAGES_MAX, IRAQ_GOVERNORATES, adImageUrl, type AdCategory, type AdCurrency } from "@/lib/ads";
+import { OPERATING_ADDRESS_PREFIX, OPERATING_LOCATION, OPERATING_LOCATION_LABEL } from "@/lib/location";
 
 import { randomId } from "@/lib/utils";
 
@@ -41,7 +42,7 @@ function NewAdPage() {
   const [body, setBody] = useState("");
   const [price, setPrice] = useState("");
   const [currency, setCurrency] = useState<AdCurrency>("IQD");
-  const [governorate, setGovernorate] = useState("");
+  const [governorate, setGovernorate] = useState<string>(OPERATING_LOCATION.governorate);
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [images, setImages] = useState<string[]>([]);
@@ -190,7 +191,19 @@ function NewAdPage() {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="ad-governorate">المحافظة</Label>
+          <div className="flex items-center justify-between gap-2">
+            <Label htmlFor="ad-governorate">المحافظة</Label>
+            <button
+              type="button"
+              onClick={() => {
+                setGovernorate(OPERATING_LOCATION.governorate);
+                if (!address.trim()) setAddress(OPERATING_ADDRESS_PREFIX);
+              }}
+              className="text-[11px] font-semibold text-primary"
+            >
+              الموقع الحالي: {OPERATING_LOCATION_LABEL}
+            </button>
+          </div>
           <Select value={governorate} onValueChange={setGovernorate}>
             <SelectTrigger id="ad-governorate" dir="rtl">
               <SelectValue placeholder="اختر المحافظة" />

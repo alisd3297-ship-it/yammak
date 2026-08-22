@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
+import { OPERATING_ADDRESS_PREFIX } from "@/lib/location";
 import { ArrowRight, LocateFixed, Star, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,7 +36,7 @@ function ServiceProviderPage() {
   const submitRequest = useServerFn(createServiceRequest);
 
   const [selected, setSelected] = useState<string | null>(null);
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState(OPERATING_ADDRESS_PREFIX);
   const [description, setDescription] = useState("");
   const [scheduledAt, setScheduledAt] = useState("");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
