@@ -14,9 +14,11 @@ export function BrandHeader({ subtitle }: { subtitle?: string }) {
   return (
     <header className="brand-gradient rounded-b-3xl px-5 pb-6 pt-7 text-primary-foreground shadow-card">
       <div className="relative flex min-h-11 flex-col items-center justify-center text-center">
-        <div className="absolute inset-y-0 start-0 flex items-center">
+        <div className="absolute inset-y-0 start-0 flex items-center gap-1">
           <AccountButton />
+          <SignOutButton />
         </div>
+
         <div className="absolute inset-y-0 end-0 flex items-center">
           <NotificationsButton />
         </div>
