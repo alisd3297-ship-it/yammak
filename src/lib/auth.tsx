@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -66,14 +67,38 @@ export function useAccount() {
   return useQuery({ queryKey: ["account"], queryFn: loadAccount, staleTime: 30_000 });
 }
 
+export function isStaffAccount(account: AccountContext | undefined): boolean {
+  const roles = account?.roles ?? [];
+  return roles.includes("super_admin") || roles.includes("admin") || roles.includes("supervisor");
+}
+
+/** الواجهة الافتراضية لكل دور: إدارة، مقدم خدمة، مندوب، أو زبون. */
 export function homeRouteForAccount(account: AccountContext | undefined): string {
   if (!account?.userId) return "/";
   const roles = account.roles;
-  if (roles.includes("super_admin") || roles.includes("admin") || roles.includes("supervisor"))
-    return "/admin/providers";
-  if (account.provider) return "/provider";
-  if (account.worker) return "/driver";
+  if (isStaffAccount(account)) return "/admin/providers";
+  if (account.provider || roles.includes("provider")) return "/provider";
+  if (account.worker || roles.includes("worker")) return "/driver";
   return "/";
+}
+
+/**
+ * توجيه تلقائي لأصحاب الأدوار الخاصة عند فتح واجهة الزبون،
+ * مرة واحدة فقط لكل تشغيل للتطبيق حتى يبقى بإمكانهم التصفح كزبائن.
+ */
+export function useRoleHomeRedirect() {
+  const { data: account } = useAccount();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!account?.userId) return;
+    const target = homeRouteForAccount(account);
+    if (target === "/") return;
+    if (typeof sessionStorage === "undefined") return;
+    if (sessionStorage.getItem("yammak:role-routed") === account.userId) return;
+    sessionStorage.setItem("yammak:role-routed", account.userId);
+    navigate({ to: target, replace: true });
+  }, [account, navigate]);
 }
 
 export const ROLE_LABELS: Record<AppRole, string> = {
