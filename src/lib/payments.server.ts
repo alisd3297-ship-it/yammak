@@ -183,3 +183,92 @@ export async function verifyStripeSignature(args: {
   }
   return diff === 0;
 }
+
+/**
+ * تنفيذ طلبات الاسترداد المعلّقة فعلياً لدى مزود الدفع.
+ * idempotent: مفتاح Stripe ثابت لكل (عملية/مبلغ)، والنتيجة تُسجَّل في قاعدة البيانات
+ * بحالة ومرجع وسبب فشل واضح. لا يُحتسب المبلغ مُسترداً إلا بعد نجاح فعلي.
+ */
+export async function processPendingRefunds(paymentIds?: string[]): Promise<{
+  processed: number;
+  succeeded: number;
+  failed: number;
+  skipped: number;
+}> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+  let query = supabaseAdmin
+    .from("payments")
+    .select("id, amount, currency, provider, provider_intent_id, refunded_amount, refund_status, refund_requested_amount")
+    .eq("refund_status", "pending")
+    .limit(25);
+  if (paymentIds?.length) query = query.in("id", paymentIds);
+
+  const { data: rows } = await query;
+  const list = rows ?? [];
+  const out = { processed: 0, succeeded: 0, failed: 0, skipped: 0 };
+  if (!list.length) return out;
+
+  if (!paymentsConfigured()) {
+    for (const row of list) {
+      await supabaseAdmin.rpc("settle_payment_refund", {
+        _payment_id: row.id,
+        _status: "manual_required",
+        _error: "payments_not_configured",
+      } as never);
+      out.skipped += 1;
+    }
+    return out;
+  }
+
+  for (const row of list) {
+    out.processed += 1;
+    const remaining = Number(row.amount) - Number(row.refunded_amount ?? 0);
+    const amount = Math.min(Number(row.refund_requested_amount ?? remaining) || remaining, remaining);
+
+    if (!row.provider_intent_id || amount <= 0) {
+      await supabaseAdmin.rpc("settle_payment_refund", {
+        _payment_id: row.id,
+        _status: "manual_required",
+        _error: "provider_not_refundable",
+      } as never);
+      out.skipped += 1;
+      continue;
+    }
+
+    try {
+      await supabaseAdmin.rpc("settle_payment_refund", {
+        _payment_id: row.id,
+        _status: "processing",
+      } as never);
+
+      const refund = await refundProviderIntent({
+        intentId: row.provider_intent_id,
+        amount,
+        currency: row.currency,
+        idempotencyKey: `refund:${row.id}:${amount}`,
+        reason: "order_cancelled",
+      });
+
+      const ok = refund.status === "succeeded" || refund.status === "pending";
+      await supabaseAdmin.rpc("settle_payment_refund", {
+        _payment_id: row.id,
+        _status: ok ? "succeeded" : "failed",
+        _amount: amount,
+        _reference: refund.id,
+        ...(ok ? {} : { _error: `stripe_status:${refund.status}` }),
+      } as never);
+      if (ok) out.succeeded += 1;
+      else out.failed += 1;
+    } catch (error) {
+      await supabaseAdmin.rpc("settle_payment_refund", {
+        _payment_id: row.id,
+        _status: "failed",
+        _error: error instanceof Error ? error.message.slice(0, 300) : "refund_failed",
+      } as never);
+      out.failed += 1;
+    }
+  }
+
+  return out;
+}
