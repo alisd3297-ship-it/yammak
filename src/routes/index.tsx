@@ -55,12 +55,19 @@ function CustomerHome() {
 
   const catalog = useCachedQuery(["home-catalog"], async () => {
     const [sections, services, providers] = await Promise.all([
-      supabase.from("service_sections").select("id, name, sort_order").eq("is_active", true).order("sort_order"),
+      supabase
+        .from("service_sections")
+        .select("id, name, sort_order")
+        .eq("is_active", true)
+        .is("deleted_at", null)
+        .order("sort_order"),
       supabase
         .from("services")
         .select("id, name, description, icon, route_path, sort_order, section_id, placement")
         .eq("is_active", true)
+        .is("deleted_at", null)
         .order("sort_order"),
+
       supabase
         .from("providers")
         .select("id, name, description, rating, orders_count, avg_prep_minutes, is_open, keywords")

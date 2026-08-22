@@ -49,6 +49,7 @@ function JoinProviderPage() {
         .from("profession_categories")
         .select("id, name")
         .eq("is_active", true)
+        .is("deleted_at", null)
         .order("sort_order");
       return data ?? [];
     },

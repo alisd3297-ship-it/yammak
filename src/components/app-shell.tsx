@@ -243,6 +243,8 @@ const ADMIN_LINKS = [
   { to: "/admin/reports", label: "التقارير" },
   { to: "/admin/users", label: "المستخدمون" },
   { to: "/admin/ads", label: "الإعلانات" },
+  { to: "/admin/services", label: "كتالوج الخدمات" },
+
 ] as const;
 
 /** شريط تنقل موحّد بين صفحات الإدارة. */
