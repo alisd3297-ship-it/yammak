@@ -434,7 +434,7 @@ function SectionsTab({
                   () =>
                     supabase.rpc("admin_delete_service_section", {
                       _id: id,
-                      _reassign_to: moveTo || null,
+                      _reassign_to: moveTo || undefined,
                       _hard: false,
                     }),
                   "تم تعطيل القسم (حذف مؤقت)",
@@ -452,7 +452,7 @@ function SectionsTab({
                   () =>
                     supabase.rpc("admin_delete_service_section", {
                       _id: id,
-                      _reassign_to: moveTo || null,
+                      _reassign_to: moveTo || undefined,
                       _hard: true,
                     }),
                   "تم حذف القسم نهائياً",
@@ -664,7 +664,7 @@ function CategoriesTab({
                   () =>
                     supabase.rpc("admin_delete_profession_category", {
                       _id: id,
-                      _reassign_to: moveTo || null,
+                      _reassign_to: moveTo || undefined,
                       _hard: false,
                     }),
                   "تم تعطيل التصنيف (حذف مؤقت)",
@@ -682,7 +682,7 @@ function CategoriesTab({
                   () =>
                     supabase.rpc("admin_delete_profession_category", {
                       _id: id,
-                      _reassign_to: moveTo || null,
+                      _reassign_to: moveTo || undefined,
                       _hard: true,
                     }),
                   "تم حذف التصنيف نهائياً",
