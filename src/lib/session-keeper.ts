@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { AUTH_BACKUP_KEY, ROLE_ROUTED_KEY, SIGNED_OUT_KEY } from "@/lib/sign-out";
 
-const BACKUP_KEY = "yammak:auth-backup";
+const BACKUP_KEY = AUTH_BACKUP_KEY;
 
 type Backup = { access_token: string; refresh_token: string };
+
 
 function readBackup(): Backup | null {
   try {
@@ -30,9 +32,14 @@ export function useSessionKeeper() {
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       try {
         if (event === "SIGNED_OUT" || !session) {
-          if (event === "SIGNED_OUT") localStorage.removeItem(BACKUP_KEY);
+          if (event === "SIGNED_OUT") {
+            localStorage.removeItem(BACKUP_KEY);
+            localStorage.setItem(SIGNED_OUT_KEY, "1");
+            sessionStorage.removeItem(ROLE_ROUTED_KEY);
+          }
           return;
         }
+        localStorage.removeItem(SIGNED_OUT_KEY);
         localStorage.setItem(
           BACKUP_KEY,
           JSON.stringify({
@@ -48,8 +55,18 @@ export function useSessionKeeper() {
     void (async () => {
       const { data } = await supabase.auth.getSession();
       if (cancelled || data.session) return;
+      // خروج متعمد: لا نستعيد الجلسة من النسخة الاحتياطية
+      try {
+        if (localStorage.getItem(SIGNED_OUT_KEY) === "1") {
+          localStorage.removeItem(BACKUP_KEY);
+          return;
+        }
+      } catch {
+        /* تجاهل */
+      }
       const backup = readBackup();
       if (!backup) return;
+
       const { error } = await supabase.auth.setSession(backup);
       if (error) {
         try {

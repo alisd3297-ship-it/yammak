@@ -91,7 +91,7 @@ export function useRoleHomeRedirect() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!account?.userId) return;
+    if (!account?.session || !account.userId) return;
     const target = homeRouteForAccount(account);
     if (target === "/") return;
     if (typeof sessionStorage === "undefined") return;
@@ -99,6 +99,7 @@ export function useRoleHomeRedirect() {
     sessionStorage.setItem("yammak:role-routed", account.userId);
     navigate({ to: target, replace: true });
   }, [account, navigate]);
+
 }
 
 export const ROLE_LABELS: Record<AppRole, string> = {

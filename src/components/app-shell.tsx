@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Home, ClipboardList, ShoppingCart, User, WifiOff, ShieldCheck, Bell } from "lucide-react";
+import { Home, ClipboardList, ShoppingCart, User, WifiOff, ShieldCheck, Bell, LogOut } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { superAdminExists } from "@/lib/admin-setup.functions";
@@ -9,14 +9,18 @@ import { useCart } from "@/lib/cart";
 import { useOnline } from "@/lib/offline-cache";
 import { cn } from "@/lib/utils";
 import { useAccount, homeRouteForAccount } from "@/lib/auth";
+import { useSignOut } from "@/lib/sign-out";
+
 
 export function BrandHeader({ subtitle }: { subtitle?: string }) {
   return (
     <header className="brand-gradient rounded-b-3xl px-5 pb-6 pt-7 text-primary-foreground shadow-card">
       <div className="relative flex min-h-11 flex-col items-center justify-center text-center">
-        <div className="absolute inset-y-0 start-0 flex items-center">
+        <div className="absolute inset-y-0 start-0 flex items-center gap-1">
           <AccountButton />
+          <SignOutButton />
         </div>
+
         <div className="absolute inset-y-0 end-0 flex items-center">
           <NotificationsButton />
         </div>
@@ -27,6 +31,22 @@ export function BrandHeader({ subtitle }: { subtitle?: string }) {
   );
 }
 
+
+function SignOutButton() {
+  const { data: account } = useAccount();
+  const signOut = useSignOut();
+  if (!account?.userId) return null;
+  return (
+    <button
+      onClick={() => void signOut()}
+      className="flex size-11 items-center justify-center rounded-2xl bg-primary-foreground/15 backdrop-blur transition hover:bg-primary-foreground/25"
+      aria-label="تسجيل الخروج"
+      title="تسجيل الخروج"
+    >
+      <LogOut className="size-5" />
+    </button>
+  );
+}
 
 function AccountButton() {
   const { data: account } = useAccount();
@@ -43,6 +63,7 @@ function AccountButton() {
     </button>
   );
 }
+
 
 function NotificationsButton() {
   const { data: account } = useAccount();
