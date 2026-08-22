@@ -101,7 +101,7 @@ export const listUsers = createServerFn({ method: "POST" })
   .inputValidator((data: { search?: string }) => data)
   .handler(async ({ data, context }) => {
     const { data: rows, error } = await context.supabase.rpc("admin_list_users", {
-      _search: data.search ?? null,
+      ...(data.search ? { _search: data.search } : {}),
       _limit: 100,
     });
     if (error) fail(error.message);
