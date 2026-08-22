@@ -22,12 +22,16 @@ import { vehicleLabel } from "@/lib/vehicles";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/orders/$id")({
+  ssr: false,
+  beforeLoad: requireSignedIn,
   head: () => ({
     meta: [
       { title: "تتبع الطلب | يمّك" },
       { name: "description", content: "تابع حالة طلبك ومندوب التوصيل خطوة بخطوة في تطبيق يمّك." },
       { property: "og:title", content: "تتبع الطلب | يمّك" },
       { property: "og:description", content: "حالة الطلب والمندوب لحظة بلحظة." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: OrderTrackPage,
