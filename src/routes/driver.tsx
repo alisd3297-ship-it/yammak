@@ -61,7 +61,7 @@ function DriverDashboard() {
     queryFn: async () => {
       const { data } = await supabase
         .from("worker_profiles")
-        .select("user_id, is_approved, is_available, worker_kind, rating, vehicle, taxi_class, taxi_seats")
+        .select("user_id, is_approved, is_available, worker_kind, rating, vehicle, taxi_class, taxi_seats, application_status, rejection_reason")
         .eq("user_id", account!.userId!)
         .maybeSingle();
       return data;
@@ -303,8 +303,24 @@ function DriverDashboard() {
             </Link>
           </div>
         )}
-        {worker && !worker.is_approved && (
-          <p className="rounded-2xl bg-warning/15 p-4 text-sm">حسابك قيد المراجعة من الإدارة.</p>
+        {worker && !worker.is_approved && worker.application_status === "rejected" && (
+          <div className="rounded-2xl bg-destructive/10 p-4 text-sm">
+            <p className="font-bold text-destructive">تم رفض طلب الانضمام كمندوب.</p>
+            {worker.rejection_reason ? (
+              <p className="mt-1 text-muted-foreground">السبب: {worker.rejection_reason}</p>
+            ) : null}
+            <Link to="/join/driver" className="mt-2 inline-block font-semibold text-primary">
+              تعديل البيانات وإعادة التقديم
+            </Link>
+          </div>
+        )}
+        {worker && !worker.is_approved && worker.application_status !== "rejected" && (
+          <div className="rounded-2xl bg-warning/15 p-4 text-sm">
+            <p className="font-bold">بانتظار موافقة المدير</p>
+            <p className="mt-1 text-muted-foreground">
+              طلبك مسجّل بحالة «قيد المراجعة». ما راح توصلك طلبات ولا تقدر تفتح صلاحيات المندوب قبل الاعتماد.
+            </p>
+          </div>
         )}
 
         {!!offers?.length && (
