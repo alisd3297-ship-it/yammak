@@ -30,6 +30,22 @@ export function BrandHeader({ subtitle }: { subtitle?: string }) {
 }
 
 
+function SignOutButton() {
+  const { data: account } = useAccount();
+  const signOut = useSignOut();
+  if (!account?.userId) return null;
+  return (
+    <button
+      onClick={() => void signOut()}
+      className="flex size-11 items-center justify-center rounded-2xl bg-primary-foreground/15 backdrop-blur transition hover:bg-primary-foreground/25"
+      aria-label="تسجيل الخروج"
+      title="تسجيل الخروج"
+    >
+      <LogOut className="size-5" />
+    </button>
+  );
+}
+
 function AccountButton() {
   const { data: account } = useAccount();
   const navigate = useNavigate();
@@ -45,6 +61,7 @@ function AccountButton() {
     </button>
   );
 }
+
 
 function NotificationsButton() {
   const { data: account } = useAccount();
