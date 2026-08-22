@@ -150,7 +150,7 @@ function AdminServicesPage() {
     return { bySection, byCategory };
   }, [data]);
 
-  async function run(key: string, fn: () => Promise<{ error: { message: string } | null }>, okMsg: string) {
+  async function run(key: string, fn: () => PromiseLike<{ error: { message: string } | null }>, okMsg: string) {
     setBusy(key);
     try {
       const { error } = await fn();
@@ -248,7 +248,7 @@ function AdminServicesPage() {
 
 type Runner = (
   key: string,
-  fn: () => Promise<{ error: { message: string } | null }>,
+  fn: () => PromiseLike<{ error: { message: string } | null }>,
   okMsg: string,
 ) => Promise<void>;
 
@@ -283,7 +283,10 @@ function SectionsTab({
   const [moveTo, setMoveTo] = useState<string>("");
 
   async function create() {
-    if (!draft.name.trim()) return toast.error("اكتب اسم القسم");
+    if (!draft.name.trim()) {
+      toast.error("اكتب اسم القسم");
+      return;
+    }
     const next = Math.max(0, ...sections.map((s) => s.sort_order)) + 1;
     await run(
       "new-section",
@@ -433,7 +436,7 @@ function SectionsTab({
                       _id: id,
                       _reassign_to: moveTo || null,
                       _hard: false,
-                    }) as never,
+                    }),
                   "تم تعطيل القسم (حذف مؤقت)",
                 );
               }}
@@ -451,7 +454,7 @@ function SectionsTab({
                       _id: id,
                       _reassign_to: moveTo || null,
                       _hard: true,
-                    }) as never,
+                    }),
                   "تم حذف القسم نهائياً",
                 );
               }}
@@ -485,7 +488,10 @@ function CategoriesTab({
   const [moveTo, setMoveTo] = useState("");
 
   async function create() {
-    if (!draft.name.trim()) return toast.error("اكتب اسم التصنيف");
+    if (!draft.name.trim()) {
+      toast.error("اكتب اسم التصنيف");
+      return;
+    }
     const next = Math.max(0, ...categories.map((c) => c.sort_order)) + 1;
     await run(
       "new-cat",
@@ -660,7 +666,7 @@ function CategoriesTab({
                       _id: id,
                       _reassign_to: moveTo || null,
                       _hard: false,
-                    }) as never,
+                    }),
                   "تم تعطيل التصنيف (حذف مؤقت)",
                 );
               }}
@@ -678,7 +684,7 @@ function CategoriesTab({
                       _id: id,
                       _reassign_to: moveTo || null,
                       _hard: true,
-                    }) as never,
+                    }),
                   "تم حذف التصنيف نهائياً",
                 );
               }}
@@ -715,7 +721,10 @@ function ServicesTab({
   const [pendingDelete, setPendingDelete] = useState<Service | null>(null);
 
   async function create() {
-    if (!draft.name.trim()) return toast.error("اكتب اسم الخدمة");
+    if (!draft.name.trim()) {
+      toast.error("اكتب اسم الخدمة");
+      return;
+    }
     const next = Math.max(0, ...services.map((s) => s.sort_order)) + 1;
     await run(
       "new-service",
@@ -890,7 +899,7 @@ function ServicesTab({
               onClick={async () => {
                 const id = pendingDelete!.id;
                 setPendingDelete(null);
-                await run(id, () => supabase.rpc("admin_delete_service", { _id: id, _hard: false }) as never, "تم تعطيل الخدمة");
+                await run(id, () => supabase.rpc("admin_delete_service", { _id: id, _hard: false }), "تم تعطيل الخدمة");
               }}
             >
               تعطيل (حذف مؤقت)
@@ -899,7 +908,7 @@ function ServicesTab({
               onClick={async () => {
                 const id = pendingDelete!.id;
                 setPendingDelete(null);
-                await run(id, () => supabase.rpc("admin_delete_service", { _id: id, _hard: true }) as never, "تم حذف الخدمة");
+                await run(id, () => supabase.rpc("admin_delete_service", { _id: id, _hard: true }), "تم حذف الخدمة");
               }}
             >
               حذف نهائي
@@ -936,7 +945,7 @@ function RowCard({
   onDown: () => void;
   onToggle: (v: boolean) => void;
   onDelete: () => void;
-  onRestore?: () => void;
+  onRestore?: (() => void) | undefined;
 }) {
   return (
     <div className={cn("rounded-2xl border bg-card p-4", deleted && "opacity-60")}>
