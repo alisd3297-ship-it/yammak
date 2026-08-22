@@ -30,8 +30,12 @@ function AuthPage() {
   const [phone, setPhone] = useState("");
 
   useEffect(() => {
-    if (account?.userId) navigate({ to: homeRouteForAccount(account), replace: true });
+    // لا نوجّه إلا بوجود جلسة فعلية (وليس بيانات مخزّنة قديمة بعد الخروج)
+    if (account?.session && account.userId) {
+      navigate({ to: homeRouteForAccount(account), replace: true });
+    }
   }, [account, navigate]);
+
 
   function authErrorMessage(message: string): string {
     const m = message.toLowerCase();
