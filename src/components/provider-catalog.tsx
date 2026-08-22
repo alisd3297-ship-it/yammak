@@ -14,7 +14,7 @@ type Props = { providerId: string; isStore: boolean };
 export function ProviderCatalog({ providerId, isStore }: Props) {
   const qc = useQueryClient();
   const [catName, setCatName] = useState("");
-  const [form, setForm] = useState({ name: "", price: "", stock: "", categoryId: "" });
+  const [form, setForm] = useState({ name: "", price: "", cost: "", stock: "", categoryId: "" });
 
   const { data } = useQuery({
     queryKey: ["provider-catalog", providerId],
@@ -23,7 +23,7 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
         supabase.from("menu_categories").select("id, name, sort_order").eq("provider_id", providerId).order("sort_order"),
         supabase
           .from("products")
-          .select("id, name, price, stock, is_available, category_id")
+          .select("id, name, price, cost_price, stock, is_available, category_id")
           .eq("provider_id", providerId)
           .order("sort_order"),
       ]);
@@ -60,6 +60,7 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
       category_id: form.categoryId || null,
       name: form.name.trim(),
       price,
+      cost_price: form.cost !== "" && Number.isFinite(Number(form.cost)) ? Number(form.cost) : null,
       stock,
       sort_order: (data?.products.length ?? 0) + 1,
     });
@@ -67,11 +68,16 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
       toast.error("تعذر إضافة المنتج");
       return;
     }
-    setForm({ name: "", price: "", stock: "", categoryId: "" });
+    setForm({ name: "", price: "", cost: "", stock: "", categoryId: "" });
     refresh();
   }
 
-  type ProductPatch = { price?: number; stock?: number | null; is_available?: boolean };
+  type ProductPatch = {
+    price?: number;
+    cost_price?: number | null;
+    stock?: number | null;
+    is_available?: boolean;
+  };
 
   async function patchProduct(id: string, patch: ProductPatch) {
     const { error } = await supabase.from("products").update(patch).eq("id", id);
@@ -130,6 +136,13 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
               value={form.price}
               onChange={(e) => setForm({ ...form, price: e.target.value })}
               placeholder="السعر بالدينار"
+              inputMode="numeric"
+              className="h-11"
+            />
+            <Input
+              value={form.cost}
+              onChange={(e) => setForm({ ...form, cost: e.target.value })}
+              placeholder="التكلفة (اختياري)"
               inputMode="numeric"
               className="h-11"
             />
