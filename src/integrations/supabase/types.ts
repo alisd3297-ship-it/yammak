@@ -643,6 +643,9 @@ export type Database = {
           created_at: string
           customer_id: string
           delivery_fee: number
+          dispatch_alerted_at: string | null
+          dispatch_attempts: number
+          dispatch_last_attempt_at: string | null
           driver_id: string | null
           dropoff_lat: number | null
           dropoff_lng: number | null
@@ -676,6 +679,9 @@ export type Database = {
           created_at?: string
           customer_id: string
           delivery_fee?: number
+          dispatch_alerted_at?: string | null
+          dispatch_attempts?: number
+          dispatch_last_attempt_at?: string | null
           driver_id?: string | null
           dropoff_lat?: number | null
           dropoff_lng?: number | null
@@ -709,6 +715,9 @@ export type Database = {
           created_at?: string
           customer_id?: string
           delivery_fee?: number
+          dispatch_alerted_at?: string | null
+          dispatch_attempts?: number
+          dispatch_last_attempt_at?: string | null
           driver_id?: string | null
           dropoff_lat?: number | null
           dropoff_lng?: number | null
@@ -798,6 +807,11 @@ export type Database = {
           paid_at: string | null
           provider: string
           provider_intent_id: string | null
+          refund_error: string | null
+          refund_reference: string | null
+          refund_requested_amount: number
+          refund_requested_at: string | null
+          refund_status: string
           refunded_amount: number
           refunded_at: string | null
           status: Database["public"]["Enums"]["payment_status"]
@@ -819,6 +833,11 @@ export type Database = {
           paid_at?: string | null
           provider?: string
           provider_intent_id?: string | null
+          refund_error?: string | null
+          refund_reference?: string | null
+          refund_requested_amount?: number
+          refund_requested_at?: string | null
+          refund_status?: string
           refunded_amount?: number
           refunded_at?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
@@ -840,6 +859,11 @@ export type Database = {
           paid_at?: string | null
           provider?: string
           provider_intent_id?: string | null
+          refund_error?: string | null
+          refund_reference?: string | null
+          refund_requested_amount?: number
+          refund_requested_at?: string | null
+          refund_status?: string
           refunded_amount?: number
           refunded_at?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
@@ -964,6 +988,7 @@ export type Database = {
       products: {
         Row: {
           category_id: string | null
+          cost_price: number | null
           created_at: string
           description: string | null
           id: string
@@ -979,6 +1004,7 @@ export type Database = {
         }
         Insert: {
           category_id?: string | null
+          cost_price?: number | null
           created_at?: string
           description?: string | null
           id?: string
@@ -994,6 +1020,7 @@ export type Database = {
         }
         Update: {
           category_id?: string | null
+          cost_price?: number | null
           created_at?: string
           description?: string | null
           id?: string
@@ -1115,6 +1142,7 @@ export type Database = {
       provider_services: {
         Row: {
           category_id: string | null
+          cost_amount: number | null
           created_at: string
           description: string | null
           estimated_minutes: number | null
@@ -1129,6 +1157,7 @@ export type Database = {
         }
         Insert: {
           category_id?: string | null
+          cost_amount?: number | null
           created_at?: string
           description?: string | null
           estimated_minutes?: number | null
@@ -1143,6 +1172,7 @@ export type Database = {
         }
         Update: {
           category_id?: string | null
+          cost_amount?: number | null
           created_at?: string
           description?: string | null
           estimated_minutes?: number | null
@@ -1915,6 +1945,9 @@ export type Database = {
           created_at: string
           customer_id: string
           delivery_fee: number
+          dispatch_alerted_at: string | null
+          dispatch_attempts: number
+          dispatch_last_attempt_at: string | null
           driver_id: string | null
           dropoff_lat: number | null
           dropoff_lng: number | null
@@ -2122,6 +2155,11 @@ export type Database = {
           paid_at: string | null
           provider: string
           provider_intent_id: string | null
+          refund_error: string | null
+          refund_reference: string | null
+          refund_requested_amount: number
+          refund_requested_at: string | null
+          refund_status: string
           refunded_amount: number
           refunded_at: string | null
           status: Database["public"]["Enums"]["payment_status"]
@@ -2170,6 +2208,9 @@ export type Database = {
           created_at: string
           customer_id: string
           delivery_fee: number
+          dispatch_alerted_at: string | null
+          dispatch_attempts: number
+          dispatch_last_attempt_at: string | null
           driver_id: string | null
           dropoff_lat: number | null
           dropoff_lng: number | null
@@ -2323,91 +2364,49 @@ export type Database = {
         }
         Returns: number
       }
-      create_ad:
-        | {
-            Args: {
-              _address_text: string
-              _body: string
-              _category_id: string
-              _city_id?: string
-              _contact_phone: string
-              _images: string[]
-              _price?: number
-              _title: string
-            }
-            Returns: {
-              address_text: string
-              body: string
-              category_id: string
-              city_id: string | null
-              contact_phone: string
-              created_at: string
-              currency: string
-              expires_at: string | null
-              governorate: string | null
-              id: string
-              images: string[]
-              owner_id: string
-              price: number | null
-              published_at: string | null
-              rejection_reason: string | null
-              reviewed_at: string | null
-              reviewed_by: string | null
-              sort_order: number
-              status: Database["public"]["Enums"]["ad_status"]
-              title: string
-              updated_at: string
-            }
-            SetofOptions: {
-              from: "*"
-              to: "ads"
-              isOneToOne: true
-              isSetofReturn: false
-            }
-          }
-        | {
-            Args: {
-              _address_text: string
-              _body: string
-              _category_id: string
-              _city_id?: string
-              _contact_phone: string
-              _currency?: string
-              _governorate?: string
-              _images: string[]
-              _price?: number
-              _title: string
-            }
-            Returns: {
-              address_text: string
-              body: string
-              category_id: string
-              city_id: string | null
-              contact_phone: string
-              created_at: string
-              currency: string
-              expires_at: string | null
-              governorate: string | null
-              id: string
-              images: string[]
-              owner_id: string
-              price: number | null
-              published_at: string | null
-              rejection_reason: string | null
-              reviewed_at: string | null
-              reviewed_by: string | null
-              sort_order: number
-              status: Database["public"]["Enums"]["ad_status"]
-              title: string
-              updated_at: string
-            }
-            SetofOptions: {
-              from: "*"
-              to: "ads"
-              isOneToOne: true
-              isSetofReturn: false
-            }
-          }
+      create_ad: {
+        Args: {
+          _address_text: string
+          _body: string
+          _category_id: string
+          _city_id?: string
+          _contact_phone: string
+          _currency?: string
+          _governorate?: string
+          _images: string[]
+          _price?: number
+          _title: string
+        }
+        Returns: {
+          address_text: string
+          body: string
+          category_id: string
+          city_id: string | null
+          contact_phone: string
+          created_at: string
+          currency: string
+          expires_at: string | null
+          governorate: string | null
+          id: string
+          images: string[]
+          owner_id: string
+          price: number | null
+          published_at: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          sort_order: number
+          status: Database["public"]["Enums"]["ad_status"]
+          title: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "ads"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       create_courier_order: {
         Args: {
           _dropoff_lat?: number
@@ -2431,6 +2430,9 @@ export type Database = {
           created_at: string
           customer_id: string
           delivery_fee: number
+          dispatch_alerted_at: string | null
+          dispatch_attempts: number
+          dispatch_last_attempt_at: string | null
           driver_id: string | null
           dropoff_lat: number | null
           dropoff_lng: number | null
@@ -2480,6 +2482,9 @@ export type Database = {
           created_at: string
           customer_id: string
           delivery_fee: number
+          dispatch_alerted_at: string | null
+          dispatch_attempts: number
+          dispatch_last_attempt_at: string | null
           driver_id: string | null
           dropoff_lat: number | null
           dropoff_lng: number | null
@@ -2527,6 +2532,11 @@ export type Database = {
           paid_at: string | null
           provider: string
           provider_intent_id: string | null
+          refund_error: string | null
+          refund_reference: string | null
+          refund_requested_amount: number
+          refund_requested_at: string | null
+          refund_status: string
           refunded_amount: number
           refunded_at: string | null
           status: Database["public"]["Enums"]["payment_status"]
@@ -2604,6 +2614,9 @@ export type Database = {
           created_at: string
           customer_id: string
           delivery_fee: number
+          dispatch_alerted_at: string | null
+          dispatch_attempts: number
+          dispatch_last_attempt_at: string | null
           driver_id: string | null
           dropoff_lat: number | null
           dropoff_lng: number | null
@@ -2699,24 +2712,15 @@ export type Database = {
         }
         Returns: boolean
       }
-      is_allowed_transition:
-        | {
-            Args: {
-              _actor: string
-              _from: Database["public"]["Enums"]["order_status"]
-              _to: Database["public"]["Enums"]["order_status"]
-            }
-            Returns: boolean
-          }
-        | {
-            Args: {
-              _actor: string
-              _from: Database["public"]["Enums"]["order_status"]
-              _order_type: Database["public"]["Enums"]["order_type"]
-              _to: Database["public"]["Enums"]["order_status"]
-            }
-            Returns: boolean
-          }
+      is_allowed_transition: {
+        Args: {
+          _actor: string
+          _from: Database["public"]["Enums"]["order_status"]
+          _order_type: Database["public"]["Enums"]["order_type"]
+          _to: Database["public"]["Enums"]["order_status"]
+        }
+        Returns: boolean
+      }
       is_allowed_trip_transition: {
         Args: {
           _actor: string
@@ -2727,6 +2731,10 @@ export type Database = {
       }
       is_phone_verified: { Args: { _user_id: string }; Returns: boolean }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      mark_dispatch_attempt: {
+        Args: { _found: boolean; _order_id: string }
+        Returns: Json
+      }
       order_actor: {
         Args: { _order_id: string; _user_id: string }
         Returns: string
@@ -2850,6 +2858,11 @@ export type Database = {
           paid_at: string | null
           provider: string
           provider_intent_id: string | null
+          refund_error: string | null
+          refund_reference: string | null
+          refund_requested_amount: number
+          refund_requested_at: string | null
+          refund_status: string
           refunded_amount: number
           refunded_at: string | null
           status: Database["public"]["Enums"]["payment_status"]
@@ -2873,6 +2886,41 @@ export type Database = {
         Args: { _offer_id: string; _reason?: string }
         Returns: string
       }
+      request_payment_refund: {
+        Args: { _amount?: number; _payment_id: string; _reason?: string }
+        Returns: {
+          amount: number
+          client_secret: string | null
+          created_at: string
+          currency: string
+          failure_reason: string | null
+          id: string
+          idempotency_key: string
+          metadata: Json
+          method: string
+          paid_at: string | null
+          provider: string
+          provider_intent_id: string | null
+          refund_error: string | null
+          refund_reference: string | null
+          refund_requested_amount: number
+          refund_requested_at: string | null
+          refund_status: string
+          refunded_amount: number
+          refunded_at: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          subject_id: string
+          subject_type: Database["public"]["Enums"]["payment_subject"]
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "payments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       review_order_approval: {
         Args: { _approve: boolean; _order_id: string; _reason?: string }
         Returns: {
@@ -2888,6 +2936,9 @@ export type Database = {
           created_at: string
           customer_id: string
           delivery_fee: number
+          dispatch_alerted_at: string | null
+          dispatch_attempts: number
+          dispatch_last_attempt_at: string | null
           driver_id: string | null
           dropoff_lat: number | null
           dropoff_lng: number | null
@@ -3042,11 +3093,97 @@ export type Database = {
         }
         Returns: Json
       }
+      settle_payment_refund: {
+        Args: {
+          _amount?: number
+          _error?: string
+          _payment_id: string
+          _reference?: string
+          _status: string
+        }
+        Returns: {
+          amount: number
+          client_secret: string | null
+          created_at: string
+          currency: string
+          failure_reason: string | null
+          id: string
+          idempotency_key: string
+          metadata: Json
+          method: string
+          paid_at: string | null
+          provider: string
+          provider_intent_id: string | null
+          refund_error: string | null
+          refund_reference: string | null
+          refund_requested_amount: number
+          refund_requested_at: string | null
+          refund_status: string
+          refunded_amount: number
+          refunded_at: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          subject_id: string
+          subject_type: Database["public"]["Enums"]["payment_subject"]
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "payments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
       special_delivery_distance: {
         Args: { _pickup_lat: number; _pickup_lng: number; _stops: Json }
         Returns: number
+      }
+      system_assign_driver: {
+        Args: { _driver_id: string; _order_id: string }
+        Returns: {
+          admin_approved_at: string | null
+          admin_approved_by: string | null
+          admin_review_reason: string | null
+          cancel_reason: string | null
+          cargo_description: string | null
+          cargo_weight_kg: number | null
+          city_id: string | null
+          code: string
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          delivery_fee: number
+          dispatch_alerted_at: string | null
+          dispatch_attempts: number
+          dispatch_last_attempt_at: string | null
+          driver_id: string | null
+          dropoff_lat: number | null
+          dropoff_lng: number | null
+          dropoff_text: string | null
+          id: string
+          notes: string | null
+          order_type: Database["public"]["Enums"]["order_type"]
+          payment_method: string
+          pickup_lat: number | null
+          pickup_lng: number | null
+          pickup_text: string | null
+          provider_id: string | null
+          requires_admin_approval: boolean
+          scheduled_at: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total: number
+          updated_at: string
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       system_change_order_status: {
         Args: {
@@ -3066,6 +3203,9 @@ export type Database = {
           created_at: string
           customer_id: string
           delivery_fee: number
+          dispatch_alerted_at: string | null
+          dispatch_attempts: number
+          dispatch_last_attempt_at: string | null
           driver_id: string | null
           dropoff_lat: number | null
           dropoff_lng: number | null
