@@ -244,6 +244,7 @@ const ADMIN_LINKS = [
   { to: "/admin/users", label: "المستخدمون" },
   { to: "/admin/ads", label: "الإعلانات" },
   { to: "/admin/services", label: "كتالوج الخدمات" },
+  { to: "/admin/audit", label: "سجل التدقيق" },
 
 ] as const;
 
