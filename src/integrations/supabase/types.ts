@@ -85,7 +85,9 @@ export type Database = {
           city_id: string | null
           contact_phone: string
           created_at: string
+          currency: string
           expires_at: string | null
+          governorate: string | null
           id: string
           images: string[]
           owner_id: string
@@ -106,7 +108,9 @@ export type Database = {
           city_id?: string | null
           contact_phone: string
           created_at?: string
+          currency?: string
           expires_at?: string | null
+          governorate?: string | null
           id?: string
           images?: string[]
           owner_id: string
@@ -127,7 +131,9 @@ export type Database = {
           city_id?: string | null
           contact_phone?: string
           created_at?: string
+          currency?: string
           expires_at?: string | null
+          governorate?: string | null
           id?: string
           images?: string[]
           owner_id?: string
@@ -2317,45 +2323,91 @@ export type Database = {
         }
         Returns: number
       }
-      create_ad: {
-        Args: {
-          _address_text: string
-          _body: string
-          _category_id: string
-          _city_id?: string
-          _contact_phone: string
-          _images: string[]
-          _price?: number
-          _title: string
-        }
-        Returns: {
-          address_text: string
-          body: string
-          category_id: string
-          city_id: string | null
-          contact_phone: string
-          created_at: string
-          expires_at: string | null
-          id: string
-          images: string[]
-          owner_id: string
-          price: number | null
-          published_at: string | null
-          rejection_reason: string | null
-          reviewed_at: string | null
-          reviewed_by: string | null
-          sort_order: number
-          status: Database["public"]["Enums"]["ad_status"]
-          title: string
-          updated_at: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "ads"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
+      create_ad:
+        | {
+            Args: {
+              _address_text: string
+              _body: string
+              _category_id: string
+              _city_id?: string
+              _contact_phone: string
+              _images: string[]
+              _price?: number
+              _title: string
+            }
+            Returns: {
+              address_text: string
+              body: string
+              category_id: string
+              city_id: string | null
+              contact_phone: string
+              created_at: string
+              currency: string
+              expires_at: string | null
+              governorate: string | null
+              id: string
+              images: string[]
+              owner_id: string
+              price: number | null
+              published_at: string | null
+              rejection_reason: string | null
+              reviewed_at: string | null
+              reviewed_by: string | null
+              sort_order: number
+              status: Database["public"]["Enums"]["ad_status"]
+              title: string
+              updated_at: string
+            }
+            SetofOptions: {
+              from: "*"
+              to: "ads"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: {
+              _address_text: string
+              _body: string
+              _category_id: string
+              _city_id?: string
+              _contact_phone: string
+              _currency?: string
+              _governorate?: string
+              _images: string[]
+              _price?: number
+              _title: string
+            }
+            Returns: {
+              address_text: string
+              body: string
+              category_id: string
+              city_id: string | null
+              contact_phone: string
+              created_at: string
+              currency: string
+              expires_at: string | null
+              governorate: string | null
+              id: string
+              images: string[]
+              owner_id: string
+              price: number | null
+              published_at: string | null
+              rejection_reason: string | null
+              reviewed_at: string | null
+              reviewed_by: string | null
+              sort_order: number
+              status: Database["public"]["Enums"]["ad_status"]
+              title: string
+              updated_at: string
+            }
+            SetofOptions: {
+              from: "*"
+              to: "ads"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
       create_courier_order: {
         Args: {
           _dropoff_lat?: number
@@ -2884,7 +2936,9 @@ export type Database = {
           city_id: string | null
           contact_phone: string
           created_at: string
+          currency: string
           expires_at: string | null
+          governorate: string | null
           id: string
           images: string[]
           owner_id: string
