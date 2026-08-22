@@ -16,6 +16,8 @@ export type AdRow = {
   title: string;
   body: string;
   price: number | null;
+  currency?: AdCurrency | string | null;
+  governorate?: string | null;
   contact_phone: string;
   address_text: string;
   images: string[];
@@ -56,9 +58,50 @@ export function adImageUrl(path: string): string {
   return `/api/public/ad-image/${path.split("/").map(encodeURIComponent).join("/")}`;
 }
 
-export function formatAdPrice(price: number | null): string {
-  if (price == null) return "السعر عند التواصل";
-  return `${new Intl.NumberFormat("ar-IQ-u-nu-latn").format(price)} د.ع`;
+export type AdCurrency = "IQD" | "USD";
+
+/** العملات المدعومة في الإعلانات والخدمات. */
+export const AD_CURRENCIES: Array<{ value: AdCurrency; label: string; symbol: string }> = [
+  { value: "IQD", label: "الدينار العراقي (IQD)", symbol: "د.ع" },
+  { value: "USD", label: "الدولار الأمريكي (USD)", symbol: "$" },
+];
+
+export function adCurrency(value: string | null | undefined): AdCurrency {
+  return value === "USD" ? "USD" : "IQD";
 }
+
+export function currencySymbol(value: string | null | undefined): string {
+  return adCurrency(value) === "USD" ? "$" : "د.ع";
+}
+
+export function formatAdPrice(price: number | null, currency?: string | null): string {
+  if (price == null) return "السعر عند التواصل";
+  const amount = new Intl.NumberFormat("ar-IQ-u-nu-latn").format(price);
+  return `${amount} ${currencySymbol(currency)}`;
+}
+
+/** المحافظات العراقية الـ18 — قيمة مخزّنة مع الإعلان ومستقلة عن حقل العنوان. */
+export const IRAQ_GOVERNORATES = [
+  "بغداد",
+  "نينوى",
+  "البصرة",
+  "ذي قار",
+  "ميسان",
+  "المثنى",
+  "القادسية",
+  "واسط",
+  "بابل",
+  "كربلاء",
+  "النجف",
+  "ديالى",
+  "الأنبار",
+  "صلاح الدين",
+  "كركوك",
+  "أربيل",
+  "السليمانية",
+  "دهوك",
+] as const;
+
+export type IraqGovernorate = (typeof IRAQ_GOVERNORATES)[number];
 
 export const AD_IMAGES_MAX = 5;
