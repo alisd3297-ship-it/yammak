@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.log_admin_table_change() FROM PUBLIC, anon, authenticated;

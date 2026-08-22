@@ -23,6 +23,7 @@ import { Route as SpecialDeliveryRouteImport } from './routes/special-delivery'
 import { Route as TaxiRouteImport } from './routes/taxi'
 import { Route as VerifyPhoneRouteImport } from './routes/verify-phone'
 import { Route as AdminAdsRouteImport } from './routes/admin.ads'
+import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminCourierRouteImport } from './routes/admin.courier'
 import { Route as AdminDriversRouteImport } from './routes/admin.drivers'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
@@ -117,6 +118,11 @@ const VerifyPhoneRoute = VerifyPhoneRouteImport.update({
 const AdminAdsRoute = AdminAdsRouteImport.update({
   id: '/admin/ads',
   path: '/admin/ads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/admin/audit',
+  path: '/admin/audit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminCourierRoute = AdminCourierRouteImport.update({
@@ -260,6 +266,7 @@ export interface FileRoutesByFullPath {
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
   '/admin/ads': typeof AdminAdsRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -301,6 +308,7 @@ export interface FileRoutesByTo {
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
   '/admin/ads': typeof AdminAdsRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -343,6 +351,7 @@ export interface FileRoutesById {
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
   '/admin/ads': typeof AdminAdsRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -386,6 +395,7 @@ export interface FileRouteTypes {
     | '/taxi'
     | '/verify-phone'
     | '/admin/ads'
+    | '/admin/audit'
     | '/admin/courier'
     | '/admin/drivers'
     | '/admin/orders'
@@ -427,6 +437,7 @@ export interface FileRouteTypes {
     | '/taxi'
     | '/verify-phone'
     | '/admin/ads'
+    | '/admin/audit'
     | '/admin/courier'
     | '/admin/drivers'
     | '/admin/orders'
@@ -468,6 +479,7 @@ export interface FileRouteTypes {
     | '/taxi'
     | '/verify-phone'
     | '/admin/ads'
+    | '/admin/audit'
     | '/admin/courier'
     | '/admin/drivers'
     | '/admin/orders'
@@ -510,6 +522,7 @@ export interface RootRouteChildren {
   TaxiRoute: typeof TaxiRoute
   VerifyPhoneRoute: typeof VerifyPhoneRoute
   AdminAdsRoute: typeof AdminAdsRoute
+  AdminAuditRoute: typeof AdminAuditRoute
   AdminCourierRoute: typeof AdminCourierRoute
   AdminDriversRoute: typeof AdminDriversRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
@@ -635,6 +648,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/ads'
       fullPath: '/admin/ads'
       preLoaderRoute: typeof AdminAdsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/audit': {
+      id: '/admin/audit'
+      path: '/admin/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/courier': {
@@ -830,6 +850,7 @@ const rootRouteChildren: RootRouteChildren = {
   TaxiRoute: TaxiRoute,
   VerifyPhoneRoute: VerifyPhoneRoute,
   AdminAdsRoute: AdminAdsRoute,
+  AdminAuditRoute: AdminAuditRoute,
   AdminCourierRoute: AdminCourierRoute,
   AdminDriversRoute: AdminDriversRoute,
   AdminOrdersRoute: AdminOrdersRoute,

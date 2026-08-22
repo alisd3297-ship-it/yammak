@@ -15,7 +15,7 @@ export async function requireSignedIn(): Promise<{ userId: string }> {
 
   // لا توجد جلسة محلية: نتحقق من الخادم كمحاولة أخيرة (قد تكون الجلسة قيد الاسترجاع).
   const { data, error } = await supabase.auth.getUser();
-  if (error || !data.user) throw redirect({ to: "/auth" });
+  if (error || !data.user) throw redirect({ to: "/auth", replace: true });
   return { userId: data.user.id };
 }
 
@@ -30,8 +30,8 @@ export async function requireStaff(): Promise<{ userId: string }> {
   const { userId } = await requireSignedIn();
   const roles = await rolesOf(userId);
   // تعذر التحقق (شبكة): لا نمنح الوصول، ونعيد المستخدم للرئيسية بدل شاشة فارغة.
-  if (!roles) throw redirect({ to: "/" });
-  if (!roles.some((r) => STAFF_ROLES.includes(r))) throw redirect({ to: "/" });
+  if (!roles) throw redirect({ to: "/", replace: true });
+  if (!roles.some((r) => STAFF_ROLES.includes(r))) throw redirect({ to: "/", replace: true });
   return { userId };
 }
 
@@ -49,8 +49,8 @@ export async function requireWorker(): Promise<{ userId: string }> {
     .select("user_id")
     .eq("user_id", userId)
     .maybeSingle();
-  if (error) throw redirect({ to: "/" });
-  if (!data) throw redirect({ to: "/join/driver" });
+  if (error) throw redirect({ to: "/", replace: true });
+  if (!data) throw redirect({ to: "/join/driver", replace: true });
   return { userId };
 }
 
@@ -68,7 +68,7 @@ export async function requireProvider(): Promise<{ userId: string }> {
     .select("id")
     .eq("owner_id", userId)
     .maybeSingle();
-  if (error) throw redirect({ to: "/" });
-  if (!data) throw redirect({ to: "/join/provider" });
+  if (error) throw redirect({ to: "/", replace: true });
+  if (!data) throw redirect({ to: "/join/provider", replace: true });
   return { userId };
 }
