@@ -19,15 +19,56 @@ export async function requireSignedIn(): Promise<{ userId: string }> {
   return { userId: data.user.id };
 }
 
+async function rolesOf(userId: string): Promise<string[] | null> {
+  const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", userId);
+  if (error) return null;
+  return (data ?? []).map((r) => r.role as string);
+}
+
 /** حارس مبكر لصفحات الإدارة: تسجيل دخول + دور إداري. */
 export async function requireStaff(): Promise<{ userId: string }> {
   const { userId } = await requireSignedIn();
-  const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", userId);
-  if (error) {
-    // تعذر التحقق (شبكة): لا نمنح الوصول، ونعيد المستخدم للرئيسية بدل شاشة فارغة.
-    throw redirect({ to: "/" });
-  }
-  const isStaff = (data ?? []).some((r) => STAFF_ROLES.includes(r.role as string));
-  if (!isStaff) throw redirect({ to: "/" });
+  const roles = await rolesOf(userId);
+  // تعذر التحقق (شبكة): لا نمنح الوصول، ونعيد المستخدم للرئيسية بدل شاشة فارغة.
+  if (!roles) throw redirect({ to: "/" });
+  if (!roles.some((r) => STAFF_ROLES.includes(r))) throw redirect({ to: "/" });
+  return { userId };
+}
+
+/**
+ * حارس لوحة المندوب: يسمح للإدارة وللمستخدم الذي يملك ملف عامل فعلياً.
+ * من ليس مندوباً يُوجَّه لصفحة الانضمام بدل رؤية لوحة فارغة.
+ */
+export async function requireWorker(): Promise<{ userId: string }> {
+  const { userId } = await requireSignedIn();
+  const roles = await rolesOf(userId);
+  if (roles?.some((r) => STAFF_ROLES.includes(r))) return { userId };
+
+  const { data, error } = await supabase
+    .from("worker_profiles")
+    .select("user_id")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (error) throw redirect({ to: "/" });
+  if (!data) throw redirect({ to: "/join/driver" });
+  return { userId };
+}
+
+/**
+ * حارس لوحة مقدم الخدمة: يسمح للإدارة ولمالك نشاط مسجّل.
+ * غير المسجّل يُوجَّه لصفحة طلب الانضمام.
+ */
+export async function requireProvider(): Promise<{ userId: string }> {
+  const { userId } = await requireSignedIn();
+  const roles = await rolesOf(userId);
+  if (roles?.some((r) => STAFF_ROLES.includes(r))) return { userId };
+
+  const { data, error } = await supabase
+    .from("providers")
+    .select("id")
+    .eq("owner_id", userId)
+    .maybeSingle();
+  if (error) throw redirect({ to: "/" });
+  if (!data) throw redirect({ to: "/join/provider" });
   return { userId };
 }
