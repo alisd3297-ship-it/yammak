@@ -21,7 +21,9 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
 
   const { data: order } = await supabaseAdmin
     .from("orders")
-    .select("id, status, provider_id, driver_id, pickup_lat, pickup_lng, vehicle_type, scheduled_at, order_type")
+    .select(
+      "id, status, provider_id, driver_id, pickup_lat, pickup_lng, vehicle_type, scheduled_at, order_type, dispatch_attempts, dispatch_last_attempt_at",
+    )
     .eq("id", orderId)
     .maybeSingle();
   if (!order) throw new Error("الطلب غير موجود");
@@ -32,6 +34,19 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
   // الطلب المجدول لا يدخل التوزيع قبل اقتراب موعده
   if (order.scheduled_at && new Date(order.scheduled_at).getTime() - Date.now() > 15 * 60_000)
     return { assignedTo: null, status: order.status, message: "الطلب مجدول لوقت لاحق" };
+
+  // مهلة تصاعدية بين المحاولات الفاشلة حتى لا ندور في حلقة استعلامات
+  const attempts = Number(order.dispatch_attempts ?? 0);
+  if (attempts > 0 && order.dispatch_last_attempt_at) {
+    const waitMs = Math.min(30 * attempts, 300) * 1000;
+    const since = Date.now() - new Date(order.dispatch_last_attempt_at).getTime();
+    if (since < waitMs)
+      return {
+        assignedTo: null,
+        status: order.status,
+        message: "ما زلنا نبحث عن مندوب، إعادة المحاولة بعد قليل",
+      };
+  }
 
   const { data: settings } = await supabaseAdmin
     .from("app_settings")
@@ -60,12 +75,22 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
     });
   }
 
-  // استبعاد كل مندوب سبق أن رفض أو انتهت مهلته على هذا الطلب
+  // الرافض يُستبعد نهائياً، أما من انتهت مهلته فيُستبعد مؤقتاً فقط (تبريد 10 دقائق)
+  // حتى لا يصبح الطلب مستحيل التوزيع بعد جولة عروض منتهية.
+  const cooldownFrom = Date.now() - 10 * 60_000;
   const { data: previous } = await supabaseAdmin
     .from("delivery_offers")
-    .select("driver_id")
+    .select("driver_id, status, sent_at, responded_at")
     .eq("order_id", order.id);
-  const excluded = new Set((previous ?? []).map((o) => o.driver_id));
+  const excluded = new Set(
+    (previous ?? [])
+      .filter((o) => {
+        if (o.status === "rejected") return true;
+        const at = new Date(o.responded_at ?? o.sent_at ?? 0).getTime();
+        return at > cooldownFrom;
+      })
+      .map((o) => o.driver_id),
+  );
 
   const { data: workers } = await supabaseAdmin
     .from("worker_profiles")
@@ -78,11 +103,20 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
   const requiredRank = order.vehicle_type ? VEHICLE_RANK[order.vehicle_type as VehicleType] : 0;
 
   const freshAfter = new Date(Date.now() - maxAgeMin * 60_000).toISOString();
-  const { data: locations } = await supabaseAdmin
+  const staleAfter = new Date(Date.now() - maxAgeMin * 4 * 60_000).toISOString();
+  const { data: freshLocations } = await supabaseAdmin
     .from("worker_locations")
     .select("user_id, lat, lng, updated_at")
     .eq("is_online", true)
     .gt("updated_at", freshAfter);
+  // احتياط: مواقع أقدم قليلاً تُستخدم فقط إذا لم يوجد أي مرشح بموقع حديث،
+  // حتى لا يبقى الطلب عالقاً بسبب قدم الموقع وحده.
+  const { data: staleLocations } = await supabaseAdmin
+    .from("worker_locations")
+    .select("user_id, lat, lng, updated_at")
+    .eq("is_online", true)
+    .lte("updated_at", freshAfter)
+    .gt("updated_at", staleAfter);
 
   const { data: activeOrders } = await supabaseAdmin
     .from("orders")
@@ -93,7 +127,8 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
   const pickupLat = order.pickup_lat ?? 0;
   const pickupLng = order.pickup_lng ?? 0;
 
-  const candidates = (workers ?? [])
+  const buildCandidates = (locations: { user_id: string; lat: number; lng: number }[]) =>
+    (workers ?? [])
     .filter((w) => !excluded.has(w.user_id))
     .filter((w) => {
       if (!requiredRank) return true;
@@ -101,7 +136,7 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
       return rank >= requiredRank;
     })
     .map((w) => {
-      const loc = locations?.find((l) => l.user_id === w.user_id);
+      const loc = locations.find((l) => l.user_id === w.user_id);
       if (!loc) return null;
       const km = distanceKm(loc.lat, loc.lng, pickupLat, pickupLng);
       const current = (activeOrders ?? []).filter((o) => o.driver_id === w.user_id);
@@ -113,11 +148,25 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
       if (conflicting) return null;
       return { driverId: w.user_id, km };
     })
-    .filter((c): c is { driverId: string; km: number } => c !== null && c.km <= radiusKm)
-    .sort((a, b) => a.km - b.km);
+      .filter((c): c is { driverId: string; km: number } => c !== null && c.km <= radiusKm)
+      .sort((a, b) => a.km - b.km);
+
+  let candidates = buildCandidates((freshLocations ?? []) as never);
+  if (!candidates.length) candidates = buildCandidates((staleLocations ?? []) as never);
 
   if (!candidates.length) {
-    return { assignedTo: null, status: "searching_driver", message: "لا يوجد مندوب مناسب حالياً" };
+    const { data: mark } = await supabaseAdmin.rpc("mark_dispatch_attempt", {
+      _order_id: order.id,
+      _found: false,
+    });
+    const info = (mark ?? {}) as { attempts?: number; alerted?: boolean };
+    return {
+      assignedTo: null,
+      status: "searching_driver",
+      message: info.alerted
+        ? "لا يوجد مندوب متاح، تم تنبيه الإدارة"
+        : `لا يوجد مندوب مناسب حالياً (محاولة ${info.attempts ?? 1})`,
+    };
   }
 
   // إرسال العرض بشكل ذري داخل قاعدة البيانات: قفل على الطلب والسائق مع إعادة فحص
@@ -135,8 +184,11 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
       break;
     }
   }
-  if (!chosen)
+  if (!chosen) {
+    await supabaseAdmin.rpc("mark_dispatch_attempt", { _order_id: order.id, _found: false });
     return { assignedTo: null, status: "searching_driver", message: "لا يوجد مندوب مناسب حالياً" };
+  }
+  await supabaseAdmin.rpc("mark_dispatch_attempt", { _order_id: order.id, _found: true });
   await supabaseAdmin.rpc("system_change_order_status", {
     _order_id: order.id,
     _new_status: "offered_to_driver",
@@ -199,6 +251,14 @@ export async function runMaintenance(source = "manual", minSeconds = 30) {
     } catch {
       // نتجاهل الطلب المتعثر ونكمل البقية
     }
+  }
+
+  // إعادة محاولة الاستردادات المعلّقة لدى مزود الدفع
+  try {
+    const { processPendingRefunds } = await import("@/lib/payments.server");
+    await processPendingRefunds();
+  } catch {
+    // لا نوقف الصيانة بسبب مزود الدفع
   }
 
   // صيانة رحلات التكسي: إنهاء العروض المنتهية وإعادة توزيع الرحلات المعلّقة
