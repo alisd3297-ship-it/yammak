@@ -1021,29 +1021,46 @@ export type Database = {
       profession_categories: {
         Row: {
           created_at: string
+          deleted_at: string | null
+          description: string | null
           icon: string
           id: string
           is_active: boolean
           name: string
+          section_id: string | null
           sort_order: number
         }
         Insert: {
           created_at?: string
+          deleted_at?: string | null
+          description?: string | null
           icon?: string
           id?: string
           is_active?: boolean
           name: string
+          section_id?: string | null
           sort_order?: number
         }
         Update: {
           created_at?: string
+          deleted_at?: string | null
+          description?: string | null
           icon?: string
           id?: string
           is_active?: boolean
           name?: string
+          section_id?: string | null
           sort_order?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profession_categories_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "service_sections"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -1464,6 +1481,9 @@ export type Database = {
       service_sections: {
         Row: {
           created_at: string
+          deleted_at: string | null
+          description: string | null
+          icon: string
           id: string
           is_active: boolean
           name: string
@@ -1471,6 +1491,9 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          deleted_at?: string | null
+          description?: string | null
+          icon?: string
           id?: string
           is_active?: boolean
           name: string
@@ -1478,6 +1501,9 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          deleted_at?: string | null
+          description?: string | null
+          icon?: string
           id?: string
           is_active?: boolean
           name?: string
@@ -1488,6 +1514,7 @@ export type Database = {
       services: {
         Row: {
           created_at: string
+          deleted_at: string | null
           description: string | null
           icon: string
           id: string
@@ -1503,6 +1530,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           icon?: string
           id?: string
@@ -1518,6 +1546,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           icon?: string
           id?: string
@@ -1940,6 +1969,18 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      admin_delete_profession_category: {
+        Args: { _hard?: boolean; _id: string; _reassign_to?: string }
+        Returns: undefined
+      }
+      admin_delete_service: {
+        Args: { _hard?: boolean; _id: string }
+        Returns: undefined
+      }
+      admin_delete_service_section: {
+        Args: { _hard?: boolean; _id: string; _reassign_to?: string }
+        Returns: undefined
       }
       admin_list_users: {
         Args: { _limit?: number; _search?: string }
