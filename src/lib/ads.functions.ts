@@ -8,7 +8,6 @@ const MAX_IMAGES = 5;
 
 function friendly(message: string): string {
   if (message.includes("ad_category_not_found")) return "فئة الإعلان غير متاحة";
-  if (message.includes("ad_images_required")) return "أضف صورة واحدة على الأقل للإعلان";
   if (message.includes("ad_images_limit")) return "الحد الأقصى 5 صور للإعلان";
   if (message.includes("too_many_active_ads")) return "عندك إعلانات نشطة كثيرة، انتظر مراجعتها أولاً";
   if (message.includes("ads_title_len")) return "عنوان الإعلان لازم بين 3 و120 حرف";
@@ -16,17 +15,18 @@ function friendly(message: string): string {
   if (message.includes("ads_phone_len")) return "رقم الاتصال غير صحيح";
   if (message.includes("ads_address_len")) return "العنوان غير صحيح";
   if (message.includes("ads_price_positive")) return "السعر غير صالح";
+  if (message.includes("ad_currency_invalid") || message.includes("ads_currency_valid")) return "العملة غير مدعومة";
+  if (message.includes("ads_governorate_valid")) return "المحافظة غير صحيحة";
   if (message.includes("ad_not_found")) return "الإعلان غير موجود";
   if (message.includes("forbidden") || message.includes("unauthorized")) return "غير مصرح بهذا الإجراء";
   return "تعذر تنفيذ العملية، حاول مرة ثانية";
 }
 
-/** التحقق النهائي من الصور يتم هنا وفي قاعدة البيانات، لا في المتصفح. */
+/** التحقق النهائي من الصور يتم هنا وفي قاعدة البيانات، لا في المتصفح. الصور اختيارية. */
 function sanitizeImages(images: string[] | undefined, userId: string): string[] {
   const clean = Array.from(
     new Set((images ?? []).map((p) => String(p).trim()).filter((p) => p.length > 0)),
   );
-  if (clean.length === 0) throw new Error("ad_images_required");
   if (clean.length > MAX_IMAGES) throw new Error("ad_images_limit");
   for (const path of clean) {
     if (!path.startsWith(`${userId}/`) || path.includes("..")) throw new Error("forbidden");
@@ -44,8 +44,10 @@ export const createAd = createServerFn({ method: "POST" })
       body: string;
       contactPhone: string;
       addressText: string;
-      images: string[];
+      images?: string[];
       price?: number | null;
+      currency?: string | null;
+      governorate?: string | null;
       cityId?: string | null;
     }) => data,
   )
@@ -64,6 +66,8 @@ export const createAd = createServerFn({ method: "POST" })
       _contact_phone: (data.contactPhone ?? "").trim(),
       _address_text: (data.addressText ?? "").trim(),
       _images: images,
+      _currency: data.currency === "USD" ? "USD" : "IQD",
+      _governorate: (data.governorate ?? "").trim() || null,
       ...(data.price != null ? { _price: data.price } : {}),
       ...(data.cityId ? { _city_id: data.cityId } : {}),
     });
