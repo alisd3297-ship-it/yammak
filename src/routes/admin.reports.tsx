@@ -56,6 +56,12 @@ function AdminReportsPage() {
   const money = (v: number | null | undefined) =>
     report?.can_finance && v != null ? formatIQD(Number(v)) : "—";
 
+  /** عرض مبلغ بعملته دون خلط الدينار بالدولار. */
+  const fmt = (v: number | string, currency: string) =>
+    currency === "USD"
+      ? `${Number(v).toLocaleString("en-US", { maximumFractionDigits: 2 })} $`
+      : formatIQD(Number(v));
+
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
