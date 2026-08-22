@@ -1862,6 +1862,7 @@ export type Database = {
       }
       worker_profiles: {
         Row: {
+          application_status: string
           city_id: string | null
           created_at: string
           is_approved: boolean
@@ -1870,7 +1871,10 @@ export type Database = {
           plate_number: string | null
           rating: number
           ratings_count: number
+          rejection_reason: string | null
           requested_kind: Database["public"]["Enums"]["worker_kind"] | null
+          reviewed_at: string | null
+          reviewed_by: string | null
           taxi_class: Database["public"]["Enums"]["taxi_class"] | null
           taxi_seats: number
           updated_at: string
@@ -1883,6 +1887,7 @@ export type Database = {
           worker_kind: Database["public"]["Enums"]["worker_kind"] | null
         }
         Insert: {
+          application_status?: string
           city_id?: string | null
           created_at?: string
           is_approved?: boolean
@@ -1891,7 +1896,10 @@ export type Database = {
           plate_number?: string | null
           rating?: number
           ratings_count?: number
+          rejection_reason?: string | null
           requested_kind?: Database["public"]["Enums"]["worker_kind"] | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           taxi_class?: Database["public"]["Enums"]["taxi_class"] | null
           taxi_seats?: number
           updated_at?: string
@@ -1904,6 +1912,7 @@ export type Database = {
           worker_kind?: Database["public"]["Enums"]["worker_kind"] | null
         }
         Update: {
+          application_status?: string
           city_id?: string | null
           created_at?: string
           is_approved?: boolean
@@ -1912,7 +1921,10 @@ export type Database = {
           plate_number?: string | null
           rating?: number
           ratings_count?: number
+          rejection_reason?: string | null
           requested_kind?: Database["public"]["Enums"]["worker_kind"] | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           taxi_class?: Database["public"]["Enums"]["taxi_class"] | null
           taxi_seats?: number
           updated_at?: string
@@ -2071,6 +2083,7 @@ export type Database = {
           _worker_kind: Database["public"]["Enums"]["worker_kind"]
         }
         Returns: {
+          application_status: string
           city_id: string | null
           created_at: string
           is_approved: boolean
@@ -2079,7 +2092,10 @@ export type Database = {
           plate_number: string | null
           rating: number
           ratings_count: number
+          rejection_reason: string | null
           requested_kind: Database["public"]["Enums"]["worker_kind"] | null
+          reviewed_at: string | null
+          reviewed_by: string | null
           taxi_class: Database["public"]["Enums"]["taxi_class"] | null
           taxi_seats: number
           updated_at: string
@@ -3066,6 +3082,7 @@ export type Database = {
       set_worker_approval: {
         Args: { _approve: boolean; _reason?: string; _user_id: string }
         Returns: {
+          application_status: string
           city_id: string | null
           created_at: string
           is_approved: boolean
@@ -3074,7 +3091,10 @@ export type Database = {
           plate_number: string | null
           rating: number
           ratings_count: number
+          rejection_reason: string | null
           requested_kind: Database["public"]["Enums"]["worker_kind"] | null
+          reviewed_at: string | null
+          reviewed_by: string | null
           taxi_class: Database["public"]["Enums"]["taxi_class"] | null
           taxi_seats: number
           updated_at: string
