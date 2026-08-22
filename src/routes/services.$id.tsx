@@ -52,7 +52,7 @@ function ServiceProviderPage() {
           .maybeSingle(),
         supabase
           .from("provider_services")
-          .select("id, name, description, price_amount, price_unit, estimated_minutes")
+          .select("id, name, description, price_amount, price_unit, estimated_minutes, currency")
           .eq("provider_id", id)
           .eq("is_active", true)
           .order("sort_order"),
@@ -144,7 +144,7 @@ function ServiceProviderPage() {
               <div className="flex items-center justify-between gap-3">
                 <p className="font-bold">{s.name}</p>
                 <span className="shrink-0 text-sm font-bold text-primary">
-                  {formatServicePrice(Number(s.price_amount), s.price_unit as ServicePriceUnit)}
+                  {formatServicePrice(Number(s.price_amount), s.price_unit as ServicePriceUnit, s.currency)}
                 </span>
               </div>
               <p className="mt-1 text-xs text-muted-foreground">{s.description}</p>
