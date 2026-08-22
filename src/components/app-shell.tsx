@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Home, ClipboardList, ShoppingCart, User, WifiOff, ShieldCheck, Bell } from "lucide-react";
+import { Home, ClipboardList, ShoppingCart, User, WifiOff, ShieldCheck, Bell, LogOut } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { superAdminExists } from "@/lib/admin-setup.functions";
