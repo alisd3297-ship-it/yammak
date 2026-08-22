@@ -25,8 +25,11 @@ import { Route as VerifyPhoneRouteImport } from './routes/verify-phone'
 import { Route as AdminAdsRouteImport } from './routes/admin.ads'
 import { Route as AdminCourierRouteImport } from './routes/admin.courier'
 import { Route as AdminDriversRouteImport } from './routes/admin.drivers'
+import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
 import { Route as AdminProvidersRouteImport } from './routes/admin.providers'
+import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdsIndexRouteImport } from './routes/ads.index'
 import { Route as AdsIdRouteImport } from './routes/ads.$id'
 import { Route as AdsNewRouteImport } from './routes/ads.new'
@@ -125,6 +128,11 @@ const AdminDriversRoute = AdminDriversRouteImport.update({
   path: '/admin/drivers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminOrdersRoute = AdminOrdersRouteImport.update({
+  id: '/admin/orders',
+  path: '/admin/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
   id: '/admin/payments',
   path: '/admin/payments',
@@ -133,6 +141,16 @@ const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
 const AdminProvidersRoute = AdminProvidersRouteImport.update({
   id: '/admin/providers',
   path: '/admin/providers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/admin/reports',
+  path: '/admin/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdsIndexRoute = AdsIndexRouteImport.update({
@@ -238,8 +256,11 @@ export interface FileRoutesByFullPath {
   '/admin/ads': typeof AdminAdsRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
+  '/admin/orders': typeof AdminOrdersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/ads/$id': typeof AdsIdRoute
   '/ads/new': typeof AdsNewRoute
   '/join/driver': typeof JoinDriverRoute
@@ -275,8 +296,11 @@ export interface FileRoutesByTo {
   '/admin/ads': typeof AdminAdsRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
+  '/admin/orders': typeof AdminOrdersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/ads/$id': typeof AdsIdRoute
   '/ads/new': typeof AdsNewRoute
   '/join/driver': typeof JoinDriverRoute
@@ -313,8 +337,11 @@ export interface FileRoutesById {
   '/admin/ads': typeof AdminAdsRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
+  '/admin/orders': typeof AdminOrdersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/ads/$id': typeof AdsIdRoute
   '/ads/new': typeof AdsNewRoute
   '/join/driver': typeof JoinDriverRoute
@@ -352,8 +379,11 @@ export interface FileRouteTypes {
     | '/admin/ads'
     | '/admin/courier'
     | '/admin/drivers'
+    | '/admin/orders'
     | '/admin/payments'
     | '/admin/providers'
+    | '/admin/reports'
+    | '/admin/users'
     | '/ads/$id'
     | '/ads/new'
     | '/join/driver'
@@ -389,8 +419,11 @@ export interface FileRouteTypes {
     | '/admin/ads'
     | '/admin/courier'
     | '/admin/drivers'
+    | '/admin/orders'
     | '/admin/payments'
     | '/admin/providers'
+    | '/admin/reports'
+    | '/admin/users'
     | '/ads/$id'
     | '/ads/new'
     | '/join/driver'
@@ -426,8 +459,11 @@ export interface FileRouteTypes {
     | '/admin/ads'
     | '/admin/courier'
     | '/admin/drivers'
+    | '/admin/orders'
     | '/admin/payments'
     | '/admin/providers'
+    | '/admin/reports'
+    | '/admin/users'
     | '/ads/$id'
     | '/ads/new'
     | '/join/driver'
@@ -464,8 +500,11 @@ export interface RootRouteChildren {
   AdminAdsRoute: typeof AdminAdsRoute
   AdminCourierRoute: typeof AdminCourierRoute
   AdminDriversRoute: typeof AdminDriversRoute
+  AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminProvidersRoute: typeof AdminProvidersRoute
+  AdminReportsRoute: typeof AdminReportsRoute
+  AdminUsersRoute: typeof AdminUsersRoute
   AdsIdRoute: typeof AdsIdRoute
   AdsNewRoute: typeof AdsNewRoute
   JoinDriverRoute: typeof JoinDriverRoute
@@ -599,6 +638,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDriversRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/orders': {
+      id: '/admin/orders'
+      path: '/admin/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/payments': {
       id: '/admin/payments'
       path: '/admin/payments'
@@ -611,6 +657,20 @@ declare module '@tanstack/react-router' {
       path: '/admin/providers'
       fullPath: '/admin/providers'
       preLoaderRoute: typeof AdminProvidersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/admin/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ads/': {
@@ -752,8 +812,11 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAdsRoute: AdminAdsRoute,
   AdminCourierRoute: AdminCourierRoute,
   AdminDriversRoute: AdminDriversRoute,
+  AdminOrdersRoute: AdminOrdersRoute,
   AdminPaymentsRoute: AdminPaymentsRoute,
   AdminProvidersRoute: AdminProvidersRoute,
+  AdminReportsRoute: AdminReportsRoute,
+  AdminUsersRoute: AdminUsersRoute,
   AdsIdRoute: AdsIdRoute,
   AdsNewRoute: AdsNewRoute,
   JoinDriverRoute: JoinDriverRoute,

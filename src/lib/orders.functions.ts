@@ -82,18 +82,26 @@ export const changeOrderStatus = createServerFn({ method: "POST" })
     return { id: order.id, status: order.status as OrderStatus };
   });
 
-/** تقدير أجرة التوصيل قبل تأكيد الطلب اعتماداً على قواعد التسعير. */
+/**
+ * تقدير أجرة التوصيل قبل تأكيد الطلب اعتماداً على قواعد التسعير،
+ * بنفس نوع الطلب الذي ستستخدمه قاعدة البيانات عند الإنشاء (مطعم/متجر)
+ * حتى يتطابق السعر المعروض مع المبلغ النهائي.
+ */
 export const quoteDeliveryFee = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { providerId: string; lat?: number | null; lng?: number | null }) => data)
   .handler(async ({ data, context }) => {
     const { data: provider } = await context.supabase
       .from("providers")
-      .select("id, city_id, lat, lng")
+      .select("id, city_id, lat, lng, kind")
       .eq("id", data.providerId)
       .maybeSingle();
     if (!provider) throw new Error("المتجر غير موجود");
+    if (provider.kind !== "restaurant" && provider.kind !== "store")
+      throw new Error("هذا النشاط لا يستقبل طلبات توصيل");
+    const orderType = provider.kind === "store" ? "store" : "restaurant";
 
+    // نفس دالة المسافة المستخدمة داخل create_customer_order (0 عند غياب الإحداثيات)
     let km = 0;
     if (provider.lat != null && provider.lng != null && data.lat != null && data.lng != null) {
       const { data: d } = await context.supabase.rpc("haversine_km", {
@@ -106,10 +114,10 @@ export const quoteDeliveryFee = createServerFn({ method: "POST" })
     }
 
     const { data: fee } = await context.supabase.rpc("compute_delivery_fee", {
-      _order_type: "restaurant",
+      _order_type: orderType,
       _city_id: provider.city_id as string,
       _provider_id: provider.id,
       _distance_km: km,
     });
-    return { fee: Number(fee ?? 0), km };
+    return { fee: Number(fee ?? 0), km, orderType };
   });

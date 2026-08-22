@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Home, ClipboardList, ShoppingCart, User, WifiOff, ShieldCheck, Bell, LogOut } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { superAdminExists } from "@/lib/admin-setup.functions";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
 import { useOnline } from "@/lib/offline-cache";
@@ -67,10 +67,13 @@ function AccountButton() {
 
 function NotificationsButton() {
   const { data: account } = useAccount();
+  const qc = useQueryClient();
+  const userId = account?.userId ?? null;
   const { data: unread } = useQuery({
-    queryKey: ["notifications-unread", account?.userId],
-    enabled: !!account?.userId,
-    refetchInterval: 60_000,
+    queryKey: ["notifications-unread", userId],
+    enabled: !!userId,
+    // realtime هو المصدر الأساسي، والاستطلاع البطيء احتياطي فقط
+    refetchInterval: 120_000,
     staleTime: 30_000,
     queryFn: async () => {
       const { count } = await supabase
@@ -81,7 +84,26 @@ function NotificationsButton() {
     },
   });
 
-  if (!account?.userId) return null;
+  // اشتراك لحظي واحد فقط على إشعارات المستخدم الحالي
+  useEffect(() => {
+    if (!userId) return;
+    const channel = supabase
+      .channel(`notifications-${userId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
+        () => {
+          qc.invalidateQueries({ queryKey: ["notifications-unread", userId] });
+          qc.invalidateQueries({ queryKey: ["notifications"] });
+        },
+      )
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [userId, qc]);
+
+  if (!userId) return null;
 
   return (
     <Link
@@ -210,4 +232,36 @@ export function AdminEntry() {
   }
 
   return null;
+}
+
+const ADMIN_LINKS = [
+  { to: "/admin/orders", label: "موافقات الطلبات" },
+  { to: "/admin/providers", label: "المزوّدون" },
+  { to: "/admin/drivers", label: "المندوبون" },
+  { to: "/admin/courier", label: "الطلبات" },
+  { to: "/admin/payments", label: "المدفوعات" },
+  { to: "/admin/reports", label: "التقارير" },
+  { to: "/admin/users", label: "المستخدمون" },
+  { to: "/admin/ads", label: "الإعلانات" },
+] as const;
+
+/** شريط تنقل موحّد بين صفحات الإدارة. */
+export function AdminNav() {
+  return (
+    <nav className="mt-4 overflow-x-auto px-4">
+      <ul className="flex gap-2">
+        {ADMIN_LINKS.map((l) => (
+          <li key={l.to}>
+            <Link
+              to={l.to}
+              className="block whitespace-nowrap rounded-full bg-muted px-4 py-2 text-xs font-semibold text-muted-foreground"
+              activeProps={{ className: "bg-primary text-primary-foreground" }}
+            >
+              {l.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
 }

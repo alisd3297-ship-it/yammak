@@ -453,6 +453,7 @@ export type Database = {
         Row: {
           body: string | null
           created_at: string
+          dedupe_key: string | null
           id: string
           is_read: boolean
           kind: string
@@ -463,6 +464,7 @@ export type Database = {
         Insert: {
           body?: string | null
           created_at?: string
+          dedupe_key?: string | null
           id?: string
           is_read?: boolean
           kind?: string
@@ -473,6 +475,7 @@ export type Database = {
         Update: {
           body?: string | null
           created_at?: string
+          dedupe_key?: string | null
           id?: string
           is_read?: boolean
           kind?: string
@@ -622,6 +625,9 @@ export type Database = {
       }
       orders: {
         Row: {
+          admin_approved_at: string | null
+          admin_approved_by: string | null
+          admin_review_reason: string | null
           cancel_reason: string | null
           cargo_description: string | null
           cargo_weight_kg: number | null
@@ -643,6 +649,7 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          requires_admin_approval: boolean
           scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
           subtotal: number
@@ -651,6 +658,9 @@ export type Database = {
           vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
         }
         Insert: {
+          admin_approved_at?: string | null
+          admin_approved_by?: string | null
+          admin_review_reason?: string | null
           cancel_reason?: string | null
           cargo_description?: string | null
           cargo_weight_kg?: number | null
@@ -672,6 +682,7 @@ export type Database = {
           pickup_lng?: number | null
           pickup_text?: string | null
           provider_id?: string | null
+          requires_admin_approval?: boolean
           scheduled_at?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           subtotal?: number
@@ -680,6 +691,9 @@ export type Database = {
           vehicle_type?: Database["public"]["Enums"]["vehicle_type"] | null
         }
         Update: {
+          admin_approved_at?: string | null
+          admin_approved_by?: string | null
+          admin_review_reason?: string | null
           cancel_reason?: string | null
           cargo_description?: string | null
           cargo_weight_kg?: number | null
@@ -701,6 +715,7 @@ export type Database = {
           pickup_lng?: number | null
           pickup_text?: string | null
           provider_id?: string | null
+          requires_admin_approval?: boolean
           scheduled_at?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           subtotal?: number
@@ -1853,6 +1868,9 @@ export type Database = {
       accept_delivery_offer: {
         Args: { _offer_id: string }
         Returns: {
+          admin_approved_at: string | null
+          admin_approved_by: string | null
+          admin_review_reason: string | null
           cancel_reason: string | null
           cargo_description: string | null
           cargo_weight_kg: number | null
@@ -1874,6 +1892,7 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          requires_admin_approval: boolean
           scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
           subtotal: number
@@ -1921,6 +1940,33 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      admin_list_users: {
+        Args: { _limit?: number; _search?: string }
+        Returns: {
+          created_at: string
+          full_name: string
+          is_blocked: boolean
+          phone: string
+          roles: string[]
+          user_id: string
+        }[]
+      }
+      admin_orders_report: {
+        Args: { _from: string; _to: string }
+        Returns: Json
+      }
+      admin_set_user_blocked: {
+        Args: { _blocked: boolean; _user_id: string }
+        Returns: boolean
+      }
+      admin_set_user_role: {
+        Args: {
+          _grant: boolean
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
       }
       apply_as_driver: {
         Args: {
@@ -2065,6 +2111,9 @@ export type Database = {
           _reason?: string
         }
         Returns: {
+          admin_approved_at: string | null
+          admin_approved_by: string | null
+          admin_review_reason: string | null
           cancel_reason: string | null
           cargo_description: string | null
           cargo_weight_kg: number | null
@@ -2086,6 +2135,7 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          requires_admin_approval: boolean
           scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
           subtotal: number
@@ -2276,6 +2326,9 @@ export type Database = {
           _pickup_text: string
         }
         Returns: {
+          admin_approved_at: string | null
+          admin_approved_by: string | null
+          admin_review_reason: string | null
           cancel_reason: string | null
           cargo_description: string | null
           cargo_weight_kg: number | null
@@ -2297,6 +2350,7 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          requires_admin_approval: boolean
           scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
           subtotal: number
@@ -2321,6 +2375,9 @@ export type Database = {
           _provider_id: string
         }
         Returns: {
+          admin_approved_at: string | null
+          admin_approved_by: string | null
+          admin_review_reason: string | null
           cancel_reason: string | null
           cargo_description: string | null
           cargo_weight_kg: number | null
@@ -2342,6 +2399,7 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          requires_admin_approval: boolean
           scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
           subtotal: number
@@ -2441,6 +2499,9 @@ export type Database = {
           _vehicle_type: Database["public"]["Enums"]["vehicle_type"]
         }
         Returns: {
+          admin_approved_at: string | null
+          admin_approved_by: string | null
+          admin_review_reason: string | null
           cancel_reason: string | null
           cargo_description: string | null
           cargo_weight_kg: number | null
@@ -2462,6 +2523,7 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          requires_admin_approval: boolean
           scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
           subtotal: number
@@ -2576,6 +2638,10 @@ export type Database = {
         Args: { _order_id: string; _user_id: string }
         Returns: string
       }
+      order_needs_admin_approval: {
+        Args: { _order_type: Database["public"]["Enums"]["order_type"] }
+        Returns: boolean
+      }
       otp_flag: { Args: { _flag: string }; Returns: boolean }
       otp_mark_delivered: {
         Args: { _challenge_id: string; _channel: string; _delivered: boolean }
@@ -2609,6 +2675,17 @@ export type Database = {
           label: string
           owner_id: string
         }[]
+      }
+      push_notification: {
+        Args: {
+          _body: string
+          _key?: string
+          _kind: string
+          _order_id?: string
+          _title: string
+          _user_id: string
+        }
+        Returns: undefined
       }
       quote_special_delivery: {
         Args: {
@@ -2702,6 +2779,48 @@ export type Database = {
       reject_trip_offer: {
         Args: { _offer_id: string; _reason?: string }
         Returns: string
+      }
+      review_order_approval: {
+        Args: { _approve: boolean; _order_id: string; _reason?: string }
+        Returns: {
+          admin_approved_at: string | null
+          admin_approved_by: string | null
+          admin_review_reason: string | null
+          cancel_reason: string | null
+          cargo_description: string | null
+          cargo_weight_kg: number | null
+          city_id: string | null
+          code: string
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          delivery_fee: number
+          driver_id: string | null
+          dropoff_lat: number | null
+          dropoff_lng: number | null
+          dropoff_text: string | null
+          id: string
+          notes: string | null
+          order_type: Database["public"]["Enums"]["order_type"]
+          payment_method: string
+          pickup_lat: number | null
+          pickup_lng: number | null
+          pickup_text: string | null
+          provider_id: string | null
+          requires_admin_approval: boolean
+          scheduled_at: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total: number
+          updated_at: string
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       run_sql_maintenance: { Args: never; Returns: Json }
       service_request_actor: {
@@ -2840,6 +2959,9 @@ export type Database = {
           _order_id: string
         }
         Returns: {
+          admin_approved_at: string | null
+          admin_approved_by: string | null
+          admin_review_reason: string | null
           cancel_reason: string | null
           cargo_description: string | null
           cargo_weight_kg: number | null
@@ -2861,6 +2983,7 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          requires_admin_approval: boolean
           scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
           subtotal: number

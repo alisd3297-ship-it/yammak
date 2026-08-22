@@ -20,14 +20,20 @@ import {
 } from "@/lib/orders";
 import { vehicleLabel } from "@/lib/vehicles";
 import { cn } from "@/lib/utils";
+import { requireSignedIn } from "@/lib/route-guards";
+import { OrderRatingCard } from "@/components/order-rating";
 
 export const Route = createFileRoute("/orders/$id")({
+  ssr: false,
+  beforeLoad: requireSignedIn,
   head: () => ({
     meta: [
       { title: "تتبع الطلب | يمّك" },
       { name: "description", content: "تابع حالة طلبك ومندوب التوصيل خطوة بخطوة في تطبيق يمّك." },
       { property: "og:title", content: "تتبع الطلب | يمّك" },
       { property: "og:description", content: "حالة الطلب والمندوب لحظة بلحظة." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: OrderTrackPage,
@@ -58,7 +64,7 @@ function OrderTrackPage() {
         supabase
           .from("orders")
           .select(
-            "id, code, status, order_type, total, subtotal, delivery_fee, pickup_text, dropoff_text, notes, created_at, vehicle_type, cargo_description, cargo_weight_kg, scheduled_at, providers(name, phone), driver_id",
+            "id, code, status, order_type, total, subtotal, delivery_fee, pickup_text, dropoff_text, notes, created_at, vehicle_type, cargo_description, cargo_weight_kg, scheduled_at, providers(name, phone), provider_id, driver_id, admin_review_reason, requires_admin_approval, admin_approved_at",
           )
           .eq("id", id)
           .maybeSingle(),
@@ -218,10 +224,28 @@ function OrderTrackPage() {
               إلغاء الطلب
             </Button>
           )}
+          {order?.requires_admin_approval && !order.admin_approved_at && status !== "cancelled" && (
+            <p className="mt-3 rounded-xl bg-warning/15 p-3 text-sm">
+              هذا الطلب ينتظر موافقة الإدارة قبل التجهيز.
+            </p>
+          )}
+          {order?.admin_review_reason && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              ملاحظة الإدارة: {order.admin_review_reason}
+            </p>
+          )}
         </section>
 
         {order?.id && Number(order.total) > 0 && (
           <PaymentPanel subjectType="order" subjectId={order.id} amount={Number(order.total)} />
+        )}
+
+        {order?.id && (status === "completed" || status === "delivered") && (
+          <OrderRatingCard
+            orderId={order.id}
+            providerId={order.provider_id}
+            driverId={order.driver_id}
+          />
         )}
 
         {tracking && (

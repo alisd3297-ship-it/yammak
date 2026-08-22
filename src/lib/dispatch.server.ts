@@ -178,18 +178,24 @@ export async function runMaintenance(source = "manual", minSeconds = 30) {
     .lte("scheduled_at", new Date(Date.now() + 15 * 60_000).toISOString())
     .limit(20);
 
+  // كل طلب بلا مندوب عالق في مرحلة توزيع: بحث عن مندوب، أو جاهز للاستلام
+  // ولم يُستدعَ له التوزيع (فشل نداء الواجهة)، أو عرض منتهي بلا رد.
   const { data: stuck } = await supabaseAdmin
     .from("orders")
     .select("id")
-    .eq("status", "searching_driver")
+    .in("status", ["searching_driver", "ready_for_pickup", "offered_to_driver"])
     .is("driver_id", null)
-    .limit(20);
+    .limit(40);
 
   let redispatched = 0;
+  const seen = new Set<string>();
   for (const o of [...(due ?? []), ...(stuck ?? [])]) {
+    if (seen.has(o.id)) continue;
+    seen.add(o.id);
     try {
-      await runDispatch(o.id);
-      redispatched += 1;
+      // runDispatch نفسه يتحقق من وجود عرض قائم ولا يرسل عرضاً مزدوجاً
+      const res = await runDispatch(o.id);
+      if (res.assignedTo) redispatched += 1;
     } catch {
       // نتجاهل الطلب المتعثر ونكمل البقية
     }
