@@ -9,6 +9,8 @@ import { useCart } from "@/lib/cart";
 import { useOnline } from "@/lib/offline-cache";
 import { cn } from "@/lib/utils";
 import { useAccount, homeRouteForAccount } from "@/lib/auth";
+import { useSignOut } from "@/lib/sign-out";
+
 
 export function BrandHeader({ subtitle }: { subtitle?: string }) {
   return (
