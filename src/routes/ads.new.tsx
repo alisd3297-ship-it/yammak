@@ -14,7 +14,7 @@ import { useAccount } from "@/lib/auth";
 import { createAd } from "@/lib/ads.functions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AD_CURRENCIES, AD_IMAGES_MAX, IRAQ_GOVERNORATES, adImageUrl, type AdCategory, type AdCurrency } from "@/lib/ads";
-import { OPERATING_ADDRESS_PREFIX, OPERATING_LOCATION, OPERATING_LOCATION_LABEL } from "@/lib/location";
+import { OPERATING_ADDRESS_PREFIX, OPERATING_LOCATION, OPERATING_LOCATION_LABEL, useOperatingCity } from "@/lib/location";
 
 import { randomId } from "@/lib/utils";
 
@@ -36,6 +36,7 @@ function NewAdPage() {
   const navigate = useNavigate();
   const { data: account } = useAccount();
   const submit = useServerFn(createAd);
+  const { data: operatingCity } = useOperatingCity();
 
   const [categoryId, setCategoryId] = useState("");
   const [title, setTitle] = useState("");
@@ -110,6 +111,8 @@ function NewAdPage() {
           price: price.trim() ? Number(price) : null,
           currency,
           governorate: governorate || null,
+          cityId:
+            governorate === OPERATING_LOCATION.governorate ? (operatingCity?.cityId ?? null) : null,
         },
       });
       toast.success("تم إرسال الإعلان للمراجعة");

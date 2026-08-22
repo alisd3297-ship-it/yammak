@@ -1,10 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { ArrowRight, Bike, Car } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { OPERATING_LOCATION } from "@/lib/location";
 import { PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,6 +57,13 @@ function JoinDriverPage() {
       return data ?? [];
     },
   });
+
+  // الموقع التشغيلي الحالي: كربلاء — قضاء الحسينية (تبقى بقية المدن متاحة للاختيار)
+  useEffect(() => {
+    if (cityId || !cities?.length) return;
+    const preferred = cities.find((c) => c.name === OPERATING_LOCATION.cityName);
+    if (preferred) setCityId(preferred.id);
+  }, [cities, cityId]);
 
   async function submit() {
     if (workerKind === "taxi" && (!make.trim() || !plate.trim())) {
