@@ -81,6 +81,21 @@ function AdminProvidersPage() {
 
   const isStaff = (account?.roles ?? []).some((r) => ["super_admin", "admin", "supervisor"].includes(r));
 
+  // عدّاد طلبات اعتماد المندوبين المعلّقة
+  const { data: pendingDrivers } = useQuery({
+    queryKey: ["admin-pending-drivers"],
+    enabled: isStaff,
+    refetchInterval: 60_000,
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("worker_profiles")
+        .select("user_id", { count: "exact", head: true })
+        .eq("is_approved", false)
+        .eq("application_status", "pending");
+      return count ?? 0;
+    },
+  });
+
   const { data: providers } = useQuery({
     queryKey: ["admin-providers", filter],
     enabled: isStaff,
@@ -147,7 +162,14 @@ function AdminProvidersPage() {
         <p className="mt-1 text-sm opacity-90">راجع طلبات مطاعم وكافتريات ومتاجر</p>
         <div className="mt-3 flex gap-4 text-sm font-semibold underline">
           <Link to="/admin/courier">طلبات المندوب المستقل</Link>
-          <Link to="/admin/drivers">السائقون والرحلات</Link>
+          <Link to="/admin/drivers">
+            السائقون والرحلات
+            {pendingDrivers ? (
+              <span className="ms-1 rounded-full bg-warning px-2 py-0.5 text-xs font-bold text-warning-foreground no-underline">
+                {pendingDrivers}
+              </span>
+            ) : null}
+          </Link>
           <Link to="/admin/payments">المدفوعات</Link>
           <Link to="/admin/ads">الإعلانات</Link>
 
