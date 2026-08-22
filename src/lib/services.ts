@@ -49,11 +49,22 @@ export const PRICE_UNIT_LABELS: Record<ServicePriceUnit, string> = {
   negotiable: "بالاتفاق",
 };
 
-export function formatServicePrice(amount: number, unit: ServicePriceUnit): string {
+/** مبلغ خدمة بعملته (دينار أو دولار) بدون خلط بين العملات. */
+export function formatServiceMoney(amount: number, currency?: string | null): string {
+  if ((currency ?? "IQD") === "IQD") return formatIQD(amount);
+  const value = new Intl.NumberFormat("ar-IQ-u-nu-latn").format(amount);
+  return `${value} ${currencySymbol(currency)}`;
+}
+
+export function formatServicePrice(
+  amount: number,
+  unit: ServicePriceUnit,
+  currency?: string | null,
+): string {
   if (unit === "negotiable" || amount <= 0) return "السعر بالاتفاق";
   const suffix =
     unit === "hourly" ? " / ساعة" : unit === "daily" ? " / يوم" : unit === "visit" ? " / زيارة" : "";
-  return `${formatIQD(amount)}${suffix}`;
+  return `${formatServiceMoney(amount, currency)}${suffix}`;
 }
 
 /** الخطوة التالية المتاحة لمقدم الخدمة حسب الحالة الحالية. */
