@@ -194,8 +194,89 @@ function AdminReportsPage() {
             </p>
           </section>
 
+          {report.can_finance && report.finance && (
+            <section className="rounded-2xl bg-card p-4 shadow-soft">
+              <h2 className="mb-3 font-bold">الأرباح والتكاليف (دينار)</h2>
+              <ul className="space-y-1 text-sm">
+                <li className="flex justify-between">
+                  <span className="text-muted-foreground">العمولات</span>
+                  <span className="font-semibold">{formatIQD(Number(report.finance.commissions))}</span>
+                </li>
+                <li className="flex justify-between">
+                  <span className="text-muted-foreground">رسوم التوصيل (طلبات مكتملة)</span>
+                  <span className="font-semibold">{formatIQD(Number(report.finance.delivery_fees))}</span>
+                </li>
+                <li className="flex justify-between">
+                  <span className="text-muted-foreground">تكلفة المنتجات المسجّلة</span>
+                  <span className="font-semibold">{formatIQD(Number(report.finance.product_cost))}</span>
+                </li>
+                <li className="flex justify-between border-t pt-1">
+                  <span className="text-muted-foreground">صافي الربح التقريبي</span>
+                  <span className="font-black">
+                    {formatIQD(
+                      Number(report.finance.commissions) +
+                        Number(report.finance.delivery_fees) -
+                        Number(report.finance.product_cost),
+                    )}
+                  </span>
+                </li>
+              </ul>
+              <p className="mt-2 text-[11px] text-muted-foreground">
+                التكلفة محسوبة على {report.finance.cost_known_items} من أصل {report.finance.total_items} صنف مباع
+                (الأصناف بدون تكلفة مسجّلة غير محتسبة).
+              </p>
+            </section>
+          )}
+
+          {report.can_finance && report.payments_by_currency && (
+            <section className="rounded-2xl bg-card p-4 shadow-soft">
+              <h2 className="mb-3 font-bold">المدفوعات حسب العملة</h2>
+              {report.payments_by_currency.length === 0 ? (
+                <p className="text-sm text-muted-foreground">ماكو مدفوعات بهذه الفترة.</p>
+              ) : (
+                <ul className="space-y-2 text-sm">
+                  {report.payments_by_currency.map((c) => (
+                    <li key={c.currency} className="flex justify-between">
+                      <span className="text-muted-foreground">
+                        {c.currency} · {c.count} عملية
+                      </span>
+                      <span className="font-semibold">
+                        {Number(c.net).toLocaleString("en-US")} {c.currency}
+                        {Number(c.refunded) > 0 ? ` (مسترجع ${Number(c.refunded).toLocaleString("en-US")})` : ""}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {report.refunds && (
+                <p className="mt-2 text-[11px] text-muted-foreground">
+                  الاستردادات: ناجحة {report.refunds.succeeded} · قيد التنفيذ {report.refunds.pending} · تحتاج معالجة
+                  يدوية {report.refunds.manual_required} · فاشلة {report.refunds.failed}
+                </p>
+              )}
+            </section>
+          )}
+
+          {report.can_finance && report.ads_by_currency && report.ads_by_currency.length > 0 && (
+            <section className="rounded-2xl bg-card p-4 shadow-soft">
+              <h2 className="mb-3 font-bold">الإعلانات حسب العملة</h2>
+              <ul className="space-y-1 text-sm">
+                {report.ads_by_currency.map((c) => (
+                  <li key={c.currency} className="flex justify-between">
+                    <span className="text-muted-foreground">
+                      {c.currency} · {c.count} إعلان
+                    </span>
+                    <span className="font-semibold">
+                      {Number(c.amount).toLocaleString("en-US")} {c.currency}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
           <p className="text-[11px] text-muted-foreground">
-            صافي الربح غير متاح لأن تكلفة المنتج غير مسجلة في الكتالوج حالياً؛ يظهر الإيراد ورسوم التوصيل بدلاً عنه.
+            أرقام الطلبات بالدينار العراقي. المدفوعات والإعلانات معروضة منفصلة لكل عملة ولا تُجمع مع بعضها.
           </p>
         </div>
       )}
