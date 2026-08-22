@@ -37,6 +37,7 @@ function ServicesPage() {
         .from("profession_categories")
         .select("id, name, icon, sort_order")
         .eq("is_active", true)
+        .is("deleted_at", null)
         .order("sort_order"),
       supabase
         .from("providers")
