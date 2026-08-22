@@ -233,3 +233,35 @@ export function AdminEntry() {
 
   return null;
 }
+
+const ADMIN_LINKS = [
+  { to: "/admin/orders", label: "موافقات الطلبات" },
+  { to: "/admin/providers", label: "المزوّدون" },
+  { to: "/admin/drivers", label: "المندوبون" },
+  { to: "/admin/courier", label: "الطلبات" },
+  { to: "/admin/payments", label: "المدفوعات" },
+  { to: "/admin/reports", label: "التقارير" },
+  { to: "/admin/users", label: "المستخدمون" },
+  { to: "/admin/ads", label: "الإعلانات" },
+] as const;
+
+/** شريط تنقل موحّد بين صفحات الإدارة. */
+export function AdminNav() {
+  return (
+    <nav className="mt-4 overflow-x-auto px-4">
+      <ul className="flex gap-2">
+        {ADMIN_LINKS.map((l) => (
+          <li key={l.to}>
+            <Link
+              to={l.to}
+              className="block whitespace-nowrap rounded-full bg-muted px-4 py-2 text-xs font-semibold text-muted-foreground"
+              activeProps={{ className: "bg-primary text-primary-foreground" }}
+            >
+              {l.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
