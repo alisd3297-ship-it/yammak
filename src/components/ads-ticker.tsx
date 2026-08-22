@@ -85,7 +85,7 @@ export function AdsTicker({ category, ads }: { category: AdCategory; ads: AdRow[
                 ) : null}
                 <span className="whitespace-nowrap text-sm font-bold">{ad.title}</span>
                 <span className="ad-ticker-price whitespace-nowrap rounded-lg px-2 py-0.5 text-[11px] font-bold">
-                  {formatAdPrice(ad.price)}
+                  {formatAdPrice(ad.price, ad.currency)}
                 </span>
               </Link>
             ))}

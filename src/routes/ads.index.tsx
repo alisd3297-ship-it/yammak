@@ -7,7 +7,7 @@ import { BottomNav, PageShell, StatusDot } from "@/components/app-shell";
 import { AdsTickerBoard } from "@/components/ads-ticker";
 import { Button } from "@/components/ui/button";
 import { useAccount } from "@/lib/auth";
-import { AD_STATUS_LABEL, AD_STATUS_TONE, formatAdPrice, type AdCategory, type AdRow } from "@/lib/ads";
+import { AD_STATUS_LABEL, AD_STATUS_TONE, IRAQ_GOVERNORATES, formatAdPrice, type AdCategory, type AdRow } from "@/lib/ads";
 import { AdImage } from "@/components/ad-image";
 import { cn } from "@/lib/utils";
 
@@ -36,7 +36,7 @@ export function useAdsBoard() {
         supabase.from("ad_categories").select("id, name, icon, color, sort_order").eq("is_active", true).order("sort_order"),
         supabase
           .from("ads")
-          .select("id, category_id, title, body, price, contact_phone, address_text, images, status, sort_order, published_at, expires_at, created_at")
+          .select("id, category_id, title, body, price, currency, governorate, contact_phone, address_text, images, status, sort_order, published_at, expires_at, created_at")
           .eq("status", "published")
           .order("sort_order")
           .order("published_at", { ascending: false }),
@@ -54,6 +54,7 @@ function AdsPage() {
   const { data: account } = useAccount();
   const { data } = useAdsBoard();
   const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [governorate, setGovernorate] = useState<string | null>(null);
 
   const mine = useQuery({
     queryKey: ["my-ads", account?.userId],
@@ -61,7 +62,7 @@ function AdsPage() {
     queryFn: async () => {
       const { data: rows } = await supabase
         .from("ads")
-        .select("id, category_id, title, price, images, status, rejection_reason, created_at, expires_at")
+        .select("id, category_id, title, price, currency, governorate, images, status, rejection_reason, created_at, expires_at")
         .eq("owner_id", account!.userId!)
         .order("created_at", { ascending: false });
       return rows ?? [];
@@ -71,8 +72,13 @@ function AdsPage() {
   const categories = data?.categories ?? [];
   const ads = data?.ads ?? [];
   const filtered = useMemo(
-    () => (categoryId ? ads.filter((ad) => ad.category_id === categoryId) : ads),
-    [ads, categoryId],
+    () =>
+      ads.filter(
+        (ad) =>
+          (!categoryId || ad.category_id === categoryId) &&
+          (!governorate || ad.governorate === governorate),
+      ),
+    [ads, categoryId, governorate],
   );
 
   return (
@@ -110,6 +116,17 @@ function AdsPage() {
           ))}
         </div>
 
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          <FilterChip active={governorate === null} onClick={() => setGovernorate(null)}>
+            كل المحافظات
+          </FilterChip>
+          {IRAQ_GOVERNORATES.map((name) => (
+            <FilterChip key={name} active={governorate === name} onClick={() => setGovernorate(name)}>
+              {name}
+            </FilterChip>
+          ))}
+        </div>
+
         <div className="space-y-2">
           {filtered.length === 0 ? (
             <p className="rounded-2xl bg-card p-5 text-center text-sm text-muted-foreground shadow-soft">
@@ -123,13 +140,14 @@ function AdsPage() {
                 params={{ id: ad.id }}
                 className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft transition active:scale-[0.99]"
               >
-                {ad.images[0] ? (
-                  <AdImage path={ad.images[0]} alt={ad.title} className="size-16 rounded-xl object-cover" />
-                ) : null}
+                <AdImage path={ad.images[0]} alt={ad.title} className="size-16 shrink-0 rounded-xl object-cover" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-bold">{ad.title}</p>
-                  <p className="truncate text-xs text-muted-foreground">{ad.address_text}</p>
-                  <p className="mt-1 text-sm font-bold text-primary">{formatAdPrice(ad.price)}</p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {ad.governorate ? `${ad.governorate} — ` : ""}
+                    {ad.address_text}
+                  </p>
+                  <p className="mt-1 text-sm font-bold text-primary">{formatAdPrice(ad.price, ad.currency)}</p>
                 </div>
               </Link>
             ))
@@ -149,7 +167,7 @@ function AdsPage() {
                   <div className="flex items-center gap-2">
                     <StatusDot tone={AD_STATUS_TONE[ad.status]} />
                     <span className="text-xs font-bold">{AD_STATUS_LABEL[ad.status]}</span>
-                    <span className="ms-auto text-xs text-muted-foreground">{formatAdPrice(ad.price)}</span>
+                    <span className="ms-auto text-xs text-muted-foreground">{formatAdPrice(ad.price, ad.currency)}</span>
                   </div>
                   <p className="mt-1 font-bold">{ad.title}</p>
                   {ad.rejection_reason ? (

@@ -57,7 +57,7 @@ function AdminAdsPage() {
       let query = supabase
         .from("ads")
         .select(
-          "id, category_id, title, body, price, contact_phone, address_text, images, status, rejection_reason, sort_order, published_at, expires_at, created_at, ad_categories(name)",
+          "id, category_id, title, body, price, currency, governorate, contact_phone, address_text, images, status, rejection_reason, sort_order, published_at, expires_at, created_at, ad_categories(name)",
         )
         .order("created_at", { ascending: false })
         .limit(100);
@@ -155,17 +155,15 @@ function AdminAdsPage() {
                 </div>
 
                 <div className="flex gap-3">
-                  {ad.images[0] ? (
-                    <AdImage path={ad.images[0]} className="size-20 rounded-xl object-cover" />
-                  ) : null}
+                  <AdImage path={ad.images[0]} className="size-20 shrink-0 rounded-xl object-cover" />
                   <div className="min-w-0 flex-1">
                     <Link to="/ads/$id" params={{ id: ad.id }} className="font-bold underline-offset-4 hover:underline">
                       {ad.title}
                     </Link>
                     <p className="line-clamp-2 text-xs text-muted-foreground">{ad.body}</p>
-                    <p className="text-sm font-bold text-primary">{formatAdPrice(ad.price)}</p>
+                    <p className="text-sm font-bold text-primary">{formatAdPrice(ad.price, ad.currency)}</p>
                     <p className="text-xs text-muted-foreground">
-                      {ad.contact_phone} — {ad.address_text}
+                      {ad.contact_phone} — {ad.governorate ? `${ad.governorate} — ` : ""}{ad.address_text}
                     </p>
                   </div>
                 </div>

@@ -34,7 +34,7 @@ function AdDetailPage() {
       const { data: ad } = await supabase
         .from("ads")
         .select(
-          "id, category_id, title, body, price, contact_phone, address_text, images, status, sort_order, published_at, expires_at, created_at, ad_categories(name)",
+          "id, category_id, title, body, price, currency, governorate, contact_phone, address_text, images, status, sort_order, published_at, expires_at, created_at, ad_categories(name)",
         )
         .eq("id", id)
         .maybeSingle();
@@ -103,10 +103,12 @@ function AdDetailPage() {
                 ) : null}
               </div>
               <h2 className="text-lg font-black">{data.title}</h2>
-              <p className="text-xl font-black text-primary">{formatAdPrice(data.price)}</p>
+              <p className="text-xl font-black text-primary">{formatAdPrice(data.price, data.currency)}</p>
               <p className="whitespace-pre-line text-sm leading-6 text-foreground/90">{data.body}</p>
               <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                <MapPin className="size-4" /> {data.address_text}
+                <MapPin className="size-4" />
+                {data.governorate ? <span className="font-bold text-foreground">{data.governorate}</span> : null}
+                <span>{data.address_text}</span>
               </p>
             </div>
 
