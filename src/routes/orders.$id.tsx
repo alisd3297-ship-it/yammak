@@ -20,6 +20,8 @@ import {
 } from "@/lib/orders";
 import { vehicleLabel } from "@/lib/vehicles";
 import { cn } from "@/lib/utils";
+import { requireSignedIn } from "@/lib/route-guards";
+import { OrderRatingCard } from "@/components/order-rating";
 
 export const Route = createFileRoute("/orders/$id")({
   ssr: false,
@@ -62,7 +64,7 @@ function OrderTrackPage() {
         supabase
           .from("orders")
           .select(
-            "id, code, status, order_type, total, subtotal, delivery_fee, pickup_text, dropoff_text, notes, created_at, vehicle_type, cargo_description, cargo_weight_kg, scheduled_at, providers(name, phone), driver_id",
+            "id, code, status, order_type, total, subtotal, delivery_fee, pickup_text, dropoff_text, notes, created_at, vehicle_type, cargo_description, cargo_weight_kg, scheduled_at, providers(name, phone), provider_id, driver_id, admin_review_reason, requires_admin_approval, admin_approved_at",
           )
           .eq("id", id)
           .maybeSingle(),
