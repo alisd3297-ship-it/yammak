@@ -128,7 +128,14 @@ function AdminAuditPage() {
   );
 
   return (
-    <PageShell title="سجل التدقيق" subtitle="كل عمليات الإدارة مسجّلة: من قام بها، ومتى، وما الذي تغيّر" admin>
+    <PageShell>
+      <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
+        <h1 className="text-2xl font-black">سجل التدقيق</h1>
+        <p className="mt-1 text-sm opacity-90">كل عمليات الإدارة مسجّلة: من قام بها، ومتى، وما الذي تغيّر</p>
+      </header>
+
+      <AdminNav />
+
       <div className="px-4 pb-24">
         <ul className="mt-4 flex gap-2 overflow-x-auto">
           {GROUPS.map((g) => (
