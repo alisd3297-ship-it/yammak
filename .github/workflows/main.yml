@@ -25,6 +25,9 @@ jobs:
           rm -rf android
           bunx cap add android
 
+      - name: Apply release signing config
+        run: node scripts/android-signing.mjs
+
       - name: Copy web app to Android
         run: bunx cap copy android
 
