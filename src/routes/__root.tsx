@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CartProvider } from "@/lib/cart";
 import { Toaster } from "@/components/ui/sonner";
+import { useSessionKeeper } from "@/lib/session-keeper";
 
 function NotFoundComponent() {
   return (
@@ -128,6 +129,9 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  // الحفاظ على جلسة المصادقة بعد إعادة فتح التطبيق
+  useSessionKeeper();
 
   // تسجيل عامل الخدمة لتوفير صفحة بديلة عند انقطاع الاتصال (غلاف Capacitor والويب)
   useEffect(() => {
