@@ -101,14 +101,17 @@ export const quoteDeliveryFee = createServerFn({ method: "POST" })
       throw new Error("هذا النشاط لا يستقبل طلبات توصيل");
     const orderType = provider.kind === "store" ? "store" : "restaurant";
 
-    // نفس دالة المسافة المستخدمة داخل create_customer_order (تعيد 0 عند غياب الإحداثيات)
-    const { data: d } = await context.supabase.rpc("haversine_km", {
-      a_lat: provider.lat,
-      a_lng: provider.lng,
-      b_lat: data.lat ?? null,
-      b_lng: data.lng ?? null,
-    });
-    const km = Number(d ?? 0);
+    // نفس دالة المسافة المستخدمة داخل create_customer_order (0 عند غياب الإحداثيات)
+    let km = 0;
+    if (provider.lat != null && provider.lng != null && data.lat != null && data.lng != null) {
+      const { data: d } = await context.supabase.rpc("haversine_km", {
+        a_lat: provider.lat,
+        a_lng: provider.lng,
+        b_lat: data.lat,
+        b_lng: data.lng,
+      });
+      km = Number(d ?? 0);
+    }
 
     const { data: fee } = await context.supabase.rpc("compute_delivery_fee", {
       _order_type: orderType,
