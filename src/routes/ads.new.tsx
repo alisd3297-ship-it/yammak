@@ -12,7 +12,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useAccount } from "@/lib/auth";
 import { createAd } from "@/lib/ads.functions";
-import { AD_IMAGES_MAX, adImageUrl, type AdCategory } from "@/lib/ads";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AD_CURRENCIES, AD_IMAGES_MAX, IRAQ_GOVERNORATES, adImageUrl, type AdCategory, type AdCurrency } from "@/lib/ads";
 
 import { randomId } from "@/lib/utils";
 
@@ -39,6 +40,8 @@ function NewAdPage() {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [price, setPrice] = useState("");
+  const [currency, setCurrency] = useState<AdCurrency>("IQD");
+  const [governorate, setGovernorate] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [images, setImages] = useState<string[]>([]);
@@ -104,6 +107,8 @@ function NewAdPage() {
           addressText: address,
           images,
           price: price.trim() ? Number(price) : null,
+          currency,
+          governorate: governorate || null,
         },
       });
       toast.success("تم إرسال الإعلان للمراجعة");
@@ -159,22 +164,60 @@ function NewAdPage() {
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <Label htmlFor="ad-price">السعر (د.ع)</Label>
+            <Label htmlFor="ad-price">السعر</Label>
             <Input id="ad-price" inputMode="numeric" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="اختياري" />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="ad-phone">رقم الاتصال</Label>
-            <Input id="ad-phone" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+            <Label htmlFor="ad-currency">العملة</Label>
+            <Select value={currency} onValueChange={(value) => setCurrency(value as AdCurrency)}>
+              <SelectTrigger id="ad-currency" dir="rtl">
+                <SelectValue placeholder="اختر العملة" />
+              </SelectTrigger>
+              <SelectContent dir="rtl">
+                {AD_CURRENCIES.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
         <div className="space-y-1.5">
+          <Label htmlFor="ad-phone">رقم الاتصال</Label>
+          <Input id="ad-phone" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="ad-governorate">المحافظة</Label>
+          <Select value={governorate} onValueChange={setGovernorate}>
+            <SelectTrigger id="ad-governorate" dir="rtl">
+              <SelectValue placeholder="اختر المحافظة" />
+            </SelectTrigger>
+            <SelectContent dir="rtl">
+              {IRAQ_GOVERNORATES.map((name) => (
+                <SelectItem key={name} value={name}>
+                  {name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1.5">
           <Label htmlFor="ad-address">العنوان</Label>
-          <Input id="ad-address" value={address} onChange={(e) => setAddress(e.target.value)} required />
+          <Input
+            id="ad-address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            required
+            placeholder="الشارع، المنطقة، أقرب نقطة دالة"
+          />
         </div>
 
         <div className="space-y-2">
-          <Label>الصور (1 إلى {AD_IMAGES_MAX})</Label>
+          <Label>الصور (اختياري — حتى {AD_IMAGES_MAX} صور)</Label>
           <div className="flex flex-wrap gap-2">
             {images.map((path) => (
               <div key={path} className="relative size-20 overflow-hidden rounded-xl">
@@ -199,7 +242,7 @@ function NewAdPage() {
           </div>
         </div>
 
-        <Button type="submit" disabled={saving || uploading || images.length === 0 || !categoryId} className="h-12 w-full text-base font-bold">
+        <Button type="submit" disabled={saving || uploading || !categoryId || !governorate} className="h-12 w-full text-base font-bold">
           {saving ? <Loader2 className="size-5 animate-spin" /> : null} إرسال للمراجعة
         </Button>
         <p className="text-center text-xs text-muted-foreground">
