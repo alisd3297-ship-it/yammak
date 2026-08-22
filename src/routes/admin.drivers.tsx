@@ -48,6 +48,9 @@ function AdminDriversPage() {
   const setStatus = useServerFn(changeTripStatus);
   const [tab, setTab] = useState<"drivers" | "trips">("drivers");
 
+  const [rejectFor, setRejectFor] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
+
   const isStaff = (account?.roles ?? []).some((r) => ["super_admin", "admin", "supervisor"].includes(r));
 
   const { data: drivers } = useQuery({
@@ -58,7 +61,7 @@ function AdminDriversPage() {
       const { data } = await supabase
         .from("worker_profiles")
         .select(
-          "user_id, worker_kind, requested_kind, is_approved, is_available, rating, ratings_count, taxi_class, taxi_seats, vehicle_type, vehicle_make, vehicle_model, vehicle_color, plate_number, created_at",
+          "user_id, worker_kind, requested_kind, is_approved, is_available, application_status, rejection_reason, rating, ratings_count, taxi_class, taxi_seats, vehicle_type, vehicle_make, vehicle_model, vehicle_color, plate_number, created_at",
         )
         .order("created_at", { ascending: false })
         .limit(100);
@@ -82,15 +85,17 @@ function AdminDriversPage() {
     },
   });
 
-  async function decide(userId: string, ok: boolean) {
+  async function decide(userId: string, ok: boolean, reason?: string) {
     try {
-      await approve({ data: { userId, approve: ok, reason: ok ? "اعتماد الإدارة" : "تعليق من الإدارة" } });
-      toast.success(ok ? "تم اعتماد السائق" : "تم تعليق السائق");
+      await approve({ data: { userId, approve: ok, reason: reason || (ok ? "اعتماد الإدارة" : "رفض من الإدارة") } });
+      toast.success(ok ? "تم اعتماد المندوب ومنحه صلاحية المندوب" : "تم رفض/تعليق المندوب وسحب صلاحياته");
       qc.invalidateQueries({ queryKey: ["admin-drivers"] });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "تعذر تنفيذ الإجراء");
     }
   }
+
+  const pendingCount = (drivers ?? []).filter((d) => !d.is_approved && d.application_status !== "rejected").length;
 
   async function retry(tripId: string) {
     try {
@@ -135,7 +140,10 @@ function AdminDriversPage() {
         <div className="grid grid-cols-2 gap-2 rounded-2xl bg-muted p-1">
           {(
             [
-              { key: "drivers", label: "طلبات السائقين" },
+              {
+                key: "drivers",
+                label: `طلبات السائقين${pendingCount ? ` (${pendingCount})` : ""}`,
+              },
               { key: "trips", label: "الرحلات" },
             ] as const
           ).map((t) => (
@@ -163,10 +171,14 @@ function AdminDriversPage() {
                   <span
                     className={cn(
                       "rounded-full px-2 py-0.5 text-xs font-semibold",
-                      d.is_approved ? "bg-success/15 text-success" : "bg-warning/20 text-warning-foreground",
+                      d.is_approved
+                        ? "bg-success/15 text-success"
+                        : d.application_status === "rejected"
+                          ? "bg-destructive/15 text-destructive"
+                          : "bg-warning/20 text-warning-foreground",
                     )}
                   >
-                    {d.is_approved ? "معتمد" : "قيد المراجعة"}
+                    {d.is_approved ? "معتمد" : d.application_status === "rejected" ? "مرفوض" : "قيد المراجعة"}
                   </span>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
@@ -181,18 +193,52 @@ function AdminDriversPage() {
                   التقييم: {Number(d.rating ?? 0).toFixed(1)} ({d.ratings_count ?? 0}) ·{" "}
                   {d.is_available ? "متاح الآن" : "غير متاح"}
                 </p>
+                {d.rejection_reason ? (
+                  <p className="mt-1 text-xs text-destructive">سبب الرفض: {d.rejection_reason}</p>
+                ) : null}
                 <div className="mt-3 flex gap-2">
                   {!d.is_approved && (
                     <Button className="h-10 flex-1" onClick={() => decide(d.user_id, true)}>
-                      اعتماد
+                      قبول ومنح صلاحية المندوب
                     </Button>
                   )}
-                  {d.is_approved && (
-                    <Button variant="outline" className="h-10 flex-1" onClick={() => decide(d.user_id, false)}>
-                      تعليق
-                    </Button>
-                  )}
+                  <Button
+                    variant="outline"
+                    className="h-10 flex-1"
+                    onClick={() => {
+                      setRejectFor(d.user_id);
+                      setRejectReason("");
+                    }}
+                  >
+                    {d.is_approved ? "تعليق" : "رفض"}
+                  </Button>
                 </div>
+                {rejectFor === d.user_id && (
+                  <div className="mt-3 space-y-2 rounded-xl bg-muted p-3">
+                    <input
+                      value={rejectReason}
+                      onChange={(e) => setRejectReason(e.target.value)}
+                      placeholder="سبب الرفض (اختياري)"
+                      aria-label="سبب الرفض"
+                      className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        variant="destructive"
+                        className="h-10 flex-1"
+                        onClick={async () => {
+                          await decide(d.user_id, false, rejectReason.trim());
+                          setRejectFor(null);
+                        }}
+                      >
+                        تأكيد
+                      </Button>
+                      <Button variant="ghost" className="h-10" onClick={() => setRejectFor(null)}>
+                        إلغاء
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </article>
             ))}
             {!drivers?.length && (

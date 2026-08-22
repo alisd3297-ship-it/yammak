@@ -28,13 +28,21 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  // نوع الحساب عند التسجيل: زبون يتفعل مباشرة، مندوب يمر بطلب اعتماد من الإدارة
+  const [accountType, setAccountType] = useState<"customer" | "driver">("customer");
+  const [pendingDriverSignup, setPendingDriverSignup] = useState(false);
 
   useEffect(() => {
     // لا نوجّه إلا بوجود جلسة فعلية (وليس بيانات مخزّنة قديمة بعد الخروج)
     if (account?.session && account.userId) {
+      if (pendingDriverSignup && !account.worker) {
+        setPendingDriverSignup(false);
+        navigate({ to: "/join/driver", replace: true });
+        return;
+      }
       navigate({ to: homeRouteForAccount(account), replace: true });
     }
-  }, [account, navigate]);
+  }, [account, navigate, pendingDriverSignup]);
 
 
   function authErrorMessage(message: string): string {
@@ -74,16 +82,19 @@ function AuthPage() {
   async function signUp(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
+    setPendingDriverSignup(accountType === "driver");
     const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
       password,
       options: {
         emailRedirectTo: window.location.origin,
-        data: { full_name: fullName, phone },
+        // نوع الحساب المطلوب فقط للعرض؛ الدور الفعلي يُمنح من الخادم/الإدارة
+        data: { full_name: fullName, phone, requested_account_type: accountType },
       },
     });
     setLoading(false);
     if (error) {
+      setPendingDriverSignup(false);
       toast.error(authErrorMessage(error.message));
       return;
     }
@@ -194,6 +205,37 @@ function AuthPage() {
 
         <TabsContent value="signup">
           <form onSubmit={signUp} className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label>نوع الحساب</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {(
+                  [
+                    { key: "customer", label: "زبون", hint: "تفعيل فوري" },
+                    { key: "driver", label: "مندوب", hint: "يحتاج موافقة الإدارة" },
+                  ] as const
+                ).map((opt) => (
+                  <button
+                    key={opt.key}
+                    type="button"
+                    aria-pressed={accountType === opt.key}
+                    onClick={() => setAccountType(opt.key)}
+                    className={
+                      accountType === opt.key
+                        ? "rounded-xl bg-primary p-3 text-sm font-bold text-primary-foreground"
+                        : "rounded-xl bg-muted p-3 text-sm font-semibold text-foreground"
+                    }
+                  >
+                    <span className="block">{opt.label}</span>
+                    <span className="block text-[11px] font-normal opacity-80">{opt.hint}</span>
+                  </button>
+                ))}
+              </div>
+              {accountType === "driver" && (
+                <p className="rounded-xl bg-warning/15 p-3 text-xs">
+                  راح ننشئ حسابك كزبون أولاً، وبعدها تكمل بيانات المركبة ويُرسل طلبك للإدارة. صلاحية المندوب تتفعل بعد الموافقة فقط.
+                </p>
+              )}
+            </div>
             <div className="space-y-2">
               <Label htmlFor="name">الاسم الكامل</Label>
               <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />

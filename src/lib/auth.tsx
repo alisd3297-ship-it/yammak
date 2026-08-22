@@ -17,6 +17,8 @@ export type AccountContext = {
     requested_kind: "delivery" | "taxi" | null;
     is_approved: boolean;
     is_available: boolean;
+    application_status: string;
+    rejection_reason: string | null;
   } | null;
   provider: { id: string; name: string; kind: string; status: string; is_open: boolean } | null;
 };
@@ -33,7 +35,7 @@ async function loadAccount(): Promise<AccountContext> {
     supabase.from("profiles").select("id, full_name, phone").eq("id", userId).maybeSingle(),
     supabase
       .from("worker_profiles")
-      .select("user_id, worker_kind, requested_kind, is_approved, is_available")
+      .select("user_id, worker_kind, requested_kind, is_approved, is_available, application_status, rejection_reason")
       .eq("user_id", userId)
       .maybeSingle(),
     supabase
@@ -78,7 +80,7 @@ export function homeRouteForAccount(account: AccountContext | undefined): string
   const roles = account.roles;
   if (isStaffAccount(account)) return "/admin/providers";
   if (account.provider || roles.includes("provider")) return "/provider";
-  if (account.worker || roles.includes("worker")) return "/driver";
+  if (account.worker?.is_approved || roles.includes("worker")) return "/driver";
   return "/";
 }
 
