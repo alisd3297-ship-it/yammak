@@ -27,6 +27,17 @@ export const reviewOrderApproval = createServerFn({ method: "POST" })
       ...(data.reason ? { _reason: data.reason } : {}),
     });
     if (error || !order) fail(error?.message ?? "");
+
+    // الرفض الإداري لطلب مدفوع يسجل طلب استرداد؛ ننفّذه فعلياً هنا
+    if (!data.approve) {
+      try {
+        const { processPendingRefunds } = await import("@/lib/payments.server");
+        await processPendingRefunds();
+      } catch {
+        // الصيانة الدورية تعيد المحاولة
+      }
+    }
+
     return { id: order.id, status: order.status };
   });
 
