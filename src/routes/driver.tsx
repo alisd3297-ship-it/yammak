@@ -134,31 +134,72 @@ function DriverDashboard() {
 
 
 
-  // بث موقع المندوب أثناء التوفر
+  // بث موقع المندوب أثناء التوفر.
+  // ملاحظة مهمة: هذا تتبّع أثناء عمل التطبيق فقط — لا يوجد تتبّع خلفية حقيقي
+  // في المتصفح ولا في غلاف Capacitor الحالي. لذلك نستعمل watchPosition + إعادة
+  // البث فور عودة التطبيق للواجهة، وقاعدة البيانات تعتمد نضارة الموقع للتوزيع.
   useEffect(() => {
-    if (!account?.userId || !worker?.is_available || !navigator.geolocation) return;
+    if (!account?.userId || !worker?.is_available) return;
+    if (typeof navigator === "undefined" || !navigator.geolocation) return;
+
+    const uid = account.userId;
     let warned = false;
-    const push = () =>
+    let lastSent = 0;
+    let watchId: number | null = null;
+
+    const send = (lat: number, lng: number, force = false) => {
+      const now = Date.now();
+      if (!force && now - lastSent < 20_000) return;
+      lastSent = now;
+      void supabase.from("worker_locations").upsert({
+        user_id: uid,
+        lat,
+        lng,
+        is_online: true,
+        updated_at: new Date().toISOString(),
+      });
+    };
+
+    const onError = () => {
+      if (warned) return;
+      warned = true;
+      toast.error("تعذر قراءة موقعك، فعّل صلاحية الموقع حتى تصلك العروض القريبة");
+    };
+
+    const pushOnce = (force = false) =>
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          void supabase.from("worker_locations").upsert({
-            user_id: account.userId!,
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-            is_online: true,
-            updated_at: new Date().toISOString(),
-          });
-        },
-        () => {
-          if (warned) return;
-          warned = true;
-          toast.error("تعذر قراءة موقعك، فعّل صلاحية الموقع حتى تصلك العروض القريبة");
-        },
+        (pos) => send(pos.coords.latitude, pos.coords.longitude, force),
+        onError,
         { enableHighAccuracy: true, timeout: 15_000, maximumAge: 30_000 },
       );
-    push();
-    const timer = setInterval(push, 30_000);
-    return () => clearInterval(timer);
+
+    pushOnce(true);
+    watchId = navigator.geolocation.watchPosition(
+      (pos) => send(pos.coords.latitude, pos.coords.longitude),
+      onError,
+      { enableHighAccuracy: true, timeout: 20_000, maximumAge: 15_000 },
+    );
+
+    // نبضة احتياطية عندما تكون الشاشة ظاهرة فقط (بدون حلقات في الخلفية)
+    const heartbeat = setInterval(() => {
+      if (document.visibilityState === "visible") pushOnce();
+    }, 45_000);
+
+    // عند عودة التطبيق من الخلفية: تحديث فوري للموقع حتى لا يُستبعد المندوب
+    const onResume = () => {
+      if (document.visibilityState === "visible") pushOnce(true);
+    };
+    document.addEventListener("visibilitychange", onResume);
+    window.addEventListener("focus", onResume);
+    window.addEventListener("online", onResume);
+
+    return () => {
+      if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+      clearInterval(heartbeat);
+      document.removeEventListener("visibilitychange", onResume);
+      window.removeEventListener("focus", onResume);
+      window.removeEventListener("online", onResume);
+    };
   }, [account?.userId, worker?.is_available]);
 
   async function toggleAvailable(value: boolean) {
