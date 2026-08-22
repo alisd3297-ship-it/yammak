@@ -194,37 +194,56 @@ function AdminReportsPage() {
             </p>
           </section>
 
-          {report.can_finance && report.finance && (
-            <section className="rounded-2xl bg-card p-4 shadow-soft">
-              <h2 className="mb-3 font-bold">الأرباح والتكاليف (دينار)</h2>
-              <ul className="space-y-1 text-sm">
-                <li className="flex justify-between">
-                  <span className="text-muted-foreground">العمولات</span>
-                  <span className="font-semibold">{formatIQD(Number(report.finance.commissions))}</span>
-                </li>
-                <li className="flex justify-between">
-                  <span className="text-muted-foreground">رسوم التوصيل (طلبات مكتملة)</span>
-                  <span className="font-semibold">{formatIQD(Number(report.finance.delivery_fees))}</span>
-                </li>
-                <li className="flex justify-between">
-                  <span className="text-muted-foreground">تكلفة المنتجات المسجّلة</span>
-                  <span className="font-semibold">{formatIQD(Number(report.finance.product_cost))}</span>
-                </li>
-                <li className="flex justify-between border-t pt-1">
-                  <span className="text-muted-foreground">صافي الربح التقريبي</span>
-                  <span className="font-black">
-                    {formatIQD(
-                      Number(report.finance.commissions) +
-                        Number(report.finance.delivery_fees) -
-                        Number(report.finance.product_cost),
-                    )}
-                  </span>
-                </li>
-              </ul>
-              <p className="mt-2 text-[11px] text-muted-foreground">
-                التكلفة محسوبة على {report.finance.cost_known_items} من أصل {report.finance.total_items} صنف مباع
-                (الأصناف بدون تكلفة مسجّلة غير محتسبة).
-              </p>
+          {report.can_finance && report.finance_by_currency && (
+            <section className="space-y-3">
+              <h2 className="px-1 font-bold">الأرباح والتكاليف — كل عملة على حدة</h2>
+              {report.finance_by_currency.length === 0 ? (
+                <p className="rounded-2xl bg-card p-4 text-sm text-muted-foreground shadow-soft">
+                  ماكو مبيعات مكتملة بهذه الفترة.
+                </p>
+              ) : (
+                report.finance_by_currency.map((f) => (
+                  <div key={f.currency} className="rounded-2xl bg-card p-4 shadow-soft">
+                    <h3 className="mb-3 text-sm font-black">
+                      {f.currency === "USD" ? "الدولار الأمريكي (USD)" : "الدينار العراقي (IQD)"}
+                    </h3>
+                    <ul className="space-y-1 text-sm">
+                      <li className="flex justify-between">
+                        <span className="text-muted-foreground">المبيعات (سعر البيع)</span>
+                        <span className="font-semibold">{fmt(f.sales, f.currency)}</span>
+                      </li>
+                      <li className="flex justify-between">
+                        <span className="text-muted-foreground">التكاليف (منتجات وخدمات)</span>
+                        <span className="font-semibold">{fmt(f.costs, f.currency)}</span>
+                      </li>
+                      <li className="flex justify-between border-t pt-1">
+                        <span className="text-muted-foreground">الربح الإجمالي (بيع − تكلفة)</span>
+                        <span className="font-bold">{fmt(f.gross_profit, f.currency)}</span>
+                      </li>
+                      <li className="flex justify-between">
+                        <span className="text-muted-foreground">عمولة يمّك</span>
+                        <span className="font-semibold">{fmt(f.commission, f.currency)}</span>
+                      </li>
+                      <li className="flex justify-between">
+                        <span className="text-muted-foreground">رسوم التوصيل</span>
+                        <span className="font-semibold">{fmt(f.delivery_fees, f.currency)}</span>
+                      </li>
+                      <li className="flex justify-between border-t pt-1">
+                        <span className="text-muted-foreground">صافي ربح يمّك (عمولة + توصيل)</span>
+                        <span className="font-black">{fmt(f.platform_net, f.currency)}</span>
+                      </li>
+                      <li className="flex justify-between">
+                        <span className="text-muted-foreground">صافي ربح المزوّد (بعد العمولة)</span>
+                        <span className="font-semibold">{fmt(f.provider_net, f.currency)}</span>
+                      </li>
+                    </ul>
+                    <p className="mt-2 text-[11px] text-muted-foreground">
+                      التكلفة محسوبة على {f.cost_known_items} من أصل {f.items} صنف/خدمة (بدون تكلفة مسجّلة = غير
+                      محتسبة). لا يتم جمع الدينار مع الدولار في أي إجمالي.
+                    </p>
+                  </div>
+                ))
+              )}
             </section>
           )}
 
