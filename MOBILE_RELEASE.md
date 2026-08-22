@@ -85,3 +85,21 @@ npx cap sync
 
 > ملاحظة مراجعة Apple: تطبيقات wrapper بحتة قد تُرفض بموجب 4.2؛ يُنصح بإضافة
 > قيمة أصلية (إشعارات Push، موقع أصلي، كاميرا) قبل التقديم.
+
+## توقيع إصدار Android (Release signing)
+
+- ملف الأسرار المحلي: `android/keystore.properties` (غير مضاف إلى Git — مستثنى في `.gitignore`)
+  ويحتوي: `storeFile`, `storePassword`, `keyAlias`, `keyPassword`.
+- بعد أي `npx cap add android` (الذي يعيد توليد `android/app/build.gradle`) نفّذ:
+
+```bash
+npm run android:signing   # أو: node scripts/android-signing.mjs
+```
+
+السكربت idempotent: يحقن قراءة `keystore.properties` + `signingConfigs.release`
+ويستخدمها في `buildTypes.release`، بدون المساس بـ `applicationId iq.yammak.app`
+أو `versionCode 1` / `versionName "1.0"` أو أي إعداد آخر. إذا لم يوجد ملف
+`keystore.properties` يبقى البناء كما كان (بدون توقيع إصدار)، لذلك لا ينكسر CI.
+
+- التحقق: `cd android && ./gradlew signingReport` ثم `./gradlew bundleRelease`.
+- لا تُرفع الـkeystore ولا كلمات المرور إلى المستودع إطلاقاً.
