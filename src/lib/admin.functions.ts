@@ -99,13 +99,20 @@ export type AdminReport = {
     revenue: number | null;
   };
   currency: string;
-  finance: {
-    commissions: number;
-    delivery_fees: number;
-    product_cost: number;
-    cost_known_items: number;
-    total_items: number;
-  } | null;
+  finance_by_currency:
+    | {
+        currency: string;
+        sales: number;
+        costs: number;
+        commission: number;
+        delivery_fees: number;
+        gross_profit: number;
+        platform_net: number;
+        provider_net: number;
+        items: number;
+        cost_known_items: number;
+      }[]
+    | null;
   payments_by_currency: { currency: string; count: number; paid: number; refunded: number; net: number }[] | null;
   refunds: { pending: number; manual_required: number; failed: number; succeeded: number } | null;
   ads_by_currency: { currency: string; count: number; amount: number }[] | null;

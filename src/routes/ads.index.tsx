@@ -8,6 +8,7 @@ import { AdsTickerBoard } from "@/components/ads-ticker";
 import { Button } from "@/components/ui/button";
 import { useAccount } from "@/lib/auth";
 import { AD_STATUS_LABEL, AD_STATUS_TONE, IRAQ_GOVERNORATES, formatAdPrice, type AdCategory, type AdRow } from "@/lib/ads";
+import { OPERATING_LOCATION } from "@/lib/location";
 import { AdImage } from "@/components/ad-image";
 import { cn } from "@/lib/utils";
 
@@ -54,7 +55,7 @@ function AdsPage() {
   const { data: account } = useAccount();
   const { data } = useAdsBoard();
   const [categoryId, setCategoryId] = useState<string | null>(null);
-  const [governorate, setGovernorate] = useState<string | null>(null);
+  const [governorate, setGovernorate] = useState<string | null>(OPERATING_LOCATION.governorate);
 
   const mine = useQuery({
     queryKey: ["my-ads", account?.userId],

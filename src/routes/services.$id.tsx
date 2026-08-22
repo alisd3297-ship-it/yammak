@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
+import { OPERATING_ADDRESS_PREFIX } from "@/lib/location";
 import { ArrowRight, LocateFixed, Star, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,7 +36,7 @@ function ServiceProviderPage() {
   const submitRequest = useServerFn(createServiceRequest);
 
   const [selected, setSelected] = useState<string | null>(null);
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState(OPERATING_ADDRESS_PREFIX);
   const [description, setDescription] = useState("");
   const [scheduledAt, setScheduledAt] = useState("");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -52,7 +53,7 @@ function ServiceProviderPage() {
           .maybeSingle(),
         supabase
           .from("provider_services")
-          .select("id, name, description, price_amount, price_unit, estimated_minutes")
+          .select("id, name, description, price_amount, price_unit, estimated_minutes, currency")
           .eq("provider_id", id)
           .eq("is_active", true)
           .order("sort_order"),
@@ -144,7 +145,7 @@ function ServiceProviderPage() {
               <div className="flex items-center justify-between gap-3">
                 <p className="font-bold">{s.name}</p>
                 <span className="shrink-0 text-sm font-bold text-primary">
-                  {formatServicePrice(Number(s.price_amount), s.price_unit as ServicePriceUnit)}
+                  {formatServicePrice(Number(s.price_amount), s.price_unit as ServicePriceUnit, s.currency)}
                 </span>
               </div>
               <p className="mt-1 text-xs text-muted-foreground">{s.description}</p>

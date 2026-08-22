@@ -28,7 +28,7 @@ export function ProviderServiceRequests({ providerId }: { providerId: string }) 
       const { data } = await supabase
         .from("service_requests")
         .select(
-          "id, code, status, service_name, price_amount, price_unit, address_text, description, scheduled_at, created_at",
+          "id, code, status, service_name, price_amount, price_unit, currency, address_text, description, scheduled_at, created_at",
         )
         .eq("provider_id", providerId)
         .order("created_at", { ascending: false })
@@ -59,7 +59,7 @@ export function ProviderServiceRequests({ providerId }: { providerId: string }) 
             <div className="flex items-center justify-between">
               <p className="font-bold">#{r.code}</p>
               <span className="text-sm font-bold text-primary">
-                {formatServicePrice(Number(r.price_amount), r.price_unit as ServicePriceUnit)}
+                {formatServicePrice(Number(r.price_amount), r.price_unit as ServicePriceUnit, r.currency)}
               </span>
             </div>
             <p className="mt-1 text-sm">{r.service_name}</p>

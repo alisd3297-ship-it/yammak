@@ -101,7 +101,7 @@ function AdminProvidersPage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("service_requests")
-        .select("id, code, status, service_name, price_amount, price_unit, address_text, created_at, providers(name, owner_id)")
+        .select("id, code, status, service_name, price_amount, price_unit, currency, address_text, created_at, providers(name, owner_id)")
         .order("created_at", { ascending: false })
         .limit(50);
       return data ?? [];
@@ -189,7 +189,7 @@ function AdminProvidersPage() {
               <p className="mt-1 text-sm">{r.service_name}</p>
               <p className="text-xs text-muted-foreground">{(r.providers as { name: string } | null)?.name}</p>
               <p className="text-xs text-muted-foreground">
-                {formatServicePrice(Number(r.price_amount), r.price_unit as ServicePriceUnit)} — {r.address_text}
+                {formatServicePrice(Number(r.price_amount), r.price_unit as ServicePriceUnit, r.currency)} — {r.address_text}
               </p>
               {!(r.providers as { owner_id: string | null } | null)?.owner_id && (
                 <p className="mt-2 rounded-xl bg-warning/15 px-3 py-2 text-[11px] font-semibold text-warning-foreground">

@@ -46,7 +46,7 @@ function ServiceRequestsPage() {
       const { data } = await supabase
         .from("service_requests")
         .select(
-          "id, code, status, service_name, price_amount, price_unit, address_text, scheduled_at, description, created_at, providers(name)",
+          "id, code, status, service_name, price_amount, price_unit, currency, address_text, scheduled_at, description, created_at, providers(name)",
         )
         .eq("customer_id", account!.userId!)
         .order("created_at", { ascending: false })
@@ -121,7 +121,7 @@ function ServiceRequestsPage() {
               <div className="flex items-center justify-between">
                 <p className="font-bold">#{r.code}</p>
                 <span className="text-sm font-bold text-primary">
-                  {formatServicePrice(Number(r.price_amount), r.price_unit as ServicePriceUnit)}
+                  {formatServicePrice(Number(r.price_amount), r.price_unit as ServicePriceUnit, r.currency)}
                 </span>
               </div>
               <p className="mt-1 text-sm">{r.service_name}</p>
