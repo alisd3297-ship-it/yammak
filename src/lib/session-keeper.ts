@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { AUTH_BACKUP_KEY, ROLE_ROUTED_KEY, SIGNED_OUT_KEY } from "@/lib/sign-out";
 
-const BACKUP_KEY = "yammak:auth-backup";
+const BACKUP_KEY = AUTH_BACKUP_KEY;
 
 type Backup = { access_token: string; refresh_token: string };
+
 
 function readBackup(): Backup | null {
   try {
