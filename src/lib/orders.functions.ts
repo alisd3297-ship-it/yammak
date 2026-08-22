@@ -79,6 +79,17 @@ export const changeOrderStatus = createServerFn({ method: "POST" })
       ...(data.reason ? { _reason: data.reason } : {}),
     });
     if (error || !order) throw new Error(friendly(error?.message ?? ""));
+
+    // الإلغاء يسجل طلب استرداد داخل قاعدة البيانات، وهنا ننفّذه فعلياً لدى مزود الدفع
+    if (data.status === "cancelled") {
+      try {
+        const { processPendingRefunds } = await import("@/lib/payments.server");
+        await processPendingRefunds();
+      } catch {
+        // فشل التنفيذ الفوري لا يلغي الإلغاء؛ الصيانة الدورية تعيد المحاولة
+      }
+    }
+
     return { id: order.id, status: order.status as OrderStatus };
   });
 

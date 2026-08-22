@@ -238,25 +238,41 @@ export const refundPayment = createServerFn({ method: "POST" })
     const remaining = Number(row.amount) - Number(row.refunded_amount ?? 0);
     const amount = Math.min(Math.max(Number(data.amount ?? remaining), 1), remaining);
 
-    const { paymentsConfigured, refundProviderIntent } = await import("@/lib/payments.server");
-    if (!paymentsConfigured() || !row.provider_intent_id) {
-      throw new Error("الدفع الإلكتروني غير مفعّل حالياً");
-    }
-
-    await refundProviderIntent({
-      intentId: row.provider_intent_id,
-      amount,
-      currency: row.currency,
-      idempotencyKey: `refund:${row.id}:${amount}`,
-      ...(data.reason ? { reason: data.reason } : {}),
-    });
-
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: updated, error } = await supabaseAdmin.rpc("record_payment_refund", {
+    // 1) تسجيل طلب الاسترداد (idempotent داخل قاعدة البيانات)
+    const { error: reqError } = await supabaseAdmin.rpc("request_payment_refund", {
       _payment_id: row.id,
       _amount: amount,
       ...(data.reason ? { _reason: data.reason } : {}),
-    });
-    if (error) throw new Error(friendly(error.message));
-    return shape(updated as unknown as PaymentRow);
+    } as never);
+    if (reqError) throw new Error(friendly(reqError.message));
+
+    // 2) تنفيذه فعلياً لدى مزود الدفع وتسجيل النتيجة
+    const { processPendingRefunds } = await import("@/lib/payments.server");
+    await processPendingRefunds([row.id]);
+
+    const { data: fresh } = await supabaseAdmin
+      .from("payments")
+      .select(
+        "id, subject_type, subject_id, amount, currency, status, provider, provider_intent_id, refunded_amount, failure_reason, created_at, paid_at, refund_status, refund_error, refund_reference",
+      )
+      .eq("id", row.id)
+      .maybeSingle();
+
+    const result = fresh as unknown as (PaymentRow & {
+      refund_status?: string;
+      refund_error?: string | null;
+      refund_reference?: string | null;
+    }) | null;
+    if (!result) throw new Error("تعذر قراءة نتيجة الاسترجاع");
+    if (result.refund_status === "failed")
+      throw new Error(`تعذر تنفيذ الاسترجاع لدى مزود الدفع: ${result.refund_error ?? "خطأ غير معروف"}`);
+    if (result.refund_status === "manual_required")
+      throw new Error("هذه العملية غير قابلة للاسترجاع آلياً (دفع نقدي أو مزود غير مفعّل) — سُجّلت للمعالجة اليدوية");
+
+    return {
+      ...shape(result),
+      refundStatus: result.refund_status ?? "none",
+      refundReference: result.refund_reference ?? null,
+    };
   });

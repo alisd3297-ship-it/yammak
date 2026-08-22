@@ -67,7 +67,7 @@ export const createAd = createServerFn({ method: "POST" })
       _address_text: (data.addressText ?? "").trim(),
       _images: images,
       _currency: data.currency === "USD" ? "USD" : "IQD",
-      _governorate: (data.governorate ?? "").trim() || null,
+      ...((data.governorate ?? "").trim() ? { _governorate: (data.governorate ?? "").trim() } : {}),
       ...(data.price != null ? { _price: data.price } : {}),
       ...(data.cityId ? { _city_id: data.cityId } : {}),
     });

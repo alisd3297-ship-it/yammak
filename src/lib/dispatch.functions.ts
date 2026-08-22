@@ -69,18 +69,19 @@ export const assignDriverManually = createServerFn({ method: "POST" })
     const { data: staff } = await context.supabase.rpc("is_staff", { _user_id: context.userId });
     if (!staff) throw new Error("غير مصرح");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin
-      .from("delivery_offers")
-      .update({ status: "cancelled", responded_at: new Date().toISOString() })
-      .eq("order_id", data.orderId)
-      .eq("status", "sent");
-    const { data: updated } = await supabaseAdmin
-      .from("orders")
-      .update({ driver_id: data.driverId, status: "driver_accepted" })
-      .eq("id", data.orderId)
-      .not("status", "in", "(completed,cancelled,delivered)")
-      .select("id");
-    if (!updated || updated.length === 0) throw new Error("لا يمكن تعيين مندوب لهذا الطلب");
+    // التعيين اليدوي يمر عبر انتقالات الحالة المسموحة داخل قاعدة البيانات
+    const { error } = await supabaseAdmin.rpc("system_assign_driver", {
+      _order_id: data.orderId,
+      _driver_id: data.driverId,
+    });
+    if (error) {
+      const m = error.message ?? "";
+      if (m.includes("order_already_assigned")) throw new Error("الطلب مسند لمندوب آخر");
+      if (m.includes("order_closed")) throw new Error("الطلب منتهي");
+      if (m.includes("driver_not_eligible")) throw new Error("هذا المندوب غير معتمد للتوصيل");
+      if (m.includes("order_not_dispatchable")) throw new Error("حالة الطلب لا تسمح بتعيين مندوب الآن");
+      throw new Error("تعذر تعيين المندوب");
+    }
     await supabaseAdmin.from("audit_logs").insert({
       actor_id: context.userId,
       action: "assign_driver",
