@@ -9,7 +9,7 @@ import { BackButton, BottomNav, PageShell  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useAccount } from "@/lib/auth";
+import { useCustomerAreaGuard, useAccount  } from "@/lib/auth";
 import { formatIQD } from "@/lib/orders";
 import { createCourierOrder, quoteCourierFee } from "@/lib/courier.functions";
 
@@ -34,6 +34,7 @@ export const Route = createFileRoute("/courier")({
 type Coords = { lat: number; lng: number } | null;
 
 function CourierPage() {
+  useCustomerAreaGuard();
   const navigate = useNavigate();
   const { data: account } = useAccount();
   const submit = useServerFn(createCourierOrder);

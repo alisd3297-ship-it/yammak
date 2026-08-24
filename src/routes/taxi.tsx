@@ -10,7 +10,7 @@ import { BackButton, BottomNav, PageShell, StatusDot  } from "@/components/app-s
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useAccount } from "@/lib/auth";
+import { useCustomerAreaGuard, useAccount  } from "@/lib/auth";
 import { formatIQD } from "@/lib/orders";
 import { cn } from "@/lib/utils";
 import {
@@ -45,6 +45,7 @@ export const Route = createFileRoute("/taxi")({
 type Coords = { lat: number; lng: number } | null;
 
 function TaxiPage() {
+  useCustomerAreaGuard();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: account } = useAccount();

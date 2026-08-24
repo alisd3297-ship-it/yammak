@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
 import { BackButton, BottomNav, PageShell, StatusDot  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
-import { useAccount } from "@/lib/auth";
+import { useCustomerAreaGuard, useAccount  } from "@/lib/auth";
 import { changeServiceRequestStatus, rateServiceRequest } from "@/lib/services.functions";
 import {
   SERVICE_STATUS_LABELS,
@@ -34,6 +34,7 @@ export const Route = createFileRoute("/service-requests/")({
 });
 
 function ServiceRequestsPage() {
+  useCustomerAreaGuard();
   const { data: account } = useAccount();
   const qc = useQueryClient();
   const setStatus = useServerFn(changeServiceRequestStatus);

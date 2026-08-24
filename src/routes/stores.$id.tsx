@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useCustomerAreaGuard } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
 import { Plus, Star, Store as StoreIcon } from "lucide-react";
 import { toast } from "sonner";
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/stores/$id")({
 });
 
 function StorePage() {
+  useCustomerAreaGuard();
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const cart = useCart();

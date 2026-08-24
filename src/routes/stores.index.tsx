@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useCustomerAreaGuard } from "@/lib/auth";
 import { useMemo, useState } from "react";
 import { Search, Star, Store as StoreIcon } from "lucide-react";
 import { toast } from "sonner";
@@ -38,6 +39,7 @@ const SORTS: { key: SortKey; label: string }[] = [
 ];
 
 function StoresPage() {
+  useCustomerAreaGuard();
   const [term, setTerm] = useState("");
   const [sort, setSort] = useState<SortKey>("rating");
   const [tag, setTag] = useState<string | null>(null);

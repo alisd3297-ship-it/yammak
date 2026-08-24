@@ -9,7 +9,7 @@ import { BackButton, BottomNav, PageShell  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useAccount } from "@/lib/auth";
+import { useCustomerAreaGuard, useAccount  } from "@/lib/auth";
 import { formatIQD } from "@/lib/orders";
 import { VEHICLE_HINTS, VEHICLE_LABELS, VEHICLE_ORDER, type VehicleType } from "@/lib/vehicles";
 import {
@@ -54,6 +54,7 @@ const emptyStop = (): StopDraft => ({
 });
 
 function SpecialDeliveryPage() {
+  useCustomerAreaGuard();
   const navigate = useNavigate();
   const { data: account } = useAccount();
   const submit = useServerFn(createSpecialDeliveryOrder);

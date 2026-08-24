@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCart } from "@/lib/cart";
 import { formatIQD } from "@/lib/orders";
 import { createOrder, quoteDeliveryFee } from "@/lib/orders.functions";
-import { useAccount } from "@/lib/auth";
+import { useCustomerAreaGuard, useAccount  } from "@/lib/auth";
 
 export const Route = createFileRoute("/checkout")({
   beforeLoad: requireCustomerFlow,
@@ -28,6 +28,7 @@ export const Route = createFileRoute("/checkout")({
 });
 
 function CheckoutPage() {
+  useCustomerAreaGuard();
   const cart = useCart();
   const navigate = useNavigate();
   const { data: account } = useAccount();

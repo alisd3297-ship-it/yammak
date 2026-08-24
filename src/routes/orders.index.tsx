@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
 import { BackButton, BottomNav, PageShell, StatusDot  } from "@/components/app-shell";
-import { useAccount } from "@/lib/auth";
+import { useCustomerAreaGuard, useAccount  } from "@/lib/auth";
 import { useServerFn } from "@tanstack/react-start";
 import { ShieldAlert } from "lucide-react";
 import { getPhoneVerification } from "@/lib/otp.functions";
@@ -24,6 +24,7 @@ export const Route = createFileRoute("/orders/")({
 });
 
 function OrdersPage() {
+  useCustomerAreaGuard();
   const { data: account } = useAccount();
 
   const phoneStatus = useServerFn(getPhoneVerification);

@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useCustomerAreaGuard } from "@/lib/auth";
 import { useMemo, useState } from "react";
 import { Search, Star, Wrench } from "lucide-react";
 import * as Icons from "lucide-react";
@@ -29,6 +30,7 @@ export const Route = createFileRoute("/services/")({
 });
 
 function ServicesPage() {
+  useCustomerAreaGuard();
   const [term, setTerm] = useState("");
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [onlyAvailable, setOnlyAvailable] = useState(false);

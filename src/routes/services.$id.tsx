@@ -11,7 +11,7 @@ import { BackButton, PageShell  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useAccount } from "@/lib/auth";
+import { useCustomerAreaGuard, useAccount  } from "@/lib/auth";
 import { createServiceRequest } from "@/lib/services.functions";
 import { formatServicePrice, PRICE_UNIT_LABELS, type ServicePriceUnit } from "@/lib/services";
 import { cn } from "@/lib/utils";
@@ -32,6 +32,7 @@ export const Route = createFileRoute("/services/$id")({
 });
 
 function ServiceProviderPage() {
+  useCustomerAreaGuard();
   const { id } = Route.useParams();
   const { data: account } = useAccount();
   const navigate = useNavigate();
