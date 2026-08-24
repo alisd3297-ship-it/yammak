@@ -35,14 +35,17 @@ function SetupTestAdminPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await provision({ data: { token, email, password } });
+      const res = await provision({ data: { token: token.trim(), email: email.trim(), password } });
       if (!res.ok) {
+        const messages: Record<string, string> = {
+          invalid_token: "رمز الإعداد غير صحيح",
+          server_token_missing: "رمز الإعداد غير مضبوط على الخادم — أضِف ADMIN_SETUP_TOKEN في إعدادات المشروع",
+          invalid_email: "استخدم بريداً بنطاق yammak.test فقط",
+          weak_password: "كلمة المرور قصيرة، استخدم 10 أحرف على الأقل",
+        };
         toast.error(
-          res.reason === "invalid_token"
-            ? "رمز الإعداد غير صحيح"
-            : res.reason === "invalid_email"
-              ? "استخدم بريداً بنطاق yammak.test فقط"
-              : "كلمة المرور قصيرة، استخدم 10 أحرف على الأقل",
+          messages[res.reason] ??
+            `تعذر تجهيز الحساب${"detail" in res && res.detail ? `: ${res.detail}` : ""}`,
         );
         return;
       }
@@ -50,12 +53,13 @@ function SetupTestAdminPage() {
       setPassword("");
       setDone(res.email);
       toast.success(res.created ? "تم إنشاء حساب المدير التجريبي" : "تم تحديث كلمة مرور حساب المدير التجريبي");
-    } catch {
-      toast.error("تعذر إكمال التجهيز");
+    } catch (err) {
+      toast.error(`تعذر الاتصال بالخادم${err instanceof Error && err.message ? `: ${err.message}` : ""}`);
     } finally {
       setLoading(false);
     }
   }
+
 
   return (
     <div className="app-shell flex flex-col justify-center px-5 py-10">
