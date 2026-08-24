@@ -3,7 +3,6 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
-type OrderType = Database["public"]["Enums"]["order_type"];
 
 function fail(message: string): never {
   if (message.includes("forbidden")) throw new Error("غير مصرح بهذا الإجراء");
