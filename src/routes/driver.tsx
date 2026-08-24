@@ -32,9 +32,10 @@ export const Route = createFileRoute("/driver")({
   ssr: false,
   beforeLoad: requireWorker,
   // يسمح لإشعار عرض التوصيل بفتح الطلب الصحيح مباشرة داخل اللوحة
-  validateSearch: (search: Record<string, unknown>) => ({
-    order: typeof search.order === "string" ? search.order : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { order?: string } => {
+    const order = search["order"];
+    return typeof order === "string" && order ? { order } : {};
+  },
   head: () => ({
     meta: [
       { title: "لوحة المندوب | يمّك" },
@@ -54,7 +55,7 @@ const DRIVER_STEPS: Partial<Record<OrderStatus, { next: OrderStatus; label: stri
 };
 
 function DriverDashboard() {
-  const { order: focusOrderId } = Route.useSearch();
+  const focusOrderId = Route.useSearch().order;
   const { data: account } = useAccount();
   const qc = useQueryClient();
   const signOut = useSignOut();
