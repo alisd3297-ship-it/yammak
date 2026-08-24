@@ -21,6 +21,7 @@ import { Route as ProviderRouteImport } from './routes/provider'
 import { Route as ProviderFinanceRouteImport } from './routes/provider-finance'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SetupAdminRouteImport } from './routes/setup-admin'
+import { Route as SetupTestAccountsRouteImport } from './routes/setup-test-accounts'
 import { Route as SetupTestAdminRouteImport } from './routes/setup-test-admin'
 import { Route as SpecialDeliveryRouteImport } from './routes/special-delivery'
 import { Route as TaxiRouteImport } from './routes/taxi'
@@ -115,6 +116,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const SetupAdminRoute = SetupAdminRouteImport.update({
   id: '/setup-admin',
   path: '/setup-admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SetupTestAccountsRoute = SetupTestAccountsRouteImport.update({
+  id: '/setup-test-accounts',
+  path: '/setup-test-accounts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SetupTestAdminRoute = SetupTestAdminRouteImport.update({
@@ -306,6 +312,7 @@ export interface FileRoutesByFullPath {
   '/provider-finance': typeof ProviderFinanceRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
+  '/setup-test-accounts': typeof SetupTestAccountsRoute
   '/setup-test-admin': typeof SetupTestAdminRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
@@ -355,6 +362,7 @@ export interface FileRoutesByTo {
   '/provider-finance': typeof ProviderFinanceRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
+  '/setup-test-accounts': typeof SetupTestAccountsRoute
   '/setup-test-admin': typeof SetupTestAdminRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
@@ -405,6 +413,7 @@ export interface FileRoutesById {
   '/provider-finance': typeof ProviderFinanceRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
+  '/setup-test-accounts': typeof SetupTestAccountsRoute
   '/setup-test-admin': typeof SetupTestAdminRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
@@ -456,6 +465,7 @@ export interface FileRouteTypes {
     | '/provider-finance'
     | '/reset-password'
     | '/setup-admin'
+    | '/setup-test-accounts'
     | '/setup-test-admin'
     | '/special-delivery'
     | '/taxi'
@@ -505,6 +515,7 @@ export interface FileRouteTypes {
     | '/provider-finance'
     | '/reset-password'
     | '/setup-admin'
+    | '/setup-test-accounts'
     | '/setup-test-admin'
     | '/special-delivery'
     | '/taxi'
@@ -554,6 +565,7 @@ export interface FileRouteTypes {
     | '/provider-finance'
     | '/reset-password'
     | '/setup-admin'
+    | '/setup-test-accounts'
     | '/setup-test-admin'
     | '/special-delivery'
     | '/taxi'
@@ -604,6 +616,7 @@ export interface RootRouteChildren {
   ProviderFinanceRoute: typeof ProviderFinanceRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SetupAdminRoute: typeof SetupAdminRoute
+  SetupTestAccountsRoute: typeof SetupTestAccountsRoute
   SetupTestAdminRoute: typeof SetupTestAdminRoute
   SpecialDeliveryRoute: typeof SpecialDeliveryRoute
   TaxiRoute: typeof TaxiRoute
@@ -725,6 +738,13 @@ declare module '@tanstack/react-router' {
       path: '/setup-admin'
       fullPath: '/setup-admin'
       preLoaderRoute: typeof SetupAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/setup-test-accounts': {
+      id: '/setup-test-accounts'
+      path: '/setup-test-accounts'
+      fullPath: '/setup-test-accounts'
+      preLoaderRoute: typeof SetupTestAccountsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/setup-test-admin': {
@@ -988,6 +1008,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderFinanceRoute: ProviderFinanceRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SetupAdminRoute: SetupAdminRoute,
+  SetupTestAccountsRoute: SetupTestAccountsRoute,
   SetupTestAdminRoute: SetupTestAdminRoute,
   SpecialDeliveryRoute: SpecialDeliveryRoute,
   TaxiRoute: TaxiRoute,
