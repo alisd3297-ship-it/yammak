@@ -32,7 +32,6 @@ import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminCourierRouteImport } from './routes/admin.courier'
 import { Route as AdminDriversRouteImport } from './routes/admin.drivers'
 import { Route as AdminFeaturesRouteImport } from './routes/admin.features'
-import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
 import { Route as AdminProvidersRouteImport } from './routes/admin.providers'
 import { Route as AdminRefundsRouteImport } from './routes/admin.refunds'
@@ -171,11 +170,6 @@ const AdminDriversRoute = AdminDriversRouteImport.update({
 const AdminFeaturesRoute = AdminFeaturesRouteImport.update({
   id: '/admin/features',
   path: '/admin/features',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminOrdersRoute = AdminOrdersRouteImport.update({
-  id: '/admin/orders',
-  path: '/admin/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
@@ -323,7 +317,6 @@ export interface FileRoutesByFullPath {
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
   '/admin/features': typeof AdminFeaturesRoute
-  '/admin/orders': typeof AdminOrdersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/admin/refunds': typeof AdminRefundsRoute
@@ -373,7 +366,6 @@ export interface FileRoutesByTo {
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
   '/admin/features': typeof AdminFeaturesRoute
-  '/admin/orders': typeof AdminOrdersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/admin/refunds': typeof AdminRefundsRoute
@@ -424,7 +416,6 @@ export interface FileRoutesById {
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
   '/admin/features': typeof AdminFeaturesRoute
-  '/admin/orders': typeof AdminOrdersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/admin/refunds': typeof AdminRefundsRoute
@@ -476,7 +467,6 @@ export interface FileRouteTypes {
     | '/admin/courier'
     | '/admin/drivers'
     | '/admin/features'
-    | '/admin/orders'
     | '/admin/payments'
     | '/admin/providers'
     | '/admin/refunds'
@@ -526,7 +516,6 @@ export interface FileRouteTypes {
     | '/admin/courier'
     | '/admin/drivers'
     | '/admin/features'
-    | '/admin/orders'
     | '/admin/payments'
     | '/admin/providers'
     | '/admin/refunds'
@@ -576,7 +565,6 @@ export interface FileRouteTypes {
     | '/admin/courier'
     | '/admin/drivers'
     | '/admin/features'
-    | '/admin/orders'
     | '/admin/payments'
     | '/admin/providers'
     | '/admin/refunds'
@@ -627,7 +615,6 @@ export interface RootRouteChildren {
   AdminCourierRoute: typeof AdminCourierRoute
   AdminDriversRoute: typeof AdminDriversRoute
   AdminFeaturesRoute: typeof AdminFeaturesRoute
-  AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminProvidersRoute: typeof AdminProvidersRoute
   AdminRefundsRoute: typeof AdminRefundsRoute
@@ -815,13 +802,6 @@ declare module '@tanstack/react-router' {
       path: '/admin/features'
       fullPath: '/admin/features'
       preLoaderRoute: typeof AdminFeaturesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/orders': {
-      id: '/admin/orders'
-      path: '/admin/orders'
-      fullPath: '/admin/orders'
-      preLoaderRoute: typeof AdminOrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/payments': {
@@ -1019,7 +999,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCourierRoute: AdminCourierRoute,
   AdminDriversRoute: AdminDriversRoute,
   AdminFeaturesRoute: AdminFeaturesRoute,
-  AdminOrdersRoute: AdminOrdersRoute,
   AdminPaymentsRoute: AdminPaymentsRoute,
   AdminProvidersRoute: AdminProvidersRoute,
   AdminRefundsRoute: AdminRefundsRoute,

@@ -280,7 +280,7 @@ export function AdminEntry() {
 }
 
 const ADMIN_LINKS = [
-  { to: "/admin/orders", label: "موافقات الطلبات" },
+  
   { to: "/admin/providers", label: "المزوّدون" },
   { to: "/admin/drivers", label: "المندوبون" },
   { to: "/admin/courier", label: "الطلبات" },
