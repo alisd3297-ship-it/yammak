@@ -37,12 +37,38 @@ export const Route = createFileRoute("/payments")({
 const TONE_MAP = { ok: "success", warn: "warning", bad: "danger" } as const;
 
 function PaymentsPage() {
+  const qc = useQueryClient();
   const fetchPayments = useServerFn(listMyPayments);
+  const askRefund = useServerFn(requestRefund);
+  const refundsOn = useFeature("refunds.self_service");
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [reason, setReason] = useState("");
+  const [busy, setBusy] = useState(false);
   const { data, isLoading } = useQuery({
     queryKey: ["my-payments"],
     queryFn: () => fetchPayments(),
     refetchInterval: 30_000,
   });
+
+  const submitRefund = async (paymentId: string, amount: number) => {
+    if (reason.trim().length < 5) {
+      toast.error("اكتب سبب الاسترجاع (5 أحرف على الأقل)");
+      return;
+    }
+    setBusy(true);
+    try {
+      await askRefund({ data: { paymentId, amount, reason: reason.trim() } });
+      toast.success("تم إرسال طلب الاسترجاع للمراجعة");
+      setOpenId(null);
+      setReason("");
+      await qc.invalidateQueries({ queryKey: ["my-payments"] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر إرسال الطلب");
+    } finally {
+      setBusy(false);
+    }
+  };
+
 
   return (
     <PageShell>
