@@ -1,6 +1,7 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { distanceKm } from "@/lib/orders";
 import { VEHICLE_RANK, type VehicleType } from "@/lib/vehicles";
+import { OPERATING_LOCATION_COORDS } from "@/lib/location";
 
 export type DispatchResult = { assignedTo: string | null; status: string; message: string };
 
@@ -124,8 +125,24 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
     .not("driver_id", "is", null)
     .in("status", [...ACTIVE_DRIVER_STATUSES]);
 
-  const pickupLat = order.pickup_lat ?? 0;
-  const pickupLng = order.pickup_lng ?? 0;
+  // إحداثيات الاستلام قد تكون فارغة (مزوّد بلا موقع)، فنعتمد موقع المزوّد ثم موقع التشغيل
+  // بدل الصفر، وإلا تُحسب المسافة من نقطة خاطئة ويُستبعد كل المندوبين.
+  let pickupLat = order.pickup_lat ?? null;
+  let pickupLng = order.pickup_lng ?? null;
+  if ((pickupLat == null || pickupLng == null) && order.provider_id) {
+    const { data: prov } = await supabaseAdmin
+      .from("providers")
+      .select("lat, lng")
+      .eq("id", order.provider_id)
+      .maybeSingle();
+    if (prov?.lat != null && prov?.lng != null) {
+      pickupLat = prov.lat;
+      pickupLng = prov.lng;
+    }
+  }
+  const originLat: number = pickupLat ?? OPERATING_LOCATION_COORDS.lat;
+  const originLng: number = pickupLng ?? OPERATING_LOCATION_COORDS.lng;
+
 
   const buildCandidates = (locations: { user_id: string; lat: number; lng: number }[]) =>
     (workers ?? [])
@@ -138,12 +155,12 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
     .map((w) => {
       const loc = locations.find((l) => l.user_id === w.user_id);
       if (!loc) return null;
-      const km = distanceKm(loc.lat, loc.lng, pickupLat, pickupLng);
+      const km = distanceKm(loc.lat, loc.lng, originLat, originLng);
       const current = (activeOrders ?? []).filter((o) => o.driver_id === w.user_id);
       if (current.length >= (w.max_active_orders ?? 2)) return null;
       const conflicting = current.some((o) => {
         if (o.dropoff_lat == null || o.dropoff_lng == null) return false;
-        return distanceKm(o.dropoff_lat, o.dropoff_lng, pickupLat, pickupLng) > radiusKm / 2;
+        return distanceKm(o.dropoff_lat, o.dropoff_lng, originLat, originLng) > radiusKm / 2;
       });
       if (conflicting) return null;
       return { driverId: w.user_id, km };
