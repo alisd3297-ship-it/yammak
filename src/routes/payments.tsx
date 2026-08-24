@@ -1,8 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowRight, CreditCard } from "lucide-react";
+import { ArrowRight, CreditCard, Wallet } from "lucide-react";
+import { toast } from "sonner";
 import { BottomNav, PageShell, StatusDot } from "@/components/app-shell";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { useFeature } from "@/lib/features";
+import { requestRefund } from "@/lib/wallet.functions";
 import { listMyPayments } from "@/lib/payments.functions";
 import {
   PAYMENT_STATUS_LABELS,
@@ -31,12 +37,38 @@ export const Route = createFileRoute("/payments")({
 const TONE_MAP = { ok: "success", warn: "warning", bad: "danger" } as const;
 
 function PaymentsPage() {
+  const qc = useQueryClient();
   const fetchPayments = useServerFn(listMyPayments);
+  const askRefund = useServerFn(requestRefund);
+  const refundsOn = useFeature("refund_requests");
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [reason, setReason] = useState("");
+  const [busy, setBusy] = useState(false);
   const { data, isLoading } = useQuery({
     queryKey: ["my-payments"],
     queryFn: () => fetchPayments(),
     refetchInterval: 30_000,
   });
+
+  const submitRefund = async (paymentId: string, amount: number) => {
+    if (reason.trim().length < 5) {
+      toast.error("اكتب سبب الاسترجاع (5 أحرف على الأقل)");
+      return;
+    }
+    setBusy(true);
+    try {
+      await askRefund({ data: { paymentId, amount, reason: reason.trim() } });
+      toast.success("تم إرسال طلب الاسترجاع للمراجعة");
+      setOpenId(null);
+      setReason("");
+      await qc.invalidateQueries({ queryKey: ["my-payments"] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر إرسال الطلب");
+    } finally {
+      setBusy(false);
+    }
+  };
+
 
   return (
     <PageShell>
@@ -46,6 +78,12 @@ function PaymentsPage() {
         </Link>
         <h1 className="text-2xl font-black">عمليات الدفع</h1>
         <p className="mt-1 text-sm opacity-90">كل مدفوعاتك وحالتها ومبالغ الاسترجاع</p>
+        <Link
+          to="/wallet"
+          className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary-foreground/15 px-4 py-2 text-xs font-semibold backdrop-blur"
+        >
+          <Wallet className="size-4" /> محفظتي
+        </Link>
       </header>
 
       <div className="space-y-3 px-4 py-5">
@@ -84,6 +122,43 @@ function PaymentsPage() {
               >
                 عرض الطلب
               </Link>
+            )}
+
+            {refundsOn && p.status === "succeeded" && p.refundedAmount < p.amount && (
+              <div className="mt-3 border-t border-border pt-3">
+                {openId === p.id ? (
+                  <div className="space-y-2">
+                    <Textarea
+                      value={reason}
+                      onChange={(e) => setReason(e.target.value)}
+                      placeholder="سبب طلب الاسترجاع"
+                      rows={2}
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        disabled={busy}
+                        onClick={() => submitRefund(p.id, p.amount - p.refundedAmount)}
+                      >
+                        إرسال الطلب
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => setOpenId(null)}>
+                        إلغاء
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setOpenId(p.id);
+                      setReason("");
+                    }}
+                    className="text-xs font-semibold text-primary"
+                  >
+                    طلب استرجاع
+                  </button>
+                )}
+              </div>
             )}
           </article>
         ))}

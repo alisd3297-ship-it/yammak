@@ -292,6 +292,12 @@ function DriverDashboard() {
             onCheckedChange={toggleAvailable}
           />
         </div>
+        <Link
+          to="/driver-earnings"
+          className="mt-3 inline-block rounded-full bg-primary-foreground/15 px-4 py-2 text-xs font-semibold backdrop-blur"
+        >
+          أرباحي والتسويات
+        </Link>
       </header>
 
       <div className="space-y-5 px-4 py-5">

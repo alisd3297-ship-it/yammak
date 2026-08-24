@@ -240,11 +240,14 @@ const ADMIN_LINKS = [
   { to: "/admin/drivers", label: "المندوبون" },
   { to: "/admin/courier", label: "الطلبات" },
   { to: "/admin/payments", label: "المدفوعات" },
+  { to: "/admin/settlements", label: "التسويات" },
+  { to: "/admin/refunds", label: "الاسترجاعات" },
   { to: "/admin/reports", label: "التقارير" },
   { to: "/admin/users", label: "المستخدمون" },
   { to: "/admin/ads", label: "الإعلانات" },
   { to: "/admin/services", label: "كتالوج الخدمات" },
   { to: "/admin/audit", label: "سجل التدقيق" },
+  { to: "/admin/features", label: "مفاتيح الميزات" },
 
 ] as const;
 

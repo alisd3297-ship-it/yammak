@@ -29,9 +29,11 @@ import { Route as AdminAdsRouteImport } from './routes/admin.ads'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminCourierRouteImport } from './routes/admin.courier'
 import { Route as AdminDriversRouteImport } from './routes/admin.drivers'
+import { Route as AdminFeaturesRouteImport } from './routes/admin.features'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
 import { Route as AdminProvidersRouteImport } from './routes/admin.providers'
+import { Route as AdminRefundsRouteImport } from './routes/admin.refunds'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminServicesRouteImport } from './routes/admin.services'
 import { Route as AdminSettlementsRouteImport } from './routes/admin.settlements'
@@ -154,6 +156,11 @@ const AdminDriversRoute = AdminDriversRouteImport.update({
   path: '/admin/drivers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminFeaturesRoute = AdminFeaturesRouteImport.update({
+  id: '/admin/features',
+  path: '/admin/features',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminOrdersRoute = AdminOrdersRouteImport.update({
   id: '/admin/orders',
   path: '/admin/orders',
@@ -167,6 +174,11 @@ const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
 const AdminProvidersRoute = AdminProvidersRouteImport.update({
   id: '/admin/providers',
   path: '/admin/providers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRefundsRoute = AdminRefundsRouteImport.update({
+  id: '/admin/refunds',
+  path: '/admin/refunds',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminReportsRoute = AdminReportsRouteImport.update({
@@ -296,9 +308,11 @@ export interface FileRoutesByFullPath {
   '/admin/audit': typeof AdminAuditRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
+  '/admin/features': typeof AdminFeaturesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
+  '/admin/refunds': typeof AdminRefundsRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/services': typeof AdminServicesRoute
   '/admin/settlements': typeof AdminSettlementsRoute
@@ -342,9 +356,11 @@ export interface FileRoutesByTo {
   '/admin/audit': typeof AdminAuditRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
+  '/admin/features': typeof AdminFeaturesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
+  '/admin/refunds': typeof AdminRefundsRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/services': typeof AdminServicesRoute
   '/admin/settlements': typeof AdminSettlementsRoute
@@ -389,9 +405,11 @@ export interface FileRoutesById {
   '/admin/audit': typeof AdminAuditRoute
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
+  '/admin/features': typeof AdminFeaturesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
+  '/admin/refunds': typeof AdminRefundsRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/services': typeof AdminServicesRoute
   '/admin/settlements': typeof AdminSettlementsRoute
@@ -437,9 +455,11 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/courier'
     | '/admin/drivers'
+    | '/admin/features'
     | '/admin/orders'
     | '/admin/payments'
     | '/admin/providers'
+    | '/admin/refunds'
     | '/admin/reports'
     | '/admin/services'
     | '/admin/settlements'
@@ -483,9 +503,11 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/courier'
     | '/admin/drivers'
+    | '/admin/features'
     | '/admin/orders'
     | '/admin/payments'
     | '/admin/providers'
+    | '/admin/refunds'
     | '/admin/reports'
     | '/admin/services'
     | '/admin/settlements'
@@ -529,9 +551,11 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/courier'
     | '/admin/drivers'
+    | '/admin/features'
     | '/admin/orders'
     | '/admin/payments'
     | '/admin/providers'
+    | '/admin/refunds'
     | '/admin/reports'
     | '/admin/services'
     | '/admin/settlements'
@@ -576,9 +600,11 @@ export interface RootRouteChildren {
   AdminAuditRoute: typeof AdminAuditRoute
   AdminCourierRoute: typeof AdminCourierRoute
   AdminDriversRoute: typeof AdminDriversRoute
+  AdminFeaturesRoute: typeof AdminFeaturesRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminProvidersRoute: typeof AdminProvidersRoute
+  AdminRefundsRoute: typeof AdminRefundsRoute
   AdminReportsRoute: typeof AdminReportsRoute
   AdminServicesRoute: typeof AdminServicesRoute
   AdminSettlementsRoute: typeof AdminSettlementsRoute
@@ -744,6 +770,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDriversRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/features': {
+      id: '/admin/features'
+      path: '/admin/features'
+      fullPath: '/admin/features'
+      preLoaderRoute: typeof AdminFeaturesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/orders': {
       id: '/admin/orders'
       path: '/admin/orders'
@@ -763,6 +796,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/providers'
       fullPath: '/admin/providers'
       preLoaderRoute: typeof AdminProvidersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/refunds': {
+      id: '/admin/refunds'
+      path: '/admin/refunds'
+      fullPath: '/admin/refunds'
+      preLoaderRoute: typeof AdminRefundsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/reports': {
@@ -936,9 +976,11 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAuditRoute: AdminAuditRoute,
   AdminCourierRoute: AdminCourierRoute,
   AdminDriversRoute: AdminDriversRoute,
+  AdminFeaturesRoute: AdminFeaturesRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminPaymentsRoute: AdminPaymentsRoute,
   AdminProvidersRoute: AdminProvidersRoute,
+  AdminRefundsRoute: AdminRefundsRoute,
   AdminReportsRoute: AdminReportsRoute,
   AdminServicesRoute: AdminServicesRoute,
   AdminSettlementsRoute: AdminSettlementsRoute,
