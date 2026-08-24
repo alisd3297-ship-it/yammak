@@ -140,6 +140,12 @@ function ProviderDashboard() {
             <Switch checked={provider.is_open} onCheckedChange={toggleOpen} />
           </div>
         )}
+        <Link
+          to="/provider-finance"
+          className="mt-3 inline-block rounded-full bg-primary-foreground/15 px-4 py-2 text-xs font-semibold backdrop-blur"
+        >
+          مالية النشاط والتسويات
+        </Link>
       </header>
 
       {provider && (
