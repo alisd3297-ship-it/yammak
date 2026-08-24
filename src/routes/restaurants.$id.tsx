@@ -35,6 +35,7 @@ function RestaurantPage() {
           .from("providers")
           .select("id, name, description, rating, avg_prep_minutes, is_open, address_text")
           .eq("id", id)
+          .eq("kind", "restaurant")
           .maybeSingle(),
         supabase.from("menu_categories").select("id, name, sort_order").eq("provider_id", id).order("sort_order"),
         supabase
@@ -107,7 +108,12 @@ function RestaurantPage() {
             </section>
           );
         })}
-        {!data?.products.length && (
+        {data && !provider && (
+          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+            هذا النشاط غير موجود ضمن المطاعم. تفقّده في قسم السوبر ماركت والمتاجر.
+          </p>
+        )}
+        {provider && !data?.products.length && (
           <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
             المطعم ما ضاف وجبات بعد.
           </p>

@@ -37,6 +37,7 @@ function StorePage() {
           .from("providers")
           .select("id, name, description, rating, is_open, address_text, kind")
           .eq("id", id)
+          .eq("kind", "store")
           .maybeSingle(),
         supabase.from("menu_categories").select("id, name, sort_order").eq("provider_id", id).order("sort_order"),
         supabase
@@ -108,7 +109,12 @@ function StorePage() {
           </section>
         )}
 
-        {!data?.products.length && (
+        {data && !provider && (
+          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+            هذا النشاط غير موجود ضمن المتاجر. تفقّده في قسم المطاعم.
+          </p>
+        )}
+        {provider && !data?.products.length && (
           <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">المتجر ما ضاف منتجات بعد.</p>
         )}
       </div>
