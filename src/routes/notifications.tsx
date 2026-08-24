@@ -136,6 +136,14 @@ function NotificationsPage() {
               {n.body && <p className="mt-1 text-xs text-muted-foreground">{n.body}</p>}
             </article>
           );
+          // عرض التوصيل يفتح لوحة المندوب على الطلب نفسه، وبقية الإشعارات تفتح تفاصيل الطلب.
+          if (n.order_id && n.kind === "offer" && account?.worker) {
+            return (
+              <Link key={n.id} to="/driver" search={{ order: n.order_id }} className="block">
+                {card}
+              </Link>
+            );
+          }
           return n.order_id ? (
             <Link key={n.id} to="/orders/$id" params={{ id: n.order_id }} className="block">
               {card}
