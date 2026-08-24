@@ -108,3 +108,75 @@ export const provisionTestAdmin = createServerFn({ method: "POST" })
 
     return { ok: true as const, created, email: data.email };
   });
+
+/**
+ * تجهيز حسابات اختبار (زبون / مندوب / تاجر) بالأدوار الفعلية الموجودة في المشروع.
+ * محمي برمز الإعداد السري، محصور على نطاق @yammak.test، وكلمة المرور تُدخل وقت التنفيذ.
+ */
+export const provisionTestAccount = createServerFn({ method: "POST" })
+  .inputValidator((data: { token: string; kind: string; email: string; password: string }) => ({
+    token: String(data?.token ?? ""),
+    kind: String(data?.kind ?? ""),
+    email: String(data?.email ?? "").trim().toLowerCase(),
+    password: String(data?.password ?? ""),
+  }))
+  .handler(async ({ data }) => {
+    const helpers = await import("@/lib/admin-setup.server");
+    if (!helpers.setupTokenMatches(data.token)) return { ok: false as const, reason: "invalid_token" };
+    if (!helpers.TEST_EMAIL_RE.test(data.email)) return { ok: false as const, reason: "invalid_email" };
+    if (data.password.length < 10) return { ok: false as const, reason: "weak_password" };
+    if (!["customer", "driver", "vendor"].includes(data.kind))
+      return { ok: false as const, reason: "invalid_kind" };
+
+    const fullName =
+      data.kind === "customer" ? "زبون اختبار" : data.kind === "driver" ? "مندوب اختبار" : "تاجر اختبار";
+    const { userId, created } = await helpers.upsertTestAuthUser(data.email, data.password, fullName);
+    const cityId = await helpers.defaultCityId();
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error: profileError } = await supabaseAdmin
+      .from("profiles")
+      .upsert({ id: userId, full_name: fullName, city_id: cityId }, { onConflict: "id" });
+    if (profileError) throw profileError;
+
+    if (data.kind === "customer") {
+      await helpers.grantRoles(userId, ["customer"]);
+    } else if (data.kind === "driver") {
+      await helpers.grantRoles(userId, ["customer", "worker"]);
+      const { error } = await supabaseAdmin.from("worker_profiles").upsert(
+        {
+          user_id: userId,
+          worker_kind: "delivery",
+          requested_kind: "delivery",
+          vehicle_type: "bike",
+          application_status: "approved",
+          is_approved: true,
+          is_available: true,
+          city_id: cityId,
+        },
+        { onConflict: "user_id" },
+      );
+      if (error) throw error;
+    } else {
+      await helpers.grantRoles(userId, ["customer", "provider"]);
+      const { data: existing } = await supabaseAdmin
+        .from("providers")
+        .select("id")
+        .eq("owner_id", userId)
+        .limit(1)
+        .maybeSingle();
+      if (!existing) {
+        const { error } = await supabaseAdmin.from("providers").insert({
+          owner_id: userId,
+          name: "متجر اختبار يمّك",
+          kind: "store",
+          status: "approved",
+          is_open: true,
+          city_id: cityId,
+        });
+        if (error) throw error;
+      }
+    }
+
+    return { ok: true as const, created, email: data.email, kind: data.kind };
+  });
