@@ -19,9 +19,14 @@ function friendly(message: string): string {
   if (message.includes("order_already_assigned")) return "تم إسناد الطلب لمندوب آخر";
   if (message.includes("offer_expired")) return "انتهت مهلة العرض";
   if (message.includes("offer_not_active")) return "هذا العرض لم يعد متاحاً";
+  if (message.includes("admin_approval_required"))
+    return "هذا الطلب ينتظر موافقة الإدارة قبل المتابعة، تواصل مع الإدارة أو أوقف شرط الموافقة من لوحة المدير";
+  if (message.includes("phone_verification_required")) return "أكمل تأكيد رقم هاتفك أولاً";
+  if (message.includes("order_not_found")) return "الطلب غير موجود";
   if (message.includes("forbidden") || message.includes("unauthorized")) return "غير مصرح بهذا الإجراء";
-  return "تعذر تنفيذ العملية، حاول مرة ثانية";
+  return message.trim() ? `تعذر تنفيذ العملية: ${message.trim()}` : "تعذر تنفيذ العملية، حاول مرة ثانية";
 }
+
 
 /**
  * إنشاء الطلب من الخادم: الواجهة ترسل المنتجات والكميات والعنوان فقط،
