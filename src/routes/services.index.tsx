@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { ArrowRight, Search, Star, Wrench } from "lucide-react";
 import * as Icons from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { requireCustomerFlow } from "@/lib/route-guards";
 import { useCachedQuery } from "@/lib/offline-cache";
 import { BottomNav, OfflineBanner, PageShell } from "@/components/app-shell";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import { fuzzyScore } from "@/lib/search";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/services/")({
+  beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
       { title: "مهن وخدمات | يمّك" },

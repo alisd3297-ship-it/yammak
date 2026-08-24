@@ -14,6 +14,7 @@ import { createOrder, quoteDeliveryFee } from "@/lib/orders.functions";
 import { useAccount } from "@/lib/auth";
 
 export const Route = createFileRoute("/checkout")({
+  beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
       { title: "سلة الطلب | يمّك" },

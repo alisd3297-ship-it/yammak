@@ -72,3 +72,23 @@ export async function requireProvider(): Promise<{ userId: string }> {
   if (!data) throw redirect({ to: "/join/provider", replace: true });
   return { userId };
 }
+
+/**
+ * حارس واجهة الزبون: يمنع حساب المندوب الصِرف من فتح صفحات الطلب كزبون
+ * ويعيده إلى لوحته. الزائر غير المسجّل يبقى قادراً على التصفح كما هو.
+ */
+export async function requireCustomerFlow(): Promise<void> {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const userId = sessionData.session?.user?.id;
+  if (!userId) return;
+
+  const roles = await rolesOf(userId);
+  if (roles?.some((r) => STAFF_ROLES.includes(r))) return;
+
+  const [{ data: provider }, { data: worker }] = await Promise.all([
+    supabase.from("providers").select("id").eq("owner_id", userId).maybeSingle(),
+    supabase.from("worker_profiles").select("user_id").eq("user_id", userId).maybeSingle(),
+  ]);
+  if (provider) return;
+  if (worker) throw redirect({ to: "/driver", replace: true });
+}

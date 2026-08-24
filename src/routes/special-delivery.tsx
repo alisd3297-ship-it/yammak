@@ -19,6 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/special-delivery")({
+  beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
       { title: "التوصيل الخاص | يمّك" },

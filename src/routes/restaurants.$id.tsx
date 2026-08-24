@@ -3,12 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Plus, Star } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { requireCustomerFlow } from "@/lib/route-guards";
 import { PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart";
 import { formatIQD } from "@/lib/orders";
 
 export const Route = createFileRoute("/restaurants/$id")({
+  beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
       { title: "قائمة المطعم | يمّك" },

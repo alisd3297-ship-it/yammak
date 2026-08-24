@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ArrowRight, Star } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { requireCustomerFlow } from "@/lib/route-guards";
 import { BottomNav, PageShell, StatusDot } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { useAccount } from "@/lib/auth";
@@ -18,6 +19,7 @@ import {
 } from "@/lib/services";
 
 export const Route = createFileRoute("/service-requests/")({
+  beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
       { title: "طلبات الخدمة | يمّك" },

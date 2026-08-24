@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { requireCustomerFlow } from "@/lib/route-guards";
 import { BottomNav, PageShell, StatusDot } from "@/components/app-shell";
 import { useAccount } from "@/lib/auth";
 import { useServerFn } from "@tanstack/react-start";
@@ -10,6 +11,7 @@ import { ORDER_STATUS_LABELS, formatIQD, statusTone, type OrderStatus } from "@/
 import { TRIP_STATUS_LABELS, taxiClassLabel, tripTone, type TripStatus } from "@/lib/taxi";
 
 export const Route = createFileRoute("/orders/")({
+  beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
       { title: "طلباتي | يمّك" },

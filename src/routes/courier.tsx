@@ -13,6 +13,7 @@ import { formatIQD } from "@/lib/orders";
 import { createCourierOrder, quoteCourierFee } from "@/lib/courier.functions";
 
 export const Route = createFileRoute("/courier")({
+  beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
       { title: "توصيل سريع | يمّك" },

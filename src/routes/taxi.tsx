@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { ArrowRight, Car, LocateFixed, MapPin, Navigation, Star, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { requireCustomerFlow } from "@/lib/route-guards";
 import { BottomNav, PageShell, StatusDot } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,7 @@ import {
 import { changeTripStatus, createTaxiTrip, quoteTaxiTrip, rateTrip } from "@/lib/taxi.functions";
 
 export const Route = createFileRoute("/taxi")({
+  beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
       { title: "اطلب تكسي | يمّك" },

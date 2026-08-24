@@ -6,6 +6,7 @@ import { OPERATING_ADDRESS_PREFIX } from "@/lib/location";
 import { ArrowRight, LocateFixed, Star, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { requireCustomerFlow } from "@/lib/route-guards";
 import { PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,7 @@ import { formatServicePrice, PRICE_UNIT_LABELS, type ServicePriceUnit } from "@/
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/services/$id")({
+  beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
       { title: "مقدم خدمة | يمّك" },
