@@ -360,6 +360,95 @@ export type Database = {
           },
         ]
       }
+      feature_flags: {
+        Row: {
+          audience: string
+          created_at: string
+          description: string | null
+          is_enabled: boolean
+          key: string
+          label: string
+          phase: number
+          rollout_percent: number
+          updated_at: string
+        }
+        Insert: {
+          audience?: string
+          created_at?: string
+          description?: string | null
+          is_enabled?: boolean
+          key: string
+          label: string
+          phase?: number
+          rollout_percent?: number
+          updated_at?: string
+        }
+        Update: {
+          audience?: string
+          created_at?: string
+          description?: string | null
+          is_enabled?: boolean
+          key?: string
+          label?: string
+          phase?: number
+          rollout_percent?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      fee_rules: {
+        Row: {
+          city_id: string | null
+          created_at: string
+          currency: string
+          fixed_amount: number
+          id: string
+          is_active: boolean
+          kind: string
+          name: string
+          order_type: Database["public"]["Enums"]["order_type"] | null
+          percent: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          city_id?: string | null
+          created_at?: string
+          currency?: string
+          fixed_amount?: number
+          id?: string
+          is_active?: boolean
+          kind?: string
+          name: string
+          order_type?: Database["public"]["Enums"]["order_type"] | null
+          percent?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          city_id?: string | null
+          created_at?: string
+          currency?: string
+          fixed_amount?: number
+          id?: string
+          is_active?: boolean
+          kind?: string
+          name?: string
+          order_type?: Database["public"]["Enums"]["order_type"] | null
+          percent?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fee_rules_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       internal_secrets: {
         Row: {
           name: string
@@ -375,6 +464,51 @@ export type Database = {
           name?: string
           updated_at?: string
           value?: string
+        }
+        Relationships: []
+      }
+      invoices: {
+        Row: {
+          currency: string
+          data: Json
+          delivery_fee: number
+          fees: number
+          id: string
+          issued_at: string
+          number: string
+          subject_id: string
+          subject_type: string
+          subtotal: number
+          total: number
+          user_id: string
+        }
+        Insert: {
+          currency?: string
+          data?: Json
+          delivery_fee?: number
+          fees?: number
+          id?: string
+          issued_at?: string
+          number: string
+          subject_id: string
+          subject_type: string
+          subtotal?: number
+          total?: number
+          user_id: string
+        }
+        Update: {
+          currency?: string
+          data?: Json
+          delivery_fee?: number
+          fees?: number
+          id?: string
+          issued_at?: string
+          number?: string
+          subject_id?: string
+          subject_type?: string
+          subtotal?: number
+          total?: number
+          user_id?: string
         }
         Relationships: []
       }
@@ -874,6 +1008,62 @@ export type Database = {
         }
         Relationships: []
       }
+      payouts: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          currency: string
+          id: string
+          method: string
+          paid_at: string | null
+          party_id: string
+          party_type: string
+          reference: string | null
+          settlement_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          id?: string
+          method?: string
+          paid_at?: string | null
+          party_id: string
+          party_type: string
+          reference?: string | null
+          settlement_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          id?: string
+          method?: string
+          paid_at?: string | null
+          party_id?: string
+          party_type?: string
+          reference?: string | null
+          settlement_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payouts_settlement_id_fkey"
+            columns: ["settlement_id"]
+            isOneToOne: false
+            referencedRelation: "settlements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       phone_verifications: {
         Row: {
           attempts: number
@@ -1352,6 +1542,62 @@ export type Database = {
           },
         ]
       }
+      refund_requests: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          decided_at: string | null
+          decided_by: string | null
+          decision_note: string | null
+          id: string
+          payment_id: string
+          reason: string
+          refund_target: string
+          requested_by: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          id?: string
+          payment_id: string
+          reason: string
+          refund_target?: string
+          requested_by: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          id?: string
+          payment_id?: string
+          reason?: string
+          refund_target?: string
+          requested_by?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "refund_requests_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_ratings: {
         Row: {
           comment: string | null
@@ -1615,6 +1861,125 @@ export type Database = {
           },
         ]
       }
+      settlement_items: {
+        Row: {
+          commission: number
+          created_at: string
+          delivery_fee: number
+          gross: number
+          id: string
+          label: string
+          net: number
+          occurred_at: string
+          settlement_id: string
+          subject_id: string
+          subject_type: string
+        }
+        Insert: {
+          commission?: number
+          created_at?: string
+          delivery_fee?: number
+          gross?: number
+          id?: string
+          label: string
+          net?: number
+          occurred_at: string
+          settlement_id: string
+          subject_id: string
+          subject_type: string
+        }
+        Update: {
+          commission?: number
+          created_at?: string
+          delivery_fee?: number
+          gross?: number
+          id?: string
+          label?: string
+          net?: number
+          occurred_at?: string
+          settlement_id?: string
+          subject_id?: string
+          subject_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "settlement_items_settlement_id_fkey"
+            columns: ["settlement_id"]
+            isOneToOne: false
+            referencedRelation: "settlements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      settlements: {
+        Row: {
+          adjustments: number
+          approved_at: string | null
+          approved_by: string | null
+          commission: number
+          created_at: string
+          created_by: string | null
+          currency: string
+          delivery_fees: number
+          gross: number
+          id: string
+          items_count: number
+          net: number
+          notes: string | null
+          paid_at: string | null
+          party_id: string
+          party_type: string
+          period_end: string
+          period_start: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          adjustments?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          commission?: number
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          delivery_fees?: number
+          gross?: number
+          id?: string
+          items_count?: number
+          net?: number
+          notes?: string | null
+          paid_at?: string | null
+          party_id: string
+          party_type: string
+          period_end: string
+          period_start: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          adjustments?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          commission?: number
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          delivery_fees?: number
+          gross?: number
+          id?: string
+          items_count?: number
+          net?: number
+          notes?: string | null
+          paid_at?: string | null
+          party_id?: string
+          party_type?: string
+          period_end?: string
+          period_start?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       trip_offers: {
         Row: {
           distance_km: number | null
@@ -1832,6 +2197,78 @@ export type Database = {
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wallet_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          created_at: string
+          created_by: string | null
+          currency: string
+          direction: string
+          id: string
+          idempotency_key: string
+          reason: string
+          subject_id: string | null
+          subject_type: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          direction: string
+          id?: string
+          idempotency_key: string
+          reason: string
+          subject_id?: string | null
+          subject_type?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          direction?: string
+          id?: string
+          idempotency_key?: string
+          reason?: string
+          subject_id?: string | null
+          subject_type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wallets: {
+        Row: {
+          balance: number
+          created_at: string
+          currency: string
+          is_locked: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          currency?: string
+          is_locked?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          currency?: string
+          is_locked?: boolean
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -2161,6 +2598,37 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      approve_settlement: {
+        Args: { _settlement_id: string }
+        Returns: {
+          adjustments: number
+          approved_at: string | null
+          approved_by: string | null
+          commission: number
+          created_at: string
+          created_by: string | null
+          currency: string
+          delivery_fees: number
+          gross: number
+          id: string
+          items_count: number
+          net: number
+          notes: string | null
+          paid_at: string | null
+          party_id: string
+          party_type: string
+          period_end: string
+          period_start: string
+          status: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "settlements"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       attach_payment_intent: {
         Args: {
           _client_secret: string
@@ -2383,6 +2851,15 @@ export type Database = {
         }
         Returns: number
       }
+      compute_fees: {
+        Args: {
+          _amount: number
+          _city_id: string
+          _currency?: string
+          _order_type: Database["public"]["Enums"]["order_type"]
+        }
+        Returns: Json
+      }
       compute_taxi_fare: {
         Args: {
           _city_id: string
@@ -2579,6 +3056,30 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      create_refund_request: {
+        Args: { _amount: number; _payment_id: string; _reason: string }
+        Returns: {
+          amount: number
+          created_at: string
+          currency: string
+          decided_at: string | null
+          decided_by: string | null
+          decision_note: string | null
+          id: string
+          payment_id: string
+          reason: string
+          refund_target: string
+          requested_by: string
+          status: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "refund_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       create_service_request: {
         Args: {
           _address_text: string
@@ -2717,10 +3218,83 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      decide_refund_request: {
+        Args: {
+          _approve: boolean
+          _note?: string
+          _request_id: string
+          _to_wallet?: boolean
+        }
+        Returns: {
+          amount: number
+          created_at: string
+          currency: string
+          decided_at: string | null
+          decided_by: string | null
+          decision_note: string | null
+          id: string
+          payment_id: string
+          reason: string
+          refund_target: string
+          requested_by: string
+          status: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "refund_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      driver_earnings_summary: {
+        Args: { _from: string; _to: string }
+        Returns: Json
+      }
       expire_ads: { Args: never; Returns: number }
       expire_due_ads: { Args: never; Returns: number }
       expire_stale_offers: { Args: { _order_id?: string }; Returns: number }
       expire_stale_trip_offers: { Args: { _trip_id?: string }; Returns: number }
+      feature_enabled: {
+        Args: { _key: string; _user_id?: string }
+        Returns: boolean
+      }
+      generate_settlement: {
+        Args: {
+          _from: string
+          _party_id: string
+          _party_type: string
+          _to: string
+        }
+        Returns: {
+          adjustments: number
+          approved_at: string | null
+          approved_by: string | null
+          commission: number
+          created_at: string
+          created_by: string | null
+          currency: string
+          delivery_fees: number
+          gross: number
+          id: string
+          items_count: number
+          net: number
+          notes: string | null
+          paid_at: string | null
+          party_id: string
+          party_type: string
+          period_end: string
+          period_start: string
+          status: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "settlements"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -2760,6 +3334,29 @@ export type Database = {
       }
       is_phone_verified: { Args: { _user_id: string }; Returns: boolean }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      issue_invoice: {
+        Args: { _subject_id: string; _subject_type: string }
+        Returns: {
+          currency: string
+          data: Json
+          delivery_fee: number
+          fees: number
+          id: string
+          issued_at: string
+          number: string
+          subject_id: string
+          subject_type: string
+          subtotal: number
+          total: number
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "invoices"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       mark_dispatch_attempt: {
         Args: { _found: boolean; _order_id: string }
         Returns: Json
@@ -2794,6 +3391,30 @@ export type Database = {
         Args: { _provider_id: string; _user_id: string }
         Returns: boolean
       }
+      pay_settlement: {
+        Args: { _method?: string; _reference?: string; _settlement_id: string }
+        Returns: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          currency: string
+          id: string
+          method: string
+          paid_at: string | null
+          party_id: string
+          party_type: string
+          reference: string | null
+          settlement_id: string | null
+          status: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "payouts"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       payment_subject_info: {
         Args: {
           _subject_id: string
@@ -2805,6 +3426,10 @@ export type Database = {
           label: string
           owner_id: string
         }[]
+      }
+      provider_finance_summary: {
+        Args: { _from: string; _provider_id: string; _to: string }
+        Returns: Json
       }
       push_notification: {
         Args: {
@@ -3328,6 +3953,74 @@ export type Database = {
           _trip_id: string
         }
         Returns: boolean
+      }
+      wallet_admin_adjust: {
+        Args: {
+          _amount: number
+          _direction: string
+          _idempotency_key: string
+          _reason: string
+          _user_id: string
+        }
+        Returns: {
+          amount: number
+          balance_after: number
+          created_at: string
+          created_by: string | null
+          currency: string
+          direction: string
+          id: string
+          idempotency_key: string
+          reason: string
+          subject_id: string | null
+          subject_type: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "wallet_transactions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      wallet_apply: {
+        Args: {
+          _actor_id?: string
+          _amount: number
+          _direction: string
+          _idempotency_key: string
+          _reason: string
+          _subject_id?: string
+          _subject_type?: string
+          _user_id: string
+        }
+        Returns: {
+          amount: number
+          balance_after: number
+          created_at: string
+          created_by: string | null
+          currency: string
+          direction: string
+          id: string
+          idempotency_key: string
+          reason: string
+          subject_id: string | null
+          subject_type: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "wallet_transactions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      wallet_pay_subject: {
+        Args: {
+          _subject_id: string
+          _subject_type: Database["public"]["Enums"]["payment_subject"]
+        }
+        Returns: Json
       }
     }
     Enums: {
