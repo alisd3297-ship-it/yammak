@@ -124,8 +124,26 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
     .not("driver_id", "is", null)
     .in("status", [...ACTIVE_DRIVER_STATUSES]);
 
-  const pickupLat = order.pickup_lat ?? 0;
-  const pickupLng = order.pickup_lng ?? 0;
+  // إحداثيات الاستلام قد تكون فارغة (مزوّد بلا موقع)، فنعتمد موقع المزوّد ثم موقع التشغيل
+  // بدل الصفر، وإلا تُحسب المسافة من نقطة خاطئة ويُستبعد كل المندوبين.
+  let pickupLat = order.pickup_lat ?? null;
+  let pickupLng = order.pickup_lng ?? null;
+  if ((pickupLat == null || pickupLng == null) && order.provider_id) {
+    const { data: prov } = await supabaseAdmin
+      .from("providers")
+      .select("lat, lng")
+      .eq("id", order.provider_id)
+      .maybeSingle();
+    if (prov?.lat != null && prov?.lng != null) {
+      pickupLat = prov.lat;
+      pickupLng = prov.lng;
+    }
+  }
+  if (pickupLat == null || pickupLng == null) {
+    pickupLat = OPERATING_LOCATION_COORDS.lat;
+    pickupLng = OPERATING_LOCATION_COORDS.lng;
+  }
+
 
   const buildCandidates = (locations: { user_id: string; lat: number; lng: number }[]) =>
     (workers ?? [])
