@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ArrowRight, ShieldCheck, ShieldAlert } from "lucide-react";
-import { PageShell } from "@/components/app-shell";
+import { ShieldCheck, ShieldAlert } from "lucide-react";
+import { BackButton, PageShell  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -111,9 +111,7 @@ function VerifyPhonePage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <Link to="/orders" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
-          <ArrowRight className="size-4" /> رجوع
-        </Link>
+        <BackButton fallback="/orders" label="رجوع" />
         <h1 className="text-2xl font-black">تأكيد رقم الهاتف</h1>
         <p className="mt-1 text-sm opacity-90">خطوة أمان تحمي حسابك وطلباتك</p>
       </header>

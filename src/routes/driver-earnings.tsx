@@ -2,8 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowRight, TrendingUp } from "lucide-react";
-import { PageShell, StatusDot } from "@/components/app-shell";
+import { TrendingUp } from "lucide-react";
+import { BackButton, PageShell, StatusDot  } from "@/components/app-shell";
 import { requireWorker } from "@/lib/route-guards";
 import { useAccount } from "@/lib/auth";
 import { getDriverEarnings, listMySettlements } from "@/lib/finance.functions";
@@ -59,9 +59,7 @@ function DriverEarningsPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <Link to="/driver" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
-          <ArrowRight className="size-4" /> لوحة المندوب
-        </Link>
+        <BackButton fallback="/driver" label="لوحة المندوب" />
         <h1 className="text-2xl font-black">أرباحي</h1>
         <p className="mt-1 text-sm opacity-90">كل المبالغ بالدينار العراقي</p>
         <div className="mt-4 flex gap-2">

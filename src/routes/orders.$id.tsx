@@ -3,9 +3,9 @@ import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ArrowRight, MapPin, Phone, Navigation } from "lucide-react";
+import { MapPin, Phone, Navigation } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { PageShell, StatusDot } from "@/components/app-shell";
+import { BackButton, PageShell, StatusDot  } from "@/components/app-shell";
 import { PaymentPanel } from "@/components/payment-panel";
 import { Button } from "@/components/ui/button";
 import { changeOrderStatus } from "@/lib/orders.functions";
@@ -176,9 +176,7 @@ function OrderTrackPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <Link to="/orders" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
-          <ArrowRight className="size-4" /> طلباتي
-        </Link>
+        <BackButton fallback="/orders" label="طلباتي" />
         <h1 className="text-2xl font-black">طلب #{order?.code ?? "..."}</h1>
         <p className="mt-1 flex items-center gap-2 text-sm opacity-90">
           <StatusDot tone={statusTone(status)} /> {ORDER_STATUS_LABELS[status]}

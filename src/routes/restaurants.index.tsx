@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Star, Clock, ArrowRight } from "lucide-react";
+import { Search, Star, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
 import { useCachedQuery } from "@/lib/offline-cache";
-import { BottomNav, OfflineBanner, PageShell } from "@/components/app-shell";
+import { BackButton, BottomNav, OfflineBanner, PageShell  } from "@/components/app-shell";
 import { Input } from "@/components/ui/input";
 import { fuzzyScore } from "@/lib/search";
 import { cn } from "@/lib/utils";
@@ -91,9 +91,7 @@ function RestaurantsPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <Link to="/" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
-          <ArrowRight className="size-4" /> رجوع
-        </Link>
+        <BackButton fallback="/" label="رجوع" />
         <h1 className="text-2xl font-black">مطاعم وكافتريات</h1>
       </header>
 

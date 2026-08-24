@@ -4,8 +4,8 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ArrowRight, LocateFixed, MapPin, Plus, Trash2, Truck } from "lucide-react";
-import { BottomNav, PageShell } from "@/components/app-shell";
+import { LocateFixed, MapPin, Plus, Trash2, Truck } from "lucide-react";
+import { BackButton, BottomNav, PageShell  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -147,9 +147,7 @@ function SpecialDeliveryPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <Link to="/" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
-          <ArrowRight className="size-4" /> الرئيسية
-        </Link>
+        <BackButton fallback="/" label="الرئيسية" />
         <h1 className="text-2xl font-black">التوصيل الخاص</h1>
         <p className="mt-1 text-sm opacity-90">
           اختر المركبة المناسبة، نقطة استلام وعدة نقاط تسليم، الآن أو بموعد.

@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowRight, Wallet as WalletIcon, ArrowDownCircle, ArrowUpCircle, ReceiptText } from "lucide-react";
-import { BottomNav, PageShell } from "@/components/app-shell";
+import { Wallet as WalletIcon, ArrowDownCircle, ArrowUpCircle, ReceiptText } from "lucide-react";
+import { BackButton, BottomNav, PageShell  } from "@/components/app-shell";
 import { requireSignedIn } from "@/lib/route-guards";
 import { getMyWallet, listMyInvoices, listMyRefundRequests } from "@/lib/wallet.functions";
 import { formatIQD } from "@/lib/payments";
@@ -53,9 +53,7 @@ function WalletPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <Link to="/payments" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
-          <ArrowRight className="size-4" /> عمليات الدفع
-        </Link>
+        <BackButton fallback="/payments" label="عمليات الدفع" />
         <h1 className="text-2xl font-black">محفظة يمّك</h1>
         <div className="mt-4 rounded-2xl bg-primary-foreground/15 p-4 backdrop-blur">
           <span className="flex items-center gap-2 text-sm opacity-90">

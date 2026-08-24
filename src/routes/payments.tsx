@@ -2,9 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowRight, CreditCard, Wallet } from "lucide-react";
+import { CreditCard, Wallet } from "lucide-react";
 import { toast } from "sonner";
-import { BottomNav, PageShell, StatusDot } from "@/components/app-shell";
+import { BackButton, BottomNav, PageShell, StatusDot  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useFeature } from "@/lib/features";
@@ -73,9 +73,7 @@ function PaymentsPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <Link to="/orders" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
-          <ArrowRight className="size-4" /> طلباتي
-        </Link>
+        <BackButton fallback="/orders" label="طلباتي" />
         <h1 className="text-2xl font-black">عمليات الدفع</h1>
         <p className="mt-1 text-sm opacity-90">كل مدفوعاتك وحالتها ومبالغ الاسترجاع</p>
         <Link

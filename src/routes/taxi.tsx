@@ -3,10 +3,10 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ArrowRight, Car, LocateFixed, MapPin, Navigation, Star, Users } from "lucide-react";
+import { Car, LocateFixed, MapPin, Navigation, Star, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
-import { BottomNav, PageShell, StatusDot } from "@/components/app-shell";
+import { BackButton, BottomNav, PageShell, StatusDot  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -206,9 +206,7 @@ function TaxiPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <Link to="/" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
-          <ArrowRight className="size-4" /> الرئيسية
-        </Link>
+        <BackButton fallback="/" label="الرئيسية" />
         <h1 className="text-2xl font-black">اطلب تكسي</h1>
         <p className="mt-1 text-sm opacity-90">من موقعك لوجهتك، والأجرة معروفة قبل ما تنطلق.</p>
       </header>

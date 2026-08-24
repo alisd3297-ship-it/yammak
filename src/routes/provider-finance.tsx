@@ -2,8 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowRight, PieChart } from "lucide-react";
-import { PageShell, StatusDot } from "@/components/app-shell";
+import { PieChart } from "lucide-react";
+import { BackButton, PageShell, StatusDot  } from "@/components/app-shell";
 import { requireProvider } from "@/lib/route-guards";
 import { useAccount } from "@/lib/auth";
 import { getProviderFinance, listMySettlements } from "@/lib/finance.functions";
@@ -61,9 +61,7 @@ function ProviderFinancePage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <Link to="/provider" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
-          <ArrowRight className="size-4" /> لوحة النشاط
-        </Link>
+        <BackButton fallback="/provider" label="لوحة النشاط" />
         <h1 className="text-2xl font-black">مالية النشاط</h1>
         <p className="mt-1 text-sm opacity-90">كل المبالغ بالدينار العراقي</p>
         <div className="mt-4 flex gap-2">

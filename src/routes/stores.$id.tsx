@@ -1,10 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Plus, Star, Store as StoreIcon } from "lucide-react";
+import { Plus, Star, Store as StoreIcon } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
-import { PageShell } from "@/components/app-shell";
+import { BackButton, PageShell  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart";
 import { formatIQD } from "@/lib/orders";
@@ -66,9 +66,7 @@ function StorePage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <Link to="/stores" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
-          <ArrowRight className="size-4" /> المتاجر
-        </Link>
+        <BackButton fallback="/stores" label="المتاجر" />
         <h1 className="flex items-center gap-2 text-2xl font-black">
           <StoreIcon className="size-6" /> {provider?.name ?? "..."}
         </h1>

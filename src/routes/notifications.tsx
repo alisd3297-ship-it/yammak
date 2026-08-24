@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowRight, BellOff } from "lucide-react";
+import { BellOff } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { PageShell } from "@/components/app-shell";
+import { BackButton, PageShell  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { useAccount } from "@/lib/auth";
 import { requireSignedIn } from "@/lib/route-guards";
@@ -85,9 +85,7 @@ function NotificationsPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <Link to="/" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
-          <ArrowRight className="size-4" /> الرئيسية
-        </Link>
+        <BackButton fallback="/" label="الرئيسية" />
         <h1 className="text-2xl font-black">الإشعارات</h1>
         <p className="mt-1 text-sm opacity-90">
           {unread ? `عندك ${unread} إشعار غير مقروء` : "كل الإشعارات مقروءة"}

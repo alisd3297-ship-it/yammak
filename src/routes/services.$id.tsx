@@ -3,11 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { OPERATING_ADDRESS_PREFIX } from "@/lib/location";
-import { ArrowRight, LocateFixed, Star, Wrench } from "lucide-react";
+import { LocateFixed, Star, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
-import { PageShell } from "@/components/app-shell";
+import { BackButton, PageShell  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -111,9 +111,7 @@ function ServiceProviderPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <Link to="/services" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
-          <ArrowRight className="size-4" /> كل الخدمات
-        </Link>
+        <BackButton fallback="/services" label="كل الخدمات" />
         <div className="flex items-start gap-3">
           <span className="flex size-14 items-center justify-center rounded-2xl bg-white/15">
             <Wrench className="size-6" />
