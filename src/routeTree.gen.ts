@@ -18,6 +18,7 @@ import { Route as DriverEarningsRouteImport } from './routes/driver-earnings'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PaymentsRouteImport } from './routes/payments'
 import { Route as ProviderRouteImport } from './routes/provider'
+import { Route as ProviderFinanceRouteImport } from './routes/provider-finance'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SetupAdminRouteImport } from './routes/setup-admin'
 import { Route as SpecialDeliveryRouteImport } from './routes/special-delivery'
@@ -95,6 +96,11 @@ const PaymentsRoute = PaymentsRouteImport.update({
 const ProviderRoute = ProviderRouteImport.update({
   id: '/provider',
   path: '/provider',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProviderFinanceRoute = ProviderFinanceRouteImport.update({
+  id: '/provider-finance',
+  path: '/provider-finance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -273,6 +279,7 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
+  '/provider-finance': typeof ProviderFinanceRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
   '/special-delivery': typeof SpecialDeliveryRoute
@@ -317,6 +324,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
+  '/provider-finance': typeof ProviderFinanceRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
   '/special-delivery': typeof SpecialDeliveryRoute
@@ -362,6 +370,7 @@ export interface FileRoutesById {
   '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
+  '/provider-finance': typeof ProviderFinanceRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
   '/special-delivery': typeof SpecialDeliveryRoute
@@ -408,6 +417,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/payments'
     | '/provider'
+    | '/provider-finance'
     | '/reset-password'
     | '/setup-admin'
     | '/special-delivery'
@@ -452,6 +462,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/payments'
     | '/provider'
+    | '/provider-finance'
     | '/reset-password'
     | '/setup-admin'
     | '/special-delivery'
@@ -496,6 +507,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/payments'
     | '/provider'
+    | '/provider-finance'
     | '/reset-password'
     | '/setup-admin'
     | '/special-delivery'
@@ -541,6 +553,7 @@ export interface RootRouteChildren {
   NotificationsRoute: typeof NotificationsRoute
   PaymentsRoute: typeof PaymentsRoute
   ProviderRoute: typeof ProviderRoute
+  ProviderFinanceRoute: typeof ProviderFinanceRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SetupAdminRoute: typeof SetupAdminRoute
   SpecialDeliveryRoute: typeof SpecialDeliveryRoute
@@ -639,6 +652,13 @@ declare module '@tanstack/react-router' {
       path: '/provider'
       fullPath: '/provider'
       preLoaderRoute: typeof ProviderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/provider-finance': {
+      id: '/provider-finance'
+      path: '/provider-finance'
+      fullPath: '/provider-finance'
+      preLoaderRoute: typeof ProviderFinanceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -885,6 +905,7 @@ const rootRouteChildren: RootRouteChildren = {
   NotificationsRoute: NotificationsRoute,
   PaymentsRoute: PaymentsRoute,
   ProviderRoute: ProviderRoute,
+  ProviderFinanceRoute: ProviderFinanceRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SetupAdminRoute: SetupAdminRoute,
   SpecialDeliveryRoute: SpecialDeliveryRoute,
