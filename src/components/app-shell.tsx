@@ -1,5 +1,17 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { Home, ClipboardList, ShoppingCart, User, WifiOff, ShieldCheck, Bell, LogOut } from "lucide-react";
+import { Link, useNavigate, useRouter, useCanGoBack } from "@tanstack/react-router";
+import {
+  Home,
+  ClipboardList,
+  ShoppingCart,
+  User,
+  WifiOff,
+  ShieldCheck,
+  Bell,
+  LogOut,
+  ArrowRight,
+  Bike,
+  Wallet,
+} from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { superAdminExists } from "@/lib/admin-setup.functions";
@@ -8,7 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
 import { useOnline } from "@/lib/offline-cache";
 import { cn } from "@/lib/utils";
-import { useAccount, homeRouteForAccount } from "@/lib/auth";
+import { useAccount, homeRouteForAccount, isWorkerOnlyAccount } from "@/lib/auth";
 import { useSignOut } from "@/lib/sign-out";
 
 
