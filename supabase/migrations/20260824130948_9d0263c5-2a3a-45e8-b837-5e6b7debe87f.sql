@@ -1,0 +1,12 @@
+REVOKE EXECUTE ON FUNCTION public.compute_fees(order_type, uuid, numeric, text) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.wallet_apply(uuid, text, numeric, text, text, text, uuid, uuid) FROM anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.wallet_admin_adjust(uuid, text, numeric, text, text) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.wallet_pay_subject(payment_subject, uuid) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.create_refund_request(uuid, numeric, text) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.decide_refund_request(uuid, boolean, text, boolean) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.generate_settlement(text, uuid, timestamptz, timestamptz) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.approve_settlement(uuid) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.pay_settlement(uuid, text, text) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.issue_invoice(text, uuid) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.driver_earnings_summary(timestamptz, timestamptz) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.provider_finance_summary(uuid, timestamptz, timestamptz) FROM anon;

@@ -14,14 +14,17 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CourierRouteImport } from './routes/courier'
 import { Route as DriverRouteImport } from './routes/driver'
+import { Route as DriverEarningsRouteImport } from './routes/driver-earnings'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PaymentsRouteImport } from './routes/payments'
 import { Route as ProviderRouteImport } from './routes/provider'
+import { Route as ProviderFinanceRouteImport } from './routes/provider-finance'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SetupAdminRouteImport } from './routes/setup-admin'
 import { Route as SpecialDeliveryRouteImport } from './routes/special-delivery'
 import { Route as TaxiRouteImport } from './routes/taxi'
 import { Route as VerifyPhoneRouteImport } from './routes/verify-phone'
+import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as AdminAdsRouteImport } from './routes/admin.ads'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminCourierRouteImport } from './routes/admin.courier'
@@ -31,6 +34,7 @@ import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
 import { Route as AdminProvidersRouteImport } from './routes/admin.providers'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminServicesRouteImport } from './routes/admin.services'
+import { Route as AdminSettlementsRouteImport } from './routes/admin.settlements'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdsIndexRouteImport } from './routes/ads.index'
 import { Route as AdsIdRouteImport } from './routes/ads.$id'
@@ -75,6 +79,11 @@ const DriverRoute = DriverRouteImport.update({
   path: '/driver',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DriverEarningsRoute = DriverEarningsRouteImport.update({
+  id: '/driver-earnings',
+  path: '/driver-earnings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NotificationsRoute = NotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
@@ -88,6 +97,11 @@ const PaymentsRoute = PaymentsRouteImport.update({
 const ProviderRoute = ProviderRouteImport.update({
   id: '/provider',
   path: '/provider',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProviderFinanceRoute = ProviderFinanceRouteImport.update({
+  id: '/provider-finance',
+  path: '/provider-finance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -113,6 +127,11 @@ const TaxiRoute = TaxiRouteImport.update({
 const VerifyPhoneRoute = VerifyPhoneRouteImport.update({
   id: '/verify-phone',
   path: '/verify-phone',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WalletRoute = WalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminAdsRoute = AdminAdsRouteImport.update({
@@ -158,6 +177,11 @@ const AdminReportsRoute = AdminReportsRouteImport.update({
 const AdminServicesRoute = AdminServicesRouteImport.update({
   id: '/admin/services',
   path: '/admin/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSettlementsRoute = AdminSettlementsRouteImport.update({
+  id: '/admin/settlements',
+  path: '/admin/settlements',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
@@ -257,14 +281,17 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
   '/driver': typeof DriverRoute
+  '/driver-earnings': typeof DriverEarningsRoute
   '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
+  '/provider-finance': typeof ProviderFinanceRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
+  '/wallet': typeof WalletRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/courier': typeof AdminCourierRoute
@@ -274,6 +301,7 @@ export interface FileRoutesByFullPath {
   '/admin/providers': typeof AdminProvidersRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/services': typeof AdminServicesRoute
+  '/admin/settlements': typeof AdminSettlementsRoute
   '/admin/users': typeof AdminUsersRoute
   '/ads/$id': typeof AdsIdRoute
   '/ads/new': typeof AdsNewRoute
@@ -299,14 +327,17 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
   '/driver': typeof DriverRoute
+  '/driver-earnings': typeof DriverEarningsRoute
   '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
+  '/provider-finance': typeof ProviderFinanceRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
+  '/wallet': typeof WalletRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/courier': typeof AdminCourierRoute
@@ -316,6 +347,7 @@ export interface FileRoutesByTo {
   '/admin/providers': typeof AdminProvidersRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/services': typeof AdminServicesRoute
+  '/admin/settlements': typeof AdminSettlementsRoute
   '/admin/users': typeof AdminUsersRoute
   '/ads/$id': typeof AdsIdRoute
   '/ads/new': typeof AdsNewRoute
@@ -342,14 +374,17 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
   '/driver': typeof DriverRoute
+  '/driver-earnings': typeof DriverEarningsRoute
   '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
+  '/provider-finance': typeof ProviderFinanceRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
+  '/wallet': typeof WalletRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/courier': typeof AdminCourierRoute
@@ -359,6 +394,7 @@ export interface FileRoutesById {
   '/admin/providers': typeof AdminProvidersRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/services': typeof AdminServicesRoute
+  '/admin/settlements': typeof AdminSettlementsRoute
   '/admin/users': typeof AdminUsersRoute
   '/ads/$id': typeof AdsIdRoute
   '/ads/new': typeof AdsNewRoute
@@ -386,14 +422,17 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/courier'
     | '/driver'
+    | '/driver-earnings'
     | '/notifications'
     | '/payments'
     | '/provider'
+    | '/provider-finance'
     | '/reset-password'
     | '/setup-admin'
     | '/special-delivery'
     | '/taxi'
     | '/verify-phone'
+    | '/wallet'
     | '/admin/ads'
     | '/admin/audit'
     | '/admin/courier'
@@ -403,6 +442,7 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/admin/reports'
     | '/admin/services'
+    | '/admin/settlements'
     | '/admin/users'
     | '/ads/$id'
     | '/ads/new'
@@ -428,14 +468,17 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/courier'
     | '/driver'
+    | '/driver-earnings'
     | '/notifications'
     | '/payments'
     | '/provider'
+    | '/provider-finance'
     | '/reset-password'
     | '/setup-admin'
     | '/special-delivery'
     | '/taxi'
     | '/verify-phone'
+    | '/wallet'
     | '/admin/ads'
     | '/admin/audit'
     | '/admin/courier'
@@ -445,6 +488,7 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/admin/reports'
     | '/admin/services'
+    | '/admin/settlements'
     | '/admin/users'
     | '/ads/$id'
     | '/ads/new'
@@ -470,14 +514,17 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/courier'
     | '/driver'
+    | '/driver-earnings'
     | '/notifications'
     | '/payments'
     | '/provider'
+    | '/provider-finance'
     | '/reset-password'
     | '/setup-admin'
     | '/special-delivery'
     | '/taxi'
     | '/verify-phone'
+    | '/wallet'
     | '/admin/ads'
     | '/admin/audit'
     | '/admin/courier'
@@ -487,6 +534,7 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/admin/reports'
     | '/admin/services'
+    | '/admin/settlements'
     | '/admin/users'
     | '/ads/$id'
     | '/ads/new'
@@ -513,14 +561,17 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   CourierRoute: typeof CourierRoute
   DriverRoute: typeof DriverRoute
+  DriverEarningsRoute: typeof DriverEarningsRoute
   NotificationsRoute: typeof NotificationsRoute
   PaymentsRoute: typeof PaymentsRoute
   ProviderRoute: typeof ProviderRoute
+  ProviderFinanceRoute: typeof ProviderFinanceRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SetupAdminRoute: typeof SetupAdminRoute
   SpecialDeliveryRoute: typeof SpecialDeliveryRoute
   TaxiRoute: typeof TaxiRoute
   VerifyPhoneRoute: typeof VerifyPhoneRoute
+  WalletRoute: typeof WalletRoute
   AdminAdsRoute: typeof AdminAdsRoute
   AdminAuditRoute: typeof AdminAuditRoute
   AdminCourierRoute: typeof AdminCourierRoute
@@ -530,6 +581,7 @@ export interface RootRouteChildren {
   AdminProvidersRoute: typeof AdminProvidersRoute
   AdminReportsRoute: typeof AdminReportsRoute
   AdminServicesRoute: typeof AdminServicesRoute
+  AdminSettlementsRoute: typeof AdminSettlementsRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdsIdRoute: typeof AdsIdRoute
   AdsNewRoute: typeof AdsNewRoute
@@ -587,6 +639,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DriverRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/driver-earnings': {
+      id: '/driver-earnings'
+      path: '/driver-earnings'
+      fullPath: '/driver-earnings'
+      preLoaderRoute: typeof DriverEarningsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/notifications': {
       id: '/notifications'
       path: '/notifications'
@@ -606,6 +665,13 @@ declare module '@tanstack/react-router' {
       path: '/provider'
       fullPath: '/provider'
       preLoaderRoute: typeof ProviderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/provider-finance': {
+      id: '/provider-finance'
+      path: '/provider-finance'
+      fullPath: '/provider-finance'
+      preLoaderRoute: typeof ProviderFinanceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -641,6 +707,13 @@ declare module '@tanstack/react-router' {
       path: '/verify-phone'
       fullPath: '/verify-phone'
       preLoaderRoute: typeof VerifyPhoneRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wallet': {
+      id: '/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof WalletRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/ads': {
@@ -704,6 +777,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/services'
       fullPath: '/admin/services'
       preLoaderRoute: typeof AdminServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/settlements': {
+      id: '/admin/settlements'
+      path: '/admin/settlements'
+      fullPath: '/admin/settlements'
+      preLoaderRoute: typeof AdminSettlementsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/users': {
@@ -841,14 +921,17 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   CourierRoute: CourierRoute,
   DriverRoute: DriverRoute,
+  DriverEarningsRoute: DriverEarningsRoute,
   NotificationsRoute: NotificationsRoute,
   PaymentsRoute: PaymentsRoute,
   ProviderRoute: ProviderRoute,
+  ProviderFinanceRoute: ProviderFinanceRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SetupAdminRoute: SetupAdminRoute,
   SpecialDeliveryRoute: SpecialDeliveryRoute,
   TaxiRoute: TaxiRoute,
   VerifyPhoneRoute: VerifyPhoneRoute,
+  WalletRoute: WalletRoute,
   AdminAdsRoute: AdminAdsRoute,
   AdminAuditRoute: AdminAuditRoute,
   AdminCourierRoute: AdminCourierRoute,
@@ -858,6 +941,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminProvidersRoute: AdminProvidersRoute,
   AdminReportsRoute: AdminReportsRoute,
   AdminServicesRoute: AdminServicesRoute,
+  AdminSettlementsRoute: AdminSettlementsRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdsIdRoute: AdsIdRoute,
   AdsNewRoute: AdsNewRoute,
