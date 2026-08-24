@@ -45,15 +45,13 @@ function SetupTestAccountsPage() {
     try {
       const res = await provision({ data: { token, kind, email, password } });
       if (!res.ok) {
-        toast.error(
-          res.reason === "invalid_token"
-            ? "رمز الإعداد غير صحيح"
-            : res.reason === "invalid_email"
-              ? "استخدم بريداً بنطاق yammak.test فقط"
-              : res.reason === "weak_password"
-                ? "كلمة المرور قصيرة، استخدم 10 أحرف على الأقل"
-                : "نوع الحساب غير معروف",
-        );
+        const messages: Record<string, string> = {
+          invalid_token: "رمز الإعداد غير صحيح",
+          server_token_missing: "رمز الإعداد غير مضبوط على الخادم — أضِف ADMIN_SETUP_TOKEN ثم أعد النشر",
+          invalid_email: "استخدم بريداً بنطاق yammak.test فقط",
+          weak_password: "كلمة المرور قصيرة، استخدم 10 أحرف على الأقل",
+        };
+        toast.error(messages[res.reason] ?? "نوع الحساب غير معروف");
         return;
       }
       setPasswords((p) => ({ ...p, [kind]: "" }));

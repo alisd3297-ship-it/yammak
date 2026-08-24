@@ -2,10 +2,11 @@ import { createHash, timingSafeEqual } from "node:crypto";
 
 /** مقارنة رمز الإعداد بشكل آمن زمنياً. */
 export function setupTokenMatches(input: string): boolean {
+  // تُقرأ القيمة وقت التنفيذ (داخل معالج الدالة) وليس وقت البناء
   const expected = process.env["ADMIN_SETUP_TOKEN"];
   if (!expected) throw new Error("لم يتم ضبط رمز الإعداد على الخادم");
-  const a = createHash("sha256").update(input, "utf8").digest();
-  const b = createHash("sha256").update(expected, "utf8").digest();
+  const a = createHash("sha256").update(input.trim(), "utf8").digest();
+  const b = createHash("sha256").update(expected.trim(), "utf8").digest();
   return timingSafeEqual(a, b);
 }
 
