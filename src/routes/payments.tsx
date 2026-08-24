@@ -123,6 +123,43 @@ function PaymentsPage() {
                 عرض الطلب
               </Link>
             )}
+
+            {refundsOn && p.status === "succeeded" && p.refundedAmount < p.amount && (
+              <div className="mt-3 border-t border-border pt-3">
+                {openId === p.id ? (
+                  <div className="space-y-2">
+                    <Textarea
+                      value={reason}
+                      onChange={(e) => setReason(e.target.value)}
+                      placeholder="سبب طلب الاسترجاع"
+                      rows={2}
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        disabled={busy}
+                        onClick={() => submitRefund(p.id, p.amount - p.refundedAmount)}
+                      >
+                        إرسال الطلب
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => setOpenId(null)}>
+                        إلغاء
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setOpenId(p.id);
+                      setReason("");
+                    }}
+                    className="text-xs font-semibold text-primary"
+                  >
+                    طلب استرجاع
+                  </button>
+                )}
+              </div>
+            )}
           </article>
         ))}
       </div>
