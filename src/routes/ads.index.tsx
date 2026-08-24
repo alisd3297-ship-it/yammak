@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { ArrowRight, Megaphone, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { BottomNav, PageShell, StatusDot } from "@/components/app-shell";
+import { BackButton, BottomNav, PageShell, StatusDot  } from "@/components/app-shell";
 import { AdsTickerBoard } from "@/components/ads-ticker";
 import { Button } from "@/components/ui/button";
 import { useAccount } from "@/lib/auth";
@@ -85,6 +85,7 @@ function AdsPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-6 pt-6 text-primary-foreground shadow-card">
+        <BackButton fallback="/" />
         <div className="flex items-center gap-3">
           <Link to="/" aria-label="رجوع" className="rounded-full bg-white/15 p-2">
             <ArrowRight className="size-5" />
