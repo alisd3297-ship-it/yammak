@@ -103,3 +103,78 @@ npm run android:signing   # أو: node scripts/android-signing.mjs
 
 - التحقق: `cd android && ./gradlew signingReport` ثم `./gradlew bundleRelease`.
 - لا تُرفع الـkeystore ولا كلمات المرور إلى المستودع إطلاقاً.
+
+## بناء نسخة الإصدار محلياً خطوة بخطوة (Android)
+
+المتطلبات: JDK 17، Android SDK (Android Studio)، Node 20+.
+
+```bash
+# 1) تجهيز المشروع
+git clone <repo> && cd <repo>
+npm install
+npm run build
+
+# 2) توليد مشروع الأندرويد ومزامنته
+npx cap add android      # مرة واحدة فقط
+npx cap sync android
+
+# 3) إنشاء keystore للإصدار (مرة واحدة فقط، واحفظه بأمان خارج المستودع)
+keytool -genkey -v -keystore ~/yammak-release.jks \
+  -alias yammak -keyalg RSA -keysize 2048 -validity 10000
+
+# 4) ملف الأسرار المحلي android/keystore.properties
+cat > android/keystore.properties <<'PROPS'
+storeFile=/absolute/path/to/yammak-release.jks
+storePassword=********
+keyAlias=yammak
+keyPassword=********
+PROPS
+
+# 5) حقن إعدادات التوقيع في build.gradle (idempotent)
+npm run android:signing
+
+# 6) التحقق من التوقيع
+cd android && ./gradlew signingReport
+
+# 7) بناء AAB للنشر على Google Play
+./gradlew bundleRelease      # android/app/build/outputs/bundle/release/app-release.aab
+# أو APK للتجربة المباشرة
+./gradlew assembleRelease    # android/app/build/outputs/apk/release/app-release.apk
+```
+
+### الناتج المتوقع من `./gradlew signingReport`
+
+يجب أن تظهر كتلة variant `release` بمفتاحك الخاص (وليس `debug.keystore`):
+
+```text
+Variant: release
+Config: release
+Store: /absolute/path/to/yammak-release.jks
+Alias: yammak
+MD5: 1A:2B:3C:...
+SHA1: AA:BB:CC:...
+SHA-256: 11:22:33:...
+Valid until: <تاريخ بعد ~27 سنة>
+```
+
+علامات الخطأ وكيف تُصلح:
+
+| ما تراه | المعنى | الإصلاح |
+| --- | --- | --- |
+| `Variant: release ... Store: ~/.android/debug.keystore` | لم يُقرأ `keystore.properties` | تأكد من مكان الملف `android/keystore.properties` وأعد `npm run android:signing` |
+| `Config: null` في variant release | `signingConfigs.release` غير مربوط | أعد تشغيل `npm run android:signing` وتحقق من وجود `signingConfig signingConfigs.release` داخل `buildTypes.release` |
+| `Keystore was tampered with, or password was incorrect` | كلمة مرور خاطئة | صحّح `storePassword` / `keyPassword` |
+| `storeFile ... (No such file or directory)` | مسار غير صحيح | استخدم مساراً مطلقاً في `storeFile` |
+
+### تحقق نهائي قبل الرفع
+
+```bash
+# التأكد أن الـAAB موقّع بمفتاح الإصدار
+$ANDROID_HOME/build-tools/34.0.0/apksigner verify --print-certs \
+  android/app/build/outputs/apk/release/app-release.apk
+# أو للـ AAB
+jarsigner -verify -verbose -certs android/app/build/outputs/bundle/release/app-release.aab | head -20
+```
+
+يجب أن تتطابق بصمة `SHA-256` مع ما ظهر في `signingReport`، وأن تكون النتيجة
+`jar verified` / `Verifies`. لا تُرفع أبداً ملفات `*.jks` أو `keystore.properties` إلى Git.
