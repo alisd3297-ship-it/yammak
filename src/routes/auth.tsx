@@ -11,10 +11,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "تسجيل الدخول | يمّك" },
-      { name: "description", content: "سجّل دخولك إلى يمّك للطلب ومتابعة خدماتك." },
-      { property: "og:title", content: "تسجيل الدخول | يمّك" },
-      { property: "og:description", content: "حساب واحد لكل خدمات يمّك." },
+      { title: "تسجيل الدخول | لبابك" },
+      { name: "description", content: "سجّل دخولك إلى لبابك للطلب ومتابعة خدماتك." },
+      { property: "og:title", content: "تسجيل الدخول | لبابك" },
+      { property: "og:description", content: "حساب واحد لكل خدمات لبابك." },
     ],
   }),
   component: AuthPage,
@@ -76,7 +76,7 @@ function AuthPage() {
       toast.error(authErrorMessage(error.message));
       return;
     }
-    toast.success("أهلاً بيك بيمّك");
+    toast.success("أهلاً بيك بلبابك");
   }
 
   async function signUp(e: React.FormEvent) {
@@ -99,7 +99,7 @@ function AuthPage() {
       return;
     }
     if (data.session) {
-      toast.success("تم إنشاء حسابك، أهلاً بيك بيمّك");
+      toast.success("تم إنشاء حسابك، أهلاً بيك بلبابك");
       return;
     }
     // No session returned: sign in directly (auto-confirm) or ask to confirm email.
@@ -111,7 +111,7 @@ function AuthPage() {
       toast.success("تم إنشاء الحساب، راجع بريدك لتأكيد التسجيل");
       return;
     }
-    toast.success("تم إنشاء حسابك، أهلاً بيك بيمّك");
+    toast.success("تم إنشاء حسابك، أهلاً بيك بلبابك");
   }
 
   function randomString(bytes: number): string {
@@ -168,8 +168,8 @@ function AuthPage() {
   return (
     <div className="app-shell flex flex-col justify-center px-5 py-10">
       <div className="mb-8 text-center">
-        <h1 className="text-4xl font-black text-primary">يمّك</h1>
-        <p className="mt-1 text-sm text-muted-foreground">ويّانه كلشي صار يمّك</p>
+        <h1 className="text-4xl font-black text-primary">لبابك</h1>
+        <p className="mt-1 text-sm text-muted-foreground">ويّانه كلشي صار لبابك</p>
       </div>
 
       <Tabs defaultValue="signin" className="rounded-3xl bg-card p-5 shadow-card">

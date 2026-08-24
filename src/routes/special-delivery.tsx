@@ -23,13 +23,13 @@ export const Route = createFileRoute("/special-delivery")({
   beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
-      { title: "التوصيل الخاص | يمّك" },
+      { title: "التوصيل الخاص | لبابك" },
       {
         name: "description",
         content:
           "توصيل خاص حسب طبيعة المهمة: اختر نوع المركبة، حدد نقطة الاستلام وعدة نقاط تسليم، الآن أو بموعد مجدول.",
       },
-      { property: "og:title", content: "التوصيل الخاص | يمّك" },
+      { property: "og:title", content: "التوصيل الخاص | لبابك" },
       {
         property: "og:description",
         content: "دراجة، سيارة، بيك أب أو شاحنة صغيرة — تسعير واضح ومحسوب حسب المسافة.",

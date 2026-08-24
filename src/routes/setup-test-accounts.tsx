@@ -11,12 +11,12 @@ export const Route = createFileRoute("/setup-test-accounts")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "تجهيز حسابات الاختبار | يمّك" },
+      { title: "تجهيز حسابات الاختبار | لبابك" },
       {
         name: "description",
         content: "مسار محمي برمز سري لتجهيز حسابات اختبار: زبون، مندوب توصيل، وتاجر، بالأدوار الفعلية للمشروع.",
       },
-      { property: "og:title", content: "تجهيز حسابات الاختبار | يمّك" },
+      { property: "og:title", content: "تجهيز حسابات الاختبار | لبابك" },
       { property: "og:description", content: "إنشاء أو تحديث كلمات مرور حسابات الاختبار برمز إعداد سري." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

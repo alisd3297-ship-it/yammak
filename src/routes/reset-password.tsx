@@ -11,10 +11,10 @@ export const Route = createFileRoute("/reset-password")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "تعيين كلمة مرور جديدة | يمّك" },
-      { name: "description", content: "أكمل استعادة حسابك في يمّك بتعيين كلمة مرور جديدة بشكل آمن." },
-      { property: "og:title", content: "تعيين كلمة مرور جديدة | يمّك" },
-      { property: "og:description", content: "استعادة الوصول إلى حسابك في تطبيق يمّك." },
+      { title: "تعيين كلمة مرور جديدة | لبابك" },
+      { name: "description", content: "أكمل استعادة حسابك في لبابك بتعيين كلمة مرور جديدة بشكل آمن." },
+      { property: "og:title", content: "تعيين كلمة مرور جديدة | لبابك" },
+      { property: "og:description", content: "استعادة الوصول إلى حسابك في تطبيق لبابك." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

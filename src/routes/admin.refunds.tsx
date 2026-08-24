@@ -16,12 +16,12 @@ export const Route = createFileRoute("/admin/refunds")({
   beforeLoad: requireStaff,
   head: () => ({
     meta: [
-      { title: "طلبات الاسترجاع | إدارة يمّك" },
+      { title: "طلبات الاسترجاع | إدارة لبابك" },
       {
         name: "description",
         content: "مراجعة طلبات استرجاع الزبائن، الموافقة بالاسترجاع لمزود الدفع أو إلى محفظة الزبون.",
       },
-      { property: "og:title", content: "طلبات الاسترجاع | إدارة يمّك" },
+      { property: "og:title", content: "طلبات الاسترجاع | إدارة لبابك" },
       { property: "og:description", content: "معالجة الاسترجاعات بشكل مركزي." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

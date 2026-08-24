@@ -24,12 +24,12 @@ export const Route = createFileRoute("/admin/payments")({
   beforeLoad: requireStaff,
   head: () => ({
     meta: [
-      { title: "إدارة المدفوعات | يمّك" },
+      { title: "إدارة المدفوعات | لبابك" },
       {
         name: "description",
-        content: "لوحة الإدارة لمتابعة عمليات الدفع الإلكتروني وتنفيذ الاسترجاع في منصة يمّك.",
+        content: "لوحة الإدارة لمتابعة عمليات الدفع الإلكتروني وتنفيذ الاسترجاع في منصة لبابك.",
       },
-      { property: "og:title", content: "إدارة المدفوعات | يمّك" },
+      { property: "og:title", content: "إدارة المدفوعات | لبابك" },
       { property: "og:description", content: "مراقبة المدفوعات والاسترجاعات." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -82,7 +82,7 @@ function AdminPaymentsPage() {
     return (
       <PageShell>
         <div className="px-5 py-16 text-center">
-          <p className="text-sm text-muted-foreground">هذه الصفحة مخصصة لفريق إدارة يمّك.</p>
+          <p className="text-sm text-muted-foreground">هذه الصفحة مخصصة لفريق إدارة لبابك.</p>
           <Link to="/" className="mt-3 inline-block font-semibold text-primary">
             رجوع للرئيسية
           </Link>

@@ -15,12 +15,12 @@ export const Route = createFileRoute("/services/")({
   beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
-      { title: "مهن وخدمات | يمّك" },
+      { title: "مهن وخدمات | لبابك" },
       {
         name: "description",
-        content: "كهربائي، سبّاك، صيانة تكييف، تنظيف ونجارة — اطلب مقدم خدمة معتمد في بغداد عبر يمّك.",
+        content: "كهربائي، سبّاك، صيانة تكييف، تنظيف ونجارة — اطلب مقدم خدمة معتمد في بغداد عبر لبابك.",
       },
-      { property: "og:title", content: "مهن وخدمات | يمّك" },
+      { property: "og:title", content: "مهن وخدمات | لبابك" },
       { property: "og:description", content: "مقدمو خدمات مهنية معتمدون قريبون منك." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -186,7 +186,7 @@ function ServicesPage() {
           to="/join/provider"
           className="block rounded-2xl bg-accent p-4 text-center text-sm font-semibold text-accent-foreground"
         >
-          عندك مهنة؟ انضم كمقدم خدمة في يمّك
+          عندك مهنة؟ انضم كمقدم خدمة في لبابك
         </Link>
       </div>
 

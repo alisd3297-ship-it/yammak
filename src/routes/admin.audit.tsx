@@ -12,10 +12,10 @@ export const Route = createFileRoute("/admin/audit")({
   beforeLoad: requireStaff,
   head: () => ({
     meta: [
-      { title: "سجل التدقيق الإداري | يمّك" },
+      { title: "سجل التدقيق الإداري | لبابك" },
       { name: "description", content: "سجل كامل لعمليات الإدارة: الأدوار والموافقات والأقسام والخدمات والإعلانات." },
-      { property: "og:title", content: "سجل التدقيق الإداري | يمّك" },
-      { property: "og:description", content: "متابعة كل عمليات المدير في تطبيق يمّك." },
+      { property: "og:title", content: "سجل التدقيق الإداري | لبابك" },
+      { property: "og:description", content: "متابعة كل عمليات المدير في تطبيق لبابك." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },

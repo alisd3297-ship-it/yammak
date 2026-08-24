@@ -18,12 +18,12 @@ import { maskPhone, normalizeIraqiPhone, otpErrorMessage } from "@/lib/otp";
 export const Route = createFileRoute("/verify-phone")({
   head: () => ({
     meta: [
-      { title: "تأكيد رقم الهاتف | يمّك" },
+      { title: "تأكيد رقم الهاتف | لبابك" },
       {
         name: "description",
-        content: "أكّد رقم هاتفك برمز تحقق آمن لتفعيل الإجراءات الحساسة في تطبيق يمّك.",
+        content: "أكّد رقم هاتفك برمز تحقق آمن لتفعيل الإجراءات الحساسة في تطبيق لبابك.",
       },
-      { property: "og:title", content: "تأكيد رقم الهاتف | يمّك" },
+      { property: "og:title", content: "تأكيد رقم الهاتف | لبابك" },
       { property: "og:description", content: "رمز تحقق آمن لمرة واحدة لحماية حسابك." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

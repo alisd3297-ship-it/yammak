@@ -20,9 +20,9 @@ export const Route = createFileRoute("/services/$id")({
   beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
-      { title: "مقدم خدمة | يمّك" },
-      { name: "description", content: "شوف خدمات مقدم الخدمة وأسعاره وقيّمه بعد إنجاز الشغل عبر يمّك." },
-      { property: "og:title", content: "مقدم خدمة | يمّك" },
+      { title: "مقدم خدمة | لبابك" },
+      { name: "description", content: "شوف خدمات مقدم الخدمة وأسعاره وقيّمه بعد إنجاز الشغل عبر لبابك." },
+      { property: "og:title", content: "مقدم خدمة | لبابك" },
       { property: "og:description", content: "اطلب خدمة مهنية معتمدة." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -209,7 +209,7 @@ function ServiceProviderPage() {
             className="h-12"
           />
           <p className="text-xs text-muted-foreground">
-            السعر النهائي يُحتسب من أسعار مقدم الخدمة المسجّلة في يمّك، ولا يمكن تعديله من التطبيق.
+            السعر النهائي يُحتسب من أسعار مقدم الخدمة المسجّلة في لبابك، ولا يمكن تعديله من التطبيق.
           </p>
         </div>
 

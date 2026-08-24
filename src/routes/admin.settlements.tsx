@@ -32,12 +32,12 @@ export const Route = createFileRoute("/admin/settlements")({
   beforeLoad: requireStaff,
   head: () => ({
     meta: [
-      { title: "التسويات المالية | إدارة يمّك" },
+      { title: "التسويات المالية | إدارة لبابك" },
       {
         name: "description",
-        content: "توليد تسويات التجار والمندوبين، اعتمادها وصرفها عبر المحفظة أو النقد في يمّك.",
+        content: "توليد تسويات التجار والمندوبين، اعتمادها وصرفها عبر المحفظة أو النقد في لبابك.",
       },
-      { property: "og:title", content: "التسويات المالية | إدارة يمّك" },
+      { property: "og:title", content: "التسويات المالية | إدارة لبابك" },
       { property: "og:description", content: "تسويات وصرفيات المنصة." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

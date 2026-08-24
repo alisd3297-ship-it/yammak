@@ -178,7 +178,7 @@ export const provisionTestAccount = createServerFn({ method: "POST" })
       if (!existing) {
         const { error } = await supabaseAdmin.from("providers").insert({
           owner_id: userId,
-          name: "متجر اختبار يمّك",
+          name: "متجر اختبار لبابك",
           kind: "store",
           status: "approved",
           is_open: true,

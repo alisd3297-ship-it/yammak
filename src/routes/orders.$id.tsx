@@ -28,9 +28,9 @@ export const Route = createFileRoute("/orders/$id")({
   beforeLoad: requireSignedIn,
   head: () => ({
     meta: [
-      { title: "تتبع الطلب | يمّك" },
-      { name: "description", content: "تابع حالة طلبك ومندوب التوصيل خطوة بخطوة في تطبيق يمّك." },
-      { property: "og:title", content: "تتبع الطلب | يمّك" },
+      { title: "تتبع الطلب | لبابك" },
+      { name: "description", content: "تابع حالة طلبك ومندوب التوصيل خطوة بخطوة في تطبيق لبابك." },
+      { property: "og:title", content: "تتبع الطلب | لبابك" },
       { property: "og:description", content: "حالة الطلب والمندوب لحظة بلحظة." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

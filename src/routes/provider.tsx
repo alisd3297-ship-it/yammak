@@ -23,9 +23,9 @@ export const Route = createFileRoute("/provider")({
   beforeLoad: requireProvider,
   head: () => ({
     meta: [
-      { title: "لوحة مقدم الخدمة | يمّك" },
-      { name: "description", content: "استقبل الطلبات، جهّزها، وأرسلها للمندوب من لوحة تحكم متجرك في يمّك." },
-      { property: "og:title", content: "لوحة مقدم الخدمة | يمّك" },
+      { title: "لوحة مقدم الخدمة | لبابك" },
+      { name: "description", content: "استقبل الطلبات، جهّزها، وأرسلها للمندوب من لوحة تحكم متجرك في لبابك." },
+      { property: "og:title", content: "لوحة مقدم الخدمة | لبابك" },
       { property: "og:description", content: "إدارة الطلبات وحالة المتجر." },
     ],
   }),

@@ -20,12 +20,12 @@ export const Route = createFileRoute("/admin/courier")({
   beforeLoad: requireStaff,
   head: () => ({
     meta: [
-      { title: "إدارة طلبات المندوب | يمّك" },
+      { title: "إدارة طلبات المندوب | لبابك" },
       {
         name: "description",
         content: "متابعة طلبات المندوب المستقل، تعيين مندوب يدوياً، وإلغاء الطلبات المتعثرة.",
       },
-      { property: "og:title", content: "إدارة طلبات المندوب | يمّك" },
+      { property: "og:title", content: "إدارة طلبات المندوب | لبابك" },
       { property: "og:description", content: "لوحة متابعة طلبات الإرسال والاستلام." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -119,7 +119,7 @@ function AdminCourierPage() {
     return (
       <PageShell>
         <div className="px-5 py-16 text-center">
-          <p className="text-sm text-muted-foreground">هذه الصفحة لإدارة يمّك فقط.</p>
+          <p className="text-sm text-muted-foreground">هذه الصفحة لإدارة لبابك فقط.</p>
           <Link to="/" className="mt-3 inline-block font-semibold text-primary">
             الرئيسية
           </Link>

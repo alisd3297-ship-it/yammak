@@ -13,10 +13,10 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/ads/$id")({
   head: () => ({
     meta: [
-      { title: "تفاصيل الإعلان | يمّك" },
+      { title: "تفاصيل الإعلان | لبابك" },
       { name: "description", content: "تفاصيل الإعلان: الصور، السعر، العنوان، والاتصال المباشر بصاحب الإعلان." },
-      { property: "og:title", content: "تفاصيل الإعلان | يمّك" },
-      { property: "og:description", content: "شاهد تفاصيل الإعلان واتصل مباشرة بصاحبه عبر يمّك." },
+      { property: "og:title", content: "تفاصيل الإعلان | لبابك" },
+      { property: "og:description", content: "شاهد تفاصيل الإعلان واتصل مباشرة بصاحبه عبر لبابك." },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
     ],

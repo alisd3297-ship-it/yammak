@@ -17,13 +17,13 @@ export const Route = createFileRoute("/courier")({
   beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
-      { title: "توصيل سريع | يمّك" },
+      { title: "توصيل سريع | لبابك" },
       {
         name: "description",
         content: "توصيل سريع لإرسال أو استلام أغراضك من أي نقطة إلى أخرى داخل مدينتك مع تسعير واضح.",
       },
-      { property: "og:title", content: "توصيل سريع | يمّك" },
-      { property: "og:description", content: "إرسال واستلام من نقطة لنقطة عبر مندوبي يمّك." },
+      { property: "og:title", content: "توصيل سريع | لبابك" },
+      { property: "og:description", content: "إرسال واستلام من نقطة لنقطة عبر مندوبي لبابك." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

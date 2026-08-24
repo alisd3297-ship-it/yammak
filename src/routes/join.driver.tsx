@@ -19,12 +19,12 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/join/driver")({
   head: () => ({
     meta: [
-      { title: "انضم كسائق أو مندوب | يمّك" },
+      { title: "انضم كسائق أو مندوب | لبابك" },
       {
         name: "description",
-        content: "سجّل مركبتك واشتغل مع يمّك كسائق تكسي أو مندوب توصيل بعد اعتماد الإدارة.",
+        content: "سجّل مركبتك واشتغل مع لبابك كسائق تكسي أو مندوب توصيل بعد اعتماد الإدارة.",
       },
-      { property: "og:title", content: "انضم كسائق أو مندوب | يمّك" },
+      { property: "og:title", content: "انضم كسائق أو مندوب | لبابك" },
       { property: "og:description", content: "تقديم طلب انضمام للسائقين والمندوبين." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -230,7 +230,7 @@ function JoinDriverPage() {
         </section>
 
         <p className="rounded-2xl bg-muted p-3 text-xs text-muted-foreground">
-          الطلب يُسجّل بحالة «قيد المراجعة». التفعيل واستلام الرحلات يبدأ بعد اعتماد إدارة يمّك فقط.
+          الطلب يُسجّل بحالة «قيد المراجعة». التفعيل واستلام الرحلات يبدأ بعد اعتماد إدارة لبابك فقط.
         </p>
 
         <Button className="h-13 w-full text-base" disabled={saving} onClick={submit}>

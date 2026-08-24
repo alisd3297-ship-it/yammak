@@ -18,9 +18,9 @@ export const Route = createFileRoute("/checkout")({
   beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
-      { title: "سلة الطلب | يمّك" },
-      { name: "description", content: "راجع سلتك وحدد موقع التوصيل وأكّد طلبك عبر يمّك." },
-      { property: "og:title", content: "سلة الطلب | يمّك" },
+      { title: "سلة الطلب | لبابك" },
+      { name: "description", content: "راجع سلتك وحدد موقع التوصيل وأكّد طلبك عبر لبابك." },
+      { property: "og:title", content: "سلة الطلب | لبابك" },
       { property: "og:description", content: "تأكيد الطلب وتحديد الموقع." },
     ],
   }),

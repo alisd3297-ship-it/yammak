@@ -19,12 +19,12 @@ export const Route = createFileRoute("/wallet")({
   beforeLoad: requireSignedIn,
   head: () => ({
     meta: [
-      { title: "محفظة يمّك | الرصيد والحركات" },
+      { title: "محفظة لبابك | الرصيد والحركات" },
       {
         name: "description",
-        content: "رصيد محفظتك بالدينار العراقي، حركات الإيداع والخصم، طلبات الاسترجاع وفواتيرك في يمّك.",
+        content: "رصيد محفظتك بالدينار العراقي، حركات الإيداع والخصم، طلبات الاسترجاع وفواتيرك في لبابك.",
       },
-      { property: "og:title", content: "محفظة يمّك" },
+      { property: "og:title", content: "محفظة لبابك" },
       { property: "og:description", content: "رصيدك وحركاتك المالية في مكان واحد." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -54,7 +54,7 @@ function WalletPage() {
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
         <BackButton fallback="/payments" label="عمليات الدفع" />
-        <h1 className="text-2xl font-black">محفظة يمّك</h1>
+        <h1 className="text-2xl font-black">محفظة لبابك</h1>
         <div className="mt-4 rounded-2xl bg-primary-foreground/15 p-4 backdrop-blur">
           <span className="flex items-center gap-2 text-sm opacity-90">
             <WalletIcon className="size-4" /> الرصيد الحالي

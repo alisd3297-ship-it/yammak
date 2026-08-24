@@ -38,9 +38,9 @@ export const Route = createFileRoute("/driver")({
   },
   head: () => ({
     meta: [
-      { title: "لوحة المندوب | يمّك" },
-      { name: "description", content: "استلم عروض التوصيل القريبة منك وتابع مهامك اليومية في يمّك." },
-      { property: "og:title", content: "لوحة المندوب | يمّك" },
+      { title: "لوحة المندوب | لبابك" },
+      { name: "description", content: "استلم عروض التوصيل القريبة منك وتابع مهامك اليومية في لبابك." },
+      { property: "og:title", content: "لوحة المندوب | لبابك" },
       { property: "og:description", content: "عروض التوصيل والمهام النشطة." },
     ],
   }),

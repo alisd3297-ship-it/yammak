@@ -15,12 +15,12 @@ export const Route = createFileRoute("/stores/")({
   beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
-      { title: "المنتجات والمتاجر | يمّك" },
+      { title: "المنتجات والمتاجر | لبابك" },
       {
         name: "description",
-        content: "تسوّق من سوبرماركت وصيدليات ومتاجر مدينتك واستلم طلبك عبر مندوب يمّك.",
+        content: "تسوّق من سوبرماركت وصيدليات ومتاجر مدينتك واستلم طلبك عبر مندوب لبابك.",
       },
-      { property: "og:title", content: "المنتجات والمتاجر | يمّك" },
+      { property: "og:title", content: "المنتجات والمتاجر | لبابك" },
       { property: "og:description", content: "متاجر قريبة منك مع توصيل سريع." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

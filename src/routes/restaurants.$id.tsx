@@ -14,9 +14,9 @@ export const Route = createFileRoute("/restaurants/$id")({
   beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
-      { title: "قائمة المطعم | يمّك" },
-      { name: "description", content: "تصفح قائمة المطعم وأضف وجباتك إلى السلة واطلبها من يمّك." },
-      { property: "og:title", content: "قائمة المطعم | يمّك" },
+      { title: "قائمة المطعم | لبابك" },
+      { name: "description", content: "تصفح قائمة المطعم وأضف وجباتك إلى السلة واطلبها من لبابك." },
+      { property: "og:title", content: "قائمة المطعم | لبابك" },
       { property: "og:description", content: "وجبات، أسعار، وطلب سريع." },
     ],
   }),
