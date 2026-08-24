@@ -40,7 +40,7 @@ function PaymentsPage() {
   const qc = useQueryClient();
   const fetchPayments = useServerFn(listMyPayments);
   const askRefund = useServerFn(requestRefund);
-  const refundsOn = useFeature("refunds.self_service");
+  const refundsOn = useFeature("refund_requests");
   const [openId, setOpenId] = useState<string | null>(null);
   const [reason, setReason] = useState("");
   const [busy, setBusy] = useState(false);
