@@ -3,12 +3,13 @@ import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { MapPin, Navigation } from "lucide-react";
+import { LogOut, MapPin, Navigation } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell, StatusDot } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useAccount } from "@/lib/auth";
+import { useSignOut } from "@/lib/sign-out";
 import { respondToOffer } from "@/lib/dispatch.functions";
 import { changeOrderStatus } from "@/lib/orders.functions";
 import { vehicleLabel } from "@/lib/vehicles";
@@ -49,6 +50,7 @@ const DRIVER_STEPS: Partial<Record<OrderStatus, { next: OrderStatus; label: stri
 function DriverDashboard() {
   const { data: account } = useAccount();
   const qc = useQueryClient();
+  const signOut = useSignOut();
   const respond = useServerFn(respondToOffer);
   const setStatus = useServerFn(changeOrderStatus);
   const finishStop = useServerFn(completeOrderStop);
