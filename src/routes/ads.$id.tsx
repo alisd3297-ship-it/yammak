@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { ArrowRight, MapPin, Phone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { BottomNav, PageShell, StatusDot } from "@/components/app-shell";
+import { BackButton, BottomNav, PageShell, StatusDot  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { AD_STATUS_LABEL, AD_STATUS_TONE, formatAdPrice, type AdRow } from "@/lib/ads";
 import { AdImage } from "@/components/ad-image";
@@ -45,6 +45,7 @@ function AdDetailPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-6 pt-6 text-primary-foreground shadow-card">
+        <BackButton fallback="/ads" />
         <div className="flex items-center gap-3">
           <Link to="/ads" aria-label="رجوع" className="rounded-full bg-white/15 p-2">
             <ArrowRight className="size-5" />

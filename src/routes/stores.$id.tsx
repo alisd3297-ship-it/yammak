@@ -1,14 +1,17 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useCustomerAreaGuard } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Plus, Star, Store as StoreIcon } from "lucide-react";
+import { Plus, Star, Store as StoreIcon } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { PageShell } from "@/components/app-shell";
+import { requireCustomerFlow } from "@/lib/route-guards";
+import { BackButton, PageShell  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart";
 import { formatIQD } from "@/lib/orders";
 
 export const Route = createFileRoute("/stores/$id")({
+  beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
       { title: "منتجات المتجر | يمّك" },
@@ -23,6 +26,7 @@ export const Route = createFileRoute("/stores/$id")({
 });
 
 function StorePage() {
+  useCustomerAreaGuard();
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const cart = useCart();
@@ -35,6 +39,7 @@ function StorePage() {
           .from("providers")
           .select("id, name, description, rating, is_open, address_text, kind")
           .eq("id", id)
+          .eq("kind", "store")
           .maybeSingle(),
         supabase.from("menu_categories").select("id, name, sort_order").eq("provider_id", id).order("sort_order"),
         supabase
@@ -63,9 +68,7 @@ function StorePage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <Link to="/stores" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
-          <ArrowRight className="size-4" /> المتاجر
-        </Link>
+        <BackButton fallback="/stores" label="المتاجر" />
         <h1 className="flex items-center gap-2 text-2xl font-black">
           <StoreIcon className="size-6" /> {provider?.name ?? "..."}
         </h1>
@@ -106,7 +109,12 @@ function StorePage() {
           </section>
         )}
 
-        {!data?.products.length && (
+        {data && !provider && (
+          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+            هذا النشاط غير موجود ضمن المتاجر. تفقّده في قسم المطاعم.
+          </p>
+        )}
+        {provider && !data?.products.length && (
           <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">المتجر ما ضاف منتجات بعد.</p>
         )}
       </div>

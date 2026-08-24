@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { normalizeArabic, fuzzyScore } from "@/lib/search";
 import { AdsTickerBoard } from "@/components/ads-ticker";
 import { useAdsBoard } from "@/routes/ads.index";
-import { useRoleHomeRedirect } from "@/lib/auth";
+import { useRoleHomeRedirect, useCustomerAreaGuard } from "@/lib/auth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -49,6 +49,7 @@ type ProviderRow = {
 };
 
 function CustomerHome() {
+  useCustomerAreaGuard();
   useRoleHomeRedirect();
   const [term, setTerm] = useState("");
   const adsBoard = useAdsBoard();

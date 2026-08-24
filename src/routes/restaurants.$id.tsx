@@ -1,14 +1,17 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useCustomerAreaGuard } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Plus, Star } from "lucide-react";
+import { Plus, Star } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { PageShell } from "@/components/app-shell";
+import { requireCustomerFlow } from "@/lib/route-guards";
+import { BackButton, PageShell  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart";
 import { formatIQD } from "@/lib/orders";
 
 export const Route = createFileRoute("/restaurants/$id")({
+  beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
       { title: "قائمة المطعم | يمّك" },
@@ -21,6 +24,7 @@ export const Route = createFileRoute("/restaurants/$id")({
 });
 
 function RestaurantPage() {
+  useCustomerAreaGuard();
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const cart = useCart();
@@ -33,6 +37,7 @@ function RestaurantPage() {
           .from("providers")
           .select("id, name, description, rating, avg_prep_minutes, is_open, address_text")
           .eq("id", id)
+          .eq("kind", "restaurant")
           .maybeSingle(),
         supabase.from("menu_categories").select("id, name, sort_order").eq("provider_id", id).order("sort_order"),
         supabase
@@ -54,9 +59,7 @@ function RestaurantPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <Link to="/restaurants" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
-          <ArrowRight className="size-4" /> المطاعم
-        </Link>
+        <BackButton fallback="/restaurants" label="المطاعم" />
         <h1 className="text-2xl font-black">{provider?.name ?? "..."}</h1>
         <p className="mt-1 text-sm opacity-90">{provider?.description}</p>
         <div className="mt-2 flex items-center gap-4 text-xs opacity-90">
@@ -105,7 +108,12 @@ function RestaurantPage() {
             </section>
           );
         })}
-        {!data?.products.length && (
+        {data && !provider && (
+          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+            هذا النشاط غير موجود ضمن المطاعم. تفقّده في قسم السوبر ماركت والمتاجر.
+          </p>
+        )}
+        {provider && !data?.products.length && (
           <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
             المطعم ما ضاف وجبات بعد.
           </p>

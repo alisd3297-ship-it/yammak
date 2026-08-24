@@ -4,10 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ArrowRight, Bike, Car } from "lucide-react";
+import { Bike, Car } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { OPERATING_LOCATION } from "@/lib/location";
-import { PageShell } from "@/components/app-shell";
+import { BackButton, PageShell  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAccount } from "@/lib/auth";
@@ -125,9 +125,7 @@ function JoinDriverPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <Link to="/" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
-          <ArrowRight className="size-4" /> الرئيسية
-        </Link>
+        <BackButton fallback="/" label="الرئيسية" />
         <h1 className="text-2xl font-black">انضم كسائق</h1>
         <p className="mt-1 text-sm opacity-90">سجّل مركبتك، والإدارة راح تراجع طلبك قبل التفعيل</p>
       </header>

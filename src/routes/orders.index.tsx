@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { BottomNav, PageShell, StatusDot } from "@/components/app-shell";
-import { useAccount } from "@/lib/auth";
+import { requireCustomerFlow } from "@/lib/route-guards";
+import { BackButton, BottomNav, PageShell, StatusDot  } from "@/components/app-shell";
+import { useCustomerAreaGuard, useAccount  } from "@/lib/auth";
 import { useServerFn } from "@tanstack/react-start";
 import { ShieldAlert } from "lucide-react";
 import { getPhoneVerification } from "@/lib/otp.functions";
@@ -10,6 +11,7 @@ import { ORDER_STATUS_LABELS, formatIQD, statusTone, type OrderStatus } from "@/
 import { TRIP_STATUS_LABELS, taxiClassLabel, tripTone, type TripStatus } from "@/lib/taxi";
 
 export const Route = createFileRoute("/orders/")({
+  beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
       { title: "طلباتي | يمّك" },
@@ -22,6 +24,7 @@ export const Route = createFileRoute("/orders/")({
 });
 
 function OrdersPage() {
+  useCustomerAreaGuard();
   const { data: account } = useAccount();
 
   const phoneStatus = useServerFn(getPhoneVerification);
@@ -65,6 +68,7 @@ function OrdersPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
+        <BackButton fallback="/" />
         <h1 className="text-2xl font-black">طلباتي</h1>
         <p className="mt-1 text-sm opacity-90">متابعة كل طلباتك بمكان واحد</p>
         <div className="mt-3 flex flex-wrap gap-2">

@@ -2,12 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { ArrowRight, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { BottomNav, PageShell, StatusDot } from "@/components/app-shell";
+import { requireCustomerFlow } from "@/lib/route-guards";
+import { BackButton, BottomNav, PageShell, StatusDot  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
-import { useAccount } from "@/lib/auth";
+import { useCustomerAreaGuard, useAccount  } from "@/lib/auth";
 import { changeServiceRequestStatus, rateServiceRequest } from "@/lib/services.functions";
 import {
   SERVICE_STATUS_LABELS,
@@ -18,6 +19,7 @@ import {
 } from "@/lib/services";
 
 export const Route = createFileRoute("/service-requests/")({
+  beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
       { title: "طلبات الخدمة | يمّك" },
@@ -32,6 +34,7 @@ export const Route = createFileRoute("/service-requests/")({
 });
 
 function ServiceRequestsPage() {
+  useCustomerAreaGuard();
   const { data: account } = useAccount();
   const qc = useQueryClient();
   const setStatus = useServerFn(changeServiceRequestStatus);
@@ -104,9 +107,7 @@ function ServiceRequestsPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <Link to="/services" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
-          <ArrowRight className="size-4" /> المهن والخدمات
-        </Link>
+        <BackButton fallback="/services" label="المهن والخدمات" />
         <h1 className="text-2xl font-black">طلبات الخدمة</h1>
         <p className="mt-1 text-sm opacity-90">تابع حالة الطلب وقيّم بعد الإنجاز</p>
       </header>

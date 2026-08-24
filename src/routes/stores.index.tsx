@@ -1,15 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useCustomerAreaGuard } from "@/lib/auth";
 import { useMemo, useState } from "react";
-import { Search, Star, Store as StoreIcon, ArrowRight } from "lucide-react";
+import { Search, Star, Store as StoreIcon } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { requireCustomerFlow } from "@/lib/route-guards";
 import { useCachedQuery } from "@/lib/offline-cache";
-import { BottomNav, OfflineBanner, PageShell } from "@/components/app-shell";
+import { BackButton, BottomNav, OfflineBanner, PageShell  } from "@/components/app-shell";
 import { Input } from "@/components/ui/input";
 import { fuzzyScore } from "@/lib/search";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/stores/")({
+  beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
       { title: "المنتجات والمتاجر | يمّك" },
@@ -36,6 +39,7 @@ const SORTS: { key: SortKey; label: string }[] = [
 ];
 
 function StoresPage() {
+  useCustomerAreaGuard();
   const [term, setTerm] = useState("");
   const [sort, setSort] = useState<SortKey>("rating");
   const [tag, setTag] = useState<string | null>(null);
@@ -99,9 +103,7 @@ function StoresPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <Link to="/" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
-          <ArrowRight className="size-4" /> رجوع
-        </Link>
+        <BackButton fallback="/" label="رجوع" />
         <h1 className="text-2xl font-black">المنتجات والمتاجر</h1>
         <p className="mt-1 text-sm opacity-90">سوبرماركت، صيدليات، ومتاجر قريبة منك</p>
       </header>

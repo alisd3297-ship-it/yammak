@@ -210,10 +210,28 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
     _order_id: order.id,
     _new_status: "offered_to_driver",
   });
+  // إشعار مختصر ومفيد للمندوب: رقم الطلب، المتجر، منطقة التسليم، وأجرة التوصيل.
+  const { data: orderInfo } = await supabaseAdmin
+    .from("orders")
+    .select("code, delivery_fee, dropoff_text, providers(name)")
+    .eq("id", order.id)
+    .maybeSingle();
+  const providerName =
+    (orderInfo?.providers as { name?: string } | null)?.name ?? "طلب توصيل مباشر";
+  const dropoff = (orderInfo?.dropoff_text ?? "").trim();
+  const shortDropoff = dropoff.length > 40 ? `${dropoff.slice(0, 40)}…` : dropoff;
+  const fee = Number(orderInfo?.delivery_fee ?? 0);
+  const parts = [
+    `طلب #${orderInfo?.code ?? ""}`.trim(),
+    providerName,
+    shortDropoff ? `التسليم: ${shortDropoff}` : null,
+    fee > 0 ? `أجرة التوصيل: ${fee.toLocaleString("en-US")} د.ع` : null,
+    `المسافة ${chosen.km.toFixed(1)} كم`,
+  ].filter(Boolean);
   await supabaseAdmin.from("notifications").insert({
     user_id: chosen.driverId,
     title: "طلب توصيل جديد",
-    body: "لديك عرض توصيل جديد، لديك مهلة للرد",
+    body: parts.join(" · "),
     kind: "offer",
     order_id: order.id,
   });

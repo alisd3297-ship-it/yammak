@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { ArrowRight, Loader2, Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { Loader2, Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { AdminNav, PageShell } from "@/components/app-shell";
+import { BackButton, AdminNav, PageShell  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -173,9 +173,7 @@ function AdminServicesPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-6 pt-7 text-primary-foreground">
-        <Link to="/" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
-          <ArrowRight className="size-4" /> رجوع
-        </Link>
+        <BackButton fallback="/" label="رجوع" />
         <h1 className="text-2xl font-black">كتالوج الخدمات</h1>
         <p className="mt-1 text-sm opacity-90">الأقسام والتصنيفات الفرعية والخدمات — إضافة وتعديل ونقل وحذف آمن.</p>
       </header>

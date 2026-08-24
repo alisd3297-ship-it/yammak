@@ -1,5 +1,17 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { Home, ClipboardList, ShoppingCart, User, WifiOff, ShieldCheck, Bell, LogOut } from "lucide-react";
+import { Link, useNavigate, useRouter, useCanGoBack } from "@tanstack/react-router";
+import {
+  Home,
+  ClipboardList,
+  ShoppingCart,
+  User,
+  WifiOff,
+  ShieldCheck,
+  Bell,
+  LogOut,
+  ArrowRight,
+  Bike,
+  Wallet,
+} from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { superAdminExists } from "@/lib/admin-setup.functions";
@@ -8,7 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
 import { useOnline } from "@/lib/offline-cache";
 import { cn } from "@/lib/utils";
-import { useAccount, homeRouteForAccount } from "@/lib/auth";
+import { useAccount, homeRouteForAccount, isWorkerOnlyAccount } from "@/lib/auth";
 import { useSignOut } from "@/lib/sign-out";
 
 
@@ -138,13 +150,46 @@ export function PageShell({ children }: { children: ReactNode }) {
   return <div className="app-shell bg-background pb-24">{children}</div>;
 }
 
+/**
+ * زر رجوع موحّد للصفحات الداخلية: يستخدم سجل التنقل عندما يكون متاحاً،
+ * وإلا ينتقل إلى صفحة أب واضحة حتى لا يخرج المستخدم من التطبيق بالخطأ.
+ */
+export function BackButton({ fallback = "/", label = "رجوع" }: { fallback?: string; label?: string }) {
+  const router = useRouter();
+  const canGoBack = useCanGoBack();
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        if (canGoBack) router.history.back();
+        else void router.navigate({ to: fallback as never, replace: true });
+      }}
+      className="mb-3 inline-flex items-center gap-1 rounded-full bg-primary-foreground/15 px-3 py-1.5 text-sm opacity-95 transition hover:bg-primary-foreground/25"
+      aria-label="رجوع"
+    >
+      <ArrowRight className="size-4" /> {label}
+    </button>
+  );
+}
+
 export function BottomNav() {
   const { count } = useCart();
-  const items = [
-    { to: "/", label: "الرئيسية", icon: Home },
-    { to: "/orders", label: "طلباتي", icon: ClipboardList },
-    { to: "/checkout", label: "السلة", icon: ShoppingCart, badge: count },
-  ] as const;
+  const { data: account } = useAccount();
+  const driverOnly = isWorkerOnlyAccount(account);
+
+  // المندوب يرى تنقل لوحة المندوب فقط، بلا وظائف طلب كزبون.
+  const items = driverOnly
+    ? ([
+        { to: "/driver", label: "لوحة المندوب", icon: Bike },
+        { to: "/driver-earnings", label: "أرباحي", icon: Wallet },
+        { to: "/notifications", label: "الإشعارات", icon: Bell },
+      ] as const)
+    : ([
+        { to: "/", label: "الرئيسية", icon: Home },
+        { to: "/orders", label: "طلباتي", icon: ClipboardList },
+        { to: "/checkout", label: "السلة", icon: ShoppingCart, badge: count },
+      ] as const);
+
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-[34rem] border-t border-border bg-card/95 backdrop-blur">

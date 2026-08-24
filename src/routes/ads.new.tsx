@@ -5,7 +5,7 @@ import { ArrowRight, ImagePlus, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { PageShell } from "@/components/app-shell";
+import { BackButton, PageShell  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -127,6 +127,7 @@ function NewAdPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-6 pt-6 text-primary-foreground shadow-card">
+        <BackButton fallback="/ads" />
         <div className="flex items-center gap-3">
           <Link to="/ads" aria-label="رجوع" className="rounded-full bg-white/15 p-2">
             <ArrowRight className="size-5" />

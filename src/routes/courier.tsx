@@ -1,18 +1,20 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { requireCustomerFlow } from "@/lib/route-guards";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ArrowRight, LocateFixed, MapPin, PackageCheck } from "lucide-react";
-import { BottomNav, PageShell } from "@/components/app-shell";
+import { LocateFixed, MapPin, PackageCheck } from "lucide-react";
+import { BackButton, BottomNav, PageShell  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useAccount } from "@/lib/auth";
+import { useCustomerAreaGuard, useAccount  } from "@/lib/auth";
 import { formatIQD } from "@/lib/orders";
 import { createCourierOrder, quoteCourierFee } from "@/lib/courier.functions";
 
 export const Route = createFileRoute("/courier")({
+  beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
       { title: "توصيل سريع | يمّك" },
@@ -32,6 +34,7 @@ export const Route = createFileRoute("/courier")({
 type Coords = { lat: number; lng: number } | null;
 
 function CourierPage() {
+  useCustomerAreaGuard();
   const navigate = useNavigate();
   const { data: account } = useAccount();
   const submit = useServerFn(createCourierOrder);
@@ -104,9 +107,7 @@ function CourierPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <Link to="/" className="mb-3 inline-flex items-center gap-1 text-sm opacity-90">
-          <ArrowRight className="size-4" /> الرئيسية
-        </Link>
+        <BackButton fallback="/" label="الرئيسية" />
         <h1 className="text-2xl font-black">توصيل سريع</h1>
         <p className="mt-1 text-sm opacity-90">إرسال واستلام من نقطة إلى نقطة داخل مدينتك.</p>
       </header>
