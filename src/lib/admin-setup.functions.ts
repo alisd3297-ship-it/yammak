@@ -124,12 +124,13 @@ export const provisionTestAdmin = createServerFn({ method: "POST" })
  */
 export const provisionTestAccount = createServerFn({ method: "POST" })
   .inputValidator((data: { token: string; kind: string; email: string; password: string }) => ({
-    token: String(data?.token ?? ""),
-    kind: String(data?.kind ?? ""),
+    token: String(data?.token ?? "").trim(),
+    kind: String(data?.kind ?? "").trim(),
     email: String(data?.email ?? "").trim().toLowerCase(),
     password: String(data?.password ?? ""),
   }))
   .handler(async ({ data }) => {
+    if (!process.env["ADMIN_SETUP_TOKEN"]) return { ok: false as const, reason: "server_token_missing" };
     const helpers = await import("@/lib/admin-setup.server");
     if (!helpers.setupTokenMatches(data.token)) return { ok: false as const, reason: "invalid_token" };
     if (!helpers.TEST_EMAIL_RE.test(data.email)) return { ok: false as const, reason: "invalid_email" };
