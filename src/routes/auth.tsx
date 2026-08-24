@@ -169,7 +169,7 @@ function AuthPage() {
     <div className="app-shell flex flex-col justify-center px-5 py-10">
       <div className="mb-8 text-center">
         <h1 className="text-4xl font-black text-primary">لبابك</h1>
-        <p className="mt-1 text-sm text-muted-foreground">ويّانه كلشي صار لبابك</p>
+        <p className="mt-1 text-sm text-muted-foreground">خدماتك وطلباتك لبابك</p>
       </div>
 
       <Tabs defaultValue="signin" className="rounded-3xl bg-card p-5 shadow-card">

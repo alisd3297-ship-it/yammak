@@ -37,7 +37,7 @@ export function BrandHeader({ subtitle }: { subtitle?: string }) {
           <NotificationsButton />
         </div>
         <h1 className="text-3xl font-black leading-none tracking-tight">لبابك</h1>
-        <p className="mt-1 max-w-[62%] text-sm/6 opacity-90">{subtitle ?? "ويّانه كلشي صار لبابك"}</p>
+        <p className="mt-1 max-w-[62%] text-sm/6 opacity-90">{subtitle ?? "خدماتك وطلباتك لبابك"}</p>
       </div>
     </header>
   );
