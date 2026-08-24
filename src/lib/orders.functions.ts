@@ -83,7 +83,16 @@ export const changeOrderStatus = createServerFn({ method: "POST" })
       _new_status: data.status,
       ...(data.reason ? { _reason: data.reason } : {}),
     });
-    if (error || !order) throw new Error(friendly(error?.message ?? ""));
+    if (error || !order) {
+      // نُسجّل السبب الأصلي في سجل الخادم حتى لا يُخفى الخطأ الحقيقي
+      console.error("[changeOrderStatus] failed", {
+        orderId: data.orderId,
+        status: data.status,
+        message: error?.message ?? "no_row_returned",
+      });
+      throw new Error(friendly(error?.message ?? ""));
+    }
+
 
     // الإلغاء يسجل طلب استرداد داخل قاعدة البيانات، وهنا ننفّذه فعلياً لدى مزود الدفع
     if (data.status === "cancelled") {
