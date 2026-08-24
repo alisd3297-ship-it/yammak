@@ -3,71 +3,15 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
-type OrderType = Database["public"]["Enums"]["order_type"];
 
 function fail(message: string): never {
   if (message.includes("forbidden")) throw new Error("غير مصرح بهذا الإجراء");
-  if (message.includes("already_reviewed")) throw new Error("تمت مراجعة هذا الطلب مسبقاً");
-  if (message.includes("approval_not_required")) throw new Error("هذا الطلب لا يحتاج موافقة");
   if (message.includes("order_closed")) throw new Error("الطلب منتهي");
   if (message.includes("cannot_revoke_self")) throw new Error("لا يمكنك سحب صلاحيتك بنفسك");
   if (message.includes("cannot_block_self")) throw new Error("لا يمكنك حظر حسابك");
   if (message.includes("user_not_found")) throw new Error("المستخدم غير موجود");
   throw new Error("تعذر تنفيذ العملية، حاول مرة ثانية");
 }
-
-/** موافقة/رفض المدير على طلب (منفصلة تماماً عن اعتماد تسجيل المزوّدين والمندوبين). */
-export const reviewOrderApproval = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((data: { orderId: string; approve: boolean; reason?: string }) => data)
-  .handler(async ({ data, context }) => {
-    const { data: order, error } = await context.supabase.rpc("review_order_approval", {
-      _order_id: data.orderId,
-      _approve: data.approve,
-      ...(data.reason ? { _reason: data.reason } : {}),
-    });
-    if (error || !order) fail(error?.message ?? "");
-
-    // الرفض الإداري لطلب مدفوع يسجل طلب استرداد؛ ننفّذه فعلياً هنا
-    if (!data.approve) {
-      try {
-        const { processPendingRefunds } = await import("@/lib/payments.server");
-        await processPendingRefunds();
-      } catch {
-        // الصيانة الدورية تعيد المحاولة
-      }
-    }
-
-    return { id: order.id, status: order.status };
-  });
-
-/** قراءة إعداد موافقة الإدارة على الطلبات. */
-export const getOrderApprovalSettings = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { data } = await context.supabase
-      .from("app_settings")
-      .select("value")
-      .eq("key", "order_admin_approval")
-      .maybeSingle();
-    const value = (data?.value ?? {}) as { enabled?: boolean; order_types?: string[] };
-    return { enabled: !!value.enabled, orderTypes: (value.order_types ?? []) as OrderType[] };
-  });
-
-/** تحديث إعداد موافقة الإدارة (إداري فقط، RLS على app_settings يفرض ذلك أيضاً). */
-export const setOrderApprovalSettings = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((data: { enabled: boolean; orderTypes: OrderType[] }) => data)
-  .handler(async ({ data, context }) => {
-    const { data: staff } = await context.supabase.rpc("is_staff", { _user_id: context.userId });
-    if (!staff) throw new Error("غير مصرح بهذا الإجراء");
-    const { error } = await context.supabase
-      .from("app_settings")
-      .update({ value: { enabled: data.enabled, order_types: data.orderTypes } })
-      .eq("key", "order_admin_approval");
-    if (error) fail(error.message);
-    return { ok: true };
-  });
 
 /** تقرير إداري شامل، وبيانات الإيرادات تظهر فقط لمن يملك صلاحية مالية. */
 export const getAdminReport = createServerFn({ method: "POST" })

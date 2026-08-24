@@ -64,7 +64,7 @@ function OrderTrackPage() {
         supabase
           .from("orders")
           .select(
-            "id, code, status, order_type, total, subtotal, delivery_fee, pickup_text, dropoff_text, notes, created_at, vehicle_type, cargo_description, cargo_weight_kg, scheduled_at, providers(name, phone), provider_id, driver_id, admin_review_reason, requires_admin_approval, admin_approved_at",
+            "id, code, status, order_type, total, subtotal, delivery_fee, pickup_text, dropoff_text, notes, created_at, vehicle_type, cargo_description, cargo_weight_kg, scheduled_at, providers(name, phone), provider_id, driver_id",
           )
           .eq("id", id)
           .maybeSingle(),
@@ -221,16 +221,6 @@ function OrderTrackPage() {
             <Button variant="outline" className="mt-3 h-11 w-full" onClick={cancelOrder}>
               إلغاء الطلب
             </Button>
-          )}
-          {order?.requires_admin_approval && !order.admin_approved_at && status !== "cancelled" && (
-            <p className="mt-3 rounded-xl bg-warning/15 p-3 text-sm">
-              هذا الطلب ينتظر موافقة الإدارة قبل التجهيز.
-            </p>
-          )}
-          {order?.admin_review_reason && (
-            <p className="mt-2 text-xs text-muted-foreground">
-              ملاحظة الإدارة: {order.admin_review_reason}
-            </p>
           )}
         </section>
 
