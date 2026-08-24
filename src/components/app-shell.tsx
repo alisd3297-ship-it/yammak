@@ -247,6 +247,7 @@ const ADMIN_LINKS = [
   { to: "/admin/ads", label: "الإعلانات" },
   { to: "/admin/services", label: "كتالوج الخدمات" },
   { to: "/admin/audit", label: "سجل التدقيق" },
+  { to: "/admin/features", label: "مفاتيح الميزات" },
 
 ] as const;
 
