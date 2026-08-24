@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowRight, BellOff } from "lucide-react";
 import { toast } from "sonner";
@@ -44,6 +45,26 @@ function NotificationsPage() {
       return rows ?? [];
     },
   });
+
+  // وصول لحظي للإشعارات الجديدة داخل هذه الصفحة (الاستطلاع احتياطي فقط)
+  useEffect(() => {
+    if (!userId) return;
+    const channel = supabase
+      .channel(`notifications-page-${userId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
+        () => {
+          void refetch();
+          qc.invalidateQueries({ queryKey: ["notifications-unread", userId] });
+        },
+      )
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [userId, qc, refetch]);
+
 
   const markAllRead = async () => {
     if (!userId) return;

@@ -12,8 +12,12 @@ export const OPERATING_LOCATION = {
   district: "قضاء الحسينية",
 } as const;
 
+/** إحداثيات تقريبية لمركز منطقة التشغيل، تُستخدم كبديل عند تعذر قراءة GPS. */
+export const OPERATING_LOCATION_COORDS = { lat: 32.6156, lng: 44.0537 } as const;
+
 /** نص الموقع الحالي المعروض للمستخدم (العنوان يبقى حقلاً منفصلاً). */
 export const OPERATING_LOCATION_LABEL = `${OPERATING_LOCATION.governorate} — ${OPERATING_LOCATION.district}`;
+
 
 /** بادئة العنوان المقترحة عند اختيار «الموقع الحالي». */
 export const OPERATING_ADDRESS_PREFIX = `${OPERATING_LOCATION.district}، `;

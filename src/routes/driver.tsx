@@ -3,7 +3,9 @@ import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { LogOut, MapPin, Navigation } from "lucide-react";
+import { Bell, LogOut, MapPin, Navigation } from "lucide-react";
+import { OPERATING_LOCATION_COORDS } from "@/lib/location";
+
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell, StatusDot } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
@@ -142,45 +144,63 @@ function DriverDashboard() {
   // البث فور عودة التطبيق للواجهة، وقاعدة البيانات تعتمد نضارة الموقع للتوزيع.
   useEffect(() => {
     if (!account?.userId || !worker?.is_available) return;
-    if (typeof navigator === "undefined" || !navigator.geolocation) return;
 
     const uid = account.userId;
     let warned = false;
     let lastSent = 0;
     let watchId: number | null = null;
 
-    const send = (lat: number, lng: number, force = false) => {
+    const send = async (lat: number, lng: number, force = false) => {
       const now = Date.now();
       if (!force && now - lastSent < 20_000) return;
       lastSent = now;
-      void supabase.from("worker_locations").upsert({
+      const { error } = await supabase.from("worker_locations").upsert({
         user_id: uid,
         lat,
         lng,
         is_online: true,
         updated_at: new Date().toISOString(),
       });
+      if (error) {
+        lastSent = 0;
+        if (!warned) {
+          warned = true;
+          toast.error("تعذر تحديث حالتك كمتاح، حدّث الصفحة أو تأكد من الاتصال");
+        }
+      }
     };
 
+    // بديل عند تعذر GPS: نُعلن التوفر بإحداثيات منطقة التشغيل حتى لا يبقى المندوب
+    // خارج التوزيع نهائياً (الموقع الدقيق يُحدَّث فور توفر إذن الموقع).
+    const sendFallback = () => void send(OPERATING_LOCATION_COORDS.lat, OPERATING_LOCATION_COORDS.lng, true);
+
     const onError = () => {
+      sendFallback();
       if (warned) return;
       warned = true;
       toast.error("تعذر قراءة موقعك، فعّل صلاحية الموقع حتى تصلك العروض القريبة");
     };
 
-    const pushOnce = (force = false) =>
-      navigator.geolocation.getCurrentPosition(
-        (pos) => send(pos.coords.latitude, pos.coords.longitude, force),
+    const hasGeo = typeof navigator !== "undefined" && !!navigator.geolocation;
+
+    const pushOnce = (force = false) => {
+      if (!hasGeo) return sendFallback();
+      return navigator.geolocation.getCurrentPosition(
+        (pos) => void send(pos.coords.latitude, pos.coords.longitude, force),
         onError,
         { enableHighAccuracy: true, timeout: 15_000, maximumAge: 30_000 },
       );
+    };
 
     pushOnce(true);
-    watchId = navigator.geolocation.watchPosition(
-      (pos) => send(pos.coords.latitude, pos.coords.longitude),
-      onError,
-      { enableHighAccuracy: true, timeout: 20_000, maximumAge: 15_000 },
-    );
+    if (hasGeo) {
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => void send(pos.coords.latitude, pos.coords.longitude),
+        onError,
+        { enableHighAccuracy: true, timeout: 20_000, maximumAge: 15_000 },
+      );
+    }
+
 
     // نبضة احتياطية عندما تكون الشاشة ظاهرة فقط (بدون حلقات في الخلفية)
     const heartbeat = setInterval(() => {
@@ -196,13 +216,70 @@ function DriverDashboard() {
     window.addEventListener("online", onResume);
 
     return () => {
-      if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+      if (watchId !== null && hasGeo) navigator.geolocation.clearWatch(watchId);
       clearInterval(heartbeat);
       document.removeEventListener("visibilitychange", onResume);
       window.removeEventListener("focus", onResume);
       window.removeEventListener("online", onResume);
     };
   }, [account?.userId, worker?.is_available]);
+
+  // تنبيه المندوب لحظياً بالعروض الجديدة: اشتراك realtime على إشعاراته وعروضه،
+  // مع تنبيه داخل التطبيق وإشعار جهاز عبر Notification API عندما يكون مسموحاً.
+  useEffect(() => {
+    const uid = account?.userId;
+    if (!uid || typeof window === "undefined") return;
+
+    if ("Notification" in window && Notification.permission === "default") {
+      void Notification.requestPermission();
+    }
+
+    const alert = (title: string, body: string, orderId: string | null) => {
+      toast.info(title, { description: body || undefined });
+      try {
+        if ("Notification" in window && Notification.permission === "granted") {
+          const n = new Notification(title, {
+            body: body || title,
+            icon: "/icon-192.png",
+            ...(orderId ? { tag: orderId } : {}),
+          });
+
+          n.onclick = () => {
+            window.focus();
+            if (orderId) window.location.assign(`/orders/${orderId}`);
+          };
+        }
+      } catch {
+        // بعض المتصفحات تمنع الإشعارات، والتنبيه داخل التطبيق يكفي
+      }
+    };
+
+    const channel = supabase
+      .channel(`driver-alerts-${uid}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${uid}` },
+        (payload) => {
+          const row = payload.new as { title: string; body: string | null; order_id: string | null };
+          alert(row.title, row.body ?? "", row.order_id ?? null);
+          qc.invalidateQueries({ queryKey: ["driver-offers"] });
+          qc.invalidateQueries({ queryKey: ["driver-trip-offers"] });
+          qc.invalidateQueries({ queryKey: ["notifications-unread", uid] });
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "delivery_offers", filter: `driver_id=eq.${uid}` },
+        () => qc.invalidateQueries({ queryKey: ["driver-offers"] }),
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [account?.userId, qc]);
+
+
 
   async function toggleAvailable(value: boolean) {
     if (!account?.userId) return;
@@ -285,16 +362,27 @@ function DriverDashboard() {
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
         <div className="flex items-center justify-between gap-3">
           <h1 className="text-2xl font-black">لوحة المندوب</h1>
-          <button
-            type="button"
-            onClick={() => void signOut()}
-            className="flex items-center gap-1.5 rounded-full bg-primary-foreground/15 px-3 py-2 text-xs font-semibold backdrop-blur transition hover:bg-primary-foreground/25"
-            aria-label="تسجيل الخروج"
-          >
-            <LogOut className="size-4" />
-            خروج
-          </button>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/notifications"
+              aria-label="الإشعارات"
+              className="flex items-center gap-1.5 rounded-full bg-primary-foreground/15 px-3 py-2 text-xs font-semibold backdrop-blur transition hover:bg-primary-foreground/25"
+            >
+              <Bell className="size-4" />
+              الإشعارات
+            </Link>
+            <button
+              type="button"
+              onClick={() => void signOut()}
+              className="flex items-center gap-1.5 rounded-full bg-primary-foreground/15 px-3 py-2 text-xs font-semibold backdrop-blur transition hover:bg-primary-foreground/25"
+              aria-label="تسجيل الخروج"
+            >
+              <LogOut className="size-4" />
+              خروج
+            </button>
+          </div>
         </div>
+
 
         <div className="mt-3 flex items-center justify-between rounded-2xl bg-white/15 px-4 py-3">
           <span className="text-sm font-semibold">
