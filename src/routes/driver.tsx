@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -31,6 +31,10 @@ import { requireWorker } from "@/lib/route-guards";
 export const Route = createFileRoute("/driver")({
   ssr: false,
   beforeLoad: requireWorker,
+  // يسمح لإشعار عرض التوصيل بفتح الطلب الصحيح مباشرة داخل اللوحة
+  validateSearch: (search: Record<string, unknown>) => ({
+    order: typeof search.order === "string" ? search.order : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "لوحة المندوب | يمّك" },
@@ -50,6 +54,7 @@ const DRIVER_STEPS: Partial<Record<OrderStatus, { next: OrderStatus; label: stri
 };
 
 function DriverDashboard() {
+  const { order: focusOrderId } = Route.useSearch();
   const { data: account } = useAccount();
   const qc = useQueryClient();
   const signOut = useSignOut();
@@ -71,6 +76,12 @@ function DriverDashboard() {
       return data;
     },
   });
+
+  const focusedOfferRef = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    if (focusOrderId && focusedOfferRef.current)
+      focusedOfferRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [focusOrderId, offers]);
 
   const { data: offers } = useQuery({
     queryKey: ["driver-offers", account?.userId],
@@ -448,8 +459,18 @@ function DriverDashboard() {
                   cargo_weight_kg: number | null;
                   scheduled_at: string | null;
                 } | null;
+                const focused = !!focusOrderId && o.order_id === focusOrderId;
                 return (
-                  <article key={o.id} className="rounded-2xl border-2 border-primary/40 bg-card p-4 shadow-card">
+                  <article
+                    key={o.id}
+                    id={`offer-${o.order_id}`}
+                    ref={focused ? focusedOfferRef : undefined}
+                    className={
+                      focused
+                        ? "rounded-2xl border-2 border-primary bg-primary/5 p-4 shadow-card ring-2 ring-primary/30"
+                        : "rounded-2xl border-2 border-primary/40 bg-card p-4 shadow-card"
+                    }
+                  >
                     <div className="flex items-center justify-between">
                       <p className="font-bold">
                         {isCourierType(ord?.order_type) ? "طلب مندوب #" : "طلب #"}
@@ -509,8 +530,18 @@ function DriverDashboard() {
                   distance_km: number;
                   notes: string | null;
                 } | null;
+                const focused = !!focusOrderId && o.order_id === focusOrderId;
                 return (
-                  <article key={o.id} className="rounded-2xl border-2 border-primary/40 bg-card p-4 shadow-card">
+                  <article
+                    key={o.id}
+                    id={`offer-${o.order_id}`}
+                    ref={focused ? focusedOfferRef : undefined}
+                    className={
+                      focused
+                        ? "rounded-2xl border-2 border-primary bg-primary/5 p-4 shadow-card ring-2 ring-primary/30"
+                        : "rounded-2xl border-2 border-primary/40 bg-card p-4 shadow-card"
+                    }
+                  >
                     <div className="flex items-center justify-between">
                       <p className="font-bold">رحلة #{tr?.code}</p>
                       <span className="text-sm font-bold text-primary">{formatIQD(Number(tr?.fare ?? 0))}</span>
