@@ -25,12 +25,12 @@ export const Route = createFileRoute("/admin/orders")({
   beforeLoad: requireStaff,
   head: () => ({
     meta: [
-      { title: "موافقات الطلبات | يمّك" },
+      { title: "موافقات الطلبات | لبابك" },
       {
         name: "description",
         content: "مراجعة الطلبات التي تحتاج موافقة الإدارة قبل التجهيز، وقبولها أو رفضها مع سبب واضح.",
       },
-      { property: "og:title", content: "موافقات الطلبات | يمّك" },
+      { property: "og:title", content: "موافقات الطلبات | لبابك" },
       { property: "og:description", content: "موافقة الإدارة على الطلبات قبل التجهيز." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

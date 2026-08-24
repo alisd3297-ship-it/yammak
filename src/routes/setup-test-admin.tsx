@@ -11,9 +11,9 @@ export const Route = createFileRoute("/setup-test-admin")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "تجهيز حساب مدير تجريبي | يمّك" },
+      { title: "تجهيز حساب مدير تجريبي | لبابك" },
       { name: "description", content: "مسار محمي برمز سري لتجهيز حساب مدير تجريبي لاختبار التطبيق." },
-      { property: "og:title", content: "تجهيز حساب مدير تجريبي | يمّك" },
+      { property: "og:title", content: "تجهيز حساب مدير تجريبي | لبابك" },
       { property: "og:description", content: "إنشاء أو تحديث كلمة مرور حساب مدير الاختبار برمز إعداد سري." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

@@ -14,13 +14,13 @@ import { useRoleHomeRedirect, useCustomerAreaGuard } from "@/lib/auth";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "يمّك | كل خدماتك بمكان واحد" },
+      { title: "لبابك | كل خدماتك بمكان واحد" },
       {
         name: "description",
-        content: "مطاعم، متاجر، مندوب، توصيل خاص، تكسي ومهن وخدمات — اطلب من يمّك بسهولة وسرعة.",
+        content: "مطاعم، متاجر، مندوب، توصيل خاص، تكسي ومهن وخدمات — اطلب من لبابك بسهولة وسرعة.",
       },
-      { property: "og:title", content: "يمّك | كل خدماتك بمكان واحد" },
-      { property: "og:description", content: "ويّانه كلشي صار يمّك." },
+      { property: "og:title", content: "لبابك | كل خدماتك بمكان واحد" },
+      { property: "og:description", content: "ويّانه كلشي صار لبابك." },
     ],
   }),
   component: CustomerHome,

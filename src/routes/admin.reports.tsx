@@ -13,13 +13,13 @@ export const Route = createFileRoute("/admin/reports")({
   beforeLoad: requireStaff,
   head: () => ({
     meta: [
-      { title: "تقارير الإدارة | يمّك" },
+      { title: "تقارير الإدارة | لبابك" },
       {
         name: "description",
         content: "إحصاءات الطلبات والمبيعات ورسوم التوصيل وأداء المزوّدين والمندوبين يومياً وأسبوعياً وشهرياً.",
       },
-      { property: "og:title", content: "تقارير الإدارة | يمّك" },
-      { property: "og:description", content: "لوحة إحصاءات وأداء منصة يمّك." },
+      { property: "og:title", content: "تقارير الإدارة | لبابك" },
+      { property: "og:description", content: "لوحة إحصاءات وأداء منصة لبابك." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -227,7 +227,7 @@ function AdminReportsPage() {
                         <span className="font-bold">{fmt(f.gross_profit, f.currency)}</span>
                       </li>
                       <li className="flex justify-between">
-                        <span className="text-muted-foreground">عمولة يمّك</span>
+                        <span className="text-muted-foreground">عمولة لبابك</span>
                         <span className="font-semibold">{fmt(f.commission, f.currency)}</span>
                       </li>
                       <li className="flex justify-between">
@@ -235,7 +235,7 @@ function AdminReportsPage() {
                         <span className="font-semibold">{fmt(f.delivery_fees, f.currency)}</span>
                       </li>
                       <li className="flex justify-between border-t pt-1">
-                        <span className="text-muted-foreground">صافي ربح يمّك (عمولة + توصيل)</span>
+                        <span className="text-muted-foreground">صافي ربح لبابك (عمولة + توصيل)</span>
                         <span className="font-black">{fmt(f.platform_net, f.currency)}</span>
                       </li>
                       <li className="flex justify-between">

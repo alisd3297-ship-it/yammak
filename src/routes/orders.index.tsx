@@ -14,9 +14,9 @@ export const Route = createFileRoute("/orders/")({
   beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
-      { title: "طلباتي | يمّك" },
-      { name: "description", content: "تابع طلباتك الحالية والسابقة وحالتها لحظة بلحظة في يمّك." },
-      { property: "og:title", content: "طلباتي | يمّك" },
+      { title: "طلباتي | لبابك" },
+      { name: "description", content: "تابع طلباتك الحالية والسابقة وحالتها لحظة بلحظة في لبابك." },
+      { property: "og:title", content: "طلباتي | لبابك" },
       { property: "og:description", content: "متابعة الطلبات وحالاتها." },
     ],
   }),

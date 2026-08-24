@@ -16,13 +16,13 @@ export const Route = createFileRoute("/admin/users")({
   beforeLoad: requireStaff,
   head: () => ({
     meta: [
-      { title: "إدارة المستخدمين والأدوار | يمّك" },
+      { title: "إدارة المستخدمين والأدوار | لبابك" },
       {
         name: "description",
         content: "عرض المستخدمين وأدوارهم ومنح أو سحب الصلاحيات وحظر الحسابات وفق صلاحيات إدارية صارمة.",
       },
-      { property: "og:title", content: "إدارة المستخدمين والأدوار | يمّك" },
-      { property: "og:description", content: "إدارة صلاحيات مستخدمي يمّك." },
+      { property: "og:title", content: "إدارة المستخدمين والأدوار | لبابك" },
+      { property: "og:description", content: "إدارة صلاحيات مستخدمي لبابك." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

@@ -15,13 +15,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/ads/")({
   head: () => ({
     meta: [
-      { title: "أعلن معنا | يمّك" },
+      { title: "أعلن معنا | لبابك" },
       {
         name: "description",
-        content: "إعلانات مبوبة داخل يمّك: عقارات، سيارات، وظائف، إلكترونيات وأثاث — انشر إعلانك ووصل لزبائنك.",
+        content: "إعلانات مبوبة داخل لبابك: عقارات، سيارات، وظائف، إلكترونيات وأثاث — انشر إعلانك ووصل لزبائنك.",
       },
-      { property: "og:title", content: "أعلن معنا | يمّك" },
-      { property: "og:description", content: "قسم الإعلانات في يمّك — انشر إعلانك بعد مراجعة الإدارة." },
+      { property: "og:title", content: "أعلن معنا | لبابك" },
+      { property: "og:description", content: "قسم الإعلانات في لبابك — انشر إعلانك بعد مراجعة الإدارة." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

@@ -77,5 +77,5 @@ export async function sendSms(to: string, body: string): Promise<{ sid: string }
 }
 
 export function otpMessage(code: string): string {
-  return `رمز التحقق في يمّك: ${code}\nصالح لمدة 5 دقائق. لا تشاركه مع أي أحد.`;
+  return `رمز التحقق في لبابك: ${code}\nصالح لمدة 5 دقائق. لا تشاركه مع أي أحد.`;
 }

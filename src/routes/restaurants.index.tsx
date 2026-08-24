@@ -15,9 +15,9 @@ export const Route = createFileRoute("/restaurants/")({
   beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
-      { title: "مطاعم وكافتريات | يمّك" },
-      { name: "description", content: "اختر مطعمك المفضل في مدينتك واطلب أكلك بسرعة عبر يمّك." },
-      { property: "og:title", content: "مطاعم وكافتريات | يمّك" },
+      { title: "مطاعم وكافتريات | لبابك" },
+      { name: "description", content: "اختر مطعمك المفضل في مدينتك واطلب أكلك بسرعة عبر لبابك." },
+      { property: "og:title", content: "مطاعم وكافتريات | لبابك" },
       { property: "og:description", content: "مطاعم قريبة منك، مرتبة حسب التقييم والسرعة." },
     ],
   }),

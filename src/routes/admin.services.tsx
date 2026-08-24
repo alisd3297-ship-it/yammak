@@ -28,13 +28,13 @@ export const Route = createFileRoute("/admin/services")({
   beforeLoad: requireStaff,
   head: () => ({
     meta: [
-      { title: "إدارة كتالوج الخدمات | يمّك" },
+      { title: "إدارة كتالوج الخدمات | لبابك" },
       {
         name: "description",
         content: "إنشاء وتعديل وحذف أقسام الخدمات والتصنيفات الفرعية والخدمات وإعادة ترتيبها ونقلها بين الأقسام.",
       },
-      { property: "og:title", content: "إدارة كتالوج الخدمات | يمّك" },
-      { property: "og:description", content: "لوحة إدارة كتالوج الخدمات في تطبيق يمّك." },
+      { property: "og:title", content: "إدارة كتالوج الخدمات | لبابك" },
+      { property: "og:description", content: "لوحة إدارة كتالوج الخدمات في تطبيق لبابك." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

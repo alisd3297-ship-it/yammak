@@ -14,9 +14,9 @@ export const Route = createFileRoute("/stores/$id")({
   beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
-      { title: "منتجات المتجر | يمّك" },
-      { name: "description", content: "تصفح منتجات المتجر وأسعارها وتوفرها وأضفها إلى سلتك في يمّك." },
-      { property: "og:title", content: "منتجات المتجر | يمّك" },
+      { title: "منتجات المتجر | لبابك" },
+      { name: "description", content: "تصفح منتجات المتجر وأسعارها وتوفرها وأضفها إلى سلتك في لبابك." },
+      { property: "og:title", content: "منتجات المتجر | لبابك" },
       { property: "og:description", content: "منتجات، أسعار، وتوصيل سريع." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

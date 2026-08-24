@@ -18,9 +18,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/join/provider")({
   head: () => ({
     meta: [
-      { title: "انضم كمطعم أو متجر أو مهني | يمّك" },
-      { name: "description", content: "سجّل مطعمك أو متجرك في يمّك واستقبل الطلبات بعد اعتماد الإدارة." },
-      { property: "og:title", content: "انضم كمطعم أو متجر | يمّك" },
+      { title: "انضم كمطعم أو متجر أو مهني | لبابك" },
+      { name: "description", content: "سجّل مطعمك أو متجرك في لبابك واستقبل الطلبات بعد اعتماد الإدارة." },
+      { property: "og:title", content: "انضم كمطعم أو متجر | لبابك" },
       { property: "og:description", content: "تقديم طلب انضمام لمقدمي الخدمة." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -234,7 +234,7 @@ function JoinProviderPage() {
         </section>
 
         <p className="rounded-2xl bg-muted p-3 text-xs text-muted-foreground">
-          الطلب يُسجّل بحالة «قيد المراجعة». الاعتماد ونسبة العمولة تحددهما إدارة يمّك فقط.
+          الطلب يُسجّل بحالة «قيد المراجعة». الاعتماد ونسبة العمولة تحددهما إدارة لبابك فقط.
         </p>
 
         <Button className="h-13 w-full text-base" disabled={saving} onClick={submit}>

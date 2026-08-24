@@ -24,9 +24,9 @@ export const Route = createFileRoute("/admin/providers")({
   beforeLoad: requireStaff,
   head: () => ({
     meta: [
-      { title: "اعتماد مقدمي الخدمة | يمّك" },
+      { title: "اعتماد مقدمي الخدمة | لبابك" },
       { name: "description", content: "مراجعة طلبات مطاعم وكافتريات ومتاجر ومقدمي الخدمات واعتمادها أو رفضها أو تعليقها، ومتابعة طلبات الخدمات." },
-      { property: "og:title", content: "اعتماد مقدمي الخدمة | يمّك" },
+      { property: "og:title", content: "اعتماد مقدمي الخدمة | لبابك" },
       { property: "og:description", content: "لوحة إدارة اعتماد المزوّدين." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -147,7 +147,7 @@ function AdminProvidersPage() {
     return (
       <PageShell>
         <div className="px-5 py-16 text-center">
-          <p className="text-sm text-muted-foreground">هذه الصفحة مخصصة لفريق إدارة يمّك.</p>
+          <p className="text-sm text-muted-foreground">هذه الصفحة مخصصة لفريق إدارة لبابك.</p>
           <Link to="/" className="mt-3 inline-block font-semibold text-primary">
             رجوع للرئيسية
           </Link>

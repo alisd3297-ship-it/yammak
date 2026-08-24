@@ -22,10 +22,10 @@ export const Route = createFileRoute("/admin/ads")({
   beforeLoad: requireStaff,
   head: () => ({
     meta: [
-      { title: "إدارة الإعلانات | يمّك" },
+      { title: "إدارة الإعلانات | لبابك" },
       { name: "description", content: "مراجعة إعلانات المستخدمين والموافقة والرفض والإيقاف وتحديد مدة النشر والترتيب." },
-      { property: "og:title", content: "إدارة الإعلانات | يمّك" },
-      { property: "og:description", content: "لوحة الإدارة لمراجعة الإعلانات في تطبيق يمّك." },
+      { property: "og:title", content: "إدارة الإعلانات | لبابك" },
+      { property: "og:description", content: "لوحة الإدارة لمراجعة الإعلانات في تطبيق لبابك." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -99,7 +99,7 @@ function AdminAdsPage() {
     return (
       <PageShell>
         <div className="px-5 py-16 text-center">
-          <p className="text-sm text-muted-foreground">هذه الصفحة مخصصة لفريق إدارة يمّك.</p>
+          <p className="text-sm text-muted-foreground">هذه الصفحة مخصصة لفريق إدارة لبابك.</p>
           <Link to="/" className="mt-3 inline-block font-semibold text-primary">
             رجوع للرئيسية
           </Link>

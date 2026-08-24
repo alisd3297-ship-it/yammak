@@ -16,12 +16,12 @@ export const Route = createFileRoute("/provider-finance")({
   beforeLoad: requireProvider,
   head: () => ({
     meta: [
-      { title: "مالية النشاط | يمّك" },
+      { title: "مالية النشاط | لبابك" },
       {
         name: "description",
-        content: "مبيعات نشاطك، عمولة المنصة، الصافي المستحق والتسويات المصروفة في يمّك.",
+        content: "مبيعات نشاطك، عمولة المنصة، الصافي المستحق والتسويات المصروفة في لبابك.",
       },
-      { property: "og:title", content: "مالية النشاط | يمّك" },
+      { property: "og:title", content: "مالية النشاط | لبابك" },
       { property: "og:description", content: "مبيعاتك وعمولتك وصافيك بالتفصيل." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

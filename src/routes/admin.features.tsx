@@ -14,12 +14,12 @@ export const Route = createFileRoute("/admin/features")({
   beforeLoad: requireStaff,
   head: () => ({
     meta: [
-      { title: "مفاتيح الميزات | إدارة يمّك" },
+      { title: "مفاتيح الميزات | إدارة لبابك" },
       {
         name: "description",
-        content: "تفعيل ميزات يمّك تدريجياً: نسبة التفعيل والجمهور المستهدف لكل ميزة على حدة.",
+        content: "تفعيل ميزات لبابك تدريجياً: نسبة التفعيل والجمهور المستهدف لكل ميزة على حدة.",
       },
-      { property: "og:title", content: "مفاتيح الميزات | إدارة يمّك" },
+      { property: "og:title", content: "مفاتيح الميزات | إدارة لبابك" },
       { property: "og:description", content: "تفعيل تدريجي آمن لكل ميزة." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

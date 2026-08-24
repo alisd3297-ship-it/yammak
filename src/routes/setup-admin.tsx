@@ -16,9 +16,9 @@ export const Route = createFileRoute("/setup-admin")({
   beforeLoad: requireSignedIn,
   head: () => ({
     meta: [
-      { title: "إعداد المدير العام | يمّك" },
+      { title: "إعداد المدير العام | لبابك" },
       { name: "description", content: "مسار إعداد لمرة واحدة لمنح صلاحية المدير العام لمالك المشروع." },
-      { property: "og:title", content: "إعداد المدير العام | يمّك" },
+      { property: "og:title", content: "إعداد المدير العام | لبابك" },
       { property: "og:description", content: "منح صلاحية الإدارة لأول مرة برمز إعداد سري." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

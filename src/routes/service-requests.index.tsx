@@ -22,9 +22,9 @@ export const Route = createFileRoute("/service-requests/")({
   beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
-      { title: "طلبات الخدمة | يمّك" },
+      { title: "طلبات الخدمة | لبابك" },
       { name: "description", content: "تابع حالة طلبات المهن والخدمات وقيّم مقدم الخدمة بعد إنجاز الشغل." },
-      { property: "og:title", content: "طلبات الخدمة | يمّك" },
+      { property: "og:title", content: "طلبات الخدمة | لبابك" },
       { property: "og:description", content: "متابعة طلبات المهن والخدمات." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

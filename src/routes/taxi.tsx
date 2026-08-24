@@ -28,13 +28,13 @@ export const Route = createFileRoute("/taxi")({
   beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
-      { title: "اطلب تكسي | يمّك" },
+      { title: "اطلب تكسي | لبابك" },
       {
         name: "description",
         content: "اطلب تكسي من موقعك إلى وجهتك داخل مدينتك بأجرة واضحة محسوبة مسبقاً ومتابعة حية للسائق.",
       },
-      { property: "og:title", content: "اطلب تكسي | يمّك" },
-      { property: "og:description", content: "تنقّل داخل المدينة مع سائقي يمّك المعتمدين." },
+      { property: "og:title", content: "اطلب تكسي | لبابك" },
+      { property: "og:description", content: "تنقّل داخل المدينة مع سائقي لبابك المعتمدين." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

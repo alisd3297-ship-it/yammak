@@ -16,12 +16,12 @@ export const Route = createFileRoute("/driver-earnings")({
   beforeLoad: requireWorker,
   head: () => ({
     meta: [
-      { title: "أرباح المندوب | يمّك" },
+      { title: "أرباح المندوب | لبابك" },
       {
         name: "description",
-        content: "أرباح المندوب من التوصيل والرحلات، المبالغ المصروفة والمستحقة والتسويات في يمّك.",
+        content: "أرباح المندوب من التوصيل والرحلات، المبالغ المصروفة والمستحقة والتسويات في لبابك.",
       },
-      { property: "og:title", content: "أرباح المندوب | يمّك" },
+      { property: "og:title", content: "أرباح المندوب | لبابك" },
       { property: "og:description", content: "أرباحك وتسوياتك بالتفصيل." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

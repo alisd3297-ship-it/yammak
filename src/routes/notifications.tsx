@@ -15,9 +15,9 @@ export const Route = createFileRoute("/notifications")({
   beforeLoad: requireSignedIn,
   head: () => ({
     meta: [
-      { title: "الإشعارات | يمّك" },
-      { name: "description", content: "تابع إشعارات طلباتك ورحلاتك وعروض التوصيل داخل تطبيق يمّك." },
-      { property: "og:title", content: "الإشعارات | يمّك" },
+      { title: "الإشعارات | لبابك" },
+      { name: "description", content: "تابع إشعارات طلباتك ورحلاتك وعروض التوصيل داخل تطبيق لبابك." },
+      { property: "og:title", content: "الإشعارات | لبابك" },
       { property: "og:description", content: "إشعارات الطلبات والرحلات والعروض." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

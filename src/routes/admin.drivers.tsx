@@ -26,12 +26,12 @@ export const Route = createFileRoute("/admin/drivers")({
   beforeLoad: requireStaff,
   head: () => ({
     meta: [
-      { title: "إدارة السائقين والرحلات | يمّك" },
+      { title: "إدارة السائقين والرحلات | لبابك" },
       {
         name: "description",
-        content: "اعتماد وتعليق سائقي التكسي والمندوبين ومتابعة الرحلات النشطة داخل يمّك.",
+        content: "اعتماد وتعليق سائقي التكسي والمندوبين ومتابعة الرحلات النشطة داخل لبابك.",
       },
-      { property: "og:title", content: "إدارة السائقين والرحلات | يمّك" },
+      { property: "og:title", content: "إدارة السائقين والرحلات | لبابك" },
       { property: "og:description", content: "لوحة إدارة السائقين ورحلات التكسي." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -121,7 +121,7 @@ function AdminDriversPage() {
     return (
       <PageShell>
         <div className="px-5 py-16 text-center">
-          <p className="text-sm text-muted-foreground">هذه اللوحة لإدارة يمّك فقط.</p>
+          <p className="text-sm text-muted-foreground">هذه اللوحة لإدارة لبابك فقط.</p>
           <Link to="/" className="mt-3 inline-block font-semibold text-primary">
             الرجوع للرئيسية
           </Link>

@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 /**
- * إعداد إصدار الموبايل (Capacitor) لتطبيق «يمّك» — نمط Hosted Wrapper.
+ * إعداد إصدار الموبايل (Capacitor) لتطبيق «لبابك» — نمط Hosted Wrapper.
  *
  * التطبيق يحمّل نسخة الإنتاج المنشورة (SSR + server functions) مباشرة،
  * لذلك لا حاجة لإعادة هيكلة الباك-إند أو تصدير موقع ثابت.
@@ -14,7 +14,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
  */
 const config: CapacitorConfig = {
   appId: "iq.yammak.app",
-  appName: "يمّك",
+  appName: "لبابك",
   webDir: "dist/client",
   android: {
     allowMixedContent: false,

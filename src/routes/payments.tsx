@@ -20,12 +20,12 @@ import {
 export const Route = createFileRoute("/payments")({
   head: () => ({
     meta: [
-      { title: "عمليات الدفع | يمّك" },
+      { title: "عمليات الدفع | لبابك" },
       {
         name: "description",
-        content: "تابع عمليات الدفع الإلكتروني والمبالغ المسترجعة لطلباتك ورحلاتك في يمّك.",
+        content: "تابع عمليات الدفع الإلكتروني والمبالغ المسترجعة لطلباتك ورحلاتك في لبابك.",
       },
-      { property: "og:title", content: "عمليات الدفع | يمّك" },
+      { property: "og:title", content: "عمليات الدفع | لبابك" },
       { property: "og:description", content: "سجل مدفوعاتك وحالتها لحظة بلحظة." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

@@ -21,10 +21,10 @@ import { randomId } from "@/lib/utils";
 export const Route = createFileRoute("/ads/new")({
   head: () => ({
     meta: [
-      { title: "انشر إعلان جديد | يمّك" },
-      { name: "description", content: "انشر إعلانك في يمّك: عنوان، وصف، فئة، صور، سعر، رقم اتصال وعنوان — بعد مراجعة الإدارة." },
-      { property: "og:title", content: "انشر إعلان جديد | يمّك" },
-      { property: "og:description", content: "أضف إعلانك في يمّك ووصل لآلاف المستخدمين بعد موافقة الإدارة." },
+      { title: "انشر إعلان جديد | لبابك" },
+      { name: "description", content: "انشر إعلانك في لبابك: عنوان، وصف، فئة، صور، سعر، رقم اتصال وعنوان — بعد مراجعة الإدارة." },
+      { property: "og:title", content: "انشر إعلان جديد | لبابك" },
+      { property: "og:description", content: "أضف إعلانك في لبابك ووصل لآلاف المستخدمين بعد موافقة الإدارة." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
