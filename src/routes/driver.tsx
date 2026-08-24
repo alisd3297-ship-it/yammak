@@ -281,7 +281,19 @@ function DriverDashboard() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <h1 className="text-2xl font-black">لوحة المندوب</h1>
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="text-2xl font-black">لوحة المندوب</h1>
+          <button
+            type="button"
+            onClick={() => void signOut()}
+            className="flex items-center gap-1.5 rounded-full bg-primary-foreground/15 px-3 py-2 text-xs font-semibold backdrop-blur transition hover:bg-primary-foreground/25"
+            aria-label="تسجيل الخروج"
+          >
+            <LogOut className="size-4" />
+            خروج
+          </button>
+        </div>
+
         <div className="mt-3 flex items-center justify-between rounded-2xl bg-white/15 px-4 py-3">
           <span className="text-sm font-semibold">
             {worker?.is_available ? "متاح لاستلام الطلبات" : "غير متاح"}
