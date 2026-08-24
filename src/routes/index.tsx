@@ -20,7 +20,7 @@ export const Route = createFileRoute("/")({
         content: "مطاعم، متاجر، مندوب، توصيل خاص، تكسي ومهن وخدمات — اطلب من لبابك بسهولة وسرعة.",
       },
       { property: "og:title", content: "لبابك | كل خدماتك بمكان واحد" },
-      { property: "og:description", content: "ويّانه كلشي صار لبابك." },
+      { property: "og:description", content: "خدماتك وطلباتك لبابك." },
     ],
   }),
   component: CustomerHome,

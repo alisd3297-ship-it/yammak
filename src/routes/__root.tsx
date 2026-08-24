@@ -78,12 +78,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "لبابك | ويّانه كلشي صار لبابك" },
+      { title: "لبابك | خدماتك وطلباتك لبابك" },
       {
         name: "description",
         content: "منصة لبابك العراقية: مطاعم، متاجر، مندوب، توصيل خاص، تكسي، ومهن وخدمات بمكان واحد.",
       },
-      { property: "og:title", content: "لبابك | ويّانه كلشي صار لبابك" },
+      { property: "og:title", content: "لبابك | خدماتك وطلباتك لبابك" },
       { property: "og:description", content: "كل خدماتك اليومية بمكان واحد." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
