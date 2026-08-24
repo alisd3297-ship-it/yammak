@@ -17,7 +17,7 @@
 بدون هذه المرحلة لا يمكن تفعيل أي شيء لاحقاً بأمان.
 
 ## المرحلة 1 — المال والمحفظة
-جداول: `wallets`, `wallet_transactions` (ledger append-only بعملة IQD/USD), `payouts`, `settlements`, `settlement_items`, `invoices`, `refund_requests`.
+جداول: `wallets`, `wallet_transactions` (ledger append-only، الرصيد والحركات كلها بالدينار IQD؛ USD للعرض فقط عبر سعر تحويل في الإعدادات), `payouts`, `settlements`, `settlement_items`, `invoices`, `refund_requests`.
 الميزات: 1 (Wallet)، 14 (استرجاع متكامل — بناءً على `payments` الموجود)، 15 و16 و57 (تسويات التجار والمندوبين + دوري تلقائي عبر cron الحالي)، 58 (فواتير وإيصالات)، 44 (تفصيل أرباح المندوب)، 56 (عقود وعمولات — توسيع `commission_rules`)، 60 (تعدد طرق الدفع كـ`payment_methods`).
 الواجهات: زبون `/wallet`، مندوب `/driver/earnings`، تاجر `/provider/finance`، إدارة `/admin/settlements` و`/admin/refunds`.
 كل حركة مالية تمر عبر RPC SECURITY DEFINER مع idempotency key؛ لا كتابة مباشرة من العميل.
