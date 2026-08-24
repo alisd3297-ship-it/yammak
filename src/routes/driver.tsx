@@ -78,10 +78,6 @@ function DriverDashboard() {
   });
 
   const focusedOfferRef = useRef<HTMLElement | null>(null);
-  useEffect(() => {
-    if (focusOrderId && focusedOfferRef.current)
-      focusedOfferRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [focusOrderId, offers]);
 
   const { data: offers } = useQuery({
     queryKey: ["driver-offers", account?.userId],
@@ -97,6 +93,11 @@ function DriverDashboard() {
       return data ?? [];
     },
   });
+
+  useEffect(() => {
+    if (focusOrderId && focusedOfferRef.current)
+      focusedOfferRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [focusOrderId, offers]);
 
   const { data: active } = useQuery({
     queryKey: ["driver-orders", account?.userId],
@@ -530,18 +531,8 @@ function DriverDashboard() {
                   distance_km: number;
                   notes: string | null;
                 } | null;
-                const focused = !!focusOrderId && o.order_id === focusOrderId;
                 return (
-                  <article
-                    key={o.id}
-                    id={`offer-${o.order_id}`}
-                    ref={focused ? focusedOfferRef : undefined}
-                    className={
-                      focused
-                        ? "rounded-2xl border-2 border-primary bg-primary/5 p-4 shadow-card ring-2 ring-primary/30"
-                        : "rounded-2xl border-2 border-primary/40 bg-card p-4 shadow-card"
-                    }
-                  >
+                  <article key={o.id} className="rounded-2xl border-2 border-primary/40 bg-card p-4 shadow-card">
                     <div className="flex items-center justify-between">
                       <p className="font-bold">رحلة #{tr?.code}</p>
                       <span className="text-sm font-bold text-primary">{formatIQD(Number(tr?.fare ?? 0))}</span>
