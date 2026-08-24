@@ -78,6 +78,12 @@ function PaymentsPage() {
         </Link>
         <h1 className="text-2xl font-black">عمليات الدفع</h1>
         <p className="mt-1 text-sm opacity-90">كل مدفوعاتك وحالتها ومبالغ الاسترجاع</p>
+        <Link
+          to="/wallet"
+          className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary-foreground/15 px-4 py-2 text-xs font-semibold backdrop-blur"
+        >
+          <Wallet className="size-4" /> محفظتي
+        </Link>
       </header>
 
       <div className="space-y-3 px-4 py-5">
