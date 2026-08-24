@@ -74,6 +74,34 @@ export function isStaffAccount(account: AccountContext | undefined): boolean {
   return roles.includes("super_admin") || roles.includes("admin") || roles.includes("supervisor");
 }
 
+/**
+ * حساب مندوب صِرف: يملك ملف عامل ولا يملك دوراً إدارياً ولا نشاطاً كمقدم خدمة.
+ * هذه الحسابات تستخدم لوحة المندوب فقط، بلا وظائف الطلب كزبون.
+ */
+export function isWorkerOnlyAccount(account: AccountContext | undefined): boolean {
+  if (!account?.userId) return false;
+  if (isStaffAccount(account)) return false;
+  if (account.provider || account.roles.includes("provider")) return false;
+  return !!account.worker || account.roles.includes("worker");
+}
+
+/**
+ * حارس واجهة الزبون على مستوى المكوّن: يعيد المندوب الصِرف إلى لوحته
+ * بدل إظهار وظائف الطلب له. الزوار غير المسجلين لا يتأثرون.
+ */
+export function useCustomerAreaGuard() {
+  const { data: account } = useAccount();
+  const navigate = useNavigate();
+  const blocked = isWorkerOnlyAccount(account);
+
+  useEffect(() => {
+    if (!blocked) return;
+    navigate({ to: "/driver", replace: true });
+  }, [blocked, navigate]);
+
+  return blocked;
+}
+
 /** الواجهة الافتراضية لكل دور: إدارة، مقدم خدمة، مندوب، أو زبون. */
 export function homeRouteForAccount(account: AccountContext | undefined): string {
   if (!account?.userId) return "/";
