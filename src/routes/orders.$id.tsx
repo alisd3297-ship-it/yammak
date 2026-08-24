@@ -222,16 +222,6 @@ function OrderTrackPage() {
               إلغاء الطلب
             </Button>
           )}
-          {order?.requires_admin_approval && !order.admin_approved_at && status !== "cancelled" && (
-            <p className="mt-3 rounded-xl bg-warning/15 p-3 text-sm">
-              هذا الطلب ينتظر موافقة الإدارة قبل التجهيز.
-            </p>
-          )}
-          {order?.admin_review_reason && (
-            <p className="mt-2 text-xs text-muted-foreground">
-              ملاحظة الإدارة: {order.admin_review_reason}
-            </p>
-          )}
         </section>
 
         {order?.id && Number(order.total) > 0 && (
