@@ -44,6 +44,7 @@ import { Route as AdminRefundsRouteImport } from './routes/admin.refunds'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminSectionsRouteImport } from './routes/admin.sections'
 import { Route as AdminServicesRouteImport } from './routes/admin.services'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminSettlementsRouteImport } from './routes/admin.settlements'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdsIndexRouteImport } from './routes/ads.index'
@@ -243,6 +244,11 @@ const AdminServicesRoute = AdminServicesRouteImport.update({
   path: '/admin/services',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/admin/settings',
+  path: '/admin/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminSettlementsRoute = AdminSettlementsRouteImport.update({
   id: '/admin/settlements',
   path: '/admin/settlements',
@@ -394,6 +400,7 @@ export interface FileRoutesByFullPath {
   '/admin/reports': typeof AdminReportsRoute
   '/admin/sections': typeof AdminSectionsRoute
   '/admin/services': typeof AdminServicesRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/settlements': typeof AdminSettlementsRoute
   '/admin/users': typeof AdminUsersRoute
   '/ads/$id': typeof AdsIdRoute
@@ -454,6 +461,7 @@ export interface FileRoutesByTo {
   '/admin/reports': typeof AdminReportsRoute
   '/admin/sections': typeof AdminSectionsRoute
   '/admin/services': typeof AdminServicesRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/settlements': typeof AdminSettlementsRoute
   '/admin/users': typeof AdminUsersRoute
   '/ads/$id': typeof AdsIdRoute
@@ -515,6 +523,7 @@ export interface FileRoutesById {
   '/admin/reports': typeof AdminReportsRoute
   '/admin/sections': typeof AdminSectionsRoute
   '/admin/services': typeof AdminServicesRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/settlements': typeof AdminSettlementsRoute
   '/admin/users': typeof AdminUsersRoute
   '/ads/$id': typeof AdsIdRoute
@@ -577,6 +586,7 @@ export interface FileRouteTypes {
     | '/admin/reports'
     | '/admin/sections'
     | '/admin/services'
+    | '/admin/settings'
     | '/admin/settlements'
     | '/admin/users'
     | '/ads/$id'
@@ -637,6 +647,7 @@ export interface FileRouteTypes {
     | '/admin/reports'
     | '/admin/sections'
     | '/admin/services'
+    | '/admin/settings'
     | '/admin/settlements'
     | '/admin/users'
     | '/ads/$id'
@@ -697,6 +708,7 @@ export interface FileRouteTypes {
     | '/admin/reports'
     | '/admin/sections'
     | '/admin/services'
+    | '/admin/settings'
     | '/admin/settlements'
     | '/admin/users'
     | '/ads/$id'
@@ -758,6 +770,7 @@ export interface RootRouteChildren {
   AdminReportsRoute: typeof AdminReportsRoute
   AdminSectionsRoute: typeof AdminSectionsRoute
   AdminServicesRoute: typeof AdminServicesRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSettlementsRoute: typeof AdminSettlementsRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdsIdRoute: typeof AdsIdRoute
@@ -1031,6 +1044,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/admin/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/settlements': {
       id: '/admin/settlements'
       path: '/admin/settlements'
@@ -1230,6 +1250,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminReportsRoute: AdminReportsRoute,
   AdminSectionsRoute: AdminSectionsRoute,
   AdminServicesRoute: AdminServicesRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
   AdminSettlementsRoute: AdminSettlementsRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdsIdRoute: AdsIdRoute,
