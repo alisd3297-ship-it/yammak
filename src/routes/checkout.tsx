@@ -183,30 +183,114 @@ function CheckoutPage() {
           </div>
 
           <section className="rounded-2xl bg-card p-4 shadow-soft">
-            <h2 className="mb-3 flex items-center gap-2 font-bold">
-              <MapPin className="size-4 text-primary" /> موقع التوصيل
-            </h2>
-            <Button variant="secondary" className="mb-3 h-11 w-full" onClick={useMyLocation}>
-              <LocateFixed className="size-4" /> استخدم موقعي الحالي
-            </Button>
-            {coords && (
-              <p className="mb-2 text-xs text-success">
-                تم تحديد الإحداثيات: {coords.lat.toFixed(4)}، {coords.lng.toFixed(4)}
+            <h2 className="mb-3 font-bold">طريقة الاستلام</h2>
+            <div className="grid grid-cols-3 gap-2">
+              {(
+                [
+                  { key: "delivery" as const, label: "توصيل", desc: "مندوب يوصلك", icon: Bike },
+                  { key: "takeaway" as const, label: "سفري", desc: "تستلم بنفسك", icon: ShoppingBag },
+                  {
+                    key: "dine_in" as const,
+                    label: "حجز بالصالة",
+                    desc: "تتناول بالمطعم",
+                    icon: UtensilsCrossed,
+                  },
+                ] satisfies { key: Fulfillment; label: string; desc: string; icon: typeof Bike }[]
+              )
+                .filter((opt) => opt.key !== "dine_in" || isRestaurant)
+                .map((opt) => {
+                  const active = fulfillment === opt.key;
+                  const Icon = opt.icon;
+                  return (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      onClick={() => setFulfillment(opt.key)}
+                      className={cn(
+                        "flex flex-col items-center gap-1 rounded-2xl border-2 p-3 text-center transition active:scale-95",
+                        active ? "border-primary bg-primary/10" : "border-border bg-background",
+                      )}
+                      aria-pressed={active}
+                    >
+                      <Icon className={cn("size-5", active ? "text-primary" : "text-muted-foreground")} />
+                      <span className="text-xs font-bold">{opt.label}</span>
+                      <span className="text-[10px] text-muted-foreground">{opt.desc}</span>
+                    </button>
+                  );
+                })}
+            </div>
+          </section>
+
+          {fulfillment === "delivery" ? (
+            <section className="rounded-2xl bg-card p-4 shadow-soft">
+              <h2 className="mb-3 flex items-center gap-2 font-bold">
+                <MapPin className="size-4 text-primary" /> موقع التوصيل
+              </h2>
+              <Button variant="secondary" className="mb-3 h-11 w-full" onClick={useMyLocation}>
+                <LocateFixed className="size-4" /> استخدم موقعي الحالي
+              </Button>
+              {coords && (
+                <p className="mb-2 text-xs text-success">
+                  تم تحديد الإحداثيات: {coords.lat.toFixed(4)}، {coords.lng.toFixed(4)}
+                </p>
+              )}
+              <Input
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="اكتب العنوان: المنطقة، الشارع، أقرب نقطة دالة"
+                className="h-12"
+              />
+            </section>
+          ) : (
+            <section className="rounded-2xl bg-card p-4 shadow-soft">
+              <h2 className="mb-2 flex items-center gap-2 font-bold">
+                <MapPin className="size-4 text-primary" />
+                {fulfillment === "dine_in" ? "مكان الحجز" : "مكان الاستلام"}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {providerInfo?.address_text ?? cart.providerName ?? "عنوان المحل"}
               </p>
-            )}
-            <Input
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="اكتب العنوان: المنطقة، الشارع، أقرب نقطة دالة"
-              className="h-12"
-            />
+              {fulfillment === "dine_in" && (
+                <div className="mt-3 space-y-3">
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold" htmlFor="sched">
+                      موعد الحجز
+                    </label>
+                    <Input
+                      id="sched"
+                      type="datetime-local"
+                      value={scheduledAt}
+                      onChange={(e) => setScheduledAt(e.target.value)}
+                      className="h-12"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold" htmlFor="party">
+                      عدد الأشخاص
+                    </label>
+                    <Input
+                      id="party"
+                      type="number"
+                      min={1}
+                      max={50}
+                      value={partySize}
+                      onChange={(e) => setPartySize(Math.max(1, Math.min(50, Number(e.target.value) || 1)))}
+                      className="h-12"
+                    />
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
+
+          <section className="rounded-2xl bg-card p-4 shadow-soft">
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="ملاحظات للمطعم أو المندوب"
-              className="mt-3"
             />
           </section>
+
 
           <section className="rounded-2xl bg-card p-4 text-sm shadow-soft">
             <Row label="مجموع الطلب" value={formatIQD(cart.total)} />
