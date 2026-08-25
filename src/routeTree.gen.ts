@@ -57,6 +57,7 @@ import { Route as ServiceRequestsIndexRouteImport } from './routes/service-reque
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesIdRouteImport } from './routes/services.$id'
 import { Route as ShopsIndexRouteImport } from './routes/shops.index'
+import { Route as ShopsSlugRouteImport } from './routes/shops.$slug'
 import { Route as StoresIndexRouteImport } from './routes/stores.index'
 import { Route as StoresIdRouteImport } from './routes/stores.$id'
 import { Route as ApiPublicMaintenanceRouteImport } from './routes/api/public/maintenance'
@@ -303,6 +304,11 @@ const ShopsIndexRoute = ShopsIndexRouteImport.update({
   path: '/shops/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShopsSlugRoute = ShopsSlugRouteImport.update({
+  id: '/shops/$slug',
+  path: '/shops/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StoresIndexRoute = StoresIndexRouteImport.update({
   id: '/stores/',
   path: '/stores/',
@@ -370,6 +376,7 @@ export interface FileRoutesByFullPath {
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/services/$id': typeof ServicesIdRoute
+  '/shops/$slug': typeof ShopsSlugRoute
   '/stores/$id': typeof StoresIdRoute
   '/ads/': typeof AdsIndexRoute
   '/doctors/': typeof DoctorsIndexRoute
@@ -425,6 +432,7 @@ export interface FileRoutesByTo {
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/services/$id': typeof ServicesIdRoute
+  '/shops/$slug': typeof ShopsSlugRoute
   '/stores/$id': typeof StoresIdRoute
   '/ads': typeof AdsIndexRoute
   '/doctors': typeof DoctorsIndexRoute
@@ -481,6 +489,7 @@ export interface FileRoutesById {
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/services/$id': typeof ServicesIdRoute
+  '/shops/$slug': typeof ShopsSlugRoute
   '/stores/$id': typeof StoresIdRoute
   '/ads/': typeof AdsIndexRoute
   '/doctors/': typeof DoctorsIndexRoute
@@ -538,6 +547,7 @@ export interface FileRouteTypes {
     | '/orders/$id'
     | '/restaurants/$id'
     | '/services/$id'
+    | '/shops/$slug'
     | '/stores/$id'
     | '/ads/'
     | '/doctors/'
@@ -593,6 +603,7 @@ export interface FileRouteTypes {
     | '/orders/$id'
     | '/restaurants/$id'
     | '/services/$id'
+    | '/shops/$slug'
     | '/stores/$id'
     | '/ads'
     | '/doctors'
@@ -648,6 +659,7 @@ export interface FileRouteTypes {
     | '/orders/$id'
     | '/restaurants/$id'
     | '/services/$id'
+    | '/shops/$slug'
     | '/stores/$id'
     | '/ads/'
     | '/doctors/'
@@ -704,6 +716,7 @@ export interface RootRouteChildren {
   OrdersIdRoute: typeof OrdersIdRoute
   RestaurantsIdRoute: typeof RestaurantsIdRoute
   ServicesIdRoute: typeof ServicesIdRoute
+  ShopsSlugRoute: typeof ShopsSlugRoute
   StoresIdRoute: typeof StoresIdRoute
   AdsIndexRoute: typeof AdsIndexRoute
   DoctorsIndexRoute: typeof DoctorsIndexRoute
@@ -1057,6 +1070,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shops/$slug': {
+      id: '/shops/$slug'
+      path: '/shops/$slug'
+      fullPath: '/shops/$slug'
+      preLoaderRoute: typeof ShopsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/stores/': {
       id: '/stores/'
       path: '/stores'
@@ -1136,6 +1156,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrdersIdRoute: OrdersIdRoute,
   RestaurantsIdRoute: RestaurantsIdRoute,
   ServicesIdRoute: ServicesIdRoute,
+  ShopsSlugRoute: ShopsSlugRoute,
   StoresIdRoute: StoresIdRoute,
   AdsIndexRoute: AdsIndexRoute,
   DoctorsIndexRoute: DoctorsIndexRoute,

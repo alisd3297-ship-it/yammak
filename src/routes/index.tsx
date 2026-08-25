@@ -52,13 +52,22 @@ type MainService = {
   label: string;
   hint: string;
   icon: Icons.LucideIcon;
-  to: "/restaurants" | "/stores" | "/services" | "/courier" | "/taxi" | "/doctors" | "/pharmacies";
+  to:
+    | "/restaurants"
+    | "/stores"
+    | "/shops"
+    | "/services"
+    | "/courier"
+    | "/taxi"
+    | "/doctors"
+    | "/pharmacies";
 };
 
 /** لوحة الخدمات الأساسية للزبون — كل بلاطة تفتح صفحتها المخصصة. */
 const MAIN_SERVICES: MainService[] = [
   { label: "مطاعم", hint: "أكل وحلويات", icon: Icons.UtensilsCrossed, to: "/restaurants" },
   { label: "سوبر ماركت", hint: "تسوّق يومي", icon: Icons.ShoppingCart, to: "/stores" },
+  { label: "محلات", hint: "تخصصات ومحلات", icon: Icons.Store, to: "/shops" },
   { label: "مهن وخدمات", hint: "فنيين ومهنيين", icon: Icons.Wrench, to: "/services" },
   { label: "توصيل", hint: "إرسال واستلام", icon: Icons.Bike, to: "/courier" },
   { label: "تكسي", hint: "نقل ركاب", icon: Icons.Car, to: "/taxi" },

@@ -41,8 +41,8 @@ export const Route = createFileRoute("/provider")({
 
 const NEXT_STEP: Partial<Record<OrderStatus, { next: OrderStatus; label: string }>> = {
   awaiting_provider: { next: "accepted", label: "قبول الطلب" },
-  accepted: { next: "preparing", label: "بدء التجهيز" },
-  preparing: { next: "ready_for_pickup", label: "جاهز للاستلام" },
+  accepted: { next: "ready_for_pickup", label: "الطلب جاهز" },
+  preparing: { next: "ready_for_pickup", label: "الطلب جاهز" },
 };
 
 function ProviderDashboard() {
