@@ -29,23 +29,36 @@ function DriverTasksPage() {
   const { data: tasks } = useDriverTasks();
   const actions = useDriverActions();
 
+  const online = !!worker?.is_available;
+
   return (
-    <DriverShell title="الطلبات">
+    <DriverShell
+      title="الطلبات"
+      online={online}
+      canToggle={!!worker?.is_approved}
+      onToggle={(v) => void actions.toggleAvailable(v)}
+    >
       <div className="space-y-5 px-4 py-5">
         <BackButton fallback="/driver" label="اللوحة" />
 
         <section>
           <h2 className="mb-3 text-base font-black">طلبات جديدة ({offers?.length ?? 0})</h2>
           <div className="space-y-3">
-            {(offers ?? []).map((o) => (
-              <OfferCard
-                key={o.id}
-                offer={o}
-                onAccept={() => void actions.answerOffer(o.id, true)}
-                onReject={() => void actions.answerOffer(o.id, false)}
-              />
-            ))}
-            {!offers?.length && (
+            {online &&
+              (offers ?? []).map((o) => (
+                <OfferCard
+                  key={o.id}
+                  offer={o}
+                  onAccept={() => void actions.answerOffer(o.id, true)}
+                  onReject={() => void actions.answerOffer(o.id, false)}
+                />
+              ))}
+            {!online && (
+              <p className="rounded-2xl bg-muted p-5 text-center text-sm text-muted-foreground">
+                حالتك «غير متصل» — شغّل زر الاتصال فوق حتى تظهر الطلبات القريبة.
+              </p>
+            )}
+            {online && !offers?.length && (
               <p className="rounded-2xl bg-muted p-5 text-center text-sm text-muted-foreground">
                 ماكو طلبات جديدة الآن.
               </p>
