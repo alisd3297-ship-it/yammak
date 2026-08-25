@@ -42,6 +42,7 @@ import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdsIndexRouteImport } from './routes/ads.index'
 import { Route as AdsIdRouteImport } from './routes/ads.$id'
 import { Route as AdsNewRouteImport } from './routes/ads.new'
+import { Route as DoctorsIndexRouteImport } from './routes/doctors.index'
 import { Route as JoinDriverRouteImport } from './routes/join.driver'
 import { Route as JoinProviderRouteImport } from './routes/join.provider'
 import { Route as OrdersIndexRouteImport } from './routes/orders.index'
@@ -223,6 +224,11 @@ const AdsNewRoute = AdsNewRouteImport.update({
   path: '/ads/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DoctorsIndexRoute = DoctorsIndexRouteImport.update({
+  id: '/doctors/',
+  path: '/doctors/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const JoinDriverRoute = JoinDriverRouteImport.update({
   id: '/join/driver',
   path: '/join/driver',
@@ -339,6 +345,7 @@ export interface FileRoutesByFullPath {
   '/services/$id': typeof ServicesIdRoute
   '/stores/$id': typeof StoresIdRoute
   '/ads/': typeof AdsIndexRoute
+  '/doctors/': typeof DoctorsIndexRoute
   '/orders/': typeof OrdersIndexRoute
   '/pharmacies/': typeof PharmaciesIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
@@ -389,6 +396,7 @@ export interface FileRoutesByTo {
   '/services/$id': typeof ServicesIdRoute
   '/stores/$id': typeof StoresIdRoute
   '/ads': typeof AdsIndexRoute
+  '/doctors': typeof DoctorsIndexRoute
   '/orders': typeof OrdersIndexRoute
   '/pharmacies': typeof PharmaciesIndexRoute
   '/restaurants': typeof RestaurantsIndexRoute
@@ -440,6 +448,7 @@ export interface FileRoutesById {
   '/services/$id': typeof ServicesIdRoute
   '/stores/$id': typeof StoresIdRoute
   '/ads/': typeof AdsIndexRoute
+  '/doctors/': typeof DoctorsIndexRoute
   '/orders/': typeof OrdersIndexRoute
   '/pharmacies/': typeof PharmaciesIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
@@ -492,6 +501,7 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/stores/$id'
     | '/ads/'
+    | '/doctors/'
     | '/orders/'
     | '/pharmacies/'
     | '/restaurants/'
@@ -542,6 +552,7 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/stores/$id'
     | '/ads'
+    | '/doctors'
     | '/orders'
     | '/pharmacies'
     | '/restaurants'
@@ -592,6 +603,7 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/stores/$id'
     | '/ads/'
+    | '/doctors/'
     | '/orders/'
     | '/pharmacies/'
     | '/restaurants/'
@@ -643,6 +655,7 @@ export interface RootRouteChildren {
   ServicesIdRoute: typeof ServicesIdRoute
   StoresIdRoute: typeof StoresIdRoute
   AdsIndexRoute: typeof AdsIndexRoute
+  DoctorsIndexRoute: typeof DoctorsIndexRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
   PharmaciesIndexRoute: typeof PharmaciesIndexRoute
   RestaurantsIndexRoute: typeof RestaurantsIndexRoute
@@ -887,6 +900,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/doctors/': {
+      id: '/doctors/'
+      path: '/doctors'
+      fullPath: '/doctors/'
+      preLoaderRoute: typeof DoctorsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/join/driver': {
       id: '/join/driver'
       path: '/join/driver'
@@ -1035,6 +1055,7 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesIdRoute: ServicesIdRoute,
   StoresIdRoute: StoresIdRoute,
   AdsIndexRoute: AdsIndexRoute,
+  DoctorsIndexRoute: DoctorsIndexRoute,
   OrdersIndexRoute: OrdersIndexRoute,
   PharmaciesIndexRoute: PharmaciesIndexRoute,
   RestaurantsIndexRoute: RestaurantsIndexRoute,

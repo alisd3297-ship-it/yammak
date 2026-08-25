@@ -52,19 +52,20 @@ type MainService = {
   label: string;
   hint: string;
   icon: Icons.LucideIcon;
-  to: "/restaurants" | "/stores" | "/services" | "/courier" | "/taxi";
+  to: "/restaurants" | "/stores" | "/services" | "/courier" | "/taxi" | "/doctors" | "/pharmacies";
 };
 
-/** لوحة الخدمات الأساسية للزبون. */
+/** لوحة الخدمات الأساسية للزبون — كل بلاطة تفتح صفحتها المخصصة. */
 const MAIN_SERVICES: MainService[] = [
   { label: "مطاعم", hint: "أكل وحلويات", icon: Icons.UtensilsCrossed, to: "/restaurants" },
   { label: "سوبر ماركت", hint: "تسوّق يومي", icon: Icons.ShoppingCart, to: "/stores" },
   { label: "مهن وخدمات", hint: "فنيين ومهنيين", icon: Icons.Wrench, to: "/services" },
   { label: "توصيل", hint: "إرسال واستلام", icon: Icons.Bike, to: "/courier" },
   { label: "تكسي", hint: "نقل ركاب", icon: Icons.Car, to: "/taxi" },
-  { label: "طبيب", hint: "استشارات طبية", icon: Icons.Stethoscope, to: "/services" },
-  { label: "صيدلية", hint: "أدوية ومستلزمات", icon: Icons.Pill, to: "/services" },
+  { label: "طبيب", hint: "استشارات طبية", icon: Icons.Stethoscope, to: "/doctors" },
+  { label: "صيدلية", hint: "أدوية ومستلزمات", icon: Icons.Pill, to: "/pharmacies" },
 ];
+
 
 function MainTile({ item }: { item: MainService }) {
   const Icon = item.icon;
