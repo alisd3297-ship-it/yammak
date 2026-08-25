@@ -31,6 +31,7 @@ export const Route = createFileRoute("/driver-earnings")({
 });
 
 const RANGES = [
+  { days: 1, label: "اليوم" },
   { days: 7, label: "٧ أيام" },
   { days: 30, label: "٣٠ يوم" },
   { days: 90, label: "٩٠ يوم" },

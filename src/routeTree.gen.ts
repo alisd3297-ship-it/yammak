@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CourierRouteImport } from './routes/courier'
 import { Route as DriverRouteImport } from './routes/driver'
+import { Route as DriverAccountRouteImport } from './routes/driver-account'
 import { Route as DriverEarningsRouteImport } from './routes/driver-earnings'
 import { Route as DriverTasksRouteImport } from './routes/driver-tasks'
 import { Route as NotificationsRouteImport } from './routes/notifications'
@@ -83,6 +84,11 @@ const CourierRoute = CourierRouteImport.update({
 const DriverRoute = DriverRouteImport.update({
   id: '/driver',
   path: '/driver',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DriverAccountRoute = DriverAccountRouteImport.update({
+  id: '/driver-account',
+  path: '/driver-account',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DriverEarningsRoute = DriverEarningsRouteImport.update({
@@ -317,6 +323,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
   '/driver': typeof DriverRoute
+  '/driver-account': typeof DriverAccountRoute
   '/driver-earnings': typeof DriverEarningsRoute
   '/driver-tasks': typeof DriverTasksRoute
   '/notifications': typeof NotificationsRoute
@@ -369,6 +376,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
   '/driver': typeof DriverRoute
+  '/driver-account': typeof DriverAccountRoute
   '/driver-earnings': typeof DriverEarningsRoute
   '/driver-tasks': typeof DriverTasksRoute
   '/notifications': typeof NotificationsRoute
@@ -422,6 +430,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
   '/driver': typeof DriverRoute
+  '/driver-account': typeof DriverAccountRoute
   '/driver-earnings': typeof DriverEarningsRoute
   '/driver-tasks': typeof DriverTasksRoute
   '/notifications': typeof NotificationsRoute
@@ -476,6 +485,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/courier'
     | '/driver'
+    | '/driver-account'
     | '/driver-earnings'
     | '/driver-tasks'
     | '/notifications'
@@ -528,6 +538,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/courier'
     | '/driver'
+    | '/driver-account'
     | '/driver-earnings'
     | '/driver-tasks'
     | '/notifications'
@@ -580,6 +591,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/courier'
     | '/driver'
+    | '/driver-account'
     | '/driver-earnings'
     | '/driver-tasks'
     | '/notifications'
@@ -633,6 +645,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   CourierRoute: typeof CourierRoute
   DriverRoute: typeof DriverRoute
+  DriverAccountRoute: typeof DriverAccountRoute
   DriverEarningsRoute: typeof DriverEarningsRoute
   DriverTasksRoute: typeof DriverTasksRoute
   NotificationsRoute: typeof NotificationsRoute
@@ -715,6 +728,13 @@ declare module '@tanstack/react-router' {
       path: '/driver'
       fullPath: '/driver'
       preLoaderRoute: typeof DriverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/driver-account': {
+      id: '/driver-account'
+      path: '/driver-account'
+      fullPath: '/driver-account'
+      preLoaderRoute: typeof DriverAccountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/driver-earnings': {
@@ -1041,6 +1061,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   CourierRoute: CourierRoute,
   DriverRoute: DriverRoute,
+  DriverAccountRoute: DriverAccountRoute,
   DriverEarningsRoute: DriverEarningsRoute,
   DriverTasksRoute: DriverTasksRoute,
   NotificationsRoute: NotificationsRoute,
