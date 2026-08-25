@@ -40,17 +40,35 @@ function CheckoutPage() {
   const [notes, setNotes] = useState("");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [saving, setSaving] = useState(false);
+  const [fulfillment, setFulfillment] = useState<Fulfillment>("delivery");
+  const [partySize, setPartySize] = useState(2);
+  const [scheduledAt, setScheduledAt] = useState("");
+
+  const { data: providerInfo } = useQuery({
+    queryKey: ["checkout-provider", cart.providerId],
+    enabled: !!cart.providerId,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("providers")
+        .select("id, name, kind, address_text, phone")
+        .eq("id", cart.providerId!)
+        .maybeSingle();
+      return data;
+    },
+  });
+  const isRestaurant = providerInfo?.kind === "restaurant";
 
   // أجرة التوصيل تُحسب من قواعد التسعير في الخادم، لا من الواجهة
   const { data: feeQuote } = useQuery({
     queryKey: ["delivery-quote", cart.providerId, coords?.lat, coords?.lng],
-    enabled: !!cart.providerId && !!account?.userId && !!cart.items.length,
+    enabled:
+      fulfillment === "delivery" && !!cart.providerId && !!account?.userId && !!cart.items.length,
     queryFn: () =>
       quote({
         data: { providerId: cart.providerId!, lat: coords?.lat ?? null, lng: coords?.lng ?? null },
       }),
   });
-  const deliveryFee = feeQuote?.fee ?? null;
+  const deliveryFee = fulfillment === "delivery" ? feeQuote?.fee ?? null : 0;
 
   function useMyLocation() {
     if (!navigator.geolocation) {
