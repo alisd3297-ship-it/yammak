@@ -75,13 +75,17 @@ export function useWorkerProfile() {
   });
 }
 
+/** العروض القريبة تظهر فقط عندما يكون المندوب «متصل». */
 export function useDriverOffers() {
   const { data: account } = useAccount();
+  const { data: worker } = useWorkerProfile();
+  const online = !!worker?.is_available && !!worker?.is_approved;
   return useQuery({
-    queryKey: ["driver-offers", account?.userId],
+    queryKey: ["driver-offers", account?.userId, online],
     enabled: !!account?.userId,
-    refetchInterval: 8_000,
+    refetchInterval: online ? 8_000 : false,
     queryFn: async () => {
+      if (!online) return [] as DriverOffer[];
       const { data } = await supabase
         .from("delivery_offers")
         .select(
@@ -170,12 +174,30 @@ export function useDriverActions() {
   };
 
   return {
+    /** تبديل «متصل/غير متصل» بتحديث فوري للواجهة وتراجع تلقائي عند الفشل. */
     async toggleAvailable(value: boolean) {
       if (!account?.userId) return;
-      await supabase.from("worker_profiles").update({ is_available: value }).eq("user_id", account.userId);
-      if (!value)
+      const key = ["worker-profile", account.userId] as const;
+      const previous = qc.getQueryData(key);
+      qc.setQueryData(key, (old: unknown) =>
+        old && typeof old === "object" ? { ...(old as object), is_available: value } : old,
+      );
+      const { error } = await supabase
+        .from("worker_profiles")
+        .update({ is_available: value })
+        .eq("user_id", account.userId);
+      if (error) {
+        qc.setQueryData(key, previous);
+        toast.error("تعذر تحديث حالة الاتصال، حاول مرة ثانية");
+        return;
+      }
+      if (!value) {
         await supabase.from("worker_locations").update({ is_online: false }).eq("user_id", account.userId);
+        qc.setQueryData(["driver-offers", account.userId, true], []);
+      }
+      toast.success(value ? "صرت متصل، راح توصلك الطلبات القريبة" : "صرت غير متصل، توقفت الطلبات القريبة");
       qc.invalidateQueries({ queryKey: ["worker-profile"] });
+      qc.invalidateQueries({ queryKey: ["driver-offers"] });
     },
     async answerOffer(offerId: string, accept: boolean) {
       try {
