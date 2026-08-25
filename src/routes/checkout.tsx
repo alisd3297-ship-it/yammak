@@ -3,14 +3,16 @@ import { requireCustomerFlow } from "@/lib/route-guards";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Minus, Plus, MapPin, LocateFixed } from "lucide-react";
+import { Minus, Plus, MapPin, LocateFixed, Bike, ShoppingBag, UtensilsCrossed } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { BackButton, BottomNav, PageShell  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import { useCart } from "@/lib/cart";
-import { formatIQD } from "@/lib/orders";
+import { formatIQD, type Fulfillment } from "@/lib/orders";
 import { createOrder, quoteDeliveryFee } from "@/lib/orders.functions";
 import { useCustomerAreaGuard, useAccount  } from "@/lib/auth";
 
