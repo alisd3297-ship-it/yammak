@@ -56,6 +56,7 @@ import { Route as RestaurantsIdRouteImport } from './routes/restaurants.$id'
 import { Route as ServiceRequestsIndexRouteImport } from './routes/service-requests.index'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesIdRouteImport } from './routes/services.$id'
+import { Route as ShopsIndexRouteImport } from './routes/shops.index'
 import { Route as StoresIndexRouteImport } from './routes/stores.index'
 import { Route as StoresIdRouteImport } from './routes/stores.$id'
 import { Route as ApiPublicMaintenanceRouteImport } from './routes/api/public/maintenance'
@@ -297,6 +298,11 @@ const ServicesIdRoute = ServicesIdRouteImport.update({
   path: '/services/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShopsIndexRoute = ShopsIndexRouteImport.update({
+  id: '/shops/',
+  path: '/shops/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StoresIndexRoute = StoresIndexRouteImport.update({
   id: '/stores/',
   path: '/stores/',
@@ -372,6 +378,7 @@ export interface FileRoutesByFullPath {
   '/restaurants/': typeof RestaurantsIndexRoute
   '/service-requests/': typeof ServiceRequestsIndexRoute
   '/services/': typeof ServicesIndexRoute
+  '/shops/': typeof ShopsIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
   '/api/public/ad-image/$': typeof ApiPublicAdImageSplatRoute
@@ -426,6 +433,7 @@ export interface FileRoutesByTo {
   '/restaurants': typeof RestaurantsIndexRoute
   '/service-requests': typeof ServiceRequestsIndexRoute
   '/services': typeof ServicesIndexRoute
+  '/shops': typeof ShopsIndexRoute
   '/stores': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
   '/api/public/ad-image/$': typeof ApiPublicAdImageSplatRoute
@@ -481,6 +489,7 @@ export interface FileRoutesById {
   '/restaurants/': typeof RestaurantsIndexRoute
   '/service-requests/': typeof ServiceRequestsIndexRoute
   '/services/': typeof ServicesIndexRoute
+  '/shops/': typeof ShopsIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
   '/api/public/ad-image/$': typeof ApiPublicAdImageSplatRoute
@@ -537,6 +546,7 @@ export interface FileRouteTypes {
     | '/restaurants/'
     | '/service-requests/'
     | '/services/'
+    | '/shops/'
     | '/stores/'
     | '/api/public/maintenance'
     | '/api/public/ad-image/$'
@@ -591,6 +601,7 @@ export interface FileRouteTypes {
     | '/restaurants'
     | '/service-requests'
     | '/services'
+    | '/shops'
     | '/stores'
     | '/api/public/maintenance'
     | '/api/public/ad-image/$'
@@ -645,6 +656,7 @@ export interface FileRouteTypes {
     | '/restaurants/'
     | '/service-requests/'
     | '/services/'
+    | '/shops/'
     | '/stores/'
     | '/api/public/maintenance'
     | '/api/public/ad-image/$'
@@ -700,6 +712,7 @@ export interface RootRouteChildren {
   RestaurantsIndexRoute: typeof RestaurantsIndexRoute
   ServiceRequestsIndexRoute: typeof ServiceRequestsIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
+  ShopsIndexRoute: typeof ShopsIndexRoute
   StoresIndexRoute: typeof StoresIndexRoute
   ApiPublicMaintenanceRoute: typeof ApiPublicMaintenanceRoute
   ApiPublicAdImageSplatRoute: typeof ApiPublicAdImageSplatRoute
@@ -1037,6 +1050,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shops/': {
+      id: '/shops/'
+      path: '/shops'
+      fullPath: '/shops/'
+      preLoaderRoute: typeof ShopsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/stores/': {
       id: '/stores/'
       path: '/stores'
@@ -1124,6 +1144,7 @@ const rootRouteChildren: RootRouteChildren = {
   RestaurantsIndexRoute: RestaurantsIndexRoute,
   ServiceRequestsIndexRoute: ServiceRequestsIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
+  ShopsIndexRoute: ShopsIndexRoute,
   StoresIndexRoute: StoresIndexRoute,
   ApiPublicMaintenanceRoute: ApiPublicMaintenanceRoute,
   ApiPublicAdImageSplatRoute: ApiPublicAdImageSplatRoute,
