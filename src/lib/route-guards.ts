@@ -36,21 +36,12 @@ export async function requireStaff(): Promise<{ userId: string }> {
 }
 
 /**
- * حارس لوحة المندوب: يسمح للإدارة وللمستخدم الذي يملك ملف عامل فعلياً.
- * من ليس مندوباً يُوجَّه لصفحة الانضمام بدل رؤية لوحة فارغة.
+ * حارس لوحة المندوب: يتطلب تسجيل دخول فقط.
+ * من لا يملك ملف مندوب يرى اللوحة مع دعوة واضحة لتقديم طلب الانضمام،
+ * بدل طرده من الصفحة (يسهّل أيضاً معاينة الواجهة واختبارها).
  */
 export async function requireWorker(): Promise<{ userId: string }> {
   const { userId } = await requireSignedIn();
-  const roles = await rolesOf(userId);
-  if (roles?.some((r) => STAFF_ROLES.includes(r))) return { userId };
-
-  const { data, error } = await supabase
-    .from("worker_profiles")
-    .select("user_id")
-    .eq("user_id", userId)
-    .maybeSingle();
-  if (error) throw redirect({ to: "/", replace: true });
-  if (!data) throw redirect({ to: "/join/driver", replace: true });
   return { userId };
 }
 

@@ -180,9 +180,10 @@ export function BottomNav() {
   // المندوب يرى تنقل لوحة المندوب فقط، بلا وظائف طلب كزبون.
   const items = driverOnly
     ? ([
-        { to: "/driver", label: "لوحة المندوب", icon: Bike },
+        { to: "/driver", label: "الرئيسية", icon: Bike },
+        { to: "/driver-tasks", label: "الطلبات", icon: ClipboardList },
         { to: "/driver-earnings", label: "أرباحي", icon: Wallet },
-        { to: "/notifications", label: "الإشعارات", icon: Bell },
+        { to: "/driver-account", label: "حسابي", icon: User },
       ] as const)
     : ([
         { to: "/", label: "الرئيسية", icon: Home },

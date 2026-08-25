@@ -10,6 +10,7 @@ import { getDriverEarnings, listMySettlements } from "@/lib/finance.functions";
 import { formatIQD } from "@/lib/payments";
 import { SETTLEMENT_STATUS_LABELS, endOfToday, settlementTone, startOfDaysAgo } from "@/lib/finance";
 import { cn } from "@/lib/utils";
+import { driverSummary, useDriverHistory } from "@/lib/driver-data";
 
 export const Route = createFileRoute("/driver-earnings")({
   ssr: false,
@@ -31,6 +32,7 @@ export const Route = createFileRoute("/driver-earnings")({
 });
 
 const RANGES = [
+  { days: 1, label: "اليوم" },
   { days: 7, label: "٧ أيام" },
   { days: 30, label: "٣٠ يوم" },
   { days: 90, label: "٩٠ يوم" },
@@ -48,6 +50,9 @@ function DriverEarningsPage() {
     queryKey: ["driver-earnings", days],
     queryFn: () => fetchEarnings({ data: range }),
   });
+
+  const { data: history } = useDriverHistory();
+  const summary = driverSummary(history);
 
   const { data: settlements } = useQuery({
     queryKey: ["driver-settlements", account?.userId],
@@ -79,6 +84,12 @@ function DriverEarningsPage() {
       </header>
 
       <div className="space-y-5 px-4 py-5">
+        <div className="grid grid-cols-3 gap-2">
+          <Stat label="أرباح اليوم" value={formatIQD(summary.todayEarnings)} />
+          <Stat label="توصيلات اليوم" value={String(summary.todayCount)} />
+          <Stat label="أرباح الأسبوع" value={formatIQD(summary.weekEarnings)} />
+        </div>
+
         {isLoading && <p className="text-sm text-muted-foreground">جاري التحميل…</p>}
 
         {data && (
@@ -119,6 +130,30 @@ function DriverEarningsPage() {
             )}
           </>
         )}
+
+        <section>
+          <h2 className="mb-2 text-sm font-black">سجل المهام المكتملة</h2>
+          {!history?.length && (
+            <p className="rounded-2xl bg-card p-6 text-center text-sm text-muted-foreground shadow-soft">
+              ماكو مهام مكتملة هذا الأسبوع.
+            </p>
+          )}
+          <div className="space-y-2">
+            {history?.map((h) => (
+              <article key={h.id} className="flex items-center justify-between rounded-2xl bg-card p-4 shadow-soft">
+                <div>
+                  <p className="text-sm font-bold">طلب #{h.code}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    {new Date(h.completed_at ?? h.updated_at).toLocaleString("ar-IQ-u-nu-latn")}
+                  </p>
+                </div>
+                <span className="text-sm font-black text-primary">
+                  {formatIQD(Number(h.delivery_fee ?? 0))}
+                </span>
+              </article>
+            ))}
+          </div>
+        </section>
 
         <section>
           <h2 className="mb-2 text-sm font-black">تسوياتي</h2>
