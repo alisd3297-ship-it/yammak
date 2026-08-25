@@ -139,18 +139,24 @@ function DriverDashboard() {
             </Link>
           </div>
           <div className="space-y-3">
-            {(offers ?? []).slice(0, 3).map((o) => (
-              <OfferCard
-                key={o.id}
-                offer={o}
-                {...(focusOrderId && o.order_id === focusOrderId
-                  ? { focused: true, ref: focusedOfferRef }
-                  : {})}
-                onAccept={() => void actions.answerOffer(o.id, true)}
-                onReject={() => void actions.answerOffer(o.id, false)}
-              />
-            ))}
-            {!offers?.length && (
+            {isOnline &&
+              (offers ?? []).slice(0, 3).map((o) => (
+                <OfferCard
+                  key={o.id}
+                  offer={o}
+                  {...(focusOrderId && o.order_id === focusOrderId
+                    ? { focused: true, ref: focusedOfferRef }
+                    : {})}
+                  onAccept={() => void actions.answerOffer(o.id, true)}
+                  onReject={() => void actions.answerOffer(o.id, false)}
+                />
+              ))}
+            {!isOnline && (
+              <p className="rounded-2xl bg-muted p-5 text-center text-sm text-muted-foreground">
+                حالتك «غير متصل» — اضغط زر الاتصال فوق حتى توصلك الطلبات القريبة.
+              </p>
+            )}
+            {isOnline && !offers?.length && (
               <p className="rounded-2xl bg-muted p-5 text-center text-sm text-muted-foreground">
                 ماكو طلبات جديدة الآن.
               </p>
