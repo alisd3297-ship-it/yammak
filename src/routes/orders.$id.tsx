@@ -11,11 +11,14 @@ import { Button } from "@/components/ui/button";
 import { changeOrderStatus } from "@/lib/orders.functions";
 import {
   COURIER_STATUS_FLOW,
-  CUSTOMER_STATUS_FLOW,
   ORDER_STATUS_LABELS,
   formatIQD,
   statusTone,
   isCourierType,
+  asFulfillment,
+  customerFlowFor,
+  statusLabelFor,
+  FULFILLMENT_LABELS,
   type OrderStatus,
 } from "@/lib/orders";
 import { vehicleLabel } from "@/lib/vehicles";
