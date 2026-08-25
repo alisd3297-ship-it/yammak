@@ -56,6 +56,8 @@ import { Route as RestaurantsIdRouteImport } from './routes/restaurants.$id'
 import { Route as ServiceRequestsIndexRouteImport } from './routes/service-requests.index'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesIdRouteImport } from './routes/services.$id'
+import { Route as ShopsIndexRouteImport } from './routes/shops.index'
+import { Route as ShopsSlugRouteImport } from './routes/shops.$slug'
 import { Route as StoresIndexRouteImport } from './routes/stores.index'
 import { Route as StoresIdRouteImport } from './routes/stores.$id'
 import { Route as ApiPublicMaintenanceRouteImport } from './routes/api/public/maintenance'
@@ -297,6 +299,16 @@ const ServicesIdRoute = ServicesIdRouteImport.update({
   path: '/services/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShopsIndexRoute = ShopsIndexRouteImport.update({
+  id: '/shops/',
+  path: '/shops/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShopsSlugRoute = ShopsSlugRouteImport.update({
+  id: '/shops/$slug',
+  path: '/shops/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StoresIndexRoute = StoresIndexRouteImport.update({
   id: '/stores/',
   path: '/stores/',
@@ -364,6 +376,7 @@ export interface FileRoutesByFullPath {
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/services/$id': typeof ServicesIdRoute
+  '/shops/$slug': typeof ShopsSlugRoute
   '/stores/$id': typeof StoresIdRoute
   '/ads/': typeof AdsIndexRoute
   '/doctors/': typeof DoctorsIndexRoute
@@ -372,6 +385,7 @@ export interface FileRoutesByFullPath {
   '/restaurants/': typeof RestaurantsIndexRoute
   '/service-requests/': typeof ServiceRequestsIndexRoute
   '/services/': typeof ServicesIndexRoute
+  '/shops/': typeof ShopsIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
   '/api/public/ad-image/$': typeof ApiPublicAdImageSplatRoute
@@ -418,6 +432,7 @@ export interface FileRoutesByTo {
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/services/$id': typeof ServicesIdRoute
+  '/shops/$slug': typeof ShopsSlugRoute
   '/stores/$id': typeof StoresIdRoute
   '/ads': typeof AdsIndexRoute
   '/doctors': typeof DoctorsIndexRoute
@@ -426,6 +441,7 @@ export interface FileRoutesByTo {
   '/restaurants': typeof RestaurantsIndexRoute
   '/service-requests': typeof ServiceRequestsIndexRoute
   '/services': typeof ServicesIndexRoute
+  '/shops': typeof ShopsIndexRoute
   '/stores': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
   '/api/public/ad-image/$': typeof ApiPublicAdImageSplatRoute
@@ -473,6 +489,7 @@ export interface FileRoutesById {
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/services/$id': typeof ServicesIdRoute
+  '/shops/$slug': typeof ShopsSlugRoute
   '/stores/$id': typeof StoresIdRoute
   '/ads/': typeof AdsIndexRoute
   '/doctors/': typeof DoctorsIndexRoute
@@ -481,6 +498,7 @@ export interface FileRoutesById {
   '/restaurants/': typeof RestaurantsIndexRoute
   '/service-requests/': typeof ServiceRequestsIndexRoute
   '/services/': typeof ServicesIndexRoute
+  '/shops/': typeof ShopsIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
   '/api/public/ad-image/$': typeof ApiPublicAdImageSplatRoute
@@ -529,6 +547,7 @@ export interface FileRouteTypes {
     | '/orders/$id'
     | '/restaurants/$id'
     | '/services/$id'
+    | '/shops/$slug'
     | '/stores/$id'
     | '/ads/'
     | '/doctors/'
@@ -537,6 +556,7 @@ export interface FileRouteTypes {
     | '/restaurants/'
     | '/service-requests/'
     | '/services/'
+    | '/shops/'
     | '/stores/'
     | '/api/public/maintenance'
     | '/api/public/ad-image/$'
@@ -583,6 +603,7 @@ export interface FileRouteTypes {
     | '/orders/$id'
     | '/restaurants/$id'
     | '/services/$id'
+    | '/shops/$slug'
     | '/stores/$id'
     | '/ads'
     | '/doctors'
@@ -591,6 +612,7 @@ export interface FileRouteTypes {
     | '/restaurants'
     | '/service-requests'
     | '/services'
+    | '/shops'
     | '/stores'
     | '/api/public/maintenance'
     | '/api/public/ad-image/$'
@@ -637,6 +659,7 @@ export interface FileRouteTypes {
     | '/orders/$id'
     | '/restaurants/$id'
     | '/services/$id'
+    | '/shops/$slug'
     | '/stores/$id'
     | '/ads/'
     | '/doctors/'
@@ -645,6 +668,7 @@ export interface FileRouteTypes {
     | '/restaurants/'
     | '/service-requests/'
     | '/services/'
+    | '/shops/'
     | '/stores/'
     | '/api/public/maintenance'
     | '/api/public/ad-image/$'
@@ -692,6 +716,7 @@ export interface RootRouteChildren {
   OrdersIdRoute: typeof OrdersIdRoute
   RestaurantsIdRoute: typeof RestaurantsIdRoute
   ServicesIdRoute: typeof ServicesIdRoute
+  ShopsSlugRoute: typeof ShopsSlugRoute
   StoresIdRoute: typeof StoresIdRoute
   AdsIndexRoute: typeof AdsIndexRoute
   DoctorsIndexRoute: typeof DoctorsIndexRoute
@@ -700,6 +725,7 @@ export interface RootRouteChildren {
   RestaurantsIndexRoute: typeof RestaurantsIndexRoute
   ServiceRequestsIndexRoute: typeof ServiceRequestsIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
+  ShopsIndexRoute: typeof ShopsIndexRoute
   StoresIndexRoute: typeof StoresIndexRoute
   ApiPublicMaintenanceRoute: typeof ApiPublicMaintenanceRoute
   ApiPublicAdImageSplatRoute: typeof ApiPublicAdImageSplatRoute
@@ -1037,6 +1063,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shops/': {
+      id: '/shops/'
+      path: '/shops'
+      fullPath: '/shops/'
+      preLoaderRoute: typeof ShopsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shops/$slug': {
+      id: '/shops/$slug'
+      path: '/shops/$slug'
+      fullPath: '/shops/$slug'
+      preLoaderRoute: typeof ShopsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/stores/': {
       id: '/stores/'
       path: '/stores'
@@ -1116,6 +1156,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrdersIdRoute: OrdersIdRoute,
   RestaurantsIdRoute: RestaurantsIdRoute,
   ServicesIdRoute: ServicesIdRoute,
+  ShopsSlugRoute: ShopsSlugRoute,
   StoresIdRoute: StoresIdRoute,
   AdsIndexRoute: AdsIndexRoute,
   DoctorsIndexRoute: DoctorsIndexRoute,
@@ -1124,6 +1165,7 @@ const rootRouteChildren: RootRouteChildren = {
   RestaurantsIndexRoute: RestaurantsIndexRoute,
   ServiceRequestsIndexRoute: ServiceRequestsIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
+  ShopsIndexRoute: ShopsIndexRoute,
   StoresIndexRoute: StoresIndexRoute,
   ApiPublicMaintenanceRoute: ApiPublicMaintenanceRoute,
   ApiPublicAdImageSplatRoute: ApiPublicAdImageSplatRoute,

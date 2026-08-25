@@ -18,7 +18,7 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   new: "طلب جديد",
   awaiting_provider: "بانتظار قبول مقدم الخدمة",
   accepted: "تم القبول",
-  preparing: "قيد التجهيز",
+  preparing: "تم القبول",
   ready_for_pickup: "جاهز للاستلام",
   searching_driver: "جاري البحث عن مندوب",
   offered_to_driver: "تم إرسال الطلب للمندوب",
@@ -74,7 +74,6 @@ export function distanceKm(
 export const CUSTOMER_STATUS_FLOW: OrderStatus[] = [
   "awaiting_provider",
   "accepted",
-  "preparing",
   "ready_for_pickup",
   "searching_driver",
   "driver_accepted",
@@ -123,7 +122,7 @@ export function asFulfillment(v: string | null | undefined): Fulfillment {
 /** مسار الحالات كما يراه الزبون حسب طريقة الاستلام. */
 export function customerFlowFor(fulfillment: Fulfillment): OrderStatus[] {
   if (fulfillment === "delivery") return CUSTOMER_STATUS_FLOW;
-  return ["awaiting_provider", "accepted", "preparing", "ready_for_pickup", "completed"];
+  return ["awaiting_provider", "accepted", "ready_for_pickup", "completed"];
 }
 
 /** تسميات مبسّطة للحالة حسب طريقة الاستلام. */
