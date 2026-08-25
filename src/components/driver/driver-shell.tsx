@@ -2,7 +2,7 @@ import { useEffect, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Bell, LogOut, Power } from "lucide-react";
+import { Bell, Bike, ClipboardList, LogOut, Power, User, Wallet } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/app-shell";
 import { useAccount } from "@/lib/auth";
