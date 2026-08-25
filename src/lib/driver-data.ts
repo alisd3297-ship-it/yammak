@@ -75,13 +75,17 @@ export function useWorkerProfile() {
   });
 }
 
+/** العروض القريبة تظهر فقط عندما يكون المندوب «متصل». */
 export function useDriverOffers() {
   const { data: account } = useAccount();
+  const { data: worker } = useWorkerProfile();
+  const online = !!worker?.is_available && !!worker?.is_approved;
   return useQuery({
-    queryKey: ["driver-offers", account?.userId],
+    queryKey: ["driver-offers", account?.userId, online],
     enabled: !!account?.userId,
-    refetchInterval: 8_000,
+    refetchInterval: online ? 8_000 : false,
     queryFn: async () => {
+      if (!online) return [] as DriverOffer[];
       const { data } = await supabase
         .from("delivery_offers")
         .select(
