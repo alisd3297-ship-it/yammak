@@ -784,9 +784,11 @@ export type Database = {
           dropoff_lat: number | null
           dropoff_lng: number | null
           dropoff_text: string | null
+          fulfillment: string
           id: string
           notes: string | null
           order_type: Database["public"]["Enums"]["order_type"]
+          party_size: number | null
           payment_method: string
           pickup_lat: number | null
           pickup_lng: number | null
@@ -820,9 +822,11 @@ export type Database = {
           dropoff_lat?: number | null
           dropoff_lng?: number | null
           dropoff_text?: string | null
+          fulfillment?: string
           id?: string
           notes?: string | null
           order_type?: Database["public"]["Enums"]["order_type"]
+          party_size?: number | null
           payment_method?: string
           pickup_lat?: number | null
           pickup_lng?: number | null
@@ -856,9 +860,11 @@ export type Database = {
           dropoff_lat?: number | null
           dropoff_lng?: number | null
           dropoff_text?: string | null
+          fulfillment?: string
           id?: string
           notes?: string | null
           order_type?: Database["public"]["Enums"]["order_type"]
+          party_size?: number | null
           payment_method?: string
           pickup_lat?: number | null
           pickup_lng?: number | null
@@ -2410,9 +2416,11 @@ export type Database = {
           dropoff_lat: number | null
           dropoff_lng: number | null
           dropoff_text: string | null
+          fulfillment: string
           id: string
           notes: string | null
           order_type: Database["public"]["Enums"]["order_type"]
+          party_size: number | null
           payment_method: string
           pickup_lat: number | null
           pickup_lng: number | null
@@ -2708,9 +2716,11 @@ export type Database = {
           dropoff_lat: number | null
           dropoff_lng: number | null
           dropoff_text: string | null
+          fulfillment: string
           id: string
           notes: string | null
           order_type: Database["public"]["Enums"]["order_type"]
+          party_size: number | null
           payment_method: string
           pickup_lat: number | null
           pickup_lng: number | null
@@ -2941,9 +2951,11 @@ export type Database = {
           dropoff_lat: number | null
           dropoff_lng: number | null
           dropoff_text: string | null
+          fulfillment: string
           id: string
           notes: string | null
           order_type: Database["public"]["Enums"]["order_type"]
+          party_size: number | null
           payment_method: string
           pickup_lat: number | null
           pickup_lng: number | null
@@ -2964,58 +2976,118 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      create_customer_order: {
-        Args: {
-          _dropoff_lat?: number
-          _dropoff_lng?: number
-          _dropoff_text: string
-          _items: Json
-          _notes?: string
-          _provider_id: string
-        }
-        Returns: {
-          admin_approved_at: string | null
-          admin_approved_by: string | null
-          admin_review_reason: string | null
-          cancel_reason: string | null
-          cargo_description: string | null
-          cargo_weight_kg: number | null
-          city_id: string | null
-          code: string
-          completed_at: string | null
-          created_at: string
-          customer_id: string
-          delivery_fee: number
-          dispatch_alerted_at: string | null
-          dispatch_attempts: number
-          dispatch_last_attempt_at: string | null
-          driver_id: string | null
-          dropoff_lat: number | null
-          dropoff_lng: number | null
-          dropoff_text: string | null
-          id: string
-          notes: string | null
-          order_type: Database["public"]["Enums"]["order_type"]
-          payment_method: string
-          pickup_lat: number | null
-          pickup_lng: number | null
-          pickup_text: string | null
-          provider_id: string | null
-          requires_admin_approval: boolean
-          scheduled_at: string | null
-          status: Database["public"]["Enums"]["order_status"]
-          subtotal: number
-          total: number
-          updated_at: string
-          vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
-        }
-        SetofOptions: {
-          from: "*"
-          to: "orders"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
+      create_customer_order:
+        | {
+            Args: {
+              _dropoff_lat?: number
+              _dropoff_lng?: number
+              _dropoff_text: string
+              _items: Json
+              _notes?: string
+              _provider_id: string
+            }
+            Returns: {
+              admin_approved_at: string | null
+              admin_approved_by: string | null
+              admin_review_reason: string | null
+              cancel_reason: string | null
+              cargo_description: string | null
+              cargo_weight_kg: number | null
+              city_id: string | null
+              code: string
+              completed_at: string | null
+              created_at: string
+              customer_id: string
+              delivery_fee: number
+              dispatch_alerted_at: string | null
+              dispatch_attempts: number
+              dispatch_last_attempt_at: string | null
+              driver_id: string | null
+              dropoff_lat: number | null
+              dropoff_lng: number | null
+              dropoff_text: string | null
+              fulfillment: string
+              id: string
+              notes: string | null
+              order_type: Database["public"]["Enums"]["order_type"]
+              party_size: number | null
+              payment_method: string
+              pickup_lat: number | null
+              pickup_lng: number | null
+              pickup_text: string | null
+              provider_id: string | null
+              requires_admin_approval: boolean
+              scheduled_at: string | null
+              status: Database["public"]["Enums"]["order_status"]
+              subtotal: number
+              total: number
+              updated_at: string
+              vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
+            }
+            SetofOptions: {
+              from: "*"
+              to: "orders"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: {
+              _dropoff_lat?: number
+              _dropoff_lng?: number
+              _dropoff_text: string
+              _fulfillment?: string
+              _items: Json
+              _notes?: string
+              _party_size?: number
+              _provider_id: string
+              _scheduled_at?: string
+            }
+            Returns: {
+              admin_approved_at: string | null
+              admin_approved_by: string | null
+              admin_review_reason: string | null
+              cancel_reason: string | null
+              cargo_description: string | null
+              cargo_weight_kg: number | null
+              city_id: string | null
+              code: string
+              completed_at: string | null
+              created_at: string
+              customer_id: string
+              delivery_fee: number
+              dispatch_alerted_at: string | null
+              dispatch_attempts: number
+              dispatch_last_attempt_at: string | null
+              driver_id: string | null
+              dropoff_lat: number | null
+              dropoff_lng: number | null
+              dropoff_text: string | null
+              fulfillment: string
+              id: string
+              notes: string | null
+              order_type: Database["public"]["Enums"]["order_type"]
+              party_size: number | null
+              payment_method: string
+              pickup_lat: number | null
+              pickup_lng: number | null
+              pickup_text: string | null
+              provider_id: string | null
+              requires_admin_approval: boolean
+              scheduled_at: string | null
+              status: Database["public"]["Enums"]["order_status"]
+              subtotal: number
+              total: number
+              updated_at: string
+              vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
+            }
+            SetofOptions: {
+              from: "*"
+              to: "orders"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
       create_payment_record: {
         Args: {
           _idempotency_key: string
@@ -3151,9 +3223,11 @@ export type Database = {
           dropoff_lat: number | null
           dropoff_lng: number | null
           dropoff_text: string | null
+          fulfillment: string
           id: string
           notes: string | null
           order_type: Database["public"]["Enums"]["order_type"]
+          party_size: number | null
           payment_method: string
           pickup_lat: number | null
           pickup_lng: number | null
@@ -3597,9 +3671,11 @@ export type Database = {
           dropoff_lat: number | null
           dropoff_lng: number | null
           dropoff_text: string | null
+          fulfillment: string
           id: string
           notes: string | null
           order_type: Database["public"]["Enums"]["order_type"]
+          party_size: number | null
           payment_method: string
           pickup_lat: number | null
           pickup_lng: number | null
@@ -3820,9 +3896,11 @@ export type Database = {
           dropoff_lat: number | null
           dropoff_lng: number | null
           dropoff_text: string | null
+          fulfillment: string
           id: string
           notes: string | null
           order_type: Database["public"]["Enums"]["order_type"]
+          party_size: number | null
           payment_method: string
           pickup_lat: number | null
           pickup_lng: number | null
@@ -3868,9 +3946,11 @@ export type Database = {
           dropoff_lat: number | null
           dropoff_lng: number | null
           dropoff_text: string | null
+          fulfillment: string
           id: string
           notes: string | null
           order_type: Database["public"]["Enums"]["order_type"]
+          party_size: number | null
           payment_method: string
           pickup_lat: number | null
           pickup_lng: number | null
