@@ -67,7 +67,7 @@ function OrderTrackPage() {
         supabase
           .from("orders")
           .select(
-            "id, code, status, order_type, total, subtotal, delivery_fee, pickup_text, dropoff_text, notes, created_at, vehicle_type, cargo_description, cargo_weight_kg, scheduled_at, providers(name, phone), provider_id, driver_id",
+            "id, code, status, order_type, total, subtotal, delivery_fee, pickup_text, dropoff_text, notes, created_at, vehicle_type, cargo_description, cargo_weight_kg, scheduled_at, fulfillment, party_size, providers(name, phone, address_text), provider_id, driver_id",
           )
           .eq("id", id)
           .maybeSingle(),
@@ -85,7 +85,9 @@ function OrderTrackPage() {
   const order = data?.order;
   const status = (order?.status ?? "awaiting_provider") as OrderStatus;
   const courier = isCourierType(order?.order_type);
-  const flow = courier ? COURIER_STATUS_FLOW : CUSTOMER_STATUS_FLOW;
+  const fulfillment = asFulfillment(order?.fulfillment);
+  const isPickup = !courier && fulfillment !== "delivery";
+  const flow: OrderStatus[] = courier ? COURIER_STATUS_FLOW : customerFlowFor(fulfillment);
   const activeIndex = flow.indexOf(status);
   const provider = order?.providers as { name: string; phone: string | null } | null;
   const driverId = order?.driver_id ?? null;
