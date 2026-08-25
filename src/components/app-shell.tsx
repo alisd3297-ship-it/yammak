@@ -280,21 +280,18 @@ export function AdminEntry() {
   return null;
 }
 
+/** الأقسام العشرة الرئيسية للوحة الإدارة بالترتيب المعتمد. */
 const ADMIN_LINKS = [
-  
-  { to: "/admin/providers", label: "المزوّدون" },
-  { to: "/admin/drivers", label: "المندوبون" },
-  { to: "/admin/courier", label: "الطلبات" },
-  { to: "/admin/payments", label: "المدفوعات" },
-  { to: "/admin/settlements", label: "التسويات" },
-  { to: "/admin/refunds", label: "الاسترجاعات" },
-  { to: "/admin/reports", label: "التقارير" },
-  { to: "/admin/users", label: "المستخدمون" },
-  { to: "/admin/ads", label: "الإعلانات" },
-  { to: "/admin/services", label: "كتالوج الخدمات" },
-  { to: "/admin/audit", label: "سجل التدقيق" },
-  { to: "/admin/features", label: "مفاتيح الميزات" },
-
+  { to: "/admin", label: "الرئيسية", exact: true },
+  { to: "/admin/users", label: "المستخدمون", exact: false },
+  { to: "/admin/providers", label: "التجار والمحلات", exact: false },
+  { to: "/admin/orders", label: "الطلبات", exact: false },
+  { to: "/admin/drivers", label: "المندوبون", exact: false },
+  { to: "/admin/sections", label: "الأقسام والتخصصات", exact: false },
+  { to: "/admin/payments", label: "المدفوعات والعمولات", exact: false },
+  { to: "/admin/reports", label: "التقارير", exact: false },
+  { to: "/admin/notifications", label: "الإشعارات", exact: false },
+  { to: "/admin/settings", label: "الإعدادات", exact: false },
 ] as const;
 
 /** شريط تنقل موحّد بين صفحات الإدارة. */

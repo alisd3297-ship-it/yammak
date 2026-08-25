@@ -30,16 +30,21 @@ import { Route as SpecialDeliveryRouteImport } from './routes/special-delivery'
 import { Route as TaxiRouteImport } from './routes/taxi'
 import { Route as VerifyPhoneRouteImport } from './routes/verify-phone'
 import { Route as WalletRouteImport } from './routes/wallet'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAdsRouteImport } from './routes/admin.ads'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminCourierRouteImport } from './routes/admin.courier'
 import { Route as AdminDriversRouteImport } from './routes/admin.drivers'
 import { Route as AdminFeaturesRouteImport } from './routes/admin.features'
+import { Route as AdminNotificationsRouteImport } from './routes/admin.notifications'
+import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
 import { Route as AdminProvidersRouteImport } from './routes/admin.providers'
 import { Route as AdminRefundsRouteImport } from './routes/admin.refunds'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminSectionsRouteImport } from './routes/admin.sections'
 import { Route as AdminServicesRouteImport } from './routes/admin.services'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminSettlementsRouteImport } from './routes/admin.settlements'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdsIndexRouteImport } from './routes/ads.index'
@@ -169,6 +174,11 @@ const WalletRoute = WalletRouteImport.update({
   path: '/wallet',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminAdsRoute = AdminAdsRouteImport.update({
   id: '/admin/ads',
   path: '/admin/ads',
@@ -194,6 +204,16 @@ const AdminFeaturesRoute = AdminFeaturesRouteImport.update({
   path: '/admin/features',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminNotificationsRoute = AdminNotificationsRouteImport.update({
+  id: '/admin/notifications',
+  path: '/admin/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminOrdersRoute = AdminOrdersRouteImport.update({
+  id: '/admin/orders',
+  path: '/admin/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
   id: '/admin/payments',
   path: '/admin/payments',
@@ -214,9 +234,19 @@ const AdminReportsRoute = AdminReportsRouteImport.update({
   path: '/admin/reports',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSectionsRoute = AdminSectionsRouteImport.update({
+  id: '/admin/sections',
+  path: '/admin/sections',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminServicesRoute = AdminServicesRouteImport.update({
   id: '/admin/services',
   path: '/admin/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/admin/settings',
+  path: '/admin/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminSettlementsRoute = AdminSettlementsRouteImport.update({
@@ -362,11 +392,15 @@ export interface FileRoutesByFullPath {
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
   '/admin/features': typeof AdminFeaturesRoute
+  '/admin/notifications': typeof AdminNotificationsRoute
+  '/admin/orders': typeof AdminOrdersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/admin/refunds': typeof AdminRefundsRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/sections': typeof AdminSectionsRoute
   '/admin/services': typeof AdminServicesRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/settlements': typeof AdminSettlementsRoute
   '/admin/users': typeof AdminUsersRoute
   '/ads/$id': typeof AdsIdRoute
@@ -378,6 +412,7 @@ export interface FileRoutesByFullPath {
   '/services/$id': typeof ServicesIdRoute
   '/shops/$slug': typeof ShopsSlugRoute
   '/stores/$id': typeof StoresIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/ads/': typeof AdsIndexRoute
   '/doctors/': typeof DoctorsIndexRoute
   '/orders/': typeof OrdersIndexRoute
@@ -418,11 +453,15 @@ export interface FileRoutesByTo {
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
   '/admin/features': typeof AdminFeaturesRoute
+  '/admin/notifications': typeof AdminNotificationsRoute
+  '/admin/orders': typeof AdminOrdersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/admin/refunds': typeof AdminRefundsRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/sections': typeof AdminSectionsRoute
   '/admin/services': typeof AdminServicesRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/settlements': typeof AdminSettlementsRoute
   '/admin/users': typeof AdminUsersRoute
   '/ads/$id': typeof AdsIdRoute
@@ -434,6 +473,7 @@ export interface FileRoutesByTo {
   '/services/$id': typeof ServicesIdRoute
   '/shops/$slug': typeof ShopsSlugRoute
   '/stores/$id': typeof StoresIdRoute
+  '/admin': typeof AdminIndexRoute
   '/ads': typeof AdsIndexRoute
   '/doctors': typeof DoctorsIndexRoute
   '/orders': typeof OrdersIndexRoute
@@ -475,11 +515,15 @@ export interface FileRoutesById {
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
   '/admin/features': typeof AdminFeaturesRoute
+  '/admin/notifications': typeof AdminNotificationsRoute
+  '/admin/orders': typeof AdminOrdersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/admin/refunds': typeof AdminRefundsRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/sections': typeof AdminSectionsRoute
   '/admin/services': typeof AdminServicesRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/settlements': typeof AdminSettlementsRoute
   '/admin/users': typeof AdminUsersRoute
   '/ads/$id': typeof AdsIdRoute
@@ -491,6 +535,7 @@ export interface FileRoutesById {
   '/services/$id': typeof ServicesIdRoute
   '/shops/$slug': typeof ShopsSlugRoute
   '/stores/$id': typeof StoresIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/ads/': typeof AdsIndexRoute
   '/doctors/': typeof DoctorsIndexRoute
   '/orders/': typeof OrdersIndexRoute
@@ -533,11 +578,15 @@ export interface FileRouteTypes {
     | '/admin/courier'
     | '/admin/drivers'
     | '/admin/features'
+    | '/admin/notifications'
+    | '/admin/orders'
     | '/admin/payments'
     | '/admin/providers'
     | '/admin/refunds'
     | '/admin/reports'
+    | '/admin/sections'
     | '/admin/services'
+    | '/admin/settings'
     | '/admin/settlements'
     | '/admin/users'
     | '/ads/$id'
@@ -549,6 +598,7 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/shops/$slug'
     | '/stores/$id'
+    | '/admin/'
     | '/ads/'
     | '/doctors/'
     | '/orders/'
@@ -589,11 +639,15 @@ export interface FileRouteTypes {
     | '/admin/courier'
     | '/admin/drivers'
     | '/admin/features'
+    | '/admin/notifications'
+    | '/admin/orders'
     | '/admin/payments'
     | '/admin/providers'
     | '/admin/refunds'
     | '/admin/reports'
+    | '/admin/sections'
     | '/admin/services'
+    | '/admin/settings'
     | '/admin/settlements'
     | '/admin/users'
     | '/ads/$id'
@@ -605,6 +659,7 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/shops/$slug'
     | '/stores/$id'
+    | '/admin'
     | '/ads'
     | '/doctors'
     | '/orders'
@@ -645,11 +700,15 @@ export interface FileRouteTypes {
     | '/admin/courier'
     | '/admin/drivers'
     | '/admin/features'
+    | '/admin/notifications'
+    | '/admin/orders'
     | '/admin/payments'
     | '/admin/providers'
     | '/admin/refunds'
     | '/admin/reports'
+    | '/admin/sections'
     | '/admin/services'
+    | '/admin/settings'
     | '/admin/settlements'
     | '/admin/users'
     | '/ads/$id'
@@ -661,6 +720,7 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/shops/$slug'
     | '/stores/$id'
+    | '/admin/'
     | '/ads/'
     | '/doctors/'
     | '/orders/'
@@ -702,11 +762,15 @@ export interface RootRouteChildren {
   AdminCourierRoute: typeof AdminCourierRoute
   AdminDriversRoute: typeof AdminDriversRoute
   AdminFeaturesRoute: typeof AdminFeaturesRoute
+  AdminNotificationsRoute: typeof AdminNotificationsRoute
+  AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminProvidersRoute: typeof AdminProvidersRoute
   AdminRefundsRoute: typeof AdminRefundsRoute
   AdminReportsRoute: typeof AdminReportsRoute
+  AdminSectionsRoute: typeof AdminSectionsRoute
   AdminServicesRoute: typeof AdminServicesRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSettlementsRoute: typeof AdminSettlementsRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdsIdRoute: typeof AdsIdRoute
@@ -718,6 +782,7 @@ export interface RootRouteChildren {
   ServicesIdRoute: typeof ServicesIdRoute
   ShopsSlugRoute: typeof ShopsSlugRoute
   StoresIdRoute: typeof StoresIdRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   AdsIndexRoute: typeof AdsIndexRoute
   DoctorsIndexRoute: typeof DoctorsIndexRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
@@ -881,6 +946,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WalletRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/ads': {
       id: '/admin/ads'
       path: '/admin/ads'
@@ -916,6 +988,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminFeaturesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/notifications': {
+      id: '/admin/notifications'
+      path: '/admin/notifications'
+      fullPath: '/admin/notifications'
+      preLoaderRoute: typeof AdminNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/orders': {
+      id: '/admin/orders'
+      path: '/admin/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/payments': {
       id: '/admin/payments'
       path: '/admin/payments'
@@ -944,11 +1030,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/sections': {
+      id: '/admin/sections'
+      path: '/admin/sections'
+      fullPath: '/admin/sections'
+      preLoaderRoute: typeof AdminSectionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/services': {
       id: '/admin/services'
       path: '/admin/services'
       fullPath: '/admin/services'
       preLoaderRoute: typeof AdminServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/admin/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/settlements': {
@@ -1142,11 +1242,15 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCourierRoute: AdminCourierRoute,
   AdminDriversRoute: AdminDriversRoute,
   AdminFeaturesRoute: AdminFeaturesRoute,
+  AdminNotificationsRoute: AdminNotificationsRoute,
+  AdminOrdersRoute: AdminOrdersRoute,
   AdminPaymentsRoute: AdminPaymentsRoute,
   AdminProvidersRoute: AdminProvidersRoute,
   AdminRefundsRoute: AdminRefundsRoute,
   AdminReportsRoute: AdminReportsRoute,
+  AdminSectionsRoute: AdminSectionsRoute,
   AdminServicesRoute: AdminServicesRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
   AdminSettlementsRoute: AdminSettlementsRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdsIdRoute: AdsIdRoute,
@@ -1158,6 +1262,7 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesIdRoute: ServicesIdRoute,
   ShopsSlugRoute: ShopsSlugRoute,
   StoresIdRoute: StoresIdRoute,
+  AdminIndexRoute: AdminIndexRoute,
   AdsIndexRoute: AdsIndexRoute,
   DoctorsIndexRoute: DoctorsIndexRoute,
   OrdersIndexRoute: OrdersIndexRoute,
