@@ -40,6 +40,9 @@ export const createOrder = createServerFn({ method: "POST" })
       lat?: number | null;
       lng?: number | null;
       notes?: string | null;
+      fulfillment?: "delivery" | "takeaway" | "dine_in";
+      partySize?: number | null;
+      scheduledAt?: string | null;
     }) => data,
   )
   .handler(async ({ data, context }) => {
@@ -52,6 +55,9 @@ export const createOrder = createServerFn({ method: "POST" })
       }));
     if (!items.length) throw new Error("سلتك فارغة");
 
+    const fulfillment =
+      data.fulfillment === "takeaway" || data.fulfillment === "dine_in" ? data.fulfillment : "delivery";
+
     const { data: order, error } = await context.supabase.rpc("create_customer_order", {
       _provider_id: data.providerId,
       _items: items,
@@ -59,6 +65,9 @@ export const createOrder = createServerFn({ method: "POST" })
       ...(data.lat != null ? { _dropoff_lat: data.lat } : {}),
       ...(data.lng != null ? { _dropoff_lng: data.lng } : {}),
       ...(data.notes ? { _notes: data.notes } : {}),
+      _fulfillment: fulfillment,
+      ...(fulfillment === "dine_in" && data.partySize ? { _party_size: data.partySize } : {}),
+      ...(fulfillment === "dine_in" && data.scheduledAt ? { _scheduled_at: data.scheduledAt } : {}),
     });
     if (error || !order) throw new Error(friendly(error?.message ?? ""));
 

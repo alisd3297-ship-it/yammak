@@ -3,14 +3,16 @@ import { requireCustomerFlow } from "@/lib/route-guards";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Minus, Plus, MapPin, LocateFixed } from "lucide-react";
+import { Minus, Plus, MapPin, LocateFixed, Bike, ShoppingBag, UtensilsCrossed } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { BackButton, BottomNav, PageShell  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import { useCart } from "@/lib/cart";
-import { formatIQD } from "@/lib/orders";
+import { formatIQD, type Fulfillment } from "@/lib/orders";
 import { createOrder, quoteDeliveryFee } from "@/lib/orders.functions";
 import { useCustomerAreaGuard, useAccount  } from "@/lib/auth";
 
@@ -38,17 +40,35 @@ function CheckoutPage() {
   const [notes, setNotes] = useState("");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [saving, setSaving] = useState(false);
+  const [fulfillment, setFulfillment] = useState<Fulfillment>("delivery");
+  const [partySize, setPartySize] = useState(2);
+  const [scheduledAt, setScheduledAt] = useState("");
+
+  const { data: providerInfo } = useQuery({
+    queryKey: ["checkout-provider", cart.providerId],
+    enabled: !!cart.providerId,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("providers")
+        .select("id, name, kind, address_text, phone")
+        .eq("id", cart.providerId!)
+        .maybeSingle();
+      return data;
+    },
+  });
+  const isRestaurant = providerInfo?.kind === "restaurant";
 
   // أجرة التوصيل تُحسب من قواعد التسعير في الخادم، لا من الواجهة
   const { data: feeQuote } = useQuery({
     queryKey: ["delivery-quote", cart.providerId, coords?.lat, coords?.lng],
-    enabled: !!cart.providerId && !!account?.userId && !!cart.items.length,
+    enabled:
+      fulfillment === "delivery" && !!cart.providerId && !!account?.userId && !!cart.items.length,
     queryFn: () =>
       quote({
         data: { providerId: cart.providerId!, lat: coords?.lat ?? null, lng: coords?.lng ?? null },
       }),
   });
-  const deliveryFee = feeQuote?.fee ?? null;
+  const deliveryFee = fulfillment === "delivery" ? feeQuote?.fee ?? null : 0;
 
   function useMyLocation() {
     if (!navigator.geolocation) {
@@ -73,8 +93,12 @@ function CheckoutPage() {
       toast.error("سلتك فارغة");
       return;
     }
-    if (!address.trim() && !coords) {
+    if (fulfillment === "delivery" && !address.trim() && !coords) {
       toast.error("حدد موقع التوصيل أو اكتب العنوان");
+      return;
+    }
+    if (fulfillment === "dine_in" && !scheduledAt) {
+      toast.error("حدد موعد الحجز");
       return;
     }
     setSaving(true);
@@ -83,14 +107,24 @@ function CheckoutPage() {
         data: {
           providerId: cart.providerId,
           items: cart.items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
-          address,
-          lat: coords?.lat ?? null,
-          lng: coords?.lng ?? null,
+          address: fulfillment === "delivery" ? address : "",
+          lat: fulfillment === "delivery" ? coords?.lat ?? null : null,
+          lng: fulfillment === "delivery" ? coords?.lng ?? null : null,
           notes,
+          fulfillment,
+          partySize: fulfillment === "dine_in" ? partySize : null,
+          scheduledAt:
+            fulfillment === "dine_in" && scheduledAt ? new Date(scheduledAt).toISOString() : null,
         },
       });
       cart.clear();
-      toast.success("تم إرسال طلبك للمطعم");
+      toast.success(
+        fulfillment === "dine_in"
+          ? "تم إرسال حجزك للمطعم"
+          : fulfillment === "takeaway"
+            ? "تم إرسال طلب السفري للمطعم"
+            : "تم إرسال طلبك للمطعم",
+      );
       navigate({ to: "/orders/$id", params: { id: order.id } });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "تعذر إرسال الطلب، حاول مرة ثانية");
@@ -149,37 +183,125 @@ function CheckoutPage() {
           </div>
 
           <section className="rounded-2xl bg-card p-4 shadow-soft">
-            <h2 className="mb-3 flex items-center gap-2 font-bold">
-              <MapPin className="size-4 text-primary" /> موقع التوصيل
-            </h2>
-            <Button variant="secondary" className="mb-3 h-11 w-full" onClick={useMyLocation}>
-              <LocateFixed className="size-4" /> استخدم موقعي الحالي
-            </Button>
-            {coords && (
-              <p className="mb-2 text-xs text-success">
-                تم تحديد الإحداثيات: {coords.lat.toFixed(4)}، {coords.lng.toFixed(4)}
+            <h2 className="mb-3 font-bold">طريقة الاستلام</h2>
+            <div className="grid grid-cols-3 gap-2">
+              {(
+                [
+                  { key: "delivery" as const, label: "توصيل", desc: "مندوب يوصلك", icon: Bike },
+                  { key: "takeaway" as const, label: "سفري", desc: "تستلم بنفسك", icon: ShoppingBag },
+                  {
+                    key: "dine_in" as const,
+                    label: "حجز بالصالة",
+                    desc: "تتناول بالمطعم",
+                    icon: UtensilsCrossed,
+                  },
+                ] satisfies { key: Fulfillment; label: string; desc: string; icon: typeof Bike }[]
+              )
+                .filter((opt) => opt.key !== "dine_in" || isRestaurant)
+                .map((opt) => {
+                  const active = fulfillment === opt.key;
+                  const Icon = opt.icon;
+                  return (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      onClick={() => setFulfillment(opt.key)}
+                      className={cn(
+                        "flex flex-col items-center gap-1 rounded-2xl border-2 p-3 text-center transition active:scale-95",
+                        active ? "border-primary bg-primary/10" : "border-border bg-background",
+                      )}
+                      aria-pressed={active}
+                    >
+                      <Icon className={cn("size-5", active ? "text-primary" : "text-muted-foreground")} />
+                      <span className="text-xs font-bold">{opt.label}</span>
+                      <span className="text-[10px] text-muted-foreground">{opt.desc}</span>
+                    </button>
+                  );
+                })}
+            </div>
+          </section>
+
+          {fulfillment === "delivery" ? (
+            <section className="rounded-2xl bg-card p-4 shadow-soft">
+              <h2 className="mb-3 flex items-center gap-2 font-bold">
+                <MapPin className="size-4 text-primary" /> موقع التوصيل
+              </h2>
+              <Button variant="secondary" className="mb-3 h-11 w-full" onClick={useMyLocation}>
+                <LocateFixed className="size-4" /> استخدم موقعي الحالي
+              </Button>
+              {coords && (
+                <p className="mb-2 text-xs text-success">
+                  تم تحديد الإحداثيات: {coords.lat.toFixed(4)}، {coords.lng.toFixed(4)}
+                </p>
+              )}
+              <Input
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="اكتب العنوان: المنطقة، الشارع، أقرب نقطة دالة"
+                className="h-12"
+              />
+            </section>
+          ) : (
+            <section className="rounded-2xl bg-card p-4 shadow-soft">
+              <h2 className="mb-2 flex items-center gap-2 font-bold">
+                <MapPin className="size-4 text-primary" />
+                {fulfillment === "dine_in" ? "مكان الحجز" : "مكان الاستلام"}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {providerInfo?.address_text ?? cart.providerName ?? "عنوان المحل"}
               </p>
-            )}
-            <Input
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="اكتب العنوان: المنطقة، الشارع، أقرب نقطة دالة"
-              className="h-12"
-            />
+              {fulfillment === "dine_in" && (
+                <div className="mt-3 space-y-3">
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold" htmlFor="sched">
+                      موعد الحجز
+                    </label>
+                    <Input
+                      id="sched"
+                      type="datetime-local"
+                      value={scheduledAt}
+                      onChange={(e) => setScheduledAt(e.target.value)}
+                      className="h-12"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold" htmlFor="party">
+                      عدد الأشخاص
+                    </label>
+                    <Input
+                      id="party"
+                      type="number"
+                      min={1}
+                      max={50}
+                      value={partySize}
+                      onChange={(e) => setPartySize(Math.max(1, Math.min(50, Number(e.target.value) || 1)))}
+                      className="h-12"
+                    />
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
+
+          <section className="rounded-2xl bg-card p-4 shadow-soft">
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="ملاحظات للمطعم أو المندوب"
-              className="mt-3"
             />
           </section>
 
+
           <section className="rounded-2xl bg-card p-4 text-sm shadow-soft">
             <Row label="مجموع الطلب" value={formatIQD(cart.total)} />
-            <Row
-              label="أجرة التوصيل"
-              value={deliveryFee == null ? "يتم الحساب…" : formatIQD(deliveryFee)}
-            />
+            {fulfillment === "delivery" ? (
+              <Row
+                label="أجرة التوصيل"
+                value={deliveryFee == null ? "يتم الحساب…" : formatIQD(deliveryFee)}
+              />
+            ) : (
+              <Row label="أجرة التوصيل" value="بدون توصيل" />
+            )}
             <div className="mt-2 border-t border-border pt-2">
               <Row
                 label="الإجمالي"
@@ -193,8 +315,9 @@ function CheckoutPage() {
           </section>
 
           <Button className="h-13 w-full text-base" disabled={saving} onClick={submitOrder}>
-            تأكيد الطلب
+            {fulfillment === "dine_in" ? "تأكيد الحجز" : "تأكيد الطلب"}
           </Button>
+
         </div>
       )}
 

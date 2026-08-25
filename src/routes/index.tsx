@@ -48,6 +48,40 @@ type ProviderRow = {
   keywords: string[];
 };
 
+type MainService = {
+  label: string;
+  hint: string;
+  icon: Icons.LucideIcon;
+  to: "/restaurants" | "/stores" | "/services" | "/courier" | "/taxi";
+};
+
+/** لوحة الخدمات الأساسية للزبون. */
+const MAIN_SERVICES: MainService[] = [
+  { label: "مطاعم", hint: "أكل وحلويات", icon: Icons.UtensilsCrossed, to: "/restaurants" },
+  { label: "سوبر ماركت", hint: "تسوّق يومي", icon: Icons.ShoppingCart, to: "/stores" },
+  { label: "مهن وخدمات", hint: "فنيين ومهنيين", icon: Icons.Wrench, to: "/services" },
+  { label: "توصيل", hint: "إرسال واستلام", icon: Icons.Bike, to: "/courier" },
+  { label: "تكسي", hint: "نقل ركاب", icon: Icons.Car, to: "/taxi" },
+  { label: "طبيب", hint: "استشارات طبية", icon: Icons.Stethoscope, to: "/services" },
+  { label: "صيدلية", hint: "أدوية ومستلزمات", icon: Icons.Pill, to: "/services" },
+];
+
+function MainTile({ item }: { item: MainService }) {
+  const Icon = item.icon;
+  return (
+    <Link
+      to={item.to}
+      className="flex h-full flex-col items-center gap-1.5 rounded-2xl bg-card p-3 text-center shadow-soft transition active:scale-95"
+    >
+      <span className="flex size-12 items-center justify-center rounded-2xl bg-accent text-accent-foreground">
+        <Icon className="size-6" />
+      </span>
+      <span className="text-xs font-bold leading-tight">{item.label}</span>
+      <span className="text-[10px] leading-tight text-muted-foreground">{item.hint}</span>
+    </Link>
+  );
+}
+
 function CustomerHome() {
   useCustomerAreaGuard();
   useRoleHomeRedirect();
@@ -161,7 +195,17 @@ function CustomerHome() {
         </section>
       ) : (
         <>
+          <section className="mt-6 px-4">
+            <h2 className="mb-3 text-base font-bold">خدماتك وطلباتك لبابك</h2>
+            <div className="grid grid-cols-3 gap-3">
+              {MAIN_SERVICES.map((s) => (
+                <MainTile key={s.to + s.label} item={s} />
+              ))}
+            </div>
+          </section>
+
           {(data?.sections ?? []).map((section) => {
+
             const services = (data?.services ?? []).filter(
               (s) => s.section_id === section.id && s.placement.includes("home"),
             );

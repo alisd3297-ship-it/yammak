@@ -11,11 +11,14 @@ import { Button } from "@/components/ui/button";
 import { changeOrderStatus } from "@/lib/orders.functions";
 import {
   COURIER_STATUS_FLOW,
-  CUSTOMER_STATUS_FLOW,
   ORDER_STATUS_LABELS,
   formatIQD,
   statusTone,
   isCourierType,
+  asFulfillment,
+  customerFlowFor,
+  statusLabelFor,
+  FULFILLMENT_LABELS,
   type OrderStatus,
 } from "@/lib/orders";
 import { vehicleLabel } from "@/lib/vehicles";
@@ -64,7 +67,7 @@ function OrderTrackPage() {
         supabase
           .from("orders")
           .select(
-            "id, code, status, order_type, total, subtotal, delivery_fee, pickup_text, dropoff_text, notes, created_at, vehicle_type, cargo_description, cargo_weight_kg, scheduled_at, providers(name, phone), provider_id, driver_id",
+            "id, code, status, order_type, total, subtotal, delivery_fee, pickup_text, dropoff_text, notes, created_at, vehicle_type, cargo_description, cargo_weight_kg, scheduled_at, fulfillment, party_size, providers(name, phone, address_text), provider_id, driver_id",
           )
           .eq("id", id)
           .maybeSingle(),
@@ -82,9 +85,13 @@ function OrderTrackPage() {
   const order = data?.order;
   const status = (order?.status ?? "awaiting_provider") as OrderStatus;
   const courier = isCourierType(order?.order_type);
-  const flow = courier ? COURIER_STATUS_FLOW : CUSTOMER_STATUS_FLOW;
+  const fulfillment = asFulfillment(order?.fulfillment);
+  const isPickup = !courier && fulfillment !== "delivery";
+  const flow: OrderStatus[] = courier ? COURIER_STATUS_FLOW : customerFlowFor(fulfillment);
   const activeIndex = flow.indexOf(status);
-  const provider = order?.providers as { name: string; phone: string | null } | null;
+  const provider = order?.providers as
+    | { name: string; phone: string | null; address_text: string | null }
+    | null;
   const driverId = order?.driver_id ?? null;
   const tracking = !!driverId && TRACKING_STATUSES.includes(status);
 
@@ -179,11 +186,33 @@ function OrderTrackPage() {
         <BackButton fallback="/orders" label="طلباتي" />
         <h1 className="text-2xl font-black">طلب #{order?.code ?? "..."}</h1>
         <p className="mt-1 flex items-center gap-2 text-sm opacity-90">
-          <StatusDot tone={statusTone(status)} /> {ORDER_STATUS_LABELS[status]}
+          <StatusDot tone={statusTone(status)} /> {statusLabelFor(status, fulfillment)}
         </p>
+        {!courier && (
+          <span className="mt-2 inline-block rounded-full bg-primary-foreground/15 px-3 py-1 text-xs font-bold">
+            {FULFILLMENT_LABELS[fulfillment]}
+          </span>
+        )}
       </header>
 
       <div className="space-y-5 px-4 py-5">
+        {isPickup && (
+          <section className="rounded-2xl bg-card p-4 text-sm shadow-soft">
+            <h2 className="mb-1 font-bold">
+              {fulfillment === "dine_in" ? "تفاصيل الحجز" : "الاستلام من المحل"}
+            </h2>
+            <p className="text-muted-foreground">{provider?.address_text ?? order?.pickup_text}</p>
+            {fulfillment === "dine_in" && (
+              <p className="mt-1 text-muted-foreground">
+                {order?.scheduled_at
+                  ? new Date(order.scheduled_at).toLocaleString("ar-IQ-u-nu-latn")
+                  : "بدون موعد محدد"}
+                {order?.party_size ? ` · ${order.party_size} أشخاص` : ""}
+              </p>
+            )}
+          </section>
+        )}
+
         <section className="rounded-2xl bg-card p-4 shadow-soft">
           <h2 className="mb-4 font-bold">مراحل الطلب</h2>
           <ol className="space-y-3">
@@ -198,7 +227,7 @@ function OrderTrackPage() {
                     )}
                   />
                   <span className={cn("text-sm", done ? "font-semibold" : "text-muted-foreground")}>
-                    {ORDER_STATUS_LABELS[s]}
+                    {statusLabelFor(s, fulfillment)}
                   </span>
                 </li>
               );
@@ -211,6 +240,18 @@ function OrderTrackPage() {
           )}
           {status === "completed" && (
             <p className="mt-3 rounded-xl bg-success/10 p-3 text-sm text-success">تم إكمال الطلب.</p>
+          )}
+          {isPickup && status === "ready_for_pickup" && (
+            <>
+              <p className="mt-3 rounded-xl bg-success/10 p-3 text-sm text-success">
+                {fulfillment === "dine_in"
+                  ? "طلبك جاهز، تفضل للصالة."
+                  : "طلبك جاهز، تكدر تستلمه من المحل."}
+              </p>
+              <Button className="mt-3 h-11 w-full" onClick={confirmReceived}>
+                تأكيد الاستلام وإنهاء الطلب
+              </Button>
+            </>
           )}
           {status === "delivered" && (
             <Button className="mt-4 h-11 w-full" onClick={confirmReceived}>
