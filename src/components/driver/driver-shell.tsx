@@ -210,7 +210,15 @@ export function DriverShell({
                 </span>
               </span>
             </span>
-            <Switch checked={!!online} disabled={!canToggle} onCheckedChange={(v) => onToggle?.(v)} />
+            <span
+              aria-hidden
+              className={cn(
+                "flex h-8 w-14 items-center rounded-full p-1 transition",
+                online ? "justify-end bg-primary" : "justify-start bg-primary-foreground/40",
+              )}
+            >
+              <span className={cn("size-6 rounded-full", online ? "bg-primary-foreground" : "bg-primary-foreground")} />
+            </span>
           </button>
         )}
       </header>
