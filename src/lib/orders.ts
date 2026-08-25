@@ -106,3 +106,32 @@ export const COURIER_STATUS_LABELS: Partial<Record<OrderStatus, string>> = {
 export function isCourierType(t: string | null | undefined): boolean {
   return t === "courier" || t === "special_delivery";
 }
+
+/** طريقة استلام الطلب من المطعم/المتجر. */
+export type Fulfillment = "delivery" | "takeaway" | "dine_in";
+
+export const FULFILLMENT_LABELS: Record<Fulfillment, string> = {
+  delivery: "توصيل",
+  takeaway: "سفري",
+  dine_in: "حجز بالصالة",
+};
+
+export function asFulfillment(v: string | null | undefined): Fulfillment {
+  return v === "takeaway" || v === "dine_in" ? v : "delivery";
+}
+
+/** مسار الحالات كما يراه الزبون حسب طريقة الاستلام. */
+export function customerFlowFor(fulfillment: Fulfillment): OrderStatus[] {
+  if (fulfillment === "delivery") return CUSTOMER_STATUS_FLOW;
+  return ["awaiting_provider", "accepted", "preparing", "ready_for_pickup", "completed"];
+}
+
+/** تسميات مبسّطة للحالة حسب طريقة الاستلام. */
+export function statusLabelFor(status: OrderStatus, fulfillment: Fulfillment): string {
+  if (fulfillment !== "delivery") {
+    if (status === "awaiting_provider") return "تم إرسال الطلب";
+    if (status === "ready_for_pickup")
+      return fulfillment === "dine_in" ? "طلبك جاهز بالصالة" : "جاهز للاستلام من المحل";
+  }
+  return ORDER_STATUS_LABELS[status];
+}
