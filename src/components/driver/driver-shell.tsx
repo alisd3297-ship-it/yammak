@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { Bell, LogOut, Power } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/app-shell";
-import { Switch } from "@/components/ui/switch";
 import { useAccount } from "@/lib/auth";
 import { useSignOut } from "@/lib/sign-out";
 import { OPERATING_LOCATION_COORDS } from "@/lib/location";
