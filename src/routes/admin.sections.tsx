@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AdminNav, PageShell } from "@/components/app-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { requireStaff } from "@/lib/route-guards";
-import { SHOP_SPECIALTIES, specialtyOfProvider } from "@/lib/shop-specialties";
+import { SHOP_SPECIALTIES, matchesSpecialty } from "@/lib/shop-specialties";
 
 export const Route = createFileRoute("/admin/sections")({
   ssr: false,
@@ -51,9 +51,8 @@ function AdminSectionsPage() {
   });
 
   const counts = new Map<string, number>();
-  for (const p of providers ?? []) {
-    const slug = specialtyOfProvider(p as never);
-    if (slug) counts.set(slug, (counts.get(slug) ?? 0) + 1);
+  for (const sp of SHOP_SPECIALTIES) {
+    counts.set(sp.slug, (providers ?? []).filter((p) => matchesSpecialty(sp, p as never)).length);
   }
 
   return (
