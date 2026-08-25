@@ -93,8 +93,12 @@ function CheckoutPage() {
       toast.error("سلتك فارغة");
       return;
     }
-    if (!address.trim() && !coords) {
+    if (fulfillment === "delivery" && !address.trim() && !coords) {
       toast.error("حدد موقع التوصيل أو اكتب العنوان");
+      return;
+    }
+    if (fulfillment === "dine_in" && !scheduledAt) {
+      toast.error("حدد موعد الحجز");
       return;
     }
     setSaving(true);
@@ -103,14 +107,24 @@ function CheckoutPage() {
         data: {
           providerId: cart.providerId,
           items: cart.items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
-          address,
-          lat: coords?.lat ?? null,
-          lng: coords?.lng ?? null,
+          address: fulfillment === "delivery" ? address : "",
+          lat: fulfillment === "delivery" ? coords?.lat ?? null : null,
+          lng: fulfillment === "delivery" ? coords?.lng ?? null : null,
           notes,
+          fulfillment,
+          partySize: fulfillment === "dine_in" ? partySize : null,
+          scheduledAt:
+            fulfillment === "dine_in" && scheduledAt ? new Date(scheduledAt).toISOString() : null,
         },
       });
       cart.clear();
-      toast.success("تم إرسال طلبك للمطعم");
+      toast.success(
+        fulfillment === "dine_in"
+          ? "تم إرسال حجزك للمطعم"
+          : fulfillment === "takeaway"
+            ? "تم إرسال طلب السفري للمطعم"
+            : "تم إرسال طلبك للمطعم",
+      );
       navigate({ to: "/orders/$id", params: { id: order.id } });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "تعذر إرسال الطلب، حاول مرة ثانية");
