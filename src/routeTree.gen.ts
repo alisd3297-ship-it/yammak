@@ -30,6 +30,7 @@ import { Route as SpecialDeliveryRouteImport } from './routes/special-delivery'
 import { Route as TaxiRouteImport } from './routes/taxi'
 import { Route as VerifyPhoneRouteImport } from './routes/verify-phone'
 import { Route as WalletRouteImport } from './routes/wallet'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAdsRouteImport } from './routes/admin.ads'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminCourierRouteImport } from './routes/admin.courier'
@@ -167,6 +168,11 @@ const VerifyPhoneRoute = VerifyPhoneRouteImport.update({
 const WalletRoute = WalletRouteImport.update({
   id: '/wallet',
   path: '/wallet',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminAdsRoute = AdminAdsRouteImport.update({
@@ -378,6 +384,7 @@ export interface FileRoutesByFullPath {
   '/services/$id': typeof ServicesIdRoute
   '/shops/$slug': typeof ShopsSlugRoute
   '/stores/$id': typeof StoresIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/ads/': typeof AdsIndexRoute
   '/doctors/': typeof DoctorsIndexRoute
   '/orders/': typeof OrdersIndexRoute
@@ -434,6 +441,7 @@ export interface FileRoutesByTo {
   '/services/$id': typeof ServicesIdRoute
   '/shops/$slug': typeof ShopsSlugRoute
   '/stores/$id': typeof StoresIdRoute
+  '/admin': typeof AdminIndexRoute
   '/ads': typeof AdsIndexRoute
   '/doctors': typeof DoctorsIndexRoute
   '/orders': typeof OrdersIndexRoute
@@ -491,6 +499,7 @@ export interface FileRoutesById {
   '/services/$id': typeof ServicesIdRoute
   '/shops/$slug': typeof ShopsSlugRoute
   '/stores/$id': typeof StoresIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/ads/': typeof AdsIndexRoute
   '/doctors/': typeof DoctorsIndexRoute
   '/orders/': typeof OrdersIndexRoute
@@ -549,6 +558,7 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/shops/$slug'
     | '/stores/$id'
+    | '/admin/'
     | '/ads/'
     | '/doctors/'
     | '/orders/'
@@ -605,6 +615,7 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/shops/$slug'
     | '/stores/$id'
+    | '/admin'
     | '/ads'
     | '/doctors'
     | '/orders'
@@ -661,6 +672,7 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/shops/$slug'
     | '/stores/$id'
+    | '/admin/'
     | '/ads/'
     | '/doctors/'
     | '/orders/'
@@ -718,6 +730,7 @@ export interface RootRouteChildren {
   ServicesIdRoute: typeof ServicesIdRoute
   ShopsSlugRoute: typeof ShopsSlugRoute
   StoresIdRoute: typeof StoresIdRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   AdsIndexRoute: typeof AdsIndexRoute
   DoctorsIndexRoute: typeof DoctorsIndexRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
@@ -879,6 +892,13 @@ declare module '@tanstack/react-router' {
       path: '/wallet'
       fullPath: '/wallet'
       preLoaderRoute: typeof WalletRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/ads': {
@@ -1158,6 +1178,7 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesIdRoute: ServicesIdRoute,
   ShopsSlugRoute: ShopsSlugRoute,
   StoresIdRoute: StoresIdRoute,
+  AdminIndexRoute: AdminIndexRoute,
   AdsIndexRoute: AdsIndexRoute,
   DoctorsIndexRoute: DoctorsIndexRoute,
   OrdersIndexRoute: OrdersIndexRoute,

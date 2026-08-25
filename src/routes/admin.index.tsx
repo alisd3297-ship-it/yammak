@@ -151,7 +151,7 @@ function Card({
   icon: typeof Users;
   label: string;
   value: string;
-  hint?: string;
+  hint?: string | undefined;
 }) {
   return (
     <div className="rounded-2xl bg-card p-4 shadow-soft">
