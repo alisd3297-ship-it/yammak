@@ -46,6 +46,7 @@ import { Route as JoinDriverRouteImport } from './routes/join.driver'
 import { Route as JoinProviderRouteImport } from './routes/join.provider'
 import { Route as OrdersIndexRouteImport } from './routes/orders.index'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
+import { Route as PharmaciesIndexRouteImport } from './routes/pharmacies.index'
 import { Route as RestaurantsIndexRouteImport } from './routes/restaurants.index'
 import { Route as RestaurantsIdRouteImport } from './routes/restaurants.$id'
 import { Route as ServiceRequestsIndexRouteImport } from './routes/service-requests.index'
@@ -242,6 +243,11 @@ const OrdersIdRoute = OrdersIdRouteImport.update({
   path: '/orders/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PharmaciesIndexRoute = PharmaciesIndexRouteImport.update({
+  id: '/pharmacies/',
+  path: '/pharmacies/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RestaurantsIndexRoute = RestaurantsIndexRouteImport.update({
   id: '/restaurants/',
   path: '/restaurants/',
@@ -334,6 +340,7 @@ export interface FileRoutesByFullPath {
   '/stores/$id': typeof StoresIdRoute
   '/ads/': typeof AdsIndexRoute
   '/orders/': typeof OrdersIndexRoute
+  '/pharmacies/': typeof PharmaciesIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
   '/service-requests/': typeof ServiceRequestsIndexRoute
   '/services/': typeof ServicesIndexRoute
@@ -383,6 +390,7 @@ export interface FileRoutesByTo {
   '/stores/$id': typeof StoresIdRoute
   '/ads': typeof AdsIndexRoute
   '/orders': typeof OrdersIndexRoute
+  '/pharmacies': typeof PharmaciesIndexRoute
   '/restaurants': typeof RestaurantsIndexRoute
   '/service-requests': typeof ServiceRequestsIndexRoute
   '/services': typeof ServicesIndexRoute
@@ -433,6 +441,7 @@ export interface FileRoutesById {
   '/stores/$id': typeof StoresIdRoute
   '/ads/': typeof AdsIndexRoute
   '/orders/': typeof OrdersIndexRoute
+  '/pharmacies/': typeof PharmaciesIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
   '/service-requests/': typeof ServiceRequestsIndexRoute
   '/services/': typeof ServicesIndexRoute
@@ -484,6 +493,7 @@ export interface FileRouteTypes {
     | '/stores/$id'
     | '/ads/'
     | '/orders/'
+    | '/pharmacies/'
     | '/restaurants/'
     | '/service-requests/'
     | '/services/'
@@ -533,6 +543,7 @@ export interface FileRouteTypes {
     | '/stores/$id'
     | '/ads'
     | '/orders'
+    | '/pharmacies'
     | '/restaurants'
     | '/service-requests'
     | '/services'
@@ -582,6 +593,7 @@ export interface FileRouteTypes {
     | '/stores/$id'
     | '/ads/'
     | '/orders/'
+    | '/pharmacies/'
     | '/restaurants/'
     | '/service-requests/'
     | '/services/'
@@ -632,6 +644,7 @@ export interface RootRouteChildren {
   StoresIdRoute: typeof StoresIdRoute
   AdsIndexRoute: typeof AdsIndexRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
+  PharmaciesIndexRoute: typeof PharmaciesIndexRoute
   RestaurantsIndexRoute: typeof RestaurantsIndexRoute
   ServiceRequestsIndexRoute: typeof ServiceRequestsIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
@@ -902,6 +915,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrdersIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pharmacies/': {
+      id: '/pharmacies/'
+      path: '/pharmacies'
+      fullPath: '/pharmacies/'
+      preLoaderRoute: typeof PharmaciesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/restaurants/': {
       id: '/restaurants/'
       path: '/restaurants'
@@ -1016,6 +1036,7 @@ const rootRouteChildren: RootRouteChildren = {
   StoresIdRoute: StoresIdRoute,
   AdsIndexRoute: AdsIndexRoute,
   OrdersIndexRoute: OrdersIndexRoute,
+  PharmaciesIndexRoute: PharmaciesIndexRoute,
   RestaurantsIndexRoute: RestaurantsIndexRoute,
   ServiceRequestsIndexRoute: ServiceRequestsIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
