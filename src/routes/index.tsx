@@ -161,7 +161,17 @@ function CustomerHome() {
         </section>
       ) : (
         <>
+          <section className="mt-6 px-4">
+            <h2 className="mb-3 text-base font-bold">خدماتك وطلباتك لبابك</h2>
+            <div className="grid grid-cols-3 gap-3">
+              {MAIN_SERVICES.map((s) => (
+                <MainTile key={s.to + s.label} item={s} />
+              ))}
+            </div>
+          </section>
+
           {(data?.sections ?? []).map((section) => {
+
             const services = (data?.services ?? []).filter(
               (s) => s.section_id === section.id && s.placement.includes("home"),
             );
