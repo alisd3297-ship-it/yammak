@@ -48,7 +48,8 @@ function DriverDashboard() {
   const { data: history } = useDriverHistory();
   const actions = useDriverActions();
 
-  useDriverPresence(!!worker?.is_available);
+  const isOnline = !!worker?.is_available;
+  useDriverPresence(isOnline);
 
   const focusedOfferRef = useRef<HTMLElement | null>(null);
   useEffect(() => {
