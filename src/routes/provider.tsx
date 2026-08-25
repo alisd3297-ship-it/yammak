@@ -14,7 +14,14 @@ import { Switch } from "@/components/ui/switch";
 import { useAccount } from "@/lib/auth";
 import { dispatchOrder } from "@/lib/dispatch.functions";
 import { changeOrderStatus } from "@/lib/orders.functions";
-import { ORDER_STATUS_LABELS, formatIQD, statusTone, type OrderStatus } from "@/lib/orders";
+import {
+  ORDER_STATUS_LABELS,
+  FULFILLMENT_LABELS,
+  asFulfillment,
+  formatIQD,
+  statusTone,
+  type OrderStatus,
+} from "@/lib/orders";
 
 import { requireProvider } from "@/lib/route-guards";
 
@@ -66,7 +73,9 @@ function ProviderDashboard() {
     queryFn: async () => {
       const { data } = await supabase
         .from("orders")
-        .select("id, code, status, total, notes, dropoff_text, created_at, order_items(name, quantity)")
+        .select(
+          "id, code, status, total, notes, dropoff_text, created_at, fulfillment, party_size, scheduled_at, order_items(name, quantity)",
+        )
         .eq("provider_id", provider!.id)
         .order("created_at", { ascending: false })
         .limit(40);
@@ -82,14 +91,14 @@ function ProviderDashboard() {
     qc.invalidateQueries({ queryKey: ["my-provider"] });
   }
 
-  async function advance(orderId: string, next: OrderStatus) {
+  async function advance(orderId: string, next: OrderStatus, pickup = false) {
     try {
       await setStatus({ data: { orderId, status: next } });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "تعذر تحديث الطلب");
       return;
     }
-    if (next === "ready_for_pickup") {
+    if (next === "ready_for_pickup" && !pickup) {
       try {
         const res = await dispatch({ data: { orderId } });
         toast.success(res.message);
@@ -209,7 +218,12 @@ function ProviderDashboard() {
         )}
 
         {(orders ?? []).map((o) => {
-          const step = NEXT_STEP[o.status as OrderStatus];
+          const ful = asFulfillment(o.fulfillment);
+          const pickup = ful !== "delivery";
+          const step =
+            pickup && o.status === "ready_for_pickup"
+              ? { next: "completed" as OrderStatus, label: "تم تسليم الطلب للزبون" }
+              : NEXT_STEP[o.status as OrderStatus];
           return (
             <article key={o.id} className="rounded-2xl bg-card p-4 shadow-soft">
               <div className="flex items-center justify-between">
@@ -219,6 +233,9 @@ function ProviderDashboard() {
               <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
                 <StatusDot tone={statusTone(o.status as OrderStatus)} />
                 {ORDER_STATUS_LABELS[o.status as OrderStatus]}
+                <span className="rounded-full bg-accent px-2 py-0.5 font-bold text-accent-foreground">
+                  {FULFILLMENT_LABELS[ful]}
+                </span>
               </p>
               <ul className="mt-2 text-sm text-muted-foreground">
                 {(o.order_items as { name: string; quantity: number }[] | null)?.map((i, idx) => (
@@ -227,11 +244,17 @@ function ProviderDashboard() {
                   </li>
                 ))}
               </ul>
-              <p className="mt-2 text-xs text-muted-foreground">التوصيل إلى: {o.dropoff_text}</p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {pickup
+                  ? ful === "dine_in"
+                    ? `حجز بالصالة${o.party_size ? ` · ${o.party_size} أشخاص` : ""}${o.scheduled_at ? ` · ${new Date(o.scheduled_at).toLocaleString("ar-IQ-u-nu-latn")}` : ""}`
+                    : "سفري: الزبون يستلم من المحل"
+                  : `التوصيل إلى: ${o.dropoff_text}`}
+              </p>
               {o.notes && <p className="text-xs text-muted-foreground">ملاحظات: {o.notes}</p>}
               {step && (
                 <div className="mt-3 flex gap-2">
-                  <Button className="h-10 flex-1" onClick={() => advance(o.id, step.next)}>
+                  <Button className="h-10 flex-1" onClick={() => advance(o.id, step.next, pickup)}>
                     {step.label}
                   </Button>
                   <Button variant="outline" className="h-10" onClick={() => cancel(o.id)}>
