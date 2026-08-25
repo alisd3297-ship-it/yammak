@@ -41,6 +41,7 @@ import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
 import { Route as AdminProvidersRouteImport } from './routes/admin.providers'
 import { Route as AdminRefundsRouteImport } from './routes/admin.refunds'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminSectionsRouteImport } from './routes/admin.sections'
 import { Route as AdminServicesRouteImport } from './routes/admin.services'
 import { Route as AdminSettlementsRouteImport } from './routes/admin.settlements'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
@@ -226,6 +227,11 @@ const AdminReportsRoute = AdminReportsRouteImport.update({
   path: '/admin/reports',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSectionsRoute = AdminSectionsRouteImport.update({
+  id: '/admin/sections',
+  path: '/admin/sections',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminServicesRoute = AdminServicesRouteImport.update({
   id: '/admin/services',
   path: '/admin/services',
@@ -379,6 +385,7 @@ export interface FileRoutesByFullPath {
   '/admin/providers': typeof AdminProvidersRoute
   '/admin/refunds': typeof AdminRefundsRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/sections': typeof AdminSectionsRoute
   '/admin/services': typeof AdminServicesRoute
   '/admin/settlements': typeof AdminSettlementsRoute
   '/admin/users': typeof AdminUsersRoute
@@ -437,6 +444,7 @@ export interface FileRoutesByTo {
   '/admin/providers': typeof AdminProvidersRoute
   '/admin/refunds': typeof AdminRefundsRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/sections': typeof AdminSectionsRoute
   '/admin/services': typeof AdminServicesRoute
   '/admin/settlements': typeof AdminSettlementsRoute
   '/admin/users': typeof AdminUsersRoute
@@ -496,6 +504,7 @@ export interface FileRoutesById {
   '/admin/providers': typeof AdminProvidersRoute
   '/admin/refunds': typeof AdminRefundsRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/sections': typeof AdminSectionsRoute
   '/admin/services': typeof AdminServicesRoute
   '/admin/settlements': typeof AdminSettlementsRoute
   '/admin/users': typeof AdminUsersRoute
@@ -556,6 +565,7 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/admin/refunds'
     | '/admin/reports'
+    | '/admin/sections'
     | '/admin/services'
     | '/admin/settlements'
     | '/admin/users'
@@ -614,6 +624,7 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/admin/refunds'
     | '/admin/reports'
+    | '/admin/sections'
     | '/admin/services'
     | '/admin/settlements'
     | '/admin/users'
@@ -672,6 +683,7 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/admin/refunds'
     | '/admin/reports'
+    | '/admin/sections'
     | '/admin/services'
     | '/admin/settlements'
     | '/admin/users'
@@ -731,6 +743,7 @@ export interface RootRouteChildren {
   AdminProvidersRoute: typeof AdminProvidersRoute
   AdminRefundsRoute: typeof AdminRefundsRoute
   AdminReportsRoute: typeof AdminReportsRoute
+  AdminSectionsRoute: typeof AdminSectionsRoute
   AdminServicesRoute: typeof AdminServicesRoute
   AdminSettlementsRoute: typeof AdminSettlementsRoute
   AdminUsersRoute: typeof AdminUsersRoute
@@ -984,6 +997,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/sections': {
+      id: '/admin/sections'
+      path: '/admin/sections'
+      fullPath: '/admin/sections'
+      preLoaderRoute: typeof AdminSectionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/services': {
       id: '/admin/services'
       path: '/admin/services'
@@ -1187,6 +1207,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminProvidersRoute: AdminProvidersRoute,
   AdminRefundsRoute: AdminRefundsRoute,
   AdminReportsRoute: AdminReportsRoute,
+  AdminSectionsRoute: AdminSectionsRoute,
   AdminServicesRoute: AdminServicesRoute,
   AdminSettlementsRoute: AdminSettlementsRoute,
   AdminUsersRoute: AdminUsersRoute,
