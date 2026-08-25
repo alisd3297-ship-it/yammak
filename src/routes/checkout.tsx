@@ -294,10 +294,14 @@ function CheckoutPage() {
 
           <section className="rounded-2xl bg-card p-4 text-sm shadow-soft">
             <Row label="مجموع الطلب" value={formatIQD(cart.total)} />
-            <Row
-              label="أجرة التوصيل"
-              value={deliveryFee == null ? "يتم الحساب…" : formatIQD(deliveryFee)}
-            />
+            {fulfillment === "delivery" ? (
+              <Row
+                label="أجرة التوصيل"
+                value={deliveryFee == null ? "يتم الحساب…" : formatIQD(deliveryFee)}
+              />
+            ) : (
+              <Row label="أجرة التوصيل" value="بدون توصيل" />
+            )}
             <div className="mt-2 border-t border-border pt-2">
               <Row
                 label="الإجمالي"
@@ -311,8 +315,9 @@ function CheckoutPage() {
           </section>
 
           <Button className="h-13 w-full text-base" disabled={saving} onClick={submitOrder}>
-            تأكيد الطلب
+            {fulfillment === "dine_in" ? "تأكيد الحجز" : "تأكيد الطلب"}
           </Button>
+
         </div>
       )}
 
