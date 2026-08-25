@@ -10,18 +10,19 @@ import { BackButton, BottomNav, OfflineBanner, PageShell  } from "@/components/a
 import { Input } from "@/components/ui/input";
 import { fuzzyScore } from "@/lib/search";
 import { cn } from "@/lib/utils";
+import { isPharmacyProvider } from "@/lib/verticals";
 
 export const Route = createFileRoute("/stores/")({
   beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
-      { title: "المنتجات والمتاجر | لبابك" },
+      { title: "سوبر ماركت ومتاجر | لبابك" },
       {
         name: "description",
-        content: "تسوّق من سوبرماركت وصيدليات ومتاجر مدينتك واستلم طلبك عبر مندوب لبابك.",
+        content: "تسوّق من السوبر ماركت والمتاجر المسجلة في مدينتك واستلم طلبك عبر مندوب لبابك.",
       },
-      { property: "og:title", content: "المنتجات والمتاجر | لبابك" },
-      { property: "og:description", content: "متاجر قريبة منك مع توصيل سريع." },
+      { property: "og:title", content: "سوبر ماركت ومتاجر | لبابك" },
+      { property: "og:description", content: "سوبر ماركت ومتاجر قريبة منك مع توصيل سريع." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -51,7 +52,8 @@ function StoresPage() {
       .select("id, name, description, rating, orders_count, is_open, keywords, lat, lng, address_text")
       .eq("status", "approved")
       .eq("kind", "store");
-    return data ?? [];
+    // الصيدليات لها صفحتها المستقلة /pharmacies
+    return (data ?? []).filter((p) => !isPharmacyProvider(p));
   });
 
   const tags = useMemo(() => {
@@ -104,8 +106,8 @@ function StoresPage() {
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
         <BackButton fallback="/" label="رجوع" />
-        <h1 className="text-2xl font-black">المنتجات والمتاجر</h1>
-        <p className="mt-1 text-sm opacity-90">سوبرماركت، صيدليات، ومتاجر قريبة منك</p>
+        <h1 className="text-2xl font-black">سوبر ماركت ومتاجر</h1>
+        <p className="mt-1 text-sm opacity-90">سوبر ماركت وبقالة ومتاجر قريبة منك</p>
       </header>
 
       <div className="px-4">
