@@ -55,7 +55,7 @@ export const SHOP_SPECIALTIES: ShopSpecialty[] = [
     label: "عطور وتجميل",
     hint: "عطور ومستحضرات",
     icon: "Sparkles",
-    terms: ["عطور", "عطر", "تجميل", "مكياج", "كوزمetics", "perfume", "cosmetic", "makeup"],
+    terms: ["عطور", "عطر", "تجميل", "مكياج", "perfume", "cosmetic", "makeup"],
   },
   {
     slug: "clothes",
