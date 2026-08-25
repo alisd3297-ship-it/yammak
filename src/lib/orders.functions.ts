@@ -40,6 +40,9 @@ export const createOrder = createServerFn({ method: "POST" })
       lat?: number | null;
       lng?: number | null;
       notes?: string | null;
+      fulfillment?: "delivery" | "takeaway" | "dine_in";
+      partySize?: number | null;
+      scheduledAt?: string | null;
     }) => data,
   )
   .handler(async ({ data, context }) => {
