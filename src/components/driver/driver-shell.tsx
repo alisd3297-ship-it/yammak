@@ -2,7 +2,7 @@ import { useEffect, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Bell, Bike, ClipboardList, LogOut, Power, User, Wallet } from "lucide-react";
+import { Bell, Bike, ClipboardList, LogOut, Map, Power, User, Wallet } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/app-shell";
 import { useAccount } from "@/lib/auth";
@@ -230,6 +230,7 @@ export function DriverShell({
 const DRIVER_NAV = [
   { to: "/driver", label: "الرئيسية", icon: Bike, exact: true },
   { to: "/driver-tasks", label: "الطلبات", icon: ClipboardList, exact: false },
+  { to: "/driver-map", label: "الخريطة", icon: Map, exact: false },
   { to: "/driver-earnings", label: "أرباحي", icon: Wallet, exact: false },
   { to: "/driver-account", label: "حسابي", icon: User, exact: false },
 ] as const;
