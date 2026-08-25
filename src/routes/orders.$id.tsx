@@ -89,7 +89,9 @@ function OrderTrackPage() {
   const isPickup = !courier && fulfillment !== "delivery";
   const flow: OrderStatus[] = courier ? COURIER_STATUS_FLOW : customerFlowFor(fulfillment);
   const activeIndex = flow.indexOf(status);
-  const provider = order?.providers as { name: string; phone: string | null } | null;
+  const provider = order?.providers as
+    | { name: string; phone: string | null; address_text: string | null }
+    | null;
   const driverId = order?.driver_id ?? null;
   const tracking = !!driverId && TRACKING_STATUSES.includes(status);
 
