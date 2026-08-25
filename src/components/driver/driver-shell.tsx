@@ -222,6 +222,37 @@ export function DriverShell({
         )}
       </header>
       {children}
+      <DriverNav />
     </PageShell>
+  );
+}
+
+const DRIVER_NAV = [
+  { to: "/driver", label: "الرئيسية", icon: Bike, exact: true },
+  { to: "/driver-tasks", label: "الطلبات", icon: ClipboardList, exact: false },
+  { to: "/driver-earnings", label: "أرباحي", icon: Wallet, exact: false },
+  { to: "/driver-account", label: "حسابي", icon: User, exact: false },
+] as const;
+
+/** شريط تنقل سفلي خاص بالمندوب بأزرار كبيرة سهلة أثناء القيادة. */
+function DriverNav() {
+  return (
+    <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-[34rem] border-t border-border bg-card/95 backdrop-blur">
+      <ul className="flex items-stretch justify-around">
+        {DRIVER_NAV.map((item) => (
+          <li key={item.to} className="flex-1">
+            <Link
+              to={item.to}
+              className="flex flex-col items-center gap-1 py-3 text-xs text-muted-foreground"
+              activeProps={{ className: "text-primary font-semibold" }}
+              activeOptions={{ exact: item.exact }}
+            >
+              <item.icon className="size-6" />
+              {item.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 }
