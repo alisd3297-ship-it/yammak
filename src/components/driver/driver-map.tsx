@@ -13,8 +13,8 @@ export function DriverMap({
   dropoff,
   target,
 }: {
-  pickup?: Point | null;
-  dropoff?: Point | null;
+  pickup: Point | null;
+  dropoff: Point | null;
   target: "pickup" | "dropoff";
 }) {
   const [me, setMe] = useState<{ lat: number; lng: number } | null>(null);
@@ -58,7 +58,7 @@ function MapLink({
   label,
   active,
 }: {
-  point?: Point | null;
+  point: Point | null;
   me: { lat: number; lng: number } | null;
   label: string;
   active: boolean;
