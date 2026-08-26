@@ -1,9 +1,16 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+type AuthedSupabase = Parameters<typeof requireSupabaseAuth extends never ? never : never>;
+
 /** التحقق أن المستخدم يملك المحل (أو من طاقم الإدارة). */
 async function assertProviderAccess(
-  supabase: { rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown }> },
+  supabase: {
+    rpc: {
+      (fn: "owns_provider", args: { _user_id: string; _provider_id: string }): PromiseLike<{ data: unknown }>;
+      (fn: "is_staff", args: { _user_id: string }): PromiseLike<{ data: unknown }>;
+    };
+  },
   userId: string,
   providerId: string,
 ): Promise<void> {
@@ -13,6 +20,7 @@ async function assertProviderAccess(
   ]);
   if (owns.data !== true && staff.data !== true) throw new Error("غير مخوّل بإدارة قوائم هذا المحل");
 }
+
 
 /** إضافة زبون إلى «قوائم الزبائن» عبر رقم هاتفه — للتاجر فقط. */
 export const openCustomerTab = createServerFn({ method: "POST" })
