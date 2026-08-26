@@ -1,7 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-type AuthedSupabase = Parameters<typeof requireSupabaseAuth extends never ? never : never>;
+
+
 
 /** التحقق أن المستخدم يملك المحل (أو من طاقم الإدارة). */
 async function assertProviderAccess(
