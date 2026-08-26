@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { provisionTestAdmin } from "@/lib/admin-setup.functions";
+import { provisionTestAdmin, setupToolsStatus } from "@/lib/admin-setup.functions";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,6 +26,8 @@ export const Route = createFileRoute("/setup-test-admin")({
 
 function SetupTestAdminPage() {
   const provision = useServerFn(provisionTestAdmin);
+  const statusFn = useServerFn(setupToolsStatus);
+  const { data: tools } = useQuery({ queryKey: ["setup-tools-status"], queryFn: () => statusFn({}) });
   const [token, setToken] = useState("");
   const [email, setEmail] = useState("qa.admin@yammak.test");
   const [password, setPassword] = useState("");
@@ -42,6 +45,7 @@ function SetupTestAdminPage() {
           server_token_missing: "رمز الإعداد غير مضبوط على الخادم — أضِف ADMIN_SETUP_TOKEN في إعدادات المشروع",
           invalid_email: "استخدم بريداً بنطاق yammak.test فقط",
           weak_password: "كلمة المرور قصيرة، استخدم 10 أحرف على الأقل",
+          setup_disabled: "أدوات الإعداد معطّلة على هذه البيئة",
         };
         toast.error(
           messages[res.reason] ??
@@ -69,7 +73,11 @@ function SetupTestAdminPage() {
         كلمة مروره) بنطاق <span dir="ltr">@yammak.test</span> فقط، ولا تُخزَّن أي بيانات اعتماد داخل الكود.
       </p>
 
-      {done ? (
+      {tools && !tools.enabled ? (
+        <div className="mt-6 rounded-2xl bg-card p-5 text-sm shadow-card">
+          أدوات الإعداد معطّلة على هذه البيئة (الإنتاج).
+        </div>
+      ) : done ? (
         <div className="mt-6 space-y-3 rounded-2xl bg-card p-5 text-sm shadow-card">
           <p>
             الحساب جاهز: <span dir="ltr" className="font-semibold">{done}</span> بصلاحية «admin».
