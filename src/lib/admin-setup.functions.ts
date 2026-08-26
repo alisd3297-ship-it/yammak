@@ -44,6 +44,13 @@ export const superAdminExists = createServerFn({ method: "GET" }).handler(async 
   return { exists: (count ?? 0) > 0 };
 });
 
+/** هل أدوات الإعداد/حسابات الاختبار مفعّلة على هذا الخادم؟ (مغلقة على الإنتاج) */
+export const setupToolsStatus = createServerFn({ method: "GET" }).handler(async () => {
+  const { setupToolsEnabled } = await import("@/lib/admin-setup.server");
+  return { enabled: setupToolsEnabled() };
+});
+
+
 /**
  * تجهيز حساب مدير تجريبي (اختبار بين عدة أجهزة).
  * محمي برمز الإعداد السري ADMIN_SETUP_TOKEN، ومحصور على نطاق البريد @yammak.test،
