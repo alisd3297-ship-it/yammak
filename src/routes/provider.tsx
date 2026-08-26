@@ -53,6 +53,8 @@ function ProviderDashboard() {
   const setStatus = useServerFn(changeOrderStatus);
 
   const [tab, setTab] = useState<"orders" | "catalog" | "tabs">("orders");
+  const [savingOpen, setSavingOpen] = useState(false);
+  const signOut = useSignOut();
 
   const { data: provider } = useQuery({
     queryKey: ["my-provider", account?.userId],
