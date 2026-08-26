@@ -88,6 +88,14 @@ function ProviderDashboard() {
     },
   });
 
+  // تنبيه صوتي + مرئي للتاجر/مقدم الخدمة عند وصول طلب جديد أو تحديث مهم
+  useAlertNotifications(account?.userId ?? null, {
+    onInsert: () => {
+      qc.invalidateQueries({ queryKey: ["provider-orders"] });
+      qc.invalidateQueries({ queryKey: ["provider-service-requests"] });
+    },
+  });
+
   const isProfession = provider?.kind === "profession";
 
   async function toggleOpen(open: boolean) {
