@@ -34,6 +34,8 @@ function StorePage() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const cart = useCart();
+  const [view, setView] = useState<"products" | "tab">("products");
+
 
   const { data } = useQuery({
     queryKey: ["store", id],
