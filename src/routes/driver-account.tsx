@@ -6,7 +6,8 @@ import { BackButton } from "@/components/app-shell";
 import { DriverShell } from "@/components/driver/driver-shell";
 import { useAccount } from "@/lib/auth";
 import { useDriverActions, useWorkerProfile } from "@/lib/driver-data";
-import { vehicleLabel } from "@/lib/vehicles";
+import { DRIVER_VEHICLE_ORDER, VEHICLE_HINTS, VEHICLE_LABELS, vehicleLabel } from "@/lib/vehicles";
+import { cn } from "@/lib/utils";
 import { requireWorker } from "@/lib/route-guards";
 
 export const Route = createFileRoute("/driver-account")({
