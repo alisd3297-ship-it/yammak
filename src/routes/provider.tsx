@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 
 import { useAccount } from "@/lib/auth";
 import { useSignOut } from "@/lib/sign-out";
+import { useAlertNotifications } from "@/lib/notify-alerts";
 import { Bell, LogOut, Power } from "lucide-react";
 import { dispatchOrder } from "@/lib/dispatch.functions";
 import { changeOrderStatus } from "@/lib/orders.functions";
