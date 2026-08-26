@@ -51,6 +51,7 @@ function StoresPage() {
       .from("providers")
       .select("id, name, description, rating, orders_count, is_open, keywords, lat, lng, address_text")
       .eq("status", "approved")
+        .eq("is_demo", false)
       .eq("kind", "store");
     // الصيدليات لها صفحتها المستقلة /pharmacies
     return (data ?? []).filter((p) => !isPharmacyProvider(p));

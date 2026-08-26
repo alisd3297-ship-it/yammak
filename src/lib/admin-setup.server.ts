@@ -1,5 +1,14 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 
+/**
+ * أدوات الإعداد وحسابات الاختبار مغلقة افتراضياً.
+ * لتشغيلها في بيئة اختبار: اضبط ENABLE_SETUP_TOOLS=true في أسرار المشروع.
+ * على الإنتاج تبقى مغلقة حتى لو عُرف رمز الإعداد.
+ */
+export function setupToolsEnabled(): boolean {
+  return (process.env["ENABLE_SETUP_TOOLS"] ?? "").trim().toLowerCase() === "true";
+}
+
 /** مقارنة رمز الإعداد بشكل آمن زمنياً. */
 export function setupTokenMatches(input: string): boolean {
   // تُقرأ القيمة وقت التنفيذ (داخل معالج الدالة) وليس وقت البناء
@@ -11,6 +20,7 @@ export function setupTokenMatches(input: string): boolean {
 }
 
 export const TEST_EMAIL_RE = /^[a-z0-9._-]+@(yammak|lubabak)\.test$/;
+
 
 /** إنشاء حساب اختبار أو تحديث كلمة مروره، وإرجاع معرّفه. */
 export async function upsertTestAuthUser(

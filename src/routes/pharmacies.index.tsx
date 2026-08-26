@@ -37,6 +37,7 @@ function PharmaciesPage() {
       .from("providers")
       .select("id, name, description, rating, is_open, keywords, address_text")
       .eq("status", "approved")
+        .eq("is_demo", false)
       .eq("kind", "store");
     return (data ?? []).filter(isPharmacyProvider);
   });

@@ -90,6 +90,7 @@ export type Database = {
           governorate: string | null
           id: string
           images: string[]
+          is_demo: boolean
           owner_id: string
           price: number | null
           published_at: string | null
@@ -113,6 +114,7 @@ export type Database = {
           governorate?: string | null
           id?: string
           images?: string[]
+          is_demo?: boolean
           owner_id: string
           price?: number | null
           published_at?: string | null
@@ -136,6 +138,7 @@ export type Database = {
           governorate?: string | null
           id?: string
           images?: string[]
+          is_demo?: boolean
           owner_id?: string
           price?: number | null
           published_at?: string | null
@@ -1533,6 +1536,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_demo: boolean
           is_open: boolean
           keywords: string[]
           kind: Database["public"]["Enums"]["provider_kind"]
@@ -1560,6 +1564,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_demo?: boolean
           is_open?: boolean
           keywords?: string[]
           kind?: Database["public"]["Enums"]["provider_kind"]
@@ -1587,6 +1592,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_demo?: boolean
           is_open?: boolean
           keywords?: string[]
           kind?: Database["public"]["Enums"]["provider_kind"]
@@ -2703,6 +2709,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_demo: boolean
           is_open: boolean
           keywords: string[]
           kind: Database["public"]["Enums"]["provider_kind"]
@@ -3025,6 +3032,7 @@ export type Database = {
           governorate: string | null
           id: string
           images: string[]
+          is_demo: boolean
           owner_id: string
           price: number | null
           published_at: string | null
@@ -3454,6 +3462,7 @@ export type Database = {
       expire_ads: { Args: never; Returns: number }
       expire_due_ads: { Args: never; Returns: number }
       expire_stale_offers: { Args: { _order_id?: string }; Returns: number }
+      expire_stale_orders: { Args: never; Returns: Json }
       expire_stale_trip_offers: { Args: { _trip_id?: string }; Returns: number }
       feature_enabled: {
         Args: { _key: string; _user_id?: string }
@@ -3848,6 +3857,7 @@ export type Database = {
           governorate: string | null
           id: string
           images: string[]
+          is_demo: boolean
           owner_id: string
           price: number | null
           published_at: string | null
@@ -3883,6 +3893,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_demo: boolean
           is_open: boolean
           keywords: string[]
           kind: Database["public"]["Enums"]["provider_kind"]

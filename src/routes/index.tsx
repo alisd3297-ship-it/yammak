@@ -46,6 +46,7 @@ type ProviderRow = {
   avg_prep_minutes: number;
   is_open: boolean;
   keywords: string[];
+  kind: string;
 };
 
 type MainService = {
@@ -115,9 +116,9 @@ function CustomerHome() {
 
       supabase
         .from("providers")
-        .select("id, name, description, rating, orders_count, avg_prep_minutes, is_open, keywords")
+        .select("id, name, description, rating, orders_count, avg_prep_minutes, is_open, keywords, kind")
         .eq("status", "approved")
-        .eq("kind", "restaurant"),
+        .eq("is_demo", false),
     ]);
     return {
       sections: (sections.data ?? []) as SectionRow[],
@@ -191,7 +192,7 @@ function CustomerHome() {
             )}
           </div>
           <div>
-            <h2 className="mb-3 text-base font-bold">المطاعم</h2>
+            <h2 className="mb-3 text-base font-bold">المطاعم والمتاجر ومقدمو الخدمة</h2>
             {results.providers.length ? (
               <div className="space-y-3">
                 {results.providers.map((p) => (
@@ -199,7 +200,7 @@ function CustomerHome() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">ما لكينا مطعم بهذا الاسم.</p>
+              <p className="text-sm text-muted-foreground">ما لكينا نتيجة بهذا الاسم.</p>
             )}
           </div>
         </section>
@@ -281,10 +282,17 @@ function ServiceTile({ service }: { service: ServiceRow }) {
   );
 }
 
+/** وجهة البطاقة حسب نوع مقدم الخدمة حتى لا يفتح البحث الصفحة الخطأ. */
+function providerHref(kind: string): "/restaurants/$id" | "/stores/$id" | "/services/$id" {
+  if (kind === "restaurant") return "/restaurants/$id";
+  if (kind === "profession") return "/services/$id";
+  return "/stores/$id";
+}
+
 function ProviderCard({ provider }: { provider: ProviderRow }) {
   return (
     <Link
-      to="/restaurants/$id"
+      to={providerHref(provider.kind)}
       params={{ id: provider.id }}
       className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft transition active:scale-[0.99]"
     >

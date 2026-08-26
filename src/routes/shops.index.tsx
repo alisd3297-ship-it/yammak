@@ -38,6 +38,7 @@ function ShopsPage() {
       .from("providers")
       .select("id, name, description, keywords")
       .eq("status", "approved")
+        .eq("is_demo", false)
       .eq("kind", "store");
     return data ?? [];
   });

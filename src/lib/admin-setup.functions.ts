@@ -44,6 +44,13 @@ export const superAdminExists = createServerFn({ method: "GET" }).handler(async 
   return { exists: (count ?? 0) > 0 };
 });
 
+/** هل أدوات الإعداد/حسابات الاختبار مفعّلة على هذا الخادم؟ (مغلقة على الإنتاج) */
+export const setupToolsStatus = createServerFn({ method: "GET" }).handler(async () => {
+  const { setupToolsEnabled } = await import("@/lib/admin-setup.server");
+  return { enabled: setupToolsEnabled() };
+});
+
+
 /**
  * تجهيز حساب مدير تجريبي (اختبار بين عدة أجهزة).
  * محمي برمز الإعداد السري ADMIN_SETUP_TOKEN، ومحصور على نطاق البريد @yammak.test،
@@ -56,6 +63,8 @@ export const provisionTestAdmin = createServerFn({ method: "POST" })
     password: String(data?.password ?? ""),
   }))
   .handler(async ({ data }) => {
+    const { setupToolsEnabled } = await import("@/lib/admin-setup.server");
+    if (!setupToolsEnabled()) return { ok: false as const, reason: "setup_disabled" };
     const { createHash, timingSafeEqual } = await import("node:crypto");
     const expected = process.env["ADMIN_SETUP_TOKEN"];
     // لا نرمي استثناءً حتى لا يُبتلع السبب ويظهر كرسالة «تعذر» عامة
@@ -130,8 +139,9 @@ export const provisionTestAccount = createServerFn({ method: "POST" })
     password: String(data?.password ?? ""),
   }))
   .handler(async ({ data }) => {
-    if (!process.env["ADMIN_SETUP_TOKEN"]) return { ok: false as const, reason: "server_token_missing" };
     const helpers = await import("@/lib/admin-setup.server");
+    if (!helpers.setupToolsEnabled()) return { ok: false as const, reason: "setup_disabled" };
+    if (!process.env["ADMIN_SETUP_TOKEN"]) return { ok: false as const, reason: "server_token_missing" };
     if (!helpers.setupTokenMatches(data.token)) return { ok: false as const, reason: "invalid_token" };
     if (!helpers.TEST_EMAIL_RE.test(data.email)) return { ok: false as const, reason: "invalid_email" };
     if (data.password.length < 10) return { ok: false as const, reason: "weak_password" };
