@@ -7,13 +7,13 @@ import type { CapacitorConfig } from "@capacitor/cli";
  * لذلك لا حاجة لإعادة هيكلة الباك-إند أو تصدير موقع ثابت.
  * webDir موجود فقط لأن Capacitor يتطلبه (نسخة احتياطية من dist/client).
  *
- * الخطوات الفعلية للبناء ورفع المتاجر تتم خارج Lovable:
- *   npm run build
- *   npx cap add android && npx cap add ios && npx cap sync
- * الأيقونة المصدر: src/assets/app-icon.png (1024×1024)، وشعار الويب: public/icon-512.png
+ * ملاحظة مهمة: appId ثابت بعد أول رفع للمتاجر ولا يجوز تغييره لاحقاً.
+ * النطاق المعتمد للإنتاج: lubabak.lovable.app
  */
+const PRODUCTION_HOST = "lubabak.lovable.app";
+
 const config: CapacitorConfig = {
-  appId: "iq.yammak.app",
+  appId: "iq.lubabak.app",
   appName: "لبابك",
   webDir: "dist/client",
   android: {
@@ -25,12 +25,12 @@ const config: CapacitorConfig = {
   },
   server: {
     // Hosted Wrapper: يفتح التطبيق نسخة الإنتاج المنشورة.
-    url: "https://yammak.lovable.app",
+    url: `https://${PRODUCTION_HOST}`,
     androidScheme: "https",
     iosScheme: "https",
-    hostname: "yammak.lovable.app",
+    hostname: PRODUCTION_HOST,
     cleartext: false,
-    allowNavigation: ["yammak.lovable.app", "*.supabase.co", "*.stripe.com"],
+    allowNavigation: [PRODUCTION_HOST, "*.lovable.app", "*.supabase.co", "*.stripe.com"],
   },
   plugins: {
     SplashScreen: {
