@@ -325,13 +325,18 @@ function TabEditor({ tabId, providerId }: { tabId: string; providerId: string })
         <p className="mb-2 text-xs font-bold text-muted-foreground">سجل الدفعات</p>
         {(data?.payments ?? []).length ? (
           <ul className="divide-y divide-border">
-            {(data?.payments ?? []).map((p) => (
+            {paymentsWithRemaining(data?.payments ?? [], totals.grandTotal).map((p) => (
               <li key={p.id} className="flex items-center justify-between py-2 text-sm">
                 <span className="text-xs text-muted-foreground">
                   {new Date(p.created_at).toLocaleString("ar-IQ-u-nu-latn")}
                   {p.note ? ` · ${p.note}` : ""}
                 </span>
-                <span className="font-bold text-success">{formatIQD(Number(p.amount))}</span>
+                <span className="text-end">
+                  <span className="block font-bold text-success">{formatIQD(Number(p.amount))}</span>
+                  <span className="block text-[11px] text-muted-foreground">
+                    المتبقي بعدها: {formatIQD(p.remainingAfter)}
+                  </span>
+                </span>
               </li>
             ))}
           </ul>
