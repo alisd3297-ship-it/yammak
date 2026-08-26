@@ -8,6 +8,7 @@ import { PageShell } from "@/components/app-shell";
 import { useAccount } from "@/lib/auth";
 import { useSignOut } from "@/lib/sign-out";
 import { OPERATING_LOCATION_COORDS } from "@/lib/location";
+import { fireAlert, requestNotificationPermission, unlockAlertSound } from "@/lib/notify-alerts";
 import { cn } from "@/lib/utils";
 
 /** بث موقع المندوب أثناء التوفر + تنبيهه لحظياً بالعروض الجديدة. */
@@ -94,30 +95,20 @@ export function useDriverPresence(isAvailable: boolean) {
   }, [userId, isAvailable]);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    const unlock = () => unlockAlertSound();
+    window.addEventListener("pointerdown", unlock, { once: true });
+    window.addEventListener("keydown", unlock, { once: true });
+    return () => {
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!userId || typeof window === "undefined") return;
 
-    if ("Notification" in window && Notification.permission === "default") {
-      void Notification.requestPermission();
-    }
-
-    const alert = (title: string, body: string, orderId: string | null) => {
-      toast.info(title, { description: body || undefined });
-      try {
-        if ("Notification" in window && Notification.permission === "granted") {
-          const n = new Notification(title, {
-            body: body || title,
-            icon: "/icon-192.png",
-            ...(orderId ? { tag: orderId } : {}),
-          });
-          n.onclick = () => {
-            window.focus();
-            if (orderId) window.location.assign(`/driver?order=${orderId}`);
-          };
-        }
-      } catch {
-        // بعض المتصفحات تمنع الإشعارات، والتنبيه داخل التطبيق يكفي
-      }
-    };
+    requestNotificationPermission();
 
     const channel = supabase
       .channel(`driver-alerts-${userId}`)
@@ -126,7 +117,12 @@ export function useDriverPresence(isAvailable: boolean) {
         { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
         (payload) => {
           const row = payload.new as { title: string; body: string | null; order_id: string | null };
-          alert(row.title, row.body ?? "", row.order_id ?? null);
+          fireAlert({
+            title: row.title,
+            body: row.body ?? "",
+            tag: row.order_id,
+            url: row.order_id ? `/driver?order=${row.order_id}` : null,
+          });
           qc.invalidateQueries({ queryKey: ["driver-offers"] });
           qc.invalidateQueries({ queryKey: ["driver-trip-offers"] });
           qc.invalidateQueries({ queryKey: ["notifications-unread", userId] });
@@ -135,7 +131,10 @@ export function useDriverPresence(isAvailable: boolean) {
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "delivery_offers", filter: `driver_id=eq.${userId}` },
-        () => qc.invalidateQueries({ queryKey: ["driver-offers"] }),
+        () => {
+          fireAlert({ title: "عرض توصيل جديد", body: "لديك عرض جديد، افتح اللوحة للقبول" });
+          qc.invalidateQueries({ queryKey: ["driver-offers"] });
+        },
       )
       .subscribe();
 

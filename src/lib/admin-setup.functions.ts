@@ -135,11 +135,17 @@ export const provisionTestAccount = createServerFn({ method: "POST" })
     if (!helpers.setupTokenMatches(data.token)) return { ok: false as const, reason: "invalid_token" };
     if (!helpers.TEST_EMAIL_RE.test(data.email)) return { ok: false as const, reason: "invalid_email" };
     if (data.password.length < 10) return { ok: false as const, reason: "weak_password" };
-    if (!["customer", "driver", "vendor"].includes(data.kind))
+    if (!["customer", "driver", "vendor", "service_provider"].includes(data.kind))
       return { ok: false as const, reason: "invalid_kind" };
 
     const fullName =
-      data.kind === "customer" ? "زبون اختبار" : data.kind === "driver" ? "مندوب اختبار" : "تاجر اختبار";
+      data.kind === "customer"
+        ? "زبون اختبار"
+        : data.kind === "driver"
+          ? "مندوب اختبار"
+          : data.kind === "service_provider"
+            ? "مقدم خدمة اختبار"
+            : "تاجر اختبار";
     const { userId, created } = await helpers.upsertTestAuthUser(data.email, data.password, fullName);
     const cityId = await helpers.defaultCityId();
 
@@ -167,6 +173,34 @@ export const provisionTestAccount = createServerFn({ method: "POST" })
         { onConflict: "user_id" },
       );
       if (error) throw error;
+    } else if (data.kind === "service_provider") {
+      await helpers.grantRoles(userId, ["customer", "provider"]);
+      const { data: category } = await supabaseAdmin
+        .from("profession_categories")
+        .select("id")
+        .eq("is_active", true)
+        .is("deleted_at", null)
+        .order("sort_order")
+        .limit(1)
+        .maybeSingle();
+      const { data: existing } = await supabaseAdmin
+        .from("providers")
+        .select("id")
+        .eq("owner_id", userId)
+        .limit(1)
+        .maybeSingle();
+      if (!existing) {
+        const { error } = await supabaseAdmin.from("providers").insert({
+          owner_id: userId,
+          name: "مقدم خدمة اختبار لبابك",
+          kind: "profession",
+          status: "approved",
+          is_open: true,
+          city_id: cityId,
+          profession_category_id: category?.id ?? null,
+        });
+        if (error) throw error;
+      }
     } else {
       await helpers.grantRoles(userId, ["customer", "provider"]);
       const { data: existing } = await supabaseAdmin

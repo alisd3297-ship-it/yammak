@@ -10,7 +10,7 @@ export function setupTokenMatches(input: string): boolean {
   return timingSafeEqual(a, b);
 }
 
-export const TEST_EMAIL_RE = /^[a-z0-9._-]+@yammak\.test$/;
+export const TEST_EMAIL_RE = /^[a-z0-9._-]+@(yammak|lubabak)\.test$/;
 
 /** إنشاء حساب اختبار أو تحديث كلمة مروره، وإرجاع معرّفه. */
 export async function upsertTestAuthUser(

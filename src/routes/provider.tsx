@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 
 import { useAccount } from "@/lib/auth";
 import { useSignOut } from "@/lib/sign-out";
+import { useAlertNotifications } from "@/lib/notify-alerts";
 import { Bell, LogOut, Power } from "lucide-react";
 import { dispatchOrder } from "@/lib/dispatch.functions";
 import { changeOrderStatus } from "@/lib/orders.functions";
@@ -85,6 +86,14 @@ function ProviderDashboard() {
         .order("created_at", { ascending: false })
         .limit(40);
       return data ?? [];
+    },
+  });
+
+  // تنبيه صوتي + مرئي للتاجر/مقدم الخدمة عند وصول طلب جديد أو تحديث مهم
+  useAlertNotifications(account?.userId ?? null, {
+    onInsert: () => {
+      qc.invalidateQueries({ queryKey: ["provider-orders"] });
+      qc.invalidateQueries({ queryKey: ["provider-service-requests"] });
     },
   });
 

@@ -27,9 +27,15 @@ export const Route = createFileRoute("/setup-test-accounts")({
 });
 
 const KINDS = [
-  { kind: "customer", email: "qa.customer@yammak.test", label: "زبون اختبار", role: "customer" },
-  { kind: "driver", email: "qa.driver@yammak.test", label: "مندوب توصيل اختبار", role: "worker + delivery" },
-  { kind: "vendor", email: "qa.vendor@yammak.test", label: "تاجر اختبار", role: "provider + متجر" },
+  { kind: "customer", email: "qa.customer@lubabak.test", label: "زبون اختبار", role: "customer" },
+  { kind: "driver", email: "qa.driver@lubabak.test", label: "مندوب توصيل اختبار", role: "worker + delivery" },
+  { kind: "vendor", email: "qa.vendor@lubabak.test", label: "تاجر اختبار", role: "provider + متجر" },
+  {
+    kind: "service_provider",
+    email: "qa.service@lubabak.test",
+    label: "مقدم خدمة اختبار",
+    role: "provider + مهنة (profession)",
+  },
 ] as const;
 
 function SetupTestAccountsPage() {
@@ -48,7 +54,7 @@ function SetupTestAccountsPage() {
         const messages: Record<string, string> = {
           invalid_token: "رمز الإعداد غير صحيح",
           server_token_missing: "رمز الإعداد غير مضبوط على الخادم — أضِف ADMIN_SETUP_TOKEN ثم أعد النشر",
-          invalid_email: "استخدم بريداً بنطاق yammak.test فقط",
+          invalid_email: "استخدم بريداً بنطاق lubabak.test أو yammak.test فقط",
           weak_password: "كلمة المرور قصيرة، استخدم 10 أحرف على الأقل",
         };
         toast.error(messages[res.reason] ?? "نوع الحساب غير معروف");
