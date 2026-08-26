@@ -1,14 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCustomerAreaGuard } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { Plus, Star, Store as StoreIcon } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
 import { BackButton, PageShell  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
+import { CustomerTabPanel } from "@/components/customer-tab-panel";
+import { cn } from "@/lib/utils";
 import { useCart } from "@/lib/cart";
 import { formatIQD } from "@/lib/orders";
+
 
 export const Route = createFileRoute("/stores/$id")({
   beforeLoad: requireCustomerFlow,
