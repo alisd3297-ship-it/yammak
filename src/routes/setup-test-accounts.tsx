@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { provisionTestAccount } from "@/lib/admin-setup.functions";
+import { provisionTestAccount, setupToolsStatus } from "@/lib/admin-setup.functions";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -40,6 +41,8 @@ const KINDS = [
 
 function SetupTestAccountsPage() {
   const provision = useServerFn(provisionTestAccount);
+  const statusFn = useServerFn(setupToolsStatus);
+  const { data: tools } = useQuery({ queryKey: ["setup-tools-status"], queryFn: () => statusFn({}) });
   const [token, setToken] = useState("");
   const [passwords, setPasswords] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<string | null>(null);
@@ -56,6 +59,7 @@ function SetupTestAccountsPage() {
           server_token_missing: "رمز الإعداد غير مضبوط على الخادم — أضِف ADMIN_SETUP_TOKEN ثم أعد النشر",
           invalid_email: "استخدم بريداً بنطاق lubabak.test أو yammak.test فقط",
           weak_password: "كلمة المرور قصيرة، استخدم 10 أحرف على الأقل",
+          setup_disabled: "أدوات حسابات الاختبار معطّلة على هذه البيئة",
         };
         toast.error(messages[res.reason] ?? "نوع الحساب غير معروف");
         return;
@@ -79,6 +83,13 @@ function SetupTestAccountsPage() {
         <span dir="ltr">delivery</span>، وتاجر <span dir="ltr">provider</span>. لا صلاحيات إدارية لأي منها.
       </p>
 
+      {tools && !tools.enabled ? (
+        <div className="mt-6 rounded-2xl bg-card p-5 text-sm shadow-card">
+          أدوات حسابات الاختبار معطّلة على هذه البيئة (الإنتاج). لتفعيلها في بيئة اختبار اضبط
+          <span dir="ltr"> ENABLE_SETUP_TOOLS=true </span> في إعدادات المشروع.
+        </div>
+      ) : (
+      <>
       <div className="mt-6 space-y-2 rounded-2xl bg-card p-5 shadow-card">
         <Label htmlFor="token">رمز الإعداد</Label>
         <Input id="token" type="password" value={token} onChange={(e) => setToken(e.target.value)} autoComplete="off" />
@@ -115,6 +126,8 @@ function SetupTestAccountsPage() {
           </form>
         ))}
       </div>
+      </>
+      )}
 
       <Link to="/auth" className="mt-6 block text-center font-semibold text-primary">
         الذهاب لتسجيل الدخول
