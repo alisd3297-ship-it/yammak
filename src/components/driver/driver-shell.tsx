@@ -8,6 +8,7 @@ import { PageShell } from "@/components/app-shell";
 import { useAccount } from "@/lib/auth";
 import { useSignOut } from "@/lib/sign-out";
 import { OPERATING_LOCATION_COORDS } from "@/lib/location";
+import { fireAlert, requestNotificationPermission, unlockAlertSound } from "@/lib/notify-alerts";
 import { cn } from "@/lib/utils";
 
 /** بث موقع المندوب أثناء التوفر + تنبيهه لحظياً بالعروض الجديدة. */
