@@ -181,7 +181,12 @@ function TabEditor({ tabId, providerId }: { tabId: string; providerId: string })
   async function addPayment() {
     const amount = Number(payment.amount);
     if (!(amount > 0)) { toast.error("اكتب مبلغاً صحيحاً"); return; }
-    if (amount > totals.remaining + 0.0001) { toast.error("المبلغ أكبر من المتبقي"); return; }
+    if (amount > totals.remaining + 0.0001) {
+      toast.error(
+        `المبلغ المستحصل (${formatIQD(amount)}) أكبر من المتبقي (${formatIQD(totals.remaining)}) — عدّل المبلغ قبل الحفظ`,
+      );
+      return;
+    }
     const { error } = await supabase.from("customer_tab_payments").insert({
       tab_id: tabId,
       amount,
