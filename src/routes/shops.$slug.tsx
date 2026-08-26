@@ -36,6 +36,7 @@ function ShopSpecialtyPage() {
       .from("providers")
       .select("id, name, description, rating, is_open, keywords, address_text")
       .eq("status", "approved")
+        .eq("is_demo", false)
       .eq("kind", "store");
     if (!specialty) return [];
     return (data ?? []).filter((p) => matchesSpecialty(specialty, p));

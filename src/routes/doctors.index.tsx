@@ -43,6 +43,7 @@ function DoctorsPage() {
         .from("providers")
         .select("id, name, description, rating, is_open, keywords, address_text, profession_category_id")
         .eq("status", "approved")
+        .eq("is_demo", false)
         .eq("kind", "profession"),
     ]);
     const catNames = new Map((categories.data ?? []).map((c) => [c.id, c.name]));

@@ -49,6 +49,7 @@ function ServicesPage() {
           "id, name, description, rating, ratings_count, is_open, keywords, address_text, profession_category_id, provider_services(name, is_active)",
         )
         .eq("status", "approved")
+        .eq("is_demo", false)
         .eq("kind", "profession"),
     ]);
     return { categories: categories.data ?? [], providers: providers.data ?? [] };

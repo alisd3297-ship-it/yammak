@@ -39,6 +39,7 @@ export function useAdsBoard() {
           .from("ads")
           .select("id, category_id, title, body, price, currency, governorate, contact_phone, address_text, images, status, sort_order, published_at, expires_at, created_at")
           .eq("status", "published")
+          .eq("is_demo", false)
           .order("sort_order")
           .order("published_at", { ascending: false }),
       ]);

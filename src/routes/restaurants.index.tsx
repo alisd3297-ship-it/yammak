@@ -45,6 +45,7 @@ function RestaurantsPage() {
       .from("providers")
       .select("id, name, description, rating, orders_count, avg_prep_minutes, is_open, keywords, lat, lng, address_text")
       .eq("status", "approved")
+        .eq("is_demo", false)
       .eq("kind", "restaurant");
     return data ?? [];
   });
