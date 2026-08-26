@@ -84,7 +84,9 @@ function StorePage() {
             <Star className="size-3.5" /> {Number(provider?.rating ?? 0).toFixed(1)}
           </span>
           <span>{provider?.address_text}</span>
-          <span>{provider?.is_open ? "مفتوح الآن" : "مغلق"}</span>
+          <span className={provider?.is_open ? "" : "font-bold"}>
+            {provider?.is_open ? "مفتوح الآن" : "مغلق — غير متاح للطلب"}
+          </span>
         </div>
       </header>
 
@@ -124,7 +126,7 @@ function StorePage() {
               <h2 className="mb-3 text-base font-bold">{cat.name}</h2>
               <div className="space-y-3">
                 {items.map((p) => (
-                  <ProductRow key={p.id} product={p} onAdd={() => addToCart(p)} />
+                  <ProductRow key={p.id} product={p} closed={!provider?.is_open} onAdd={() => addToCart(p)} />
                 ))}
               </div>
             </section>
@@ -136,7 +138,7 @@ function StorePage() {
             <h2 className="mb-3 text-base font-bold">منتجات أخرى</h2>
             <div className="space-y-3">
               {uncategorized.map((p) => (
-                <ProductRow key={p.id} product={p} onAdd={() => addToCart(p)} />
+                <ProductRow key={p.id} product={p} closed={!provider?.is_open} onAdd={() => addToCart(p)} />
               ))}
             </div>
           </section>
@@ -172,11 +174,12 @@ type ProductRowProps = {
     is_available: boolean;
     stock: number | null;
   };
+  closed?: boolean;
   onAdd: () => void;
 };
 
-function ProductRow({ product, onAdd }: ProductRowProps) {
-  const soldOut = !product.is_available || product.stock === 0;
+function ProductRow({ product, closed, onAdd }: ProductRowProps) {
+  const soldOut = !product.is_available || product.stock === 0 || !!closed;
   return (
     <div className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft">
       <div className="min-w-0 flex-1">
