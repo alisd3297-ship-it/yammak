@@ -145,42 +145,42 @@ function TabEditor({ tabId, providerId }: { tabId: string; providerId: string })
     const { error } = await supabase
       .from("customer_tab_items")
       .insert({ tab_id: tabId, name: item.name.trim(), quantity, unit_price: unitPrice });
-    if (error) return toast.error("تعذر إضافة المادة");
+    if (error) { toast.error("تعذر إضافة المادة"); return; }
     setItem({ name: "", quantity: "1", price: "" });
     refresh();
   }
 
   async function updateItem(id: string, patch: { quantity?: number; unit_price?: number }) {
     const { error } = await supabase.from("customer_tab_items").update(patch).eq("id", id);
-    if (error) return toast.error("تعذر تعديل المادة");
+    if (error) { toast.error("تعذر تعديل المادة"); return; }
     refresh();
   }
 
   async function removeItem(id: string) {
     const { error } = await supabase.from("customer_tab_items").delete().eq("id", id);
-    if (error) return toast.error("تعذر حذف المادة");
+    if (error) { toast.error("تعذر حذف المادة"); return; }
     refresh();
   }
 
   async function saveFee() {
     const value = Number(fee);
-    if (!(value >= 0)) return toast.error("رسوم توصيل غير صحيحة");
+    if (!(value >= 0)) { toast.error("رسوم توصيل غير صحيحة"); return; }
     const { error } = await supabase.from("customer_tabs").update({ delivery_fee: value }).eq("id", tabId);
-    if (error) return toast.error("تعذر تحديث رسوم التوصيل");
+    if (error) { toast.error("تعذر تحديث رسوم التوصيل"); return; }
     setFee(null);
     refresh();
   }
 
   async function addPayment() {
     const amount = Number(payment.amount);
-    if (!(amount > 0)) return toast.error("اكتب مبلغاً صحيحاً");
-    if (amount > totals.remaining + 0.0001) return toast.error("المبلغ أكبر من المتبقي");
+    if (!(amount > 0)) { toast.error("اكتب مبلغاً صحيحاً"); return; }
+    if (amount > totals.remaining + 0.0001) { toast.error("المبلغ أكبر من المتبقي"); return; }
     const { error } = await supabase.from("customer_tab_payments").insert({
       tab_id: tabId,
       amount,
       note: payment.note.trim() || null,
     });
-    if (error) return toast.error("تعذر تسجيل الدفعة");
+    if (error) { toast.error("تعذر تسجيل الدفعة"); return; }
     setPayment({ amount: "", note: "" });
     refresh();
   }
