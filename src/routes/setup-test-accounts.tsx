@@ -54,7 +54,7 @@ function SetupTestAccountsPage() {
         const messages: Record<string, string> = {
           invalid_token: "رمز الإعداد غير صحيح",
           server_token_missing: "رمز الإعداد غير مضبوط على الخادم — أضِف ADMIN_SETUP_TOKEN ثم أعد النشر",
-          invalid_email: "استخدم بريداً بنطاق yammak.test فقط",
+          invalid_email: "استخدم بريداً بنطاق lubabak.test أو yammak.test فقط",
           weak_password: "كلمة المرور قصيرة، استخدم 10 أحرف على الأقل",
         };
         toast.error(messages[res.reason] ?? "نوع الحساب غير معروف");
