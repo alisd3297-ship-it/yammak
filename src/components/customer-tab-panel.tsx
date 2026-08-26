@@ -3,7 +3,14 @@ import { ClipboardList, Truck, Wallet } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAccount } from "@/lib/auth";
 import { formatIQD } from "@/lib/orders";
-import { computeTabTotals, lineTotal, tabStatusLabel, type TabItem, type TabPayment } from "@/lib/customer-tabs";
+import {
+  computeTabTotals,
+  lineTotal,
+  paymentsWithRemaining,
+  tabStatusLabel,
+  type TabItem,
+  type TabPayment,
+} from "@/lib/customer-tabs";
 
 /** «قائمتي»: عرض حساب الزبون المتفق عليه مع هذا المحل تحديداً — قراءة فقط للزبون. */
 export function CustomerTabPanel({ providerId, providerName }: { providerId: string; providerName: string }) {
@@ -116,13 +123,18 @@ export function CustomerTabPanel({ providerId, providerName }: { providerId: str
         </h3>
         {data.payments.length ? (
           <ul className="divide-y divide-border">
-            {data.payments.map((p) => (
+            {paymentsWithRemaining(data.payments, totals.grandTotal).map((p) => (
               <li key={p.id} className="flex items-center justify-between py-2 text-sm">
                 <span className="text-xs text-muted-foreground">
                   {new Date(p.created_at).toLocaleString("ar-IQ-u-nu-latn")}
                   {p.note ? ` · ${p.note}` : ""}
                 </span>
-                <span className="font-bold text-success">{formatIQD(Number(p.amount))}</span>
+                <span className="text-end">
+                  <span className="block font-bold text-success">{formatIQD(Number(p.amount))}</span>
+                  <span className="block text-[11px] text-muted-foreground">
+                    المتبقي بعدها: {formatIQD(p.remainingAfter)}
+                  </span>
+                </span>
               </li>
             ))}
           </ul>

@@ -7,7 +7,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatIQD } from "@/lib/orders";
-import { computeTabTotals, lineTotal, tabStatusLabel, type TabItem, type TabPayment } from "@/lib/customer-tabs";
+import {
+  computeTabTotals,
+  lineTotal,
+  paymentsWithRemaining,
+  tabStatusLabel,
+  type TabItem,
+  type TabPayment,
+} from "@/lib/customer-tabs";
 import { listProviderTabs, openCustomerTab } from "@/lib/customer-tabs.functions";
 
 /** «قوائم الزبائن» في لوحة التاجر — إدارة المواد والتوصيل والدفعات لكل زبون. */
@@ -174,7 +181,12 @@ function TabEditor({ tabId, providerId }: { tabId: string; providerId: string })
   async function addPayment() {
     const amount = Number(payment.amount);
     if (!(amount > 0)) { toast.error("اكتب مبلغاً صحيحاً"); return; }
-    if (amount > totals.remaining + 0.0001) { toast.error("المبلغ أكبر من المتبقي"); return; }
+    if (amount > totals.remaining + 0.0001) {
+      toast.error(
+        `المبلغ المستحصل (${formatIQD(amount)}) أكبر من المتبقي (${formatIQD(totals.remaining)}) — عدّل المبلغ قبل الحفظ`,
+      );
+      return;
+    }
     const { error } = await supabase.from("customer_tab_payments").insert({
       tab_id: tabId,
       amount,
@@ -313,13 +325,18 @@ function TabEditor({ tabId, providerId }: { tabId: string; providerId: string })
         <p className="mb-2 text-xs font-bold text-muted-foreground">سجل الدفعات</p>
         {(data?.payments ?? []).length ? (
           <ul className="divide-y divide-border">
-            {(data?.payments ?? []).map((p) => (
+            {paymentsWithRemaining(data?.payments ?? [], totals.grandTotal).map((p) => (
               <li key={p.id} className="flex items-center justify-between py-2 text-sm">
                 <span className="text-xs text-muted-foreground">
                   {new Date(p.created_at).toLocaleString("ar-IQ-u-nu-latn")}
                   {p.note ? ` · ${p.note}` : ""}
                 </span>
-                <span className="font-bold text-success">{formatIQD(Number(p.amount))}</span>
+                <span className="text-end">
+                  <span className="block font-bold text-success">{formatIQD(Number(p.amount))}</span>
+                  <span className="block text-[11px] text-muted-foreground">
+                    المتبقي بعدها: {formatIQD(p.remainingAfter)}
+                  </span>
+                </span>
               </li>
             ))}
           </ul>

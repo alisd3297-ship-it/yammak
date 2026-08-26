@@ -57,3 +57,17 @@ export function tabStatusLabel(totals: TabTotals): string {
   if (totals.grandTotal <= 0) return "لا توجد مواد";
   return totals.settled ? "مسدد بالكامل" : "متبقي";
 }
+
+/** سجل الدفعات مع المتبقي بعد كل دفعة، مرتّب من الأحدث إلى الأقدم. */
+export function paymentsWithRemaining<T extends { amount: number; created_at: string }>(
+  payments: T[],
+  grandTotal: number,
+): (T & { remainingAfter: number })[] {
+  const asc = [...payments].sort((a, b) => +new Date(a.created_at) - +new Date(b.created_at));
+  let balance = Math.max(0, Number(grandTotal) || 0);
+  const withBalance = asc.map((p) => {
+    balance = Math.max(0, balance - Number(p.amount));
+    return { ...p, remainingAfter: balance };
+  });
+  return withBalance.reverse();
+}
