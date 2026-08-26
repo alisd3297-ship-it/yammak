@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { useAccount } from "@/lib/auth";
 import { applyAsDriver } from "@/lib/taxi.functions";
 import { TAXI_CLASSES, type TaxiClass } from "@/lib/taxi";
-import { VEHICLE_LABELS, VEHICLE_ORDER, type VehicleType } from "@/lib/vehicles";
+import { DRIVER_VEHICLE_ORDER, VEHICLE_HINTS, VEHICLE_LABELS, type VehicleType } from "@/lib/vehicles";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/join/driver")({
