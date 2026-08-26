@@ -4291,7 +4291,7 @@ export type Database = {
         | "in_progress"
         | "completed"
         | "cancelled"
-      vehicle_type: "bike" | "car" | "pickup" | "small_truck"
+      vehicle_type: "bike" | "car" | "pickup" | "small_truck" | "tuktuk"
       worker_kind: "delivery" | "taxi"
     }
     CompositeTypes: {
@@ -4487,7 +4487,7 @@ export const Constants = {
         "completed",
         "cancelled",
       ],
-      vehicle_type: ["bike", "car", "pickup", "small_truck"],
+      vehicle_type: ["bike", "car", "pickup", "small_truck", "tuktuk"],
       worker_kind: ["delivery", "taxi"],
     },
   },

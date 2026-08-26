@@ -6,7 +6,8 @@ import { BackButton } from "@/components/app-shell";
 import { DriverShell } from "@/components/driver/driver-shell";
 import { useAccount } from "@/lib/auth";
 import { useDriverActions, useWorkerProfile } from "@/lib/driver-data";
-import { vehicleLabel } from "@/lib/vehicles";
+import { DRIVER_VEHICLE_ORDER, VEHICLE_HINTS, VEHICLE_LABELS, vehicleLabel } from "@/lib/vehicles";
+import { cn } from "@/lib/utils";
 import { requireWorker } from "@/lib/route-guards";
 
 export const Route = createFileRoute("/driver-account")({
@@ -106,6 +107,37 @@ function DriverAccountPage() {
             <p className="text-xs text-muted-foreground">{worker?.ratings_count ?? 0} تقييم</p>
           </div>
         </section>
+
+        <section className="rounded-3xl bg-card p-4 shadow-soft">
+          <p className="flex items-center gap-2 text-sm font-black">
+            <Car className="size-4 text-primary" /> نوع وسيلة النقل
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            اختيارك يُحفظ في ملفك ويظهر للإدارة ويُستخدم لتوزيع الطلبات المناسبة.
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            {DRIVER_VEHICLE_ORDER.map((v) => {
+              const active = worker?.vehicle_type === v;
+              return (
+                <button
+                  key={v}
+                  aria-pressed={active}
+                  onClick={() => void actions.setVehicleType(v)}
+                  className={cn(
+                    "rounded-2xl p-3 text-right transition",
+                    active ? "bg-primary text-primary-foreground" : "bg-muted",
+                  )}
+                >
+                  <span className="block text-sm font-bold">{VEHICLE_LABELS[v]}</span>
+                  <span className={cn("block text-[11px]", active ? "opacity-90" : "text-muted-foreground")}>
+                    {VEHICLE_HINTS[v]}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
 
         <section className="overflow-hidden rounded-3xl bg-card shadow-soft">
           <SettingLink to="/driver-earnings" icon={Wallet} label="الأرباح والتسويات" />
