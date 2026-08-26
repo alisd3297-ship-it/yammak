@@ -11,7 +11,7 @@ import { ProviderServiceRequests } from "@/components/provider-service-requests"
 import { ProviderCustomerTabs } from "@/components/provider-customer-tabs";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
+
 import { useAccount } from "@/lib/auth";
 import { useSignOut } from "@/lib/sign-out";
 import { Bell, LogOut, Power } from "lucide-react";
