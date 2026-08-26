@@ -148,22 +148,73 @@ function ProviderDashboard() {
 
   return (
     <PageShell>
-      <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <h1 className="text-2xl font-black">{provider?.name ?? "لوحة مقدم الخدمة"}</h1>
-        {provider && (
-          <div className="mt-3 flex items-center justify-between rounded-2xl bg-white/15 px-4 py-3">
-            <span className="text-sm font-semibold">
-              {isProfession
-                ? provider.is_open
-                  ? "متاح لاستقبال الطلبات"
-                  : "غير متاح حالياً"
-                : provider.is_open
-                  ? "المتجر مفتوح"
-                  : "المتجر مغلق"}
-            </span>
-            <Switch checked={provider.is_open} onCheckedChange={toggleOpen} />
+      <header className="brand-gradient rounded-b-3xl px-5 pb-6 pt-7 text-primary-foreground shadow-card">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-black leading-tight">{provider?.name ?? "لوحة مقدم الخدمة"}</h1>
+            <p className="mt-1 text-xs opacity-90">خدماتك وطلباتك لبابك</p>
           </div>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/notifications"
+              aria-label="الإشعارات"
+              className="flex size-11 items-center justify-center rounded-2xl bg-primary-foreground/15 backdrop-blur transition hover:bg-primary-foreground/25"
+            >
+              <Bell className="size-5" />
+            </Link>
+            <button
+              type="button"
+              onClick={() => void signOut()}
+              aria-label="تسجيل الخروج"
+              className="flex size-11 items-center justify-center rounded-2xl bg-primary-foreground/15 backdrop-blur transition hover:bg-primary-foreground/25"
+            >
+              <LogOut className="size-5" />
+            </button>
+          </div>
+        </div>
+
+        {provider && (
+          <button
+            type="button"
+            aria-label="تشغيل أو إطفاء المتجر"
+            aria-pressed={provider.is_open}
+            disabled={savingOpen}
+            onClick={() => void toggleOpen(!provider.is_open)}
+            className={cn(
+              "mt-4 flex w-full items-center justify-between rounded-3xl px-5 py-4 text-start transition",
+              provider.is_open ? "bg-primary-foreground text-primary" : "bg-primary-foreground/15",
+              savingOpen && "opacity-60",
+            )}
+          >
+            <span className="flex items-center gap-3">
+              <Power className="size-6" />
+              <span>
+                <span className="block text-lg font-black">
+                  {isProfession
+                    ? provider.is_open
+                      ? "متاح"
+                      : "غير متاح"
+                    : provider.is_open
+                      ? "المتجر مفتوح"
+                      : "المتجر مغلق"}
+                </span>
+                <span className="block text-xs opacity-80">
+                  {provider.is_open ? "تستلم طلبات جديدة من الزبائن" : "الزبون يشاهد متجرك كغير متاح"}
+                </span>
+              </span>
+            </span>
+            <span
+              aria-hidden
+              className={cn(
+                "flex h-8 w-14 items-center rounded-full p-1 transition",
+                provider.is_open ? "justify-end bg-primary" : "justify-start bg-primary-foreground/40",
+              )}
+            >
+              <span className="size-6 rounded-full bg-primary-foreground" />
+            </span>
+          </button>
         )}
+
         <Link
           to="/provider-finance"
           className="mt-3 inline-block rounded-full bg-primary-foreground/15 px-4 py-2 text-xs font-semibold backdrop-blur"
