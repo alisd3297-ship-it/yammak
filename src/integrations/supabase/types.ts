@@ -316,6 +316,126 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_tab_items: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          note: string | null
+          quantity: number
+          sort_order: number
+          tab_id: string
+          unit_price: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          note?: string | null
+          quantity?: number
+          sort_order?: number
+          tab_id: string
+          unit_price?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          note?: string | null
+          quantity?: number
+          sort_order?: number
+          tab_id?: string
+          unit_price?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_tab_items_tab_id_fkey"
+            columns: ["tab_id"]
+            isOneToOne: false
+            referencedRelation: "customer_tabs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_tab_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          id: string
+          note: string | null
+          tab_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          tab_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          tab_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_tab_payments_tab_id_fkey"
+            columns: ["tab_id"]
+            isOneToOne: false
+            referencedRelation: "customer_tabs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_tabs: {
+        Row: {
+          created_at: string
+          currency: string
+          customer_id: string
+          delivery_fee: number
+          id: string
+          note: string | null
+          provider_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          customer_id: string
+          delivery_fee?: number
+          id?: string
+          note?: string | null
+          provider_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          customer_id?: string
+          delivery_fee?: number
+          id?: string
+          note?: string | null
+          provider_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_tabs_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       delivery_offers: {
         Row: {
           distance_km: number | null
@@ -2678,6 +2798,7 @@ export type Database = {
       }
       auto_complete_delivered_orders: { Args: never; Returns: number }
       call_maintenance_endpoint: { Args: never; Returns: undefined }
+      can_manage_tab: { Args: { _tab_id: string }; Returns: boolean }
       can_see_order: {
         Args: { _order_id: string; _user_id: string }
         Returns: boolean
@@ -2686,6 +2807,7 @@ export type Database = {
         Args: { _request_id: string; _user_id: string }
         Returns: boolean
       }
+      can_see_tab: { Args: { _tab_id: string }; Returns: boolean }
       can_see_trip: {
         Args: { _trip_id: string; _user_id: string }
         Returns: boolean
@@ -3324,6 +3446,10 @@ export type Database = {
       driver_earnings_summary: {
         Args: { _from: string; _to: string }
         Returns: Json
+      }
+      ensure_customer_tab: {
+        Args: { _customer_id: string; _provider_id: string }
+        Returns: string
       }
       expire_ads: { Args: never; Returns: number }
       expire_due_ads: { Args: never; Returns: number }
