@@ -172,21 +172,37 @@ function JoinDriverPage() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-4 gap-2">
-              {VEHICLE_ORDER.map((v) => (
-                <button
-                  key={v}
-                  onClick={() => setVehicleType(v)}
-                  className={cn(
-                    "rounded-xl p-3 text-xs font-semibold transition",
-                    vehicleType === v ? "bg-primary text-primary-foreground" : "bg-muted",
-                  )}
-                >
-                  {VEHICLE_LABELS[v]}
-                </button>
-              ))}
+            <div className="space-y-2">
+              <p className="text-sm font-bold">نوع وسيلة النقل</p>
+              <div className="grid grid-cols-2 gap-2">
+                {DRIVER_VEHICLE_ORDER.map((v) => (
+                  <button
+                    key={v}
+                    onClick={() => setVehicleType(v)}
+                    aria-pressed={vehicleType === v}
+                    className={cn(
+                      "rounded-xl p-3 text-right transition",
+                      vehicleType === v ? "bg-primary text-primary-foreground" : "bg-muted",
+                    )}
+                  >
+                    <span className="block text-sm font-bold">{VEHICLE_LABELS[v]}</span>
+                    <span
+                      className={cn(
+                        "block text-[11px]",
+                        vehicleType === v ? "opacity-90" : "text-muted-foreground",
+                      )}
+                    >
+                      {VEHICLE_HINTS[v]}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                المختار حالياً: {VEHICLE_LABELS[vehicleType]} — يُحفظ في ملف المندوب ويظهر للإدارة.
+              </p>
             </div>
           )}
+
 
           <Input value={make} onChange={(e) => setMake(e.target.value)} placeholder="نوع المركبة (تويوتا، كيا…)" className="h-12" />
           <Input value={model} onChange={(e) => setModel(e.target.value)} placeholder="الموديل والسنة" className="h-12" />
