@@ -3,7 +3,14 @@ import { ClipboardList, Truck, Wallet } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAccount } from "@/lib/auth";
 import { formatIQD } from "@/lib/orders";
-import { computeTabTotals, lineTotal, tabStatusLabel, type TabItem, type TabPayment } from "@/lib/customer-tabs";
+import {
+  computeTabTotals,
+  lineTotal,
+  paymentsWithRemaining,
+  tabStatusLabel,
+  type TabItem,
+  type TabPayment,
+} from "@/lib/customer-tabs";
 
 /** «قائمتي»: عرض حساب الزبون المتفق عليه مع هذا المحل تحديداً — قراءة فقط للزبون. */
 export function CustomerTabPanel({ providerId, providerName }: { providerId: string; providerName: string }) {
