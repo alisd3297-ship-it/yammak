@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -118,8 +118,8 @@ export function useAlertNotifications(
   userId: string | null,
   opts?: { deepLink?: (orderId: string | null) => string | null; onInsert?: () => void },
 ) {
-  const deepLink = opts?.deepLink;
-  const onInsert = opts?.onInsert;
+  const optsRef = useRef(opts);
+  optsRef.current = opts;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -154,9 +154,9 @@ export function useAlertNotifications(
             title: row.title,
             body: row.body ?? "",
             tag: row.order_id,
-            url: deepLink ? deepLink(row.order_id ?? null) : null,
+            url: optsRef.current?.deepLink?.(row.order_id ?? null) ?? null,
           });
-          onInsert?.();
+          optsRef.current?.onInsert?.();
         },
       )
       .subscribe();
@@ -164,5 +164,5 @@ export function useAlertNotifications(
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [userId, deepLink, onInsert]);
+  }, [userId]);
 }
