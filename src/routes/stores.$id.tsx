@@ -1,14 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCustomerAreaGuard } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { Plus, Star, Store as StoreIcon } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
 import { BackButton, PageShell  } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
+import { CustomerTabPanel } from "@/components/customer-tab-panel";
+import { cn } from "@/lib/utils";
 import { useCart } from "@/lib/cart";
 import { formatIQD } from "@/lib/orders";
+
 
 export const Route = createFileRoute("/stores/$id")({
   beforeLoad: requireCustomerFlow,
@@ -30,6 +34,8 @@ function StorePage() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const cart = useCart();
+  const [view, setView] = useState<"products" | "tab">("products");
+
 
   const { data } = useQuery({
     queryKey: ["store", id],
@@ -82,9 +88,36 @@ function StorePage() {
         </div>
       </header>
 
-      <div className="space-y-6 px-4 py-5">
+      <div className="mt-4 flex gap-2 px-4">
+        {(
+          [
+            { key: "products", label: "المنتجات" },
+            { key: "tab", label: "قائمتي" },
+          ] as const
+        ).map((t) => (
+          <button
+            key={t.key}
+            onClick={() => setView(t.key)}
+            className={cn(
+              "flex-1 rounded-full px-4 py-2 text-xs font-semibold transition",
+              view === t.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+            )}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {view === "tab" && provider && (
+        <div className="px-4 py-5">
+          <CustomerTabPanel providerId={provider.id} providerName={provider.name} />
+        </div>
+      )}
+
+      <div className={cn("space-y-6 px-4 py-5", view !== "products" && "hidden")}>
         {(data?.categories ?? []).map((cat) => {
           const items = (data?.products ?? []).filter((p) => p.category_id === cat.id);
+
           if (!items.length) return null;
           return (
             <section key={cat.id}>

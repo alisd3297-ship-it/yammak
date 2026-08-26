@@ -8,6 +8,7 @@ import { PageShell, StatusDot } from "@/components/app-shell";
 import { ProviderCatalog } from "@/components/provider-catalog";
 import { ProviderServices } from "@/components/provider-services";
 import { ProviderServiceRequests } from "@/components/provider-service-requests";
+import { ProviderCustomerTabs } from "@/components/provider-customer-tabs";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -51,7 +52,7 @@ function ProviderDashboard() {
   const dispatch = useServerFn(dispatchOrder);
   const setStatus = useServerFn(changeOrderStatus);
 
-  const [tab, setTab] = useState<"orders" | "catalog">("orders");
+  const [tab, setTab] = useState<"orders" | "catalog" | "tabs">("orders");
 
   const { data: provider } = useQuery({
     queryKey: ["my-provider", account?.userId],
@@ -167,6 +168,7 @@ function ProviderDashboard() {
             : ([
                 { key: "orders", label: "الطلبات" },
                 { key: "catalog", label: "الكتالوج" },
+                { key: "tabs", label: "قوائم الزبائن" },
               ] as const)
           ).map((t) => (
             <button
@@ -180,6 +182,12 @@ function ProviderDashboard() {
               {t.label}
             </button>
           ))}
+        </div>
+      )}
+
+      {provider && tab === "tabs" && !isProfession && (
+        <div className="px-4 py-5">
+          <ProviderCustomerTabs providerId={provider.id} />
         </div>
       )}
 
