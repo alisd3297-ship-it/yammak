@@ -7,7 +7,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatIQD } from "@/lib/orders";
-import { computeTabTotals, lineTotal, tabStatusLabel, type TabItem, type TabPayment } from "@/lib/customer-tabs";
+import {
+  computeTabTotals,
+  lineTotal,
+  paymentsWithRemaining,
+  tabStatusLabel,
+  type TabItem,
+  type TabPayment,
+} from "@/lib/customer-tabs";
 import { listProviderTabs, openCustomerTab } from "@/lib/customer-tabs.functions";
 
 /** «قوائم الزبائن» في لوحة التاجر — إدارة المواد والتوصيل والدفعات لكل زبون. */
