@@ -199,6 +199,27 @@ export function useDriverActions() {
       qc.invalidateQueries({ queryKey: ["worker-profile"] });
       qc.invalidateQueries({ queryKey: ["driver-offers"] });
     },
+    /** حفظ نوع وسيلة النقل في ملف المندوب — يظهر للإدارة ويُستخدم في توزيع الطلبات. */
+    async setVehicleType(value: string) {
+      if (!account?.userId) return;
+      const key = ["worker-profile", account.userId] as const;
+      const previous = qc.getQueryData(key);
+      qc.setQueryData(key, (old: unknown) =>
+        old && typeof old === "object" ? { ...(old as object), vehicle_type: value } : old,
+      );
+      const { error } = await supabase
+        .from("worker_profiles")
+        .update({ vehicle_type: value as never })
+        .eq("user_id", account.userId);
+      if (error) {
+        qc.setQueryData(key, previous);
+        toast.error("تعذر حفظ نوع وسيلة النقل");
+        return;
+      }
+      toast.success("تم حفظ نوع وسيلة النقل");
+      qc.invalidateQueries({ queryKey: ["worker-profile"] });
+    },
+
     async answerOffer(offerId: string, accept: boolean) {
       try {
         await respond({ data: accept ? { offerId, accept } : { offerId, accept, reason: "رفض المندوب" } });
