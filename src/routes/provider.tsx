@@ -87,8 +87,18 @@ function ProviderDashboard() {
   const isProfession = provider?.kind === "profession";
 
   async function toggleOpen(open: boolean) {
-    if (!provider) return;
-    await supabase.from("providers").update({ is_open: open }).eq("id", provider.id);
+    if (!provider || savingOpen) return;
+    setSavingOpen(true);
+    const key = ["my-provider", account?.userId] as const;
+    qc.setQueryData(key, (prev: typeof provider) => (prev ? { ...prev, is_open: open } : prev));
+    const { error } = await supabase.from("providers").update({ is_open: open }).eq("id", provider.id);
+    setSavingOpen(false);
+    if (error) {
+      qc.setQueryData(key, (prev: typeof provider) => (prev ? { ...prev, is_open: !open } : prev));
+      toast.error("تعذر تحديث حالة المتجر، حاول مرة ثانية");
+      return;
+    }
+    toast.success(open ? "متجرك صار متاح لاستقبال الطلبات" : "أوقفت استقبال الطلبات الجديدة");
     qc.invalidateQueries({ queryKey: ["my-provider"] });
   }
 
