@@ -109,7 +109,7 @@ export function AdsTicker({
               <span className="ad-ticker-price whitespace-nowrap rounded-full px-1.5 text-[10px] font-bold">
                 {formatAdPrice(ad.price, ad.currency)}
               </span>
-            </Link>
+            </button>
           );
         })}
       </div>
