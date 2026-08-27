@@ -57,6 +57,7 @@ function AdsPage() {
   const { data } = useAdsBoard();
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [governorate, setGovernorate] = useState<string | null>(OPERATING_LOCATION.governorate);
+  const [selectedAd, setSelectedAd] = useState<AdRow | null>(null);
 
   const mine = useQuery({
     queryKey: ["my-ads", account?.userId],
