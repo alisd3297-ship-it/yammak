@@ -170,7 +170,25 @@ export function useDriverPresence(isAvailable: boolean) {
           qc.invalidateQueries({ queryKey: ["driver-offers"] });
         },
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "trip_offers",
+          filter: `driver_id=eq.${userId}`,
+        },
+        () => {
+          alertOnce({
+            title: "طلب تكسي جديد",
+            body: "وصلك طلب رحلة، افتح اللوحة للقبول",
+            kind: "order",
+          });
+          qc.invalidateQueries({ queryKey: ["driver-trip-offers"] });
+        },
+      )
       .subscribe();
+
 
     return () => {
       void supabase.removeChannel(channel);
