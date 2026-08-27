@@ -53,6 +53,7 @@ function ServiceProviderPage() {
           .from("providers")
           .select("id, name, description, rating, ratings_count, is_open, address_text, phone, status")
           .eq("id", id)
+          .eq("is_demo", false)
           .maybeSingle(),
         supabase
           .from("provider_services")
