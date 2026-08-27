@@ -14,7 +14,8 @@ type CartState = {
 };
 
 const EMPTY: CartState = { providerId: null, providerName: null, items: [] };
-const STORAGE_KEY = "yammak.cart.v1";
+export const CART_STORAGE_KEY = "yammak.cart.v1";
+const STORAGE_KEY = CART_STORAGE_KEY;
 
 type CartApi = CartState & {
   total: number;

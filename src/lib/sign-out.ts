@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import { CART_STORAGE_KEY } from "@/lib/cart";
 
 export const AUTH_BACKUP_KEY = "yammak:auth-backup";
 export const ROLE_ROUTED_KEY = "yammak:role-routed";
@@ -12,6 +13,8 @@ export function clearLocalAuthState() {
   try {
     localStorage.removeItem(AUTH_BACKUP_KEY);
     localStorage.setItem(SIGNED_OUT_KEY, "1");
+    // السلة مرتبطة بالمستخدم: نمسحها حتى لا يرثها حساب آخر على نفس الجهاز.
+    localStorage.removeItem(CART_STORAGE_KEY);
   } catch {
     /* التخزين غير متاح */
   }

@@ -13,7 +13,7 @@ import { listMyPayments } from "@/lib/payments.functions";
 import {
   PAYMENT_STATUS_LABELS,
   PAYMENT_SUBJECT_LABELS,
-  formatIQD,
+  formatMoney,
   paymentTone,
 } from "@/lib/payments";
 
@@ -98,7 +98,7 @@ function PaymentsPage() {
                 <CreditCard className="size-4 text-primary" />
                 {PAYMENT_SUBJECT_LABELS[p.subjectType]}
               </span>
-              <span className="font-black">{formatIQD(p.amount)}</span>
+              <span className="font-black">{formatMoney(p.amount, p.currency)}</span>
             </div>
             <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
               <span className="flex items-center gap-2">
@@ -109,7 +109,7 @@ function PaymentsPage() {
             </div>
             {p.refundedAmount > 0 && (
               <p className="mt-2 text-xs text-muted-foreground">
-                مسترجع: {formatIQD(p.refundedAmount)}
+                مسترجع: {formatMoney(p.refundedAmount, p.currency)}
               </p>
             )}
             {p.subjectType === "order" && (

@@ -59,7 +59,7 @@ function CheckoutPage() {
   const isRestaurant = providerInfo?.kind === "restaurant";
 
   // أجرة التوصيل تُحسب من قواعد التسعير في الخادم، لا من الواجهة
-  const { data: feeQuote } = useQuery({
+  const { data: feeQuote, isError: feeError, refetch: refetchFee } = useQuery({
     queryKey: ["delivery-quote", cart.providerId, coords?.lat, coords?.lng],
     enabled:
       fulfillment === "delivery" && !!cart.providerId && !!account?.userId && !!cart.items.length,
@@ -117,6 +117,11 @@ function CheckoutPage() {
             fulfillment === "dine_in" && scheduledAt ? new Date(scheduledAt).toISOString() : null,
         },
       });
+      // الأسعار النهائية تُحتسب في الخادم: ننبّه الزبون إذا اختلف المجموع عن المعروض.
+      const shownTotal = cart.total + (deliveryFee ?? 0);
+      if (Math.abs(Number(order.total) - shownTotal) > 1) {
+        toast.warning(`تم تحديث المجموع النهائي إلى ${formatIQD(Number(order.total))} حسب أسعار المتجر.`);
+      }
       cart.clear();
       toast.success(
         fulfillment === "dine_in"
@@ -297,11 +302,23 @@ function CheckoutPage() {
             {fulfillment === "delivery" ? (
               <Row
                 label="أجرة التوصيل"
-                value={deliveryFee == null ? "يتم الحساب…" : formatIQD(deliveryFee)}
+                value={
+                  feeError ? "تعذر الحساب" : deliveryFee == null ? "يتم الحساب…" : formatIQD(deliveryFee)
+                }
               />
             ) : (
               <Row label="أجرة التوصيل" value="بدون توصيل" />
             )}
+            {feeError && fulfillment === "delivery" && (
+              <button
+                type="button"
+                onClick={() => void refetchFee()}
+                className="mt-1 text-xs font-bold text-primary"
+              >
+                إعادة حساب أجرة التوصيل
+              </button>
+            )}
+
             <div className="mt-2 border-t border-border pt-2">
               <Row
                 label="الإجمالي"

@@ -38,6 +38,7 @@ function RestaurantPage() {
           .select("id, name, description, rating, avg_prep_minutes, is_open, address_text")
           .eq("id", id)
           .eq("kind", "restaurant")
+          .eq("is_demo", false)
           .maybeSingle(),
         supabase.from("menu_categories").select("id, name, sort_order").eq("provider_id", id).order("sort_order"),
         supabase

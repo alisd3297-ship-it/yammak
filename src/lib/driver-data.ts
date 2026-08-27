@@ -81,12 +81,11 @@ export function useDriverOffers() {
   const { data: worker } = useWorkerProfile();
   const online = !!worker?.is_available && !!worker?.is_approved;
   return useQuery({
-    queryKey: ["driver-offers", account?.userId, online],
-    enabled: !!account?.userId,
+    queryKey: ["driver-offers", account?.userId],
+    enabled: !!account?.userId && online,
     refetchInterval: online ? 8_000 : false,
     queryFn: async () => {
-      if (!online) return [] as DriverOffer[];
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("delivery_offers")
         .select(
           "id, order_id, distance_km, expires_at, status, orders(code, total, delivery_fee, order_type, notes, pickup_text, dropoff_text, vehicle_type, cargo_description, cargo_weight_kg, scheduled_at)",
@@ -94,6 +93,7 @@ export function useDriverOffers() {
         .eq("driver_id", account!.userId!)
         .eq("status", "sent")
         .gt("expires_at", new Date().toISOString());
+      if (error) throw error;
       return (data ?? []) as unknown as DriverOffer[];
     },
   });
@@ -106,13 +106,14 @@ export function useDriverTasks() {
     enabled: !!account?.userId,
     refetchInterval: 10_000,
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("orders")
         .select(
           "id, code, status, total, delivery_fee, order_type, notes, pickup_text, pickup_lat, pickup_lng, dropoff_text, dropoff_lat, dropoff_lng, vehicle_type, cargo_description, scheduled_at, order_stops(id, position, address_text, recipient_name, recipient_phone, notes, is_delivered)",
         )
         .eq("driver_id", account!.userId!)
         .in("status", ["driver_accepted", "driver_heading_pickup", "picked_up", "on_the_way"]);
+      if (error) throw error;
       return (data ?? []) as unknown as DriverTask[];
     },
   });
@@ -193,7 +194,7 @@ export function useDriverActions() {
       }
       if (!value) {
         await supabase.from("worker_locations").update({ is_online: false }).eq("user_id", account.userId);
-        qc.setQueryData(["driver-offers", account.userId, true], []);
+        qc.setQueryData(["driver-offers", account.userId], []);
       }
       toast.success(value ? "صرت متصل، راح توصلك الطلبات القريبة" : "صرت غير متصل، توقفت الطلبات القريبة");
       qc.invalidateQueries({ queryKey: ["worker-profile"] });

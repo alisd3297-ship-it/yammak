@@ -43,8 +43,8 @@ function DriverDashboard() {
   const focusOrderId = Route.useSearch().order;
   const { data: account } = useAccount();
   const { data: worker } = useWorkerProfile();
-  const { data: offers } = useDriverOffers();
-  const { data: tasks } = useDriverTasks();
+  const { data: offers, isError: offersError, refetch: refetchOffers } = useDriverOffers();
+  const { data: tasks, isLoading: tasksLoading, isError: tasksError, refetch: refetchTasks } = useDriverTasks();
   const { data: history } = useDriverHistory();
   const actions = useDriverActions();
 
@@ -124,7 +124,13 @@ function DriverDashboard() {
                 onCompleteStop={(id) => void actions.completeStop(id)}
               />
             ))}
-            {!tasks?.length && (
+            {tasksError && <LoadError onRetry={() => void refetchTasks()} />}
+            {!tasksError && tasksLoading && (
+              <p className="rounded-2xl bg-muted p-5 text-center text-sm text-muted-foreground">
+                جاري التحميل…
+              </p>
+            )}
+            {!tasksError && !tasksLoading && !tasks?.length && (
               <p className="rounded-2xl bg-muted p-5 text-center text-sm text-muted-foreground">
                 ماكو مهمة حالية. خلي حالتك «متصل» حتى توصلك الطلبات القريبة.
               </p>
@@ -157,7 +163,8 @@ function DriverDashboard() {
                 حالتك «غير متصل» — اضغط زر الاتصال فوق حتى توصلك الطلبات القريبة.
               </p>
             )}
-            {isOnline && !offers?.length && (
+            {isOnline && offersError && <LoadError onRetry={() => void refetchOffers()} />}
+            {isOnline && !offersError && !offers?.length && (
               <p className="rounded-2xl bg-muted p-5 text-center text-sm text-muted-foreground">
                 ماكو طلبات جديدة الآن.
               </p>
@@ -168,6 +175,18 @@ function DriverDashboard() {
         <TaxiSections enabled={worker?.worker_kind === "taxi"} />
       </div>
     </DriverShell>
+  );
+}
+
+/** رسالة فشل تحميل مع إعادة محاولة، حتى لا يبدو الخطأ وكأنه «ماكو طلبات». */
+function LoadError({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div className="rounded-2xl bg-destructive/10 p-5 text-center text-sm">
+      <p className="font-bold text-destructive">تعذر تحميل البيانات، تحقق من الاتصال.</p>
+      <button type="button" onClick={onRetry} className="mt-2 font-bold text-primary">
+        إعادة المحاولة
+      </button>
+    </div>
   );
 }
 
