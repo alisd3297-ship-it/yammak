@@ -148,7 +148,7 @@ export function useDriverPresence(isAvailable: boolean) {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "delivery_offers", filter: `driver_id=eq.${userId}` },
         () => {
-          alertOnce({ title: "عرض توصيل جديد", body: "لديك عرض جديد، افتح اللوحة للقبول" });
+          alertOnce({ title: "عرض توصيل جديد", body: "لديك عرض جديد، افتح اللوحة للقبول", kind: "order" });
           qc.invalidateQueries({ queryKey: ["driver-offers"] });
         },
       )
