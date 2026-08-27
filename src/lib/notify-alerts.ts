@@ -13,6 +13,19 @@ let audioCtx: AudioContext | null = null;
 let unlocked = false;
 let lastPlayed = 0;
 const seen = new Set<string>();
+/** أحدث المعرّفات فقط: يمنع تضخم الذاكرة في الجلسات الطويلة. */
+function rememberSeen(id: string) {
+  seen.add(id);
+  if (seen.size > 300) {
+    const it = seen.values();
+    for (let i = 0; i < 100; i += 1) {
+      const next = it.next();
+      if (next.done) break;
+      seen.delete(next.value);
+    }
+  }
+}
+let pendingSound = false;
 
 const SOUND_PREF_KEY = "lubabak.alert-sound";
 
@@ -42,6 +55,12 @@ export function unlockAlertSound() {
   if (!ac) return;
   void ac.resume().then(() => {
     unlocked = true;
+    // تنبيه وصل قبل تفاعل المستخدم: نشغّله الآن بعد فك القفل.
+    if (pendingSound) {
+      pendingSound = false;
+      lastPlayed = 0;
+      playAlertSound();
+    }
   });
 }
 
@@ -54,7 +73,10 @@ export function playAlertSound() {
   if (!ac) return;
   if (ac.state === "suspended") {
     void ac.resume();
-    if (!unlocked) return; // المتصفح يمنع الصوت قبل تفاعل المستخدم
+    if (!unlocked) {
+      pendingSound = true;
+      return; // المتصفح يمنع الصوت قبل تفاعل المستخدم
+    }
   }
   lastPlayed = now;
   const start = ac.currentTime;
@@ -149,7 +171,7 @@ export function useAlertNotifications(
             order_id: string | null;
           };
           if (seen.has(row.id)) return;
-          seen.add(row.id);
+          rememberSeen(row.id);
           fireAlert({
             title: row.title,
             body: row.body ?? "",
