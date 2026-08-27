@@ -28,10 +28,12 @@ function categoryIcon(name: string): Icons.LucideIcon {
 export function AdsTicker({
   ads,
   categories,
+  onSelect,
   className,
 }: {
   ads: AdRow[];
   categories: AdCategory[];
+  onSelect?: (ad: AdRow) => void;
   className?: string;
 }) {
   const [paused, setPaused] = useState(false);
