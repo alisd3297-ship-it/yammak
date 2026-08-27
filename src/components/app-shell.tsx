@@ -294,6 +294,7 @@ const ADMIN_LINKS = [
   { to: "/admin/payments", label: "المدفوعات والعمولات", exact: false },
   { to: "/admin/reports", label: "التقارير", exact: false },
   { to: "/admin/notifications", label: "الإشعارات", exact: false },
+  { to: "/admin/monitoring", label: "المراقبة", exact: false },
   { to: "/admin/settings", label: "الإعدادات", exact: false },
 ] as const;
 
