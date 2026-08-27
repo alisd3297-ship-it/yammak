@@ -178,3 +178,19 @@ jarsigner -verify -verbose -certs android/app/build/outputs/bundle/release/app-r
 
 يجب أن تتطابق بصمة `SHA-256` مع ما ظهر في `signingReport`، وأن تكون النتيجة
 `jar verified` / `Verifies`. لا تُرفع أبداً ملفات `*.jks` أو `keystore.properties` إلى Git.
+
+## إشعارات الهاتف (Push) — ما هو منجز وما ينقص
+
+منجز داخل المشروع:
+- تسجيل رمز الجهاز لكل مستخدم (`push_devices`) مع إعادة الربط عند تبدّل المستخدم.
+- قنوات أندرويد `lubabak_orders` (طلبات: صوت + اهتزاز، أولوية قصوى) و`lubabak_default`، تُنشأ قبل التسجيل ويستخدمها الـ payload.
+- فتح صفحة الطلب عند الضغط على الإشعار (بالخلفية أو بعد الإغلاق).
+- مرسل `/api/public/push-dispatch` مع محاولات إعادة: لا يُعلَّم الإشعار مُرسلاً إلا بعد نجاح فعلي، وتُعطَّل الرموز غير الصالحة.
+
+ينقص (خارج المشروع — لا يمكن توليده هنا):
+1. أسرار: `FCM_PROJECT_ID`، `FCM_SERVICE_ACCOUNT_JSON`، `PUSH_DISPATCH_SECRET` في Project Settings → Secrets.
+2. جدولة استدعاء `/api/public/push-dispatch` كل دقيقة بترويسة `Authorization: Bearer <PUSH_DISPATCH_SECRET>`.
+3. بناء native: `npx cap add android` / `npx cap add ios` (مجلدا android/ و ios/ غير موجودين حالياً).
+4. أندرويد: `google-services.json` داخل `android/app/`. iOS: `GoogleService-Info.plist` + مفتاح APNs في Firebase + تفعيل Push Notifications capability.
+
+حتى تكتمل هذه الخطوات لا يصل إشعار إلى جهاز حقيقي؛ التنبيه داخل التطبيق (صوت/اهتزاز/toast) يعمل بدونها.
