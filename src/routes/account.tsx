@@ -191,6 +191,7 @@ function AccountPage() {
         <div className="grid grid-cols-2 gap-2">
           {SERVICE_PREF_OPTIONS.map((opt) => {
             const active = selectedPrefs.includes(opt.key);
+            const Icon = opt.icon;
             return (
               <button
                 key={opt.key}
@@ -205,7 +206,9 @@ function AccountPage() {
                   active ? "border-primary bg-primary/10 font-bold" : "border-border"
                 }`}
               >
-                <span aria-hidden>{opt.emoji}</span> {opt.label}
+                <span className="flex items-center gap-2">
+                  <Icon className="size-4 text-primary" aria-hidden /> {opt.label}
+                </span>
               </button>
             );
           })}

@@ -94,6 +94,7 @@ function WelcomePage() {
       <div className="mt-6 grid grid-cols-2 gap-3">
         {SERVICE_PREF_OPTIONS.map((opt) => {
           const active = selected.includes(opt.key);
+          const Icon = opt.icon;
           return (
             <button
               key={opt.key}
@@ -109,9 +110,7 @@ function WelcomePage() {
                   <Check className="h-4 w-4" />
                 </span>
               ) : null}
-              <span className="text-3xl" aria-hidden>
-                {opt.emoji}
-              </span>
+              <Icon className="size-8 text-primary" aria-hidden />
               <span className="mt-2 block text-base font-bold">{opt.label}</span>
               <span className="block text-xs text-muted-foreground">{opt.hint}</span>
             </button>
