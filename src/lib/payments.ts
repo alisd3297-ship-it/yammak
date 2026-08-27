@@ -1,10 +1,5 @@
 export type PaymentStatus =
-  | "pending"
-  | "processing"
-  | "succeeded"
-  | "failed"
-  | "cancelled"
-  | "refunded";
+  "pending" | "processing" | "succeeded" | "failed" | "cancelled" | "refunded";
 
 export type PaymentSubject = "order" | "trip" | "service_request";
 
@@ -36,8 +31,9 @@ export function formatIQD(value: number): string {
 /** تنسيق مبلغ حسب عملته الفعلية (الدينار العراقي أو الدولار) بدل افتراض الدينار دائماً. */
 export function formatMoney(value: number, currency?: string | null): string {
   const code = (currency ?? "IQD").toUpperCase();
-  if (code === "USD") return `$${Number(value).toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
-  if (code !== "IQD") return `${Number(value).toLocaleString("en-US", { maximumFractionDigits: 2 })} ${code}`;
+  if (code === "USD")
+    return `$${Number(value).toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+  if (code !== "IQD")
+    return `${Number(value).toLocaleString("en-US", { maximumFractionDigits: 2 })} ${code}`;
   return formatIQD(value);
 }
-

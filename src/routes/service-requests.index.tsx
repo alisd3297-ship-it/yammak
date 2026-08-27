@@ -6,9 +6,9 @@ import { Star } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
-import { BackButton, BottomNav, PageShell, StatusDot  } from "@/components/app-shell";
+import { BackButton, BottomNav, PageShell, StatusDot } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
-import { useCustomerAreaGuard, useAccount  } from "@/lib/auth";
+import { useCustomerAreaGuard, useAccount } from "@/lib/auth";
 import { changeServiceRequestStatus, rateServiceRequest } from "@/lib/services.functions";
 import {
   SERVICE_STATUS_LABELS,
@@ -23,7 +23,10 @@ export const Route = createFileRoute("/service-requests/")({
   head: () => ({
     meta: [
       { title: "طلبات الخدمة | لبابك" },
-      { name: "description", content: "تابع حالة طلبات المهن والخدمات وقيّم مقدم الخدمة بعد إنجاز الشغل." },
+      {
+        name: "description",
+        content: "تابع حالة طلبات المهن والخدمات وقيّم مقدم الخدمة بعد إنجاز الشغل.",
+      },
       { property: "og:title", content: "طلبات الخدمة | لبابك" },
       { property: "og:description", content: "متابعة طلبات المهن والخدمات." },
       { property: "og:type", content: "website" },
@@ -122,7 +125,11 @@ function ServiceRequestsPage() {
               <div className="flex items-center justify-between">
                 <p className="font-bold">#{r.code}</p>
                 <span className="text-sm font-bold text-primary">
-                  {formatServicePrice(Number(r.price_amount), r.price_unit as ServicePriceUnit, r.currency)}
+                  {formatServicePrice(
+                    Number(r.price_amount),
+                    r.price_unit as ServicePriceUnit,
+                    r.currency,
+                  )}
                 </span>
               </div>
               <p className="mt-1 text-sm">{r.service_name}</p>
@@ -139,7 +146,9 @@ function ServiceRequestsPage() {
                   الموعد: {new Date(r.scheduled_at).toLocaleString("ar-IQ-u-nu-latn")}
                 </p>
               )}
-              {r.description && <p className="text-xs text-muted-foreground">التفاصيل: {r.description}</p>}
+              {r.description && (
+                <p className="text-xs text-muted-foreground">التفاصيل: {r.description}</p>
+              )}
 
               {canCancel && (
                 <Button
@@ -181,7 +190,9 @@ function ServiceRequestsPage() {
           );
         })}
         {!requests?.length && (
-          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">ماكو طلبات خدمة لحد الآن.</p>
+          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+            ماكو طلبات خدمة لحد الآن.
+          </p>
         )}
       </div>
 

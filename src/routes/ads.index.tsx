@@ -3,11 +3,18 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { ArrowRight, Megaphone, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { BackButton, BottomNav, PageShell, StatusDot  } from "@/components/app-shell";
+import { BackButton, BottomNav, PageShell, StatusDot } from "@/components/app-shell";
 import { AdsTickerBoard } from "@/components/ads-ticker";
 import { Button } from "@/components/ui/button";
 import { useAccount } from "@/lib/auth";
-import { AD_STATUS_LABEL, AD_STATUS_TONE, IRAQ_GOVERNORATES, formatAdPrice, type AdCategory, type AdRow } from "@/lib/ads";
+import {
+  AD_STATUS_LABEL,
+  AD_STATUS_TONE,
+  IRAQ_GOVERNORATES,
+  formatAdPrice,
+  type AdCategory,
+  type AdRow,
+} from "@/lib/ads";
 import { OPERATING_LOCATION } from "@/lib/location";
 import { AdImage } from "@/components/ad-image";
 import { AdDetailsDialog } from "@/components/ad-details-dialog";
@@ -19,10 +26,14 @@ export const Route = createFileRoute("/ads/")({
       { title: "أعلن معنا | لبابك" },
       {
         name: "description",
-        content: "إعلانات مبوبة داخل لبابك: عقارات، سيارات، وظائف، إلكترونيات وأثاث — انشر إعلانك ووصل لزبائنك.",
+        content:
+          "إعلانات مبوبة داخل لبابك: عقارات، سيارات، وظائف، إلكترونيات وأثاث — انشر إعلانك ووصل لزبائنك.",
       },
       { property: "og:title", content: "أعلن معنا | لبابك" },
-      { property: "og:description", content: "قسم الإعلانات في لبابك — انشر إعلانك بعد مراجعة الإدارة." },
+      {
+        property: "og:description",
+        content: "قسم الإعلانات في لبابك — انشر إعلانك بعد مراجعة الإدارة.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -35,10 +46,16 @@ export function useAdsBoard() {
     queryKey: ["ads-board"],
     queryFn: async () => {
       const [categories, ads] = await Promise.all([
-        supabase.from("ad_categories").select("id, name, icon, color, sort_order").eq("is_active", true).order("sort_order"),
+        supabase
+          .from("ad_categories")
+          .select("id, name, icon, color, sort_order")
+          .eq("is_active", true)
+          .order("sort_order"),
         supabase
           .from("ads")
-          .select("id, category_id, title, body, price, currency, governorate, contact_phone, address_text, images, status, sort_order, published_at, expires_at, created_at")
+          .select(
+            "id, category_id, title, body, price, currency, governorate, contact_phone, address_text, images, status, sort_order, published_at, expires_at, created_at",
+          )
           .eq("status", "published")
           .eq("is_demo", false)
           .order("sort_order")
@@ -66,7 +83,9 @@ function AdsPage() {
     queryFn: async () => {
       const { data: rows } = await supabase
         .from("ads")
-        .select("id, category_id, title, price, currency, governorate, images, status, rejection_reason, created_at, expires_at")
+        .select(
+          "id, category_id, title, price, currency, governorate, images, status, rejection_reason, created_at, expires_at",
+        )
         .eq("owner_id", account!.userId!)
         .order("created_at", { ascending: false });
       return rows ?? [];
@@ -126,7 +145,11 @@ function AdsPage() {
             كل المحافظات
           </FilterChip>
           {IRAQ_GOVERNORATES.map((name) => (
-            <FilterChip key={name} active={governorate === name} onClick={() => setGovernorate(name)}>
+            <FilterChip
+              key={name}
+              active={governorate === name}
+              onClick={() => setGovernorate(name)}
+            >
               {name}
             </FilterChip>
           ))}
@@ -145,14 +168,20 @@ function AdsPage() {
                 onClick={() => setSelectedAd(ad)}
                 className="flex w-full items-center gap-3 rounded-2xl bg-card p-3 text-start shadow-soft transition active:scale-[0.99]"
               >
-                <AdImage path={ad.images[0]} alt={ad.title} className="size-16 shrink-0 rounded-xl object-cover" />
+                <AdImage
+                  path={ad.images[0]}
+                  alt={ad.title}
+                  className="size-16 shrink-0 rounded-xl object-cover"
+                />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-bold">{ad.title}</p>
                   <p className="truncate text-xs text-muted-foreground">
                     {ad.governorate ? `${ad.governorate} — ` : ""}
                     {ad.address_text}
                   </p>
-                  <p className="mt-1 text-sm font-bold text-primary">{formatAdPrice(ad.price, ad.currency)}</p>
+                  <p className="mt-1 text-sm font-bold text-primary">
+                    {formatAdPrice(ad.price, ad.currency)}
+                  </p>
                 </div>
               </button>
             ))
@@ -172,11 +201,15 @@ function AdsPage() {
                   <div className="flex items-center gap-2">
                     <StatusDot tone={AD_STATUS_TONE[ad.status]} />
                     <span className="text-xs font-bold">{AD_STATUS_LABEL[ad.status]}</span>
-                    <span className="ms-auto text-xs text-muted-foreground">{formatAdPrice(ad.price, ad.currency)}</span>
+                    <span className="ms-auto text-xs text-muted-foreground">
+                      {formatAdPrice(ad.price, ad.currency)}
+                    </span>
                   </div>
                   <p className="mt-1 font-bold">{ad.title}</p>
                   {ad.rejection_reason ? (
-                    <p className="mt-1 text-xs text-destructive">سبب الرفض: {ad.rejection_reason}</p>
+                    <p className="mt-1 text-xs text-destructive">
+                      سبب الرفض: {ad.rejection_reason}
+                    </p>
                   ) : null}
                 </div>
               ))
@@ -199,7 +232,15 @@ function AdsPage() {
   );
 }
 
-function FilterChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+function FilterChip({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <button
       type="button"

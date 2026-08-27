@@ -4,7 +4,13 @@ import { Search, Star, Clock } from "lucide-react";
 import * as Icons from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCachedQuery } from "@/lib/offline-cache";
-import { AdminEntry, BottomNav, BrandHeader, OfflineBanner, PageShell } from "@/components/app-shell";
+import {
+  AdminEntry,
+  BottomNav,
+  BrandHeader,
+  OfflineBanner,
+  PageShell,
+} from "@/components/app-shell";
 import { Input } from "@/components/ui/input";
 import { normalizeArabic, fuzzyScore } from "@/lib/search";
 import { AdsTickerBoard } from "@/components/ads-ticker";
@@ -77,7 +83,6 @@ const MAIN_SERVICES: MainService[] = [
   { label: "صيدلية", hint: "أدوية ومستلزمات", icon: Icons.Pill, to: "/pharmacies" },
 ];
 
-
 function MainTile({ item }: { item: MainService }) {
   const Icon = item.icon;
   return (
@@ -119,7 +124,9 @@ function CustomerHome() {
 
       supabase
         .from("providers")
-        .select("id, name, description, rating, orders_count, avg_prep_minutes, is_open, keywords, kind")
+        .select(
+          "id, name, description, rating, orders_count, avg_prep_minutes, is_open, keywords, kind",
+        )
         .eq("status", "approved")
         .eq("is_demo", false),
     ]);
@@ -177,7 +184,10 @@ function CustomerHome() {
             أعلن معنا
           </Link>
         </div>
-        <AdsTickerBoard categories={adsBoard.data?.categories ?? []} ads={adsBoard.data?.ads ?? []} />
+        <AdsTickerBoard
+          categories={adsBoard.data?.categories ?? []}
+          ads={adsBoard.data?.ads ?? []}
+        />
       </section>
 
       {results ? (
@@ -219,7 +229,6 @@ function CustomerHome() {
           </section>
 
           {(data?.sections ?? []).map((section) => {
-
             const services = (data?.services ?? []).filter(
               (s) => s.section_id === section.id && s.placement.includes("home"),
             );
@@ -263,7 +272,8 @@ function CustomerHome() {
 }
 
 function ServiceTile({ service }: { service: ServiceRow }) {
-  const Icon = (Icons as unknown as Record<string, Icons.LucideIcon>)[service.icon] ?? Icons.Sparkles;
+  const Icon =
+    (Icons as unknown as Record<string, Icons.LucideIcon>)[service.icon] ?? Icons.Sparkles;
   const to = service.route_path ?? "/";
   const content = (
     <div className="flex h-full flex-col items-center gap-2 rounded-2xl bg-card p-3 text-center shadow-soft transition active:scale-95">
@@ -273,7 +283,15 @@ function ServiceTile({ service }: { service: ServiceRow }) {
       <span className="text-xs font-semibold leading-tight">{service.name}</span>
     </div>
   );
-  const KNOWN = ["/restaurants", "/stores", "/services", "/courier", "/special-delivery", "/taxi", "/ads"] as const;
+  const KNOWN = [
+    "/restaurants",
+    "/stores",
+    "/services",
+    "/courier",
+    "/special-delivery",
+    "/taxi",
+    "/ads",
+  ] as const;
   if ((KNOWN as readonly string[]).includes(to)) {
     return <Link to={to as (typeof KNOWN)[number]}>{content}</Link>;
   }

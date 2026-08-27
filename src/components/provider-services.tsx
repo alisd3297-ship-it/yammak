@@ -92,7 +92,12 @@ export function ProviderServices({ providerId }: { providerId: string }) {
 
   async function patch(
     id: string,
-    values: { price_amount?: number; cost_amount?: number | null; currency?: AdCurrency; is_active?: boolean },
+    values: {
+      price_amount?: number;
+      cost_amount?: number | null;
+      currency?: AdCurrency;
+      is_active?: boolean;
+    },
   ) {
     const { error } = await supabase.from("provider_services").update(values).eq("id", id);
     if (error) toast.error("تعذر حفظ التعديل");
@@ -193,7 +198,11 @@ export function ProviderServices({ providerId }: { providerId: string }) {
             <article key={s.id} className="rounded-2xl bg-card p-4 shadow-soft">
               <div className="flex items-center justify-between gap-2">
                 <p className="font-bold">{s.name}</p>
-                <button onClick={() => remove(s.id)} aria-label="حذف الخدمة" className="text-destructive">
+                <button
+                  onClick={() => remove(s.id)}
+                  aria-label="حذف الخدمة"
+                  className="text-destructive"
+                >
                   <Trash2 className="size-4" />
                 </button>
               </div>
@@ -270,7 +279,10 @@ export function ProviderServices({ providerId }: { providerId: string }) {
                   </select>
                 </div>
                 <div className="flex items-center gap-2 text-xs">
-                  <Switch checked={s.is_active} onCheckedChange={(v) => patch(s.id, { is_active: v })} />
+                  <Switch
+                    checked={s.is_active}
+                    onCheckedChange={(v) => patch(s.id, { is_active: v })}
+                  />
                   {s.is_active ? "مفعّلة" : "متوقفة"}
                 </div>
               </div>
@@ -278,7 +290,9 @@ export function ProviderServices({ providerId }: { providerId: string }) {
           );
         })}
         {!services?.length && (
-          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">ما أضفت خدمات بعد.</p>
+          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+            ما أضفت خدمات بعد.
+          </p>
         )}
       </section>
     </div>

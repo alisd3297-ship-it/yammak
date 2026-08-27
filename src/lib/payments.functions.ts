@@ -26,7 +26,8 @@ function friendly(message: string): string {
   if (message.includes("payments_not_configured")) return "الدفع الإلكتروني غير مفعّل حالياً";
   if (message.includes("payment_not_refundable")) return "لا يمكن استرجاع هذه العملية";
   if (message.includes("invalid_refund_amount")) return "مبلغ الاسترجاع غير صالح";
-  if (message.includes("forbidden") || message.includes("unauthorized")) return "غير مصرح بهذا الإجراء";
+  if (message.includes("forbidden") || message.includes("unauthorized"))
+    return "غير مصرح بهذا الإجراء";
   return "تعذر تنفيذ عملية الدفع، حاول مرة ثانية";
 }
 
@@ -259,16 +260,22 @@ export const refundPayment = createServerFn({ method: "POST" })
       .eq("id", row.id)
       .maybeSingle();
 
-    const result = fresh as unknown as (PaymentRow & {
-      refund_status?: string;
-      refund_error?: string | null;
-      refund_reference?: string | null;
-    }) | null;
+    const result = fresh as unknown as
+      | (PaymentRow & {
+          refund_status?: string;
+          refund_error?: string | null;
+          refund_reference?: string | null;
+        })
+      | null;
     if (!result) throw new Error("تعذر قراءة نتيجة الاسترجاع");
     if (result.refund_status === "failed")
-      throw new Error(`تعذر تنفيذ الاسترجاع لدى مزود الدفع: ${result.refund_error ?? "خطأ غير معروف"}`);
+      throw new Error(
+        `تعذر تنفيذ الاسترجاع لدى مزود الدفع: ${result.refund_error ?? "خطأ غير معروف"}`,
+      );
     if (result.refund_status === "manual_required")
-      throw new Error("هذه العملية غير قابلة للاسترجاع آلياً (دفع نقدي أو مزود غير مفعّل) — سُجّلت للمعالجة اليدوية");
+      throw new Error(
+        "هذه العملية غير قابلة للاسترجاع آلياً (دفع نقدي أو مزود غير مفعّل) — سُجّلت للمعالجة اليدوية",
+      );
 
     return {
       ...shape(result),

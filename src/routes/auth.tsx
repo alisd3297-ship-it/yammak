@@ -54,10 +54,10 @@ function AuthPage() {
     }
   }, [account, navigate, pendingDriverSignup, needsOnboarding]);
 
-
   function authErrorMessage(message: string): string {
     const m = message.toLowerCase();
-    if (m.includes("invalid login credentials")) return "البريد الإلكتروني أو كلمة المرور غير صحيحة";
+    if (m.includes("invalid login credentials"))
+      return "البريد الإلكتروني أو كلمة المرور غير صحيحة";
     if (m.includes("email not confirmed")) return "لم يتم تأكيد البريد بعد، راجع بريدك الإلكتروني";
     if (m.includes("weak") || m.includes("pwned"))
       return "كلمة المرور ضعيفة أو مسربة، اختر كلمة مرور أقوى (أحرف وأرقام ورموز)";
@@ -127,7 +127,9 @@ function AuthPage() {
   function randomString(bytes: number): string {
     const arr = new Uint8Array(bytes);
     crypto.getRandomValues(arr);
-    return Array.from(arr, (b) => b.toString(36).padStart(2, "0")).join("").slice(0, bytes * 2);
+    return Array.from(arr, (b) => b.toString(36).padStart(2, "0"))
+      .join("")
+      .slice(0, bytes * 2);
   }
 
   async function createTestAccount() {
@@ -158,7 +160,6 @@ function AuthPage() {
     }
     toast.success(`تم إنشاء حساب اختبار مؤقت (${testEmail}) — صلاحيات زبون فقط`);
   }
-
 
   async function resetPassword() {
     if (!email) {
@@ -192,7 +193,13 @@ function AuthPage() {
           <form onSubmit={signIn} className="space-y-4 pt-4">
             <div className="space-y-2">
               <Label htmlFor="email">البريد الإلكتروني</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">كلمة المرور</Label>
@@ -207,7 +214,11 @@ function AuthPage() {
             <Button type="submit" className="h-12 w-full text-base" disabled={loading}>
               دخول
             </Button>
-            <button type="button" onClick={resetPassword} className="w-full text-sm text-muted-foreground">
+            <button
+              type="button"
+              onClick={resetPassword}
+              className="w-full text-sm text-muted-foreground"
+            >
               نسيت كلمة المرور؟
             </button>
           </form>
@@ -242,21 +253,38 @@ function AuthPage() {
               </div>
               {accountType === "driver" && (
                 <p className="rounded-xl bg-warning/15 p-3 text-xs">
-                  راح ننشئ حسابك كزبون أولاً، وبعدها تكمل بيانات المركبة ويُرسل طلبك للإدارة. صلاحية المندوب تتفعل بعد الموافقة فقط.
+                  راح ننشئ حسابك كزبون أولاً، وبعدها تكمل بيانات المركبة ويُرسل طلبك للإدارة. صلاحية
+                  المندوب تتفعل بعد الموافقة فقط.
                 </p>
               )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="name">الاسم الكامل</Label>
-              <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+              <Input
+                id="name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="phone">رقم الهاتف</Label>
-              <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} inputMode="tel" />
+              <Input
+                id="phone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                inputMode="tel"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email2">البريد الإلكتروني</Label>
-              <Input id="email2" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <Input
+                id="email2"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password2">كلمة المرور</Label>
@@ -281,13 +309,17 @@ function AuthPage() {
           <p className="mb-3 text-xs text-muted-foreground">
             وضع التطوير: حساب مؤقت بصلاحيات زبون فقط، بدون أي بيانات اعتماد ثابتة.
           </p>
-          <Button type="button" variant="outline" className="h-12 w-full text-base" disabled={loading} onClick={createTestAccount}>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-12 w-full text-base"
+            disabled={loading}
+            onClick={createTestAccount}
+          >
             إنشاء حساب اختبار
           </Button>
         </div>
       )}
-
-
 
       <Link to="/" className="mt-6 text-center text-sm text-muted-foreground">
         تصفح التطبيق بدون تسجيل

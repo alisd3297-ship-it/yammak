@@ -6,7 +6,6 @@ const BACKUP_KEY = AUTH_BACKUP_KEY;
 
 type Backup = { access_token: string; refresh_token: string };
 
-
 function readBackup(): Backup | null {
   try {
     const raw = localStorage.getItem(BACKUP_KEY);

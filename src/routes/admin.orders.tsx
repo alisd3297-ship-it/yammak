@@ -32,11 +32,21 @@ const STATUS_GROUPS = [
   { key: "all", label: "الكل", statuses: [] as OrderStatus[] },
   { key: "new", label: "جديد", statuses: ["new", "awaiting_provider"] as OrderStatus[] },
   { key: "accepted", label: "مقبول", statuses: ["accepted", "preparing"] as OrderStatus[] },
-  { key: "ready", label: "جاهز", statuses: ["ready_for_pickup", "searching_driver", "offered_to_driver"] as OrderStatus[] },
+  {
+    key: "ready",
+    label: "جاهز",
+    statuses: ["ready_for_pickup", "searching_driver", "offered_to_driver"] as OrderStatus[],
+  },
   {
     key: "delivery",
     label: "استلام/توصيل",
-    statuses: ["driver_accepted", "driver_heading_pickup", "picked_up", "on_the_way", "delivered"] as OrderStatus[],
+    statuses: [
+      "driver_accepted",
+      "driver_heading_pickup",
+      "picked_up",
+      "on_the_way",
+      "delivered",
+    ] as OrderStatus[],
   },
   { key: "completed", label: "مكتمل", statuses: ["completed"] as OrderStatus[] },
   { key: "cancelled", label: "ملغى", statuses: ["cancelled"] as OrderStatus[] },
@@ -63,7 +73,9 @@ function AdminOrdersPage() {
     queryFn: async () => {
       let q = supabase
         .from("orders")
-        .select("id, code, status, order_type, fulfillment, total, delivery_fee, created_at, dropoff_text")
+        .select(
+          "id, code, status, order_type, fulfillment, total, delivery_fee, created_at, dropoff_text",
+        )
         .order("created_at", { ascending: false })
         .limit(120);
       const statuses = STATUS_GROUPS.find((g) => g.key === group)?.statuses ?? [];
@@ -86,7 +98,9 @@ function AdminOrdersPage() {
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
         <h1 className="text-2xl font-black">الطلبات</h1>
-        <p className="mt-1 text-sm opacity-90">مراقبة كل الطلبات وتتبع حالتها بدون موافقة إدارية إجبارية.</p>
+        <p className="mt-1 text-sm opacity-90">
+          مراقبة كل الطلبات وتتبع حالتها بدون موافقة إدارية إجبارية.
+        </p>
       </header>
 
       <AdminNav />
@@ -109,7 +123,9 @@ function AdminOrdersPage() {
               onClick={() => setGroup(g.key)}
               className={cn(
                 "whitespace-nowrap rounded-full px-4 py-2 text-xs font-semibold",
-                group === g.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+                group === g.key
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground",
               )}
             >
               {g.label}
@@ -127,7 +143,9 @@ function AdminOrdersPage() {
               onClick={() => setType(t.key)}
               className={cn(
                 "whitespace-nowrap rounded-full px-4 py-2 text-xs font-semibold",
-                type === t.key ? "bg-secondary text-secondary-foreground" : "bg-muted text-muted-foreground",
+                type === t.key
+                  ? "bg-secondary text-secondary-foreground"
+                  : "bg-muted text-muted-foreground",
               )}
             >
               {t.label}
@@ -139,7 +157,9 @@ function AdminOrdersPage() {
       <div className="space-y-2 px-4 py-5">
         {isLoading && <p className="text-sm text-muted-foreground">جاري التحميل…</p>}
         {!isLoading && !rows.length && (
-          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">ماكو طلبات بهذي التصفية.</p>
+          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+            ماكو طلبات بهذي التصفية.
+          </p>
         )}
         {rows.map((o) => (
           <Link

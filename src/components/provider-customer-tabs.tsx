@@ -85,7 +85,9 @@ export function ProviderCustomerTabs({ providerId }: { providerId: string }) {
                 <p className="text-sm font-bold text-primary">{formatIQD(totals.remaining)}</p>
                 <p className="text-[11px] text-muted-foreground">{tabStatusLabel(totals)}</p>
               </div>
-              <ChevronDown className={`ms-2 size-4 transition ${openTab === t.tabId ? "rotate-180" : ""}`} />
+              <ChevronDown
+                className={`ms-2 size-4 transition ${openTab === t.tabId ? "rotate-180" : ""}`}
+              />
             </button>
             {openTab === t.tabId && (
               <div className="border-t border-border p-4">
@@ -115,7 +117,11 @@ function TabEditor({ tabId, providerId }: { tabId: string; providerId: string })
     queryKey: ["provider-tab-detail", tabId],
     queryFn: async () => {
       const [tab, items, payments] = await Promise.all([
-        supabase.from("customer_tabs").select("id, delivery_fee, note").eq("id", tabId).maybeSingle(),
+        supabase
+          .from("customer_tabs")
+          .select("id, delivery_fee, note")
+          .eq("id", tabId)
+          .maybeSingle(),
         supabase
           .from("customer_tab_items")
           .select("id, name, quantity, unit_price, note")
@@ -152,35 +158,56 @@ function TabEditor({ tabId, providerId }: { tabId: string; providerId: string })
     const { error } = await supabase
       .from("customer_tab_items")
       .insert({ tab_id: tabId, name: item.name.trim(), quantity, unit_price: unitPrice });
-    if (error) { toast.error("تعذر إضافة المادة"); return; }
+    if (error) {
+      toast.error("تعذر إضافة المادة");
+      return;
+    }
     setItem({ name: "", quantity: "1", price: "" });
     refresh();
   }
 
   async function updateItem(id: string, patch: { quantity?: number; unit_price?: number }) {
     const { error } = await supabase.from("customer_tab_items").update(patch).eq("id", id);
-    if (error) { toast.error("تعذر تعديل المادة"); return; }
+    if (error) {
+      toast.error("تعذر تعديل المادة");
+      return;
+    }
     refresh();
   }
 
   async function removeItem(id: string) {
     const { error } = await supabase.from("customer_tab_items").delete().eq("id", id);
-    if (error) { toast.error("تعذر حذف المادة"); return; }
+    if (error) {
+      toast.error("تعذر حذف المادة");
+      return;
+    }
     refresh();
   }
 
   async function saveFee() {
     const value = Number(fee);
-    if (!(value >= 0)) { toast.error("رسوم توصيل غير صحيحة"); return; }
-    const { error } = await supabase.from("customer_tabs").update({ delivery_fee: value }).eq("id", tabId);
-    if (error) { toast.error("تعذر تحديث رسوم التوصيل"); return; }
+    if (!(value >= 0)) {
+      toast.error("رسوم توصيل غير صحيحة");
+      return;
+    }
+    const { error } = await supabase
+      .from("customer_tabs")
+      .update({ delivery_fee: value })
+      .eq("id", tabId);
+    if (error) {
+      toast.error("تعذر تحديث رسوم التوصيل");
+      return;
+    }
     setFee(null);
     refresh();
   }
 
   async function addPayment() {
     const amount = Number(payment.amount);
-    if (!(amount > 0)) { toast.error("اكتب مبلغاً صحيحاً"); return; }
+    if (!(amount > 0)) {
+      toast.error("اكتب مبلغاً صحيحاً");
+      return;
+    }
     if (amount > totals.remaining + 0.0001) {
       toast.error(
         `المبلغ المستحصل (${formatIQD(amount)}) أكبر من المتبقي (${formatIQD(totals.remaining)}) — عدّل المبلغ قبل الحفظ`,
@@ -192,7 +219,10 @@ function TabEditor({ tabId, providerId }: { tabId: string; providerId: string })
       amount,
       note: payment.note.trim() || null,
     });
-    if (error) { toast.error("تعذر تسجيل الدفعة"); return; }
+    if (error) {
+      toast.error("تعذر تسجيل الدفعة");
+      return;
+    }
     setPayment({ amount: "", note: "" });
     refresh();
   }
@@ -226,7 +256,13 @@ function TabEditor({ tabId, providerId }: { tabId: string; providerId: string })
               inputMode="decimal"
               aria-label="سعر الوحدة"
             />
-            <Button size="icon" variant="ghost" className="size-9" onClick={() => removeItem(i.id)} aria-label="حذف">
+            <Button
+              size="icon"
+              variant="ghost"
+              className="size-9"
+              onClick={() => removeItem(i.id)}
+              aria-label="حذف"
+            >
               <Trash2 className="size-4 text-destructive" />
             </Button>
           </div>
@@ -332,7 +368,9 @@ function TabEditor({ tabId, providerId }: { tabId: string; providerId: string })
                   {p.note ? ` · ${p.note}` : ""}
                 </span>
                 <span className="text-end">
-                  <span className="block font-bold text-success">{formatIQD(Number(p.amount))}</span>
+                  <span className="block font-bold text-success">
+                    {formatIQD(Number(p.amount))}
+                  </span>
                   <span className="block text-[11px] text-muted-foreground">
                     المتبقي بعدها: {formatIQD(p.remainingAfter)}
                   </span>

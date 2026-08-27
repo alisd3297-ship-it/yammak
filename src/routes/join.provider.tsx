@@ -7,7 +7,7 @@ import { LocateFixed, Store as StoreIcon, UtensilsCrossed, Wrench } from "lucide
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { OPERATING_LOCATION } from "@/lib/location";
-import { BackButton, PageShell  } from "@/components/app-shell";
+import { BackButton, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,7 +19,10 @@ export const Route = createFileRoute("/join/provider")({
   head: () => ({
     meta: [
       { title: "انضم كمطعم أو متجر أو مهني | لبابك" },
-      { name: "description", content: "سجّل مطعمك أو متجرك في لبابك واستقبل الطلبات بعد اعتماد الإدارة." },
+      {
+        name: "description",
+        content: "سجّل مطعمك أو متجرك في لبابك واستقبل الطلبات بعد اعتماد الإدارة.",
+      },
       { property: "og:title", content: "انضم كمطعم أو متجر | لبابك" },
       { property: "og:description", content: "تقديم طلب انضمام لمقدمي الخدمة." },
       { property: "og:type", content: "website" },
@@ -60,7 +63,11 @@ function JoinProviderPage() {
   const { data: cities } = useQuery({
     queryKey: ["cities"],
     queryFn: async () => {
-      const { data } = await supabase.from("cities").select("id, name").eq("is_active", true).order("sort_order");
+      const { data } = await supabase
+        .from("cities")
+        .select("id, name")
+        .eq("is_active", true)
+        .order("sort_order");
       return data ?? [];
     },
   });
@@ -110,7 +117,9 @@ function JoinProviderPage() {
     return (
       <PageShell>
         <div className="px-5 py-16 text-center">
-          <p className="text-sm text-muted-foreground">سجّل دخولك أولاً حتى تقدر تقدّم طلب انضمام.</p>
+          <p className="text-sm text-muted-foreground">
+            سجّل دخولك أولاً حتى تقدر تقدّم طلب انضمام.
+          </p>
           <Link to="/auth" className="mt-3 inline-block font-semibold text-primary">
             تسجيل الدخول
           </Link>
@@ -137,7 +146,9 @@ function JoinProviderPage() {
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
         <BackButton fallback="/" label="الرئيسية" />
         <h1 className="text-2xl font-black">انضم كمقدم خدمة</h1>
-        <p className="mt-1 text-sm opacity-90">سجّل مطعمك أو متجرك أو مهنتك، والإدارة راح تراجع طلبك</p>
+        <p className="mt-1 text-sm opacity-90">
+          سجّل مطعمك أو متجرك أو مهنتك، والإدارة راح تراجع طلبك
+        </p>
       </header>
 
       <div className="space-y-5 px-4 py-5">
@@ -179,7 +190,12 @@ function JoinProviderPage() {
               ))}
             </select>
           )}
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="اسم النشاط" className="h-12" />
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="اسم النشاط"
+            className="h-12"
+          />
           <Textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}

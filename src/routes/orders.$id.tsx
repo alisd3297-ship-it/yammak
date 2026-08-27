@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { MapPin, Phone, Navigation } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { BackButton, PageShell, StatusDot  } from "@/components/app-shell";
+import { BackButton, PageShell, StatusDot } from "@/components/app-shell";
 import { PaymentPanel } from "@/components/payment-panel";
 import { Button } from "@/components/ui/button";
 import { changeOrderStatus } from "@/lib/orders.functions";
@@ -74,7 +74,9 @@ function OrderTrackPage() {
         supabase.from("order_items").select("id, name, quantity, unit_price").eq("order_id", id),
         supabase
           .from("order_stops")
-          .select("id, position, address_text, recipient_name, recipient_phone, notes, is_delivered")
+          .select(
+            "id, position, address_text, recipient_name, recipient_phone, notes, is_delivered",
+          )
           .eq("order_id", id)
           .order("position"),
       ]);
@@ -89,9 +91,11 @@ function OrderTrackPage() {
   const isPickup = !courier && fulfillment !== "delivery";
   const flow: OrderStatus[] = courier ? COURIER_STATUS_FLOW : customerFlowFor(fulfillment);
   const activeIndex = flow.indexOf(status);
-  const provider = order?.providers as
-    | { name: string; phone: string | null; address_text: string | null }
-    | null;
+  const provider = order?.providers as {
+    name: string;
+    phone: string | null;
+    address_text: string | null;
+  } | null;
   const driverId = order?.driver_id ?? null;
   const tracking = !!driverId && TRACKING_STATUSES.includes(status);
 
@@ -165,7 +169,6 @@ function OrderTrackPage() {
     }
   }
 
-
   async function cancelOrder() {
     try {
       await setStatus({ data: { orderId: id, status: "cancelled", reason: "إلغاء من العميل" } });
@@ -177,7 +180,9 @@ function OrderTrackPage() {
   }
 
   const canCancel = courier
-    ? (["new", "searching_driver", "offered_to_driver", "driver_accepted"] as OrderStatus[]).includes(status)
+    ? (
+        ["new", "searching_driver", "offered_to_driver", "driver_accepted"] as OrderStatus[]
+      ).includes(status)
     : (["new", "awaiting_provider", "accepted"] as OrderStatus[]).includes(status);
 
   // تعذر الجلب أو طلب غير موجود: نعرض رسالة واضحة بدل شاشة تحميل أبدية.
@@ -190,7 +195,9 @@ function OrderTrackPage() {
         </header>
         <div className="space-y-3 px-4 py-8 text-center">
           <p className="text-sm text-muted-foreground">
-            {isError ? "تعذر تحميل الطلب، تحقق من الاتصال." : "هذا الطلب غير موجود أو ما عندك صلاحية عليه."}
+            {isError
+              ? "تعذر تحميل الطلب، تحقق من الاتصال."
+              : "هذا الطلب غير موجود أو ما عندك صلاحية عليه."}
           </p>
           {isError && (
             <button
@@ -265,7 +272,9 @@ function OrderTrackPage() {
             </p>
           )}
           {status === "completed" && (
-            <p className="mt-3 rounded-xl bg-success/10 p-3 text-sm text-success">تم إكمال الطلب.</p>
+            <p className="mt-3 rounded-xl bg-success/10 p-3 text-sm text-success">
+              تم إكمال الطلب.
+            </p>
           )}
           {isPickup && status === "ready_for_pickup" && (
             <>
@@ -354,7 +363,11 @@ function OrderTrackPage() {
                   <li key={s.id} className="rounded-xl bg-muted/60 p-3 text-sm">
                     <div className="flex items-center justify-between">
                       <span className="font-semibold">النقطة {i + 1}</span>
-                      <span className={s.is_delivered ? "text-xs text-success" : "text-xs text-muted-foreground"}>
+                      <span
+                        className={
+                          s.is_delivered ? "text-xs text-success" : "text-xs text-muted-foreground"
+                        }
+                      >
                         {s.is_delivered ? "تم التسليم" : "بالانتظار"}
                       </span>
                     </div>
@@ -373,7 +386,9 @@ function OrderTrackPage() {
               </p>
             )}
             {order?.cargo_description && (
-              <p className="mt-1 text-xs text-muted-foreground">الحمولة: {order.cargo_description}</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                الحمولة: {order.cargo_description}
+              </p>
             )}
             {order?.scheduled_at && (
               <p className="mt-1 text-xs text-muted-foreground">
@@ -385,18 +400,23 @@ function OrderTrackPage() {
             )}
           </section>
         ) : (
-        <section className="rounded-2xl bg-card p-4 shadow-soft">
-          <h2 className="mb-3 font-bold">{provider?.name}</h2>
-          {provider?.phone && (
-            <a href={`tel:${provider.phone}`} className="flex items-center gap-2 text-sm text-primary">
-              <Phone className="size-4" /> {provider.phone}
-            </a>
-          )}
-          <p className="mt-3 flex items-start gap-2 text-sm text-muted-foreground">
-            <MapPin className="mt-0.5 size-4 shrink-0" /> {order?.dropoff_text}
-          </p>
-          {order?.notes && <p className="mt-2 text-xs text-muted-foreground">ملاحظات: {order.notes}</p>}
-        </section>
+          <section className="rounded-2xl bg-card p-4 shadow-soft">
+            <h2 className="mb-3 font-bold">{provider?.name}</h2>
+            {provider?.phone && (
+              <a
+                href={`tel:${provider.phone}`}
+                className="flex items-center gap-2 text-sm text-primary"
+              >
+                <Phone className="size-4" /> {provider.phone}
+              </a>
+            )}
+            <p className="mt-3 flex items-start gap-2 text-sm text-muted-foreground">
+              <MapPin className="mt-0.5 size-4 shrink-0" /> {order?.dropoff_text}
+            </p>
+            {order?.notes && (
+              <p className="mt-2 text-xs text-muted-foreground">ملاحظات: {order.notes}</p>
+            )}
+          </section>
         )}
 
         <section className="rounded-2xl bg-card p-4 text-sm shadow-soft">

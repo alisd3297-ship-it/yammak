@@ -15,16 +15,19 @@ function friendly(message: string): string {
   if (message.includes("product_not_found")) return "أحد المنتجات لم يعد موجوداً";
   if (message.includes("missing_dropoff")) return "حدد موقع التوصيل أو اكتب العنوان";
   if (message.includes("empty_cart")) return "سلتك فارغة";
-  if (message.includes("transition_not_allowed")) return "لا يمكن تنفيذ هذا الإجراء على حالة الطلب الحالية";
+  if (message.includes("transition_not_allowed"))
+    return "لا يمكن تنفيذ هذا الإجراء على حالة الطلب الحالية";
   if (message.includes("order_already_assigned")) return "تم إسناد الطلب لمندوب آخر";
   if (message.includes("offer_expired")) return "انتهت مهلة العرض";
   if (message.includes("offer_not_active")) return "هذا العرض لم يعد متاحاً";
   if (message.includes("phone_verification_required")) return "أكمل تأكيد رقم هاتفك أولاً";
   if (message.includes("order_not_found")) return "الطلب غير موجود";
-  if (message.includes("forbidden") || message.includes("unauthorized")) return "غير مصرح بهذا الإجراء";
-  return message.trim() ? `تعذر تنفيذ العملية: ${message.trim()}` : "تعذر تنفيذ العملية، حاول مرة ثانية";
+  if (message.includes("forbidden") || message.includes("unauthorized"))
+    return "غير مصرح بهذا الإجراء";
+  return message.trim()
+    ? `تعذر تنفيذ العملية: ${message.trim()}`
+    : "تعذر تنفيذ العملية، حاول مرة ثانية";
 }
-
 
 /**
  * إنشاء الطلب من الخادم: الواجهة ترسل المنتجات والكميات والعنوان فقط،
@@ -56,7 +59,9 @@ export const createOrder = createServerFn({ method: "POST" })
     if (!items.length) throw new Error("سلتك فارغة");
 
     const fulfillment =
-      data.fulfillment === "takeaway" || data.fulfillment === "dine_in" ? data.fulfillment : "delivery";
+      data.fulfillment === "takeaway" || data.fulfillment === "dine_in"
+        ? data.fulfillment
+        : "delivery";
 
     const { data: order, error } = await context.supabase.rpc("create_customer_order", {
       _provider_id: data.providerId,
@@ -99,7 +104,6 @@ export const changeOrderStatus = createServerFn({ method: "POST" })
       });
       throw new Error(friendly(error?.message ?? ""));
     }
-
 
     // الإلغاء يسجل طلب استرداد داخل قاعدة البيانات، وهنا ننفّذه فعلياً لدى مزود الدفع
     if (data.status === "cancelled") {

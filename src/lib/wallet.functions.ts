@@ -14,7 +14,8 @@ function friendly(message: string): string {
   if (message.includes("payment_not_refundable")) return "لا يمكن استرجاع هذه العملية";
   if (message.includes("invalid_refund_amount")) return "مبلغ الاسترجاع غير صالح";
   if (message.includes("subject_not_invoiceable")) return "الفاتورة تصدر بعد إكمال الطلب";
-  if (message.includes("forbidden") || message.includes("unauthorized")) return "غير مصرح بهذا الإجراء";
+  if (message.includes("forbidden") || message.includes("unauthorized"))
+    return "غير مصرح بهذا الإجراء";
   return "تعذر تنفيذ العملية، حاول مرة ثانية";
 }
 
@@ -30,7 +31,9 @@ export const getMyWallet = createServerFn({ method: "GET" })
         .maybeSingle(),
       context.supabase
         .from("wallet_transactions")
-        .select("id, direction, amount, balance_after, reason, subject_type, subject_id, created_at")
+        .select(
+          "id, direction, amount, balance_after, reason, subject_type, subject_id, created_at",
+        )
         .eq("user_id", context.userId)
         .order("created_at", { ascending: false })
         .limit(50),
@@ -112,7 +115,9 @@ export const listMyInvoices = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { data } = await context.supabase
       .from("invoices")
-      .select("id, number, subject_type, subject_id, currency, subtotal, delivery_fee, total, issued_at")
+      .select(
+        "id, number, subject_type, subject_id, currency, subtotal, delivery_fee, total, issued_at",
+      )
       .eq("user_id", context.userId)
       .order("issued_at", { ascending: false })
       .limit(50);
@@ -132,7 +137,9 @@ export const listMyInvoices = createServerFn({ method: "GET" })
 /** إصدار فاتورة لطلب مكتمل (idempotent في قاعدة البيانات). */
 export const issueInvoice = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { subjectType: "order" | "trip" | "service_request"; subjectId: string }) => data)
+  .inputValidator(
+    (data: { subjectType: "order" | "trip" | "service_request"; subjectId: string }) => data,
+  )
   .handler(async ({ data, context }) => {
     const { data: row, error } = await context.supabase.rpc("issue_invoice", {
       _subject_type: data.subjectType,

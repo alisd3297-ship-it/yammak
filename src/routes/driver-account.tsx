@@ -16,7 +16,10 @@ export const Route = createFileRoute("/driver-account")({
   head: () => ({
     meta: [
       { title: "حساب المندوب | لبابك" },
-      { name: "description", content: "بيانات المندوب والمركبة والتقييم وإعدادات الحساب في لبابك." },
+      {
+        name: "description",
+        content: "بيانات المندوب والمركبة والتقييم وإعدادات الحساب في لبابك.",
+      },
       { property: "og:title", content: "حساب المندوب | لبابك" },
       { property: "og:description", content: "بياناتك ومركبتك وتقييمك وإعداداتك." },
       { property: "og:type", content: "website" },
@@ -52,7 +55,9 @@ function DriverAccountPage() {
       worker?.vehicle_color,
     ]
       .filter(Boolean)
-      .join(" · ") || worker?.vehicle || "غير محددة";
+      .join(" · ") ||
+    worker?.vehicle ||
+    "غير محددة";
 
   return (
     <DriverShell
@@ -72,7 +77,9 @@ function DriverAccountPage() {
           <p className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
             <Phone className="size-4" /> {profile?.phone ?? "لم يُضف رقم"}
             {profile?.phone_verified_at ? (
-              <span className="rounded-full bg-success/15 px-2 py-0.5 text-[11px] font-bold text-success">موثّق</span>
+              <span className="rounded-full bg-success/15 px-2 py-0.5 text-[11px] font-bold text-success">
+                موثّق
+              </span>
             ) : (
               <Link to="/verify-phone" className="text-xs font-bold text-primary">
                 توثيق الرقم
@@ -129,7 +136,12 @@ function DriverAccountPage() {
                   )}
                 >
                   <span className="block text-sm font-bold">{VEHICLE_LABELS[v]}</span>
-                  <span className={cn("block text-[11px]", active ? "opacity-90" : "text-muted-foreground")}>
+                  <span
+                    className={cn(
+                      "block text-[11px]",
+                      active ? "opacity-90" : "text-muted-foreground",
+                    )}
+                  >
                     {VEHICLE_HINTS[v]}
                   </span>
                 </button>
@@ -137,7 +149,6 @@ function DriverAccountPage() {
             })}
           </div>
         </section>
-
 
         <section className="overflow-hidden rounded-3xl bg-card shadow-soft">
           <SettingLink to="/driver-earnings" icon={Wallet} label="الأرباح والتسويات" />
@@ -159,7 +170,10 @@ function SettingLink({
   label: string;
 }) {
   return (
-    <Link to={to} className="flex items-center gap-3 border-b border-border px-4 py-4 text-sm font-bold last:border-0">
+    <Link
+      to={to}
+      className="flex items-center gap-3 border-b border-border px-4 py-4 text-sm font-bold last:border-0"
+    >
       <Icon className="size-5 text-primary" />
       {label}
     </Link>

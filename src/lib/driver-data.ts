@@ -132,7 +132,9 @@ export function useDriverHistory() {
       since.setHours(0, 0, 0, 0);
       const { data } = await supabase
         .from("orders")
-        .select("id, code, status, total, delivery_fee, dropoff_text, completed_at, updated_at, order_type")
+        .select(
+          "id, code, status, total, delivery_fee, dropoff_text, completed_at, updated_at, order_type",
+        )
         .eq("driver_id", account!.userId!)
         .in("status", ["delivered", "completed"])
         .gte("updated_at", since.toISOString())
@@ -143,7 +145,9 @@ export function useDriverHistory() {
   });
 }
 
-export function driverSummary(rows: { delivery_fee: number | null; updated_at: string }[] | undefined) {
+export function driverSummary(
+  rows: { delivery_fee: number | null; updated_at: string }[] | undefined,
+) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   let todayCount = 0;
@@ -193,10 +197,15 @@ export function useDriverActions() {
         return;
       }
       if (!value) {
-        await supabase.from("worker_locations").update({ is_online: false }).eq("user_id", account.userId);
+        await supabase
+          .from("worker_locations")
+          .update({ is_online: false })
+          .eq("user_id", account.userId);
         qc.setQueryData(["driver-offers", account.userId], []);
       }
-      toast.success(value ? "صرت متصل، راح توصلك الطلبات القريبة" : "صرت غير متصل، توقفت الطلبات القريبة");
+      toast.success(
+        value ? "صرت متصل، راح توصلك الطلبات القريبة" : "صرت غير متصل، توقفت الطلبات القريبة",
+      );
       qc.invalidateQueries({ queryKey: ["worker-profile"] });
       qc.invalidateQueries({ queryKey: ["driver-offers"] });
     },
@@ -223,7 +232,9 @@ export function useDriverActions() {
 
     async answerOffer(offerId: string, accept: boolean) {
       try {
-        await respond({ data: accept ? { offerId, accept } : { offerId, accept, reason: "رفض المندوب" } });
+        await respond({
+          data: accept ? { offerId, accept } : { offerId, accept, reason: "رفض المندوب" },
+        });
         toast.success(accept ? "قبلت المهمة" : "تم رفض العرض");
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "تعذر تنفيذ الرد على العرض");

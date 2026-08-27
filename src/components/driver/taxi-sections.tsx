@@ -58,7 +58,9 @@ export function TaxiSections({ enabled }: { enabled: boolean }) {
 
   async function answerTrip(offerId: string, accept: boolean) {
     try {
-      await respondTrip({ data: accept ? { offerId, accept } : { offerId, accept, reason: "رفض السائق" } });
+      await respondTrip({
+        data: accept ? { offerId, accept } : { offerId, accept, reason: "رفض السائق" },
+      });
       toast.success(accept ? "قبلت الرحلة" : "تم رفض العرض");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "تعذر تنفيذ الرد على العرض");
@@ -97,26 +99,40 @@ export function TaxiSections({ enabled }: { enabled: boolean }) {
                 notes: string | null;
               } | null;
               return (
-                <article key={o.id} className="rounded-3xl border border-primary/30 bg-card p-4 shadow-card">
+                <article
+                  key={o.id}
+                  className="rounded-3xl border border-primary/30 bg-card p-4 shadow-card"
+                >
                   <div className="flex items-center justify-between">
                     <p className="font-black">رحلة #{tr?.code}</p>
-                    <span className="text-lg font-black text-primary">{formatIQD(Number(tr?.fare ?? 0))}</span>
+                    <span className="text-lg font-black text-primary">
+                      {formatIQD(Number(tr?.fare ?? 0))}
+                    </span>
                   </div>
                   <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
-                    <Navigation className="size-3.5" /> يبعد {Number(o.distance_km ?? 0).toFixed(1)} كم · طول
-                    الرحلة {Number(tr?.distance_km ?? 0).toFixed(1)} كم
+                    <Navigation className="size-3.5" /> يبعد {Number(o.distance_km ?? 0).toFixed(1)}{" "}
+                    كم · طول الرحلة {Number(tr?.distance_km ?? 0).toFixed(1)} كم
                   </p>
                   <p className="mt-1 text-sm">من: {tr?.pickup_text}</p>
                   <p className="text-sm">إلى: {tr?.destination_text}</p>
                   <p className="mt-1 text-xs font-semibold text-primary">
                     {taxiClassLabel(tr?.taxi_class)} · {tr?.passengers} راكب
                   </p>
-                  {tr?.notes && <p className="mt-1 text-xs text-muted-foreground">ملاحظات: {tr.notes}</p>}
+                  {tr?.notes && (
+                    <p className="mt-1 text-xs text-muted-foreground">ملاحظات: {tr.notes}</p>
+                  )}
                   <div className="mt-3 flex gap-2">
-                    <Button className="h-14 flex-1 rounded-2xl font-black" onClick={() => answerTrip(o.id, true)}>
+                    <Button
+                      className="h-14 flex-1 rounded-2xl font-black"
+                      onClick={() => answerTrip(o.id, true)}
+                    >
                       قبول الرحلة
                     </Button>
-                    <Button variant="outline" className="h-14 rounded-2xl px-5" onClick={() => answerTrip(o.id, false)}>
+                    <Button
+                      variant="outline"
+                      className="h-14 rounded-2xl px-5"
+                      onClick={() => answerTrip(o.id, false)}
+                    >
                       رفض
                     </Button>
                   </div>
@@ -137,11 +153,14 @@ export function TaxiSections({ enabled }: { enabled: boolean }) {
                 <article key={t.id} className="rounded-3xl bg-card p-4 shadow-card">
                   <div className="flex items-center justify-between">
                     <p className="font-black">رحلة #{t.code}</p>
-                    <span className="text-lg font-black text-primary">{formatIQD(Number(t.fare))}</span>
+                    <span className="text-lg font-black text-primary">
+                      {formatIQD(Number(t.fare))}
+                    </span>
                   </div>
                   <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
                     <StatusDot tone={tripTone(t.status as TripStatus)} />
-                    {TRIP_STATUS_LABELS[t.status as TripStatus]} · {taxiClassLabel(t.taxi_class)} · {t.passengers} راكب
+                    {TRIP_STATUS_LABELS[t.status as TripStatus]} · {taxiClassLabel(t.taxi_class)} ·{" "}
+                    {t.passengers} راكب
                   </p>
                   <p className="mt-2 flex items-start gap-2 text-sm">
                     <MapPin className="mt-0.5 size-4 shrink-0 text-primary" /> من: {t.pickup_text}
@@ -159,9 +178,14 @@ export function TaxiSections({ enabled }: { enabled: boolean }) {
                       فتح الاتجاهات
                     </a>
                   )}
-                  {t.notes && <p className="mt-1 text-xs text-muted-foreground">ملاحظات: {t.notes}</p>}
+                  {t.notes && (
+                    <p className="mt-1 text-xs text-muted-foreground">ملاحظات: {t.notes}</p>
+                  )}
                   {step && (
-                    <Button className="mt-3 h-14 w-full rounded-2xl font-black" onClick={() => advanceTrip(t.id, step.next)}>
+                    <Button
+                      className="mt-3 h-14 w-full rounded-2xl font-black"
+                      onClick={() => advanceTrip(t.id, step.next)}
+                    >
                       {step.label}
                     </Button>
                   )}

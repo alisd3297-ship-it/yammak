@@ -37,7 +37,7 @@ function PharmaciesPage() {
       .from("providers")
       .select("id, name, description, rating, is_open, keywords, address_text")
       .eq("status", "approved")
-        .eq("is_demo", false)
+      .eq("is_demo", false)
       .eq("kind", "store");
     return (data ?? []).filter(isPharmacyProvider);
   });
@@ -46,7 +46,10 @@ function PharmaciesPage() {
     const rows = query.data ?? [];
     if (!term.trim()) return [...rows].sort((a, b) => Number(b.is_open) - Number(a.is_open));
     return rows
-      .map((p) => ({ p, score: fuzzyScore(term, [p.name, p.description ?? "", ...(p.keywords ?? [])]) }))
+      .map((p) => ({
+        p,
+        score: fuzzyScore(term, [p.name, p.description ?? "", ...(p.keywords ?? [])]),
+      }))
       .filter((r) => r.score > 0)
       .sort((a, b) => b.score - a.score)
       .map((r) => r.p);

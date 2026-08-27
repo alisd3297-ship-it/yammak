@@ -1,14 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-
-
-
 /** التحقق أن المستخدم يملك المحل (أو من طاقم الإدارة). */
 async function assertProviderAccess(
   supabase: {
     rpc: {
-      (fn: "owns_provider", args: { _user_id: string; _provider_id: string }): PromiseLike<{ data: unknown }>;
+      (
+        fn: "owns_provider",
+        args: { _user_id: string; _provider_id: string },
+      ): PromiseLike<{ data: unknown }>;
       (fn: "is_staff", args: { _user_id: string }): PromiseLike<{ data: unknown }>;
     };
   },
@@ -19,9 +19,9 @@ async function assertProviderAccess(
     supabase.rpc("owns_provider", { _user_id: userId, _provider_id: providerId }),
     supabase.rpc("is_staff", { _user_id: userId }),
   ]);
-  if (owns.data !== true && staff.data !== true) throw new Error("غير مخوّل بإدارة قوائم هذا المحل");
+  if (owns.data !== true && staff.data !== true)
+    throw new Error("غير مخوّل بإدارة قوائم هذا المحل");
 }
-
 
 /** إضافة زبون إلى «قوائم الزبائن» عبر رقم هاتفه — للتاجر فقط. */
 export const openCustomerTab = createServerFn({ method: "POST" })
@@ -86,7 +86,10 @@ export const listProviderTabs = createServerFn({ method: "POST" })
     const { data: profiles } = await supabaseAdmin
       .from("profiles")
       .select("id, full_name, phone")
-      .in("id", tabs.map((t) => t.customer_id));
+      .in(
+        "id",
+        tabs.map((t) => t.customer_id),
+      );
 
     const byId = new Map((profiles ?? []).map((p) => [p.id, p]));
 

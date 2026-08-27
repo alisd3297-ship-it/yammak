@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { ArrowRight, MapPin, Phone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { BackButton, BottomNav, PageShell, StatusDot  } from "@/components/app-shell";
+import { BackButton, BottomNav, PageShell, StatusDot } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { AD_STATUS_LABEL, AD_STATUS_TONE, formatAdPrice, type AdRow } from "@/lib/ads";
 import { AdImage } from "@/components/ad-image";
@@ -14,7 +14,10 @@ export const Route = createFileRoute("/ads/$id")({
   head: () => ({
     meta: [
       { title: "تفاصيل الإعلان | لبابك" },
-      { name: "description", content: "تفاصيل الإعلان: الصور، السعر، العنوان، والاتصال المباشر بصاحب الإعلان." },
+      {
+        name: "description",
+        content: "تفاصيل الإعلان: الصور، السعر، العنوان، والاتصال المباشر بصاحب الإعلان.",
+      },
       { property: "og:title", content: "تفاصيل الإعلان | لبابك" },
       { property: "og:description", content: "شاهد تفاصيل الإعلان واتصل مباشرة بصاحبه عبر لبابك." },
       { property: "og:type", content: "article" },
@@ -51,13 +54,17 @@ function AdDetailPage() {
           <Link to="/ads" aria-label="رجوع" className="rounded-full bg-white/15 p-2">
             <ArrowRight className="size-5" />
           </Link>
-          <h1 className="min-w-0 flex-1 truncate text-xl font-black">{data?.title ?? "تفاصيل الإعلان"}</h1>
+          <h1 className="min-w-0 flex-1 truncate text-xl font-black">
+            {data?.title ?? "تفاصيل الإعلان"}
+          </h1>
         </div>
       </header>
 
       <div className="space-y-4 p-4">
         {isLoading ? (
-          <p className="rounded-2xl bg-card p-5 text-center text-sm text-muted-foreground shadow-soft">جاري التحميل…</p>
+          <p className="rounded-2xl bg-card p-5 text-center text-sm text-muted-foreground shadow-soft">
+            جاري التحميل…
+          </p>
         ) : !data ? (
           <p className="rounded-2xl bg-card p-5 text-center text-sm text-muted-foreground shadow-soft">
             الإعلان غير متاح أو تمت إزالته.
@@ -105,11 +112,17 @@ function AdDetailPage() {
                 ) : null}
               </div>
               <h2 className="text-lg font-black">{data.title}</h2>
-              <p className="text-xl font-black text-primary">{formatAdPrice(data.price, data.currency)}</p>
-              <p className="whitespace-pre-line text-sm leading-6 text-foreground/90">{data.body}</p>
+              <p className="text-xl font-black text-primary">
+                {formatAdPrice(data.price, data.currency)}
+              </p>
+              <p className="whitespace-pre-line text-sm leading-6 text-foreground/90">
+                {data.body}
+              </p>
               <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
                 <MapPin className="size-4" />
-                {data.governorate ? <span className="font-bold text-foreground">{data.governorate}</span> : null}
+                {data.governorate ? (
+                  <span className="font-bold text-foreground">{data.governorate}</span>
+                ) : null}
                 <span>{data.address_text}</span>
               </p>
             </div>

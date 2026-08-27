@@ -83,7 +83,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "لبابك | خدماتك وطلباتك لبابك" },
       {
         name: "description",
-        content: "منصة لبابك العراقية: مطاعم، متاجر، مندوب، توصيل خاص، تكسي، ومهن وخدمات بمكان واحد.",
+        content:
+          "منصة لبابك العراقية: مطاعم، متاجر، مندوب، توصيل خاص، تكسي، ومهن وخدمات بمكان واحد.",
       },
       { property: "og:title", content: "لبابك | خدماتك وطلباتك لبابك" },
       { property: "og:description", content: "كل خدماتك اليومية بمكان واحد." },
@@ -107,7 +108,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       { rel: "manifest", href: "/manifest.webmanifest" },
     ],
-
   }),
   shellComponent: RootShell,
   component: RootComponent,

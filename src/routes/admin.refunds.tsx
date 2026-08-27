@@ -19,7 +19,8 @@ export const Route = createFileRoute("/admin/refunds")({
       { title: "طلبات الاسترجاع | إدارة لبابك" },
       {
         name: "description",
-        content: "مراجعة طلبات استرجاع الزبائن، الموافقة بالاسترجاع لمزود الدفع أو إلى محفظة الزبون.",
+        content:
+          "مراجعة طلبات استرجاع الزبائن، الموافقة بالاسترجاع لمزود الدفع أو إلى محفظة الزبون.",
       },
       { property: "og:title", content: "طلبات الاسترجاع | إدارة لبابك" },
       { property: "og:description", content: "معالجة الاسترجاعات بشكل مركزي." },
@@ -44,12 +45,7 @@ function AdminRefundsPage() {
     queryFn: () => list({ data: { status: filter } }),
   });
 
-  const act = async (
-    id: string,
-    approve: boolean,
-    toWallet: boolean,
-    label: string,
-  ) => {
+  const act = async (id: string, approve: boolean, toWallet: boolean, label: string) => {
     setBusy(id);
     try {
       await decide({ data: { requestId: id, approve, toWallet } });
@@ -78,7 +74,9 @@ function AdminRefundsPage() {
               onClick={() => setFilter(f)}
               className={cn(
                 "whitespace-nowrap rounded-full px-4 py-2 text-xs font-semibold",
-                filter === f ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+                filter === f
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground",
               )}
             >
               {f === "all" ? "الكل" : REFUND_REQUEST_STATUS_LABELS[f]}

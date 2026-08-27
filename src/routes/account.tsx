@@ -2,7 +2,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Bell, ClipboardList, LogOut, MapPin, Megaphone, Plus, Sparkles, Trash2, Wallet } from "lucide-react";
+import {
+  Bell,
+  ClipboardList,
+  LogOut,
+  MapPin,
+  Megaphone,
+  Plus,
+  Sparkles,
+  Trash2,
+  Wallet,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAccount } from "@/lib/auth";
 import { useSignOut } from "@/lib/sign-out";
@@ -22,9 +32,15 @@ export const Route = createFileRoute("/account")({
   head: () => ({
     meta: [
       { title: "حسابي | لبابك" },
-      { name: "description", content: "إدارة بياناتك الشخصية وعناوين التوصيل المحفوظة في تطبيق لبابك." },
+      {
+        name: "description",
+        content: "إدارة بياناتك الشخصية وعناوين التوصيل المحفوظة في تطبيق لبابك.",
+      },
       { property: "og:title", content: "حسابي | لبابك" },
-      { property: "og:description", content: "بياناتك الشخصية وعناوينك المحفوظة وطلباتك في مكان واحد." },
+      {
+        property: "og:description",
+        content: "بياناتك الشخصية وعناوينك المحفوظة وطلباتك في مكان واحد.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -176,7 +192,13 @@ function AccountPage() {
         </div>
         <div className="space-y-2">
           <Label htmlFor="phone">رقم الهاتف</Label>
-          <Input id="phone" dir="ltr" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="07XXXXXXXXX" />
+          <Input
+            id="phone"
+            dir="ltr"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="07XXXXXXXXX"
+          />
         </div>
         <Button className="h-11 w-full" onClick={() => void saveProfile()} disabled={savingProfile}>
           حفظ التعديلات
@@ -234,8 +256,6 @@ function AccountPage() {
         </Button>
       </section>
 
-
-
       <section className="mx-4 mt-4 space-y-3 rounded-2xl bg-card p-5 shadow-card">
         <h2 className="flex items-center gap-2 font-bold">
           <MapPin className="size-4 text-primary" /> عناويني المحفوظة
@@ -250,7 +270,9 @@ function AccountPage() {
                   <div>
                     <p className="font-semibold">
                       {a.label}
-                      {a.is_default ? <span className="ms-2 text-xs text-success">(الافتراضي)</span> : null}
+                      {a.is_default ? (
+                        <span className="ms-2 text-xs text-success">(الافتراضي)</span>
+                      ) : null}
                     </p>
                     <p className="text-muted-foreground">{a.address_text}</p>
                   </div>
@@ -279,13 +301,22 @@ function AccountPage() {
           </ul>
         )}
         <div className="space-y-2 border-t border-border pt-3">
-          <Input placeholder="اسم العنوان (البيت، العمل)" value={label} onChange={(e) => setLabel(e.target.value)} />
+          <Input
+            placeholder="اسم العنوان (البيت، العمل)"
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+          />
           <Input
             placeholder="العنوان بالتفصيل"
             value={addressText}
             onChange={(e) => setAddressText(e.target.value)}
           />
-          <Button variant="secondary" className="h-11 w-full" onClick={() => void addAddress()} disabled={savingAddress}>
+          <Button
+            variant="secondary"
+            className="h-11 w-full"
+            onClick={() => void addAddress()}
+            disabled={savingAddress}
+          >
             <Plus className="size-4" /> إضافة عنوان
           </Button>
         </div>
@@ -295,7 +326,10 @@ function AccountPage() {
         <Link to="/orders" className="flex items-center gap-3 px-5 py-4 text-sm font-semibold">
           <ClipboardList className="size-5 text-primary" /> طلباتي
         </Link>
-        <Link to="/notifications" className="flex items-center gap-3 px-5 py-4 text-sm font-semibold">
+        <Link
+          to="/notifications"
+          className="flex items-center gap-3 px-5 py-4 text-sm font-semibold"
+        >
           <Bell className="size-5 text-primary" /> الإشعارات
         </Link>
         <Link to="/wallet" className="flex items-center gap-3 px-5 py-4 text-sm font-semibold">
@@ -307,7 +341,11 @@ function AccountPage() {
       </section>
 
       <div className="mx-4 mt-4">
-        <Button variant="outline" className="h-11 w-full text-destructive" onClick={() => void signOut()}>
+        <Button
+          variant="outline"
+          className="h-11 w-full text-destructive"
+          onClick={() => void signOut()}
+        >
           <LogOut className="size-4" /> تسجيل الخروج
         </Button>
       </div>

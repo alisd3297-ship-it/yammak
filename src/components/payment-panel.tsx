@@ -6,12 +6,7 @@ import { CreditCard, Wallet, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatusDot } from "@/components/app-shell";
 import { getPaymentForSubject, startPayment, verifyPayment } from "@/lib/payments.functions";
-import {
-  PAYMENT_STATUS_LABELS,
-  formatIQD,
-  paymentTone,
-  type PaymentSubject,
-} from "@/lib/payments";
+import { PAYMENT_STATUS_LABELS, formatIQD, paymentTone, type PaymentSubject } from "@/lib/payments";
 
 const TONE_MAP = { ok: "success", warn: "warning", bad: "danger" } as const;
 
@@ -133,7 +128,9 @@ export function PaymentPanel({
       )}
 
       {notice && (
-        <p className="mt-3 rounded-xl bg-warning/15 p-3 text-xs text-warning-foreground">{notice}</p>
+        <p className="mt-3 rounded-xl bg-warning/15 p-3 text-xs text-warning-foreground">
+          {notice}
+        </p>
       )}
       <p className="mt-3 text-[11px] text-muted-foreground">
         حالة الدفع تُثبت من الخادم فقط عبر مزود الدفع، ولا يمكن تعليمها ناجحة من التطبيق.

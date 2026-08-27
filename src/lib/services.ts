@@ -63,7 +63,13 @@ export function formatServicePrice(
 ): string {
   if (unit === "negotiable" || amount <= 0) return "السعر بالاتفاق";
   const suffix =
-    unit === "hourly" ? " / ساعة" : unit === "daily" ? " / يوم" : unit === "visit" ? " / زيارة" : "";
+    unit === "hourly"
+      ? " / ساعة"
+      : unit === "daily"
+        ? " / يوم"
+        : unit === "visit"
+          ? " / زيارة"
+          : "";
   return `${formatServiceMoney(amount, currency)}${suffix}`;
 }
 

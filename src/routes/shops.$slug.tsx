@@ -15,7 +15,10 @@ export const Route = createFileRoute("/shops/$slug")({
   head: () => ({
     meta: [
       { title: "محلات التخصص | لبابك" },
-      { name: "description", content: "كل المحلات المسجلة ضمن التخصص المختار مع منتجاتها وأسعارها في لبابك." },
+      {
+        name: "description",
+        content: "كل المحلات المسجلة ضمن التخصص المختار مع منتجاتها وأسعارها في لبابك.",
+      },
       { property: "og:title", content: "محلات التخصص | لبابك" },
       { property: "og:description", content: "اختر محلاً وتصفّح منتجاته واطلب مباشرة." },
       { property: "og:type", content: "website" },
@@ -36,7 +39,7 @@ function ShopSpecialtyPage() {
       .from("providers")
       .select("id, name, description, rating, is_open, keywords, address_text")
       .eq("status", "approved")
-        .eq("is_demo", false)
+      .eq("is_demo", false)
       .eq("kind", "store");
     if (!specialty) return [];
     return (data ?? []).filter((p) => matchesSpecialty(specialty, p));
@@ -46,7 +49,10 @@ function ShopSpecialtyPage() {
     const rows = query.data ?? [];
     if (!term.trim()) return [...rows].sort((a, b) => Number(b.is_open) - Number(a.is_open));
     return rows
-      .map((p) => ({ p, score: fuzzyScore(term, [p.name, p.description ?? "", ...(p.keywords ?? [])]) }))
+      .map((p) => ({
+        p,
+        score: fuzzyScore(term, [p.name, p.description ?? "", ...(p.keywords ?? [])]),
+      }))
       .filter((r) => r.score > 0)
       .sort((a, b) => b.score - a.score)
       .map((r) => r.p);
@@ -57,7 +63,9 @@ function ShopSpecialtyPage() {
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
         <BackButton fallback="/shops" label="المحلات" />
         <h1 className="text-2xl font-black">{specialty?.label ?? "تخصص غير معروف"}</h1>
-        <p className="mt-1 text-sm opacity-90">{specialty?.hint ?? "اختر تخصصاً من صفحة المحلات"}</p>
+        <p className="mt-1 text-sm opacity-90">
+          {specialty?.hint ?? "اختر تخصصاً من صفحة المحلات"}
+        </p>
       </header>
 
       <div className="px-4">

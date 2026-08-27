@@ -53,7 +53,9 @@ function AdminCourierPage() {
   const [tab, setTab] = useState<"open" | "closed">("open");
   const [kind, setKind] = useState<"courier" | "special_delivery">("courier");
 
-  const isStaff = (account?.roles ?? []).some((r) => ["super_admin", "admin", "supervisor"].includes(r));
+  const isStaff = (account?.roles ?? []).some((r) =>
+    ["super_admin", "admin", "supervisor"].includes(r),
+  );
 
   const { data: orders } = useQuery({
     queryKey: ["admin-courier-orders", tab, kind],
@@ -62,7 +64,9 @@ function AdminCourierPage() {
     queryFn: async () => {
       const query = supabase
         .from("orders")
-        .select("id, code, status, total, pickup_text, dropoff_text, notes, driver_id, created_at, vehicle_type, cargo_description, scheduled_at, order_stops(id, position, address_text, is_delivered)")
+        .select(
+          "id, code, status, total, pickup_text, dropoff_text, notes, driver_id, created_at, vehicle_type, cargo_description, scheduled_at, order_stops(id, position, address_text, is_delivered)",
+        )
         .eq("order_type", kind)
         .order("created_at", { ascending: false })
         .limit(50);
@@ -169,7 +173,9 @@ function AdminCourierPage() {
         </div>
 
         {!orders?.length && (
-          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">ما توجد طلبات هنا.</p>
+          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+            ما توجد طلبات هنا.
+          </p>
         )}
 
         {(orders ?? []).map((o) => {
@@ -189,7 +195,9 @@ function AdminCourierPage() {
               {o.vehicle_type && (
                 <p className="mt-1 text-xs font-semibold text-primary">
                   المركبة: {vehicleLabel(o.vehicle_type)}
-                  {o.scheduled_at ? ` · موعد ${new Date(o.scheduled_at).toLocaleString("ar-IQ-u-nu-latn")}` : ""}
+                  {o.scheduled_at
+                    ? ` · موعد ${new Date(o.scheduled_at).toLocaleString("ar-IQ-u-nu-latn")}`
+                    : ""}
                 </p>
               )}
               {!!(o.order_stops ?? []).length && (
@@ -213,7 +221,8 @@ function AdminCourierPage() {
                       <option value="">تعيين مندوب يدوياً…</option>
                       {(drivers ?? []).map((d) => (
                         <option key={d.user_id} value={d.user_id}>
-                          {d.fullName ?? d.user_id.slice(0, 8)} {d.is_available ? "· متاح" : "· غير متاح"}
+                          {d.fullName ?? d.user_id.slice(0, 8)}{" "}
+                          {d.is_available ? "· متاح" : "· غير متاح"}
                         </option>
                       ))}
                     </select>

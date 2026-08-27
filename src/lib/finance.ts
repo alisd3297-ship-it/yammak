@@ -41,14 +41,18 @@ export const PARTY_TYPE_LABELS: Record<PartyType, string> = {
   driver: "مندوب",
 };
 
-export function settlementTone(status: SettlementStatus): "success" | "warning" | "danger" | "muted" {
+export function settlementTone(
+  status: SettlementStatus,
+): "success" | "warning" | "danger" | "muted" {
   if (status === "paid") return "success";
   if (status === "approved") return "warning";
   if (status === "cancelled") return "danger";
   return "muted";
 }
 
-export function refundTone(status: RefundRequestStatus): "success" | "warning" | "danger" | "muted" {
+export function refundTone(
+  status: RefundRequestStatus,
+): "success" | "warning" | "danger" | "muted" {
   if (status === "processed") return "success";
   if (status === "rejected") return "danger";
   if (status === "approved") return "warning";

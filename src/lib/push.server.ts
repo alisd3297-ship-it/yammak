@@ -7,8 +7,7 @@
 type ServiceAccount = { client_email: string; private_key: string };
 
 function b64url(input: ArrayBuffer | string): string {
-  const bytes =
-    typeof input === "string" ? new TextEncoder().encode(input) : new Uint8Array(input);
+  const bytes = typeof input === "string" ? new TextEncoder().encode(input) : new Uint8Array(input);
   let bin = "";
   bytes.forEach((b) => (bin += String.fromCharCode(b)));
   return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
@@ -108,7 +107,8 @@ export async function sendFcm(
           android: {
             priority: "HIGH",
             notification: {
-              channel_id: msg.kind === "order" || msg.orderId ? "lubabak_orders" : "lubabak_default",
+              channel_id:
+                msg.kind === "order" || msg.orderId ? "lubabak_orders" : "lubabak_default",
               sound: "default",
               default_vibrate_timings: true,
             },

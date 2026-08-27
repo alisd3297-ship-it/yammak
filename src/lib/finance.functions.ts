@@ -13,7 +13,8 @@ function friendly(message: string): string {
   if (message.includes("already_decided")) return "تمت معالجة الطلب مسبقاً";
   if (message.includes("request_not_found")) return "الطلب غير موجود";
   if (message.includes("insufficient_balance")) return "رصيد المحفظة غير كافي";
-  if (message.includes("forbidden") || message.includes("unauthorized")) return "غير مصرح بهذا الإجراء";
+  if (message.includes("forbidden") || message.includes("unauthorized"))
+    return "غير مصرح بهذا الإجراء";
   return "تعذر تنفيذ العملية، حاول مرة ثانية";
 }
 
@@ -157,11 +158,7 @@ export const adminSettlementParties = createServerFn({ method: "GET" })
         .eq("status", "approved")
         .order("name")
         .limit(200),
-      context.supabase
-        .from("worker_profiles")
-        .select("user_id")
-        .eq("is_approved", true)
-        .limit(200),
+      context.supabase.from("worker_profiles").select("user_id").eq("is_approved", true).limit(200),
     ]);
 
     const driverIds = (driversRes.data ?? []).map((d) => d.user_id);
@@ -178,7 +175,9 @@ export const adminSettlementParties = createServerFn({ method: "GET" })
 /** الإدارة: توليد تسوية لجهة عن فترة. */
 export const generateSettlement = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { partyType: PartyType; partyId: string; from: string; to: string }) => data)
+  .inputValidator(
+    (data: { partyType: PartyType; partyId: string; from: string; to: string }) => data,
+  )
   .handler(async ({ data, context }) => {
     const { data: row, error } = await context.supabase.rpc("generate_settlement", {
       _party_type: data.partyType,
@@ -205,7 +204,9 @@ export const approveSettlement = createServerFn({ method: "POST" })
 /** الإدارة: صرف التسوية (محفظة/نقد/حوالة). */
 export const paySettlement = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { settlementId: string; method: PayoutMethod; reference?: string }) => data)
+  .inputValidator(
+    (data: { settlementId: string; method: PayoutMethod; reference?: string }) => data,
+  )
   .handler(async ({ data, context }) => {
     const { data: row, error } = await context.supabase.rpc("pay_settlement", {
       _settlement_id: data.settlementId,
@@ -223,7 +224,9 @@ export const listSettlementItems = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { data: rows } = await context.supabase
       .from("settlement_items")
-      .select("id, subject_type, subject_id, label, gross, commission, delivery_fee, net, occurred_at")
+      .select(
+        "id, subject_type, subject_id, label, gross, commission, delivery_fee, net, occurred_at",
+      )
       .eq("settlement_id", data.settlementId)
       .order("occurred_at", { ascending: false })
       .limit(500);
@@ -298,7 +301,8 @@ export const decideRefundRequest = createServerFn({ method: "POST" })
 export const adminAdjustWallet = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (data: { userId: string; direction: "credit" | "debit"; amount: number; reason: string }) => data,
+    (data: { userId: string; direction: "credit" | "debit"; amount: number; reason: string }) =>
+      data,
   )
   .handler(async ({ data, context }) => {
     const key = `admin:${data.userId}:${data.direction}:${data.amount}:${Date.now()}`;
@@ -317,8 +321,12 @@ export const adminAdjustWallet = createServerFn({ method: "POST" })
 export const setFeatureFlag = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (data: { key: string; isEnabled?: boolean; rolloutPercent?: number; audience?: "all" | "staff" }) =>
-      data,
+    (data: {
+      key: string;
+      isEnabled?: boolean;
+      rolloutPercent?: number;
+      audience?: "all" | "staff";
+    }) => data,
   )
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase

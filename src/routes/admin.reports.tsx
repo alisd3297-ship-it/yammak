@@ -16,7 +16,8 @@ export const Route = createFileRoute("/admin/reports")({
       { title: "تقارير الإدارة | لبابك" },
       {
         name: "description",
-        content: "إحصاءات الطلبات والمبيعات ورسوم التوصيل وأداء المزوّدين والمندوبين يومياً وأسبوعياً وشهرياً.",
+        content:
+          "إحصاءات الطلبات والمبيعات ورسوم التوصيل وأداء المزوّدين والمندوبين يومياً وأسبوعياً وشهرياً.",
       },
       { property: "og:title", content: "تقارير الإدارة | لبابك" },
       { property: "og:description", content: "لوحة إحصاءات وأداء منصة لبابك." },
@@ -78,7 +79,9 @@ function AdminReportsPage() {
             onClick={() => setDays(p.days)}
             className={cn(
               "flex-1 rounded-full px-3 py-2 text-xs font-semibold transition",
-              days === p.days ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+              days === p.days
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground",
             )}
           >
             {p.label}
@@ -140,7 +143,10 @@ function AdminReportsPage() {
                       {new Date(d.day).toLocaleDateString("ar-IQ-u-nu-latn")}
                     </span>
                     <span className="font-semibold">
-                      {d.orders} طلب{report.can_finance && d.revenue != null ? ` · ${formatIQD(Number(d.revenue))}` : ""}
+                      {d.orders} طلب
+                      {report.can_finance && d.revenue != null
+                        ? ` · ${formatIQD(Number(d.revenue))}`
+                        : ""}
                     </span>
                   </li>
                 ))}
@@ -158,10 +164,16 @@ function AdminReportsPage() {
                   <li key={p.id} className="flex justify-between">
                     <span>
                       {p.name}
-                      <span className="text-xs text-muted-foreground"> · تقييم {Number(p.rating).toFixed(1)}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {" "}
+                        · تقييم {Number(p.rating).toFixed(1)}
+                      </span>
                     </span>
                     <span className="font-semibold">
-                      {p.orders} طلب{report.can_finance && p.revenue != null ? ` · ${formatIQD(Number(p.revenue))}` : ""}
+                      {p.orders} طلب
+                      {report.can_finance && p.revenue != null
+                        ? ` · ${formatIQD(Number(p.revenue))}`
+                        : ""}
                     </span>
                   </li>
                 ))}
@@ -179,7 +191,10 @@ function AdminReportsPage() {
                   <li key={d.id} className="flex justify-between">
                     <span>
                       {d.name}
-                      <span className="text-xs text-muted-foreground"> · تقييم {Number(d.rating).toFixed(1)}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {" "}
+                        · تقييم {Number(d.rating).toFixed(1)}
+                      </span>
                     </span>
                     <span className="font-semibold">
                       {d.delivered} تسليم · {d.cancelled} ملغى
@@ -235,17 +250,21 @@ function AdminReportsPage() {
                         <span className="font-semibold">{fmt(f.delivery_fees, f.currency)}</span>
                       </li>
                       <li className="flex justify-between border-t pt-1">
-                        <span className="text-muted-foreground">صافي ربح لبابك (عمولة + توصيل)</span>
+                        <span className="text-muted-foreground">
+                          صافي ربح لبابك (عمولة + توصيل)
+                        </span>
                         <span className="font-black">{fmt(f.platform_net, f.currency)}</span>
                       </li>
                       <li className="flex justify-between">
-                        <span className="text-muted-foreground">صافي ربح المزوّد (بعد العمولة)</span>
+                        <span className="text-muted-foreground">
+                          صافي ربح المزوّد (بعد العمولة)
+                        </span>
                         <span className="font-semibold">{fmt(f.provider_net, f.currency)}</span>
                       </li>
                     </ul>
                     <p className="mt-2 text-[11px] text-muted-foreground">
-                      التكلفة محسوبة على {f.cost_known_items} من أصل {f.items} صنف/خدمة (بدون تكلفة مسجّلة = غير
-                      محتسبة). لا يتم جمع الدينار مع الدولار في أي إجمالي.
+                      التكلفة محسوبة على {f.cost_known_items} من أصل {f.items} صنف/خدمة (بدون تكلفة
+                      مسجّلة = غير محتسبة). لا يتم جمع الدينار مع الدولار في أي إجمالي.
                     </p>
                   </div>
                 ))
@@ -267,7 +286,9 @@ function AdminReportsPage() {
                       </span>
                       <span className="font-semibold">
                         {Number(c.net).toLocaleString("en-US")} {c.currency}
-                        {Number(c.refunded) > 0 ? ` (مسترجع ${Number(c.refunded).toLocaleString("en-US")})` : ""}
+                        {Number(c.refunded) > 0
+                          ? ` (مسترجع ${Number(c.refunded).toLocaleString("en-US")})`
+                          : ""}
                       </span>
                     </li>
                   ))}
@@ -275,8 +296,9 @@ function AdminReportsPage() {
               )}
               {report.refunds && (
                 <p className="mt-2 text-[11px] text-muted-foreground">
-                  الاستردادات: ناجحة {report.refunds.succeeded} · قيد التنفيذ {report.refunds.pending} · تحتاج معالجة
-                  يدوية {report.refunds.manual_required} · فاشلة {report.refunds.failed}
+                  الاستردادات: ناجحة {report.refunds.succeeded} · قيد التنفيذ{" "}
+                  {report.refunds.pending} · تحتاج معالجة يدوية {report.refunds.manual_required} ·
+                  فاشلة {report.refunds.failed}
                 </p>
               )}
             </section>
@@ -301,7 +323,8 @@ function AdminReportsPage() {
           )}
 
           <p className="text-[11px] text-muted-foreground">
-            أرقام الطلبات بالدينار العراقي. المدفوعات والإعلانات معروضة منفصلة لكل عملة ولا تُجمع مع بعضها.
+            أرقام الطلبات بالدينار العراقي. المدفوعات والإعلانات معروضة منفصلة لكل عملة ولا تُجمع مع
+            بعضها.
           </p>
         </div>
       )}

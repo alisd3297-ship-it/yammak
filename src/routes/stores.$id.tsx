@@ -6,20 +6,22 @@ import { Plus, Star, Store as StoreIcon } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
-import { BackButton, PageShell  } from "@/components/app-shell";
+import { BackButton, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { CustomerTabPanel } from "@/components/customer-tab-panel";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/lib/cart";
 import { formatIQD } from "@/lib/orders";
 
-
 export const Route = createFileRoute("/stores/$id")({
   beforeLoad: requireCustomerFlow,
   head: () => ({
     meta: [
       { title: "منتجات المتجر | لبابك" },
-      { name: "description", content: "تصفح منتجات المتجر وأسعارها وتوفرها وأضفها إلى سلتك في لبابك." },
+      {
+        name: "description",
+        content: "تصفح منتجات المتجر وأسعارها وتوفرها وأضفها إلى سلتك في لبابك.",
+      },
       { property: "og:title", content: "منتجات المتجر | لبابك" },
       { property: "og:description", content: "منتجات، أسعار، وتوصيل سريع." },
       { property: "og:type", content: "website" },
@@ -36,7 +38,6 @@ function StorePage() {
   const cart = useCart();
   const [view, setView] = useState<"products" | "tab">("products");
 
-
   const { data } = useQuery({
     queryKey: ["store", id],
     queryFn: async () => {
@@ -48,7 +49,11 @@ function StorePage() {
           .eq("kind", "store")
           .eq("is_demo", false)
           .maybeSingle(),
-        supabase.from("menu_categories").select("id, name, sort_order").eq("provider_id", id).order("sort_order"),
+        supabase
+          .from("menu_categories")
+          .select("id, name, sort_order")
+          .eq("provider_id", id)
+          .order("sort_order"),
         supabase
           .from("products")
           .select("id, name, description, price, category_id, is_available, stock")
@@ -68,7 +73,10 @@ function StorePage() {
 
   function addToCart(p: { id: string; name: string; price: number }) {
     if (!provider) return;
-    cart.add({ id: provider.id, name: provider.name }, { productId: p.id, name: p.name, price: Number(p.price) });
+    cart.add(
+      { id: provider.id, name: provider.name },
+      { productId: p.id, name: p.name, price: Number(p.price) },
+    );
     toast.success("أضفناها للسلة");
   }
 
@@ -103,7 +111,9 @@ function StorePage() {
             onClick={() => setView(t.key)}
             className={cn(
               "flex-1 rounded-full px-4 py-2 text-xs font-semibold transition",
-              view === t.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+              view === t.key
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground",
             )}
           >
             {t.label}
@@ -127,7 +137,12 @@ function StorePage() {
               <h2 className="mb-3 text-base font-bold">{cat.name}</h2>
               <div className="space-y-3">
                 {items.map((p) => (
-                  <ProductRow key={p.id} product={p} closed={!provider?.is_open} onAdd={() => addToCart(p)} />
+                  <ProductRow
+                    key={p.id}
+                    product={p}
+                    closed={!provider?.is_open}
+                    onAdd={() => addToCart(p)}
+                  />
                 ))}
               </div>
             </section>
@@ -139,7 +154,12 @@ function StorePage() {
             <h2 className="mb-3 text-base font-bold">منتجات أخرى</h2>
             <div className="space-y-3">
               {uncategorized.map((p) => (
-                <ProductRow key={p.id} product={p} closed={!provider?.is_open} onAdd={() => addToCart(p)} />
+                <ProductRow
+                  key={p.id}
+                  product={p}
+                  closed={!provider?.is_open}
+                  onAdd={() => addToCart(p)}
+                />
               ))}
             </div>
           </section>
@@ -151,7 +171,9 @@ function StorePage() {
           </p>
         )}
         {provider && !data?.products.length && (
-          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">المتجر ما ضاف منتجات بعد.</p>
+          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+            المتجر ما ضاف منتجات بعد.
+          </p>
         )}
       </div>
 
@@ -197,7 +219,13 @@ function ProductRow({ product, closed, onAdd }: ProductRowProps) {
           )}
         </div>
       </div>
-      <Button size="icon" className="size-11 rounded-xl" disabled={soldOut} onClick={onAdd} aria-label="إضافة للسلة">
+      <Button
+        size="icon"
+        className="size-11 rounded-xl"
+        disabled={soldOut}
+        onClick={onAdd}
+        aria-label="إضافة للسلة"
+      >
         <Plus className="size-5" />
       </Button>
     </div>

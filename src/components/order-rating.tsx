@@ -33,7 +33,9 @@ export function OrderRatingCard({
   });
 
   const targets: Target[] = [
-    ...(providerId ? [{ type: "provider" as const, id: providerId, label: "المتجر / المطعم" }] : []),
+    ...(providerId
+      ? [{ type: "provider" as const, id: providerId, label: "المتجر / المطعم" }]
+      : []),
     ...(driverId ? [{ type: "driver" as const, id: driverId, label: "المندوب" }] : []),
   ];
   if (targets.length === 0) return null;

@@ -6,7 +6,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Minus, Plus, MapPin, LocateFixed, Bike, ShoppingBag, UtensilsCrossed } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { BackButton, BottomNav, PageShell  } from "@/components/app-shell";
+import { BackButton, BottomNav, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { useCart } from "@/lib/cart";
 import { formatIQD, type Fulfillment } from "@/lib/orders";
 import { createOrder, quoteDeliveryFee } from "@/lib/orders.functions";
-import { useCustomerAreaGuard, useAccount  } from "@/lib/auth";
+import { useCustomerAreaGuard, useAccount } from "@/lib/auth";
 
 export const Route = createFileRoute("/checkout")({
   beforeLoad: requireCustomerFlow,
@@ -59,7 +59,11 @@ function CheckoutPage() {
   const isRestaurant = providerInfo?.kind === "restaurant";
 
   // أجرة التوصيل تُحسب من قواعد التسعير في الخادم، لا من الواجهة
-  const { data: feeQuote, isError: feeError, refetch: refetchFee } = useQuery({
+  const {
+    data: feeQuote,
+    isError: feeError,
+    refetch: refetchFee,
+  } = useQuery({
     queryKey: ["delivery-quote", cart.providerId, coords?.lat, coords?.lng],
     enabled:
       fulfillment === "delivery" && !!cart.providerId && !!account?.userId && !!cart.items.length,
@@ -68,7 +72,7 @@ function CheckoutPage() {
         data: { providerId: cart.providerId!, lat: coords?.lat ?? null, lng: coords?.lng ?? null },
       }),
   });
-  const deliveryFee = fulfillment === "delivery" ? feeQuote?.fee ?? null : 0;
+  const deliveryFee = fulfillment === "delivery" ? (feeQuote?.fee ?? null) : 0;
 
   function useMyLocation() {
     if (!navigator.geolocation) {
@@ -108,8 +112,8 @@ function CheckoutPage() {
           providerId: cart.providerId,
           items: cart.items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
           address: fulfillment === "delivery" ? address : "",
-          lat: fulfillment === "delivery" ? coords?.lat ?? null : null,
-          lng: fulfillment === "delivery" ? coords?.lng ?? null : null,
+          lat: fulfillment === "delivery" ? (coords?.lat ?? null) : null,
+          lng: fulfillment === "delivery" ? (coords?.lng ?? null) : null,
           notes,
           fulfillment,
           partySize: fulfillment === "dine_in" ? partySize : null,
@@ -120,7 +124,9 @@ function CheckoutPage() {
       // الأسعار النهائية تُحتسب في الخادم: ننبّه الزبون إذا اختلف المجموع عن المعروض.
       const shownTotal = cart.total + (deliveryFee ?? 0);
       if (Math.abs(Number(order.total) - shownTotal) > 1) {
-        toast.warning(`تم تحديث المجموع النهائي إلى ${formatIQD(Number(order.total))} حسب أسعار المتجر.`);
+        toast.warning(
+          `تم تحديث المجموع النهائي إلى ${formatIQD(Number(order.total))} حسب أسعار المتجر.`,
+        );
       }
       cart.clear();
       toast.success(
@@ -157,7 +163,10 @@ function CheckoutPage() {
         <div className="space-y-5 px-4 py-5">
           <div className="space-y-3">
             {cart.items.map((item) => (
-              <div key={item.productId} className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft">
+              <div
+                key={item.productId}
+                className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft"
+              >
                 <div className="min-w-0 flex-1">
                   <p className="font-bold">{item.name}</p>
                   <p className="text-sm text-primary">{formatIQD(item.price * item.quantity)}</p>
@@ -193,7 +202,12 @@ function CheckoutPage() {
               {(
                 [
                   { key: "delivery" as const, label: "توصيل", desc: "مندوب يوصلك", icon: Bike },
-                  { key: "takeaway" as const, label: "سفري", desc: "تستلم بنفسك", icon: ShoppingBag },
+                  {
+                    key: "takeaway" as const,
+                    label: "سفري",
+                    desc: "تستلم بنفسك",
+                    icon: ShoppingBag,
+                  },
                   {
                     key: "dine_in" as const,
                     label: "حجز بالصالة",
@@ -217,7 +231,9 @@ function CheckoutPage() {
                       )}
                       aria-pressed={active}
                     >
-                      <Icon className={cn("size-5", active ? "text-primary" : "text-muted-foreground")} />
+                      <Icon
+                        className={cn("size-5", active ? "text-primary" : "text-muted-foreground")}
+                      />
                       <span className="text-xs font-bold">{opt.label}</span>
                       <span className="text-[10px] text-muted-foreground">{opt.desc}</span>
                     </button>
@@ -279,7 +295,9 @@ function CheckoutPage() {
                       min={1}
                       max={50}
                       value={partySize}
-                      onChange={(e) => setPartySize(Math.max(1, Math.min(50, Number(e.target.value) || 1)))}
+                      onChange={(e) =>
+                        setPartySize(Math.max(1, Math.min(50, Number(e.target.value) || 1)))
+                      }
                       className="h-12"
                     />
                   </div>
@@ -296,14 +314,17 @@ function CheckoutPage() {
             />
           </section>
 
-
           <section className="rounded-2xl bg-card p-4 text-sm shadow-soft">
             <Row label="مجموع الطلب" value={formatIQD(cart.total)} />
             {fulfillment === "delivery" ? (
               <Row
                 label="أجرة التوصيل"
                 value={
-                  feeError ? "تعذر الحساب" : deliveryFee == null ? "يتم الحساب…" : formatIQD(deliveryFee)
+                  feeError
+                    ? "تعذر الحساب"
+                    : deliveryFee == null
+                      ? "يتم الحساب…"
+                      : formatIQD(deliveryFee)
                 }
               />
             ) : (
@@ -322,7 +343,9 @@ function CheckoutPage() {
             <div className="mt-2 border-t border-border pt-2">
               <Row
                 label="الإجمالي"
-                value={deliveryFee == null ? formatIQD(cart.total) : formatIQD(cart.total + deliveryFee)}
+                value={
+                  deliveryFee == null ? formatIQD(cart.total) : formatIQD(cart.total + deliveryFee)
+                }
                 bold
               />
             </div>
@@ -334,7 +357,6 @@ function CheckoutPage() {
           <Button className="h-13 w-full text-base" disabled={saving} onClick={submitOrder}>
             {fulfillment === "dine_in" ? "تأكيد الحجز" : "تأكيد الطلب"}
           </Button>
-
         </div>
       )}
 

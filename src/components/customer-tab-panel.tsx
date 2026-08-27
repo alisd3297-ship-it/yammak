@@ -13,7 +13,13 @@ import {
 } from "@/lib/customer-tabs";
 
 /** «قائمتي»: عرض حساب الزبون المتفق عليه مع هذا المحل تحديداً — قراءة فقط للزبون. */
-export function CustomerTabPanel({ providerId, providerName }: { providerId: string; providerName: string }) {
+export function CustomerTabPanel({
+  providerId,
+  providerName,
+}: {
+  providerId: string;
+  providerName: string;
+}) {
   const { data: account } = useAccount();
   const userId = account?.userId ?? null;
 
@@ -56,12 +62,14 @@ export function CustomerTabPanel({ providerId, providerName }: { providerId: str
       </p>
     );
 
-  if (isLoading) return <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">جاري التحميل…</p>;
+  if (isLoading)
+    return <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">جاري التحميل…</p>;
 
   if (!data)
     return (
       <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
-        ما عندك «قائمتي» مع {providerName} بعد. اتفق مع المحل حتى يفتح لك قائمة بمواد وأسعار متفق عليها.
+        ما عندك «قائمتي» مع {providerName} بعد. اتفق مع المحل حتى يفتح لك قائمة بمواد وأسعار متفق
+        عليها.
       </p>
     );
 
@@ -130,7 +138,9 @@ export function CustomerTabPanel({ providerId, providerName }: { providerId: str
                   {p.note ? ` · ${p.note}` : ""}
                 </span>
                 <span className="text-end">
-                  <span className="block font-bold text-success">{formatIQD(Number(p.amount))}</span>
+                  <span className="block font-bold text-success">
+                    {formatIQD(Number(p.amount))}
+                  </span>
                   <span className="block text-[11px] text-muted-foreground">
                     المتبقي بعدها: {formatIQD(p.remainingAfter)}
                   </span>

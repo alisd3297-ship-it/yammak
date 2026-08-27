@@ -37,7 +37,8 @@ export const Route = createFileRoute("/api/public/payments/stripe")({
         const object = (event.data?.object ?? {}) as Record<string, unknown>;
 
         let intentId: string | null = null;
-        let status: "pending" | "succeeded" | "failed" | "cancelled" | "processing" | "refunded" | null =
+        let status:
+          "pending" | "succeeded" | "failed" | "cancelled" | "processing" | "refunded" | null =
           null;
         let amount: number | null = null;
         let failureReason: string | null = null;

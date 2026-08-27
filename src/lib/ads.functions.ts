@@ -9,16 +9,19 @@ const MAX_IMAGES = 5;
 function friendly(message: string): string {
   if (message.includes("ad_category_not_found")) return "فئة الإعلان غير متاحة";
   if (message.includes("ad_images_limit")) return "الحد الأقصى 5 صور للإعلان";
-  if (message.includes("too_many_active_ads")) return "عندك إعلانات نشطة كثيرة، انتظر مراجعتها أولاً";
+  if (message.includes("too_many_active_ads"))
+    return "عندك إعلانات نشطة كثيرة، انتظر مراجعتها أولاً";
   if (message.includes("ads_title_len")) return "عنوان الإعلان لازم بين 3 و120 حرف";
   if (message.includes("ads_body_len")) return "نص الإعلان لازم بين 5 و2000 حرف";
   if (message.includes("ads_phone_len")) return "رقم الاتصال غير صحيح";
   if (message.includes("ads_address_len")) return "العنوان غير صحيح";
   if (message.includes("ads_price_positive")) return "السعر غير صالح";
-  if (message.includes("ad_currency_invalid") || message.includes("ads_currency_valid")) return "العملة غير مدعومة";
+  if (message.includes("ad_currency_invalid") || message.includes("ads_currency_valid"))
+    return "العملة غير مدعومة";
   if (message.includes("ads_governorate_valid")) return "المحافظة غير صحيحة";
   if (message.includes("ad_not_found")) return "الإعلان غير موجود";
-  if (message.includes("forbidden") || message.includes("unauthorized")) return "غير مصرح بهذا الإجراء";
+  if (message.includes("forbidden") || message.includes("unauthorized"))
+    return "غير مصرح بهذا الإجراء";
   return "تعذر تنفيذ العملية، حاول مرة ثانية";
 }
 

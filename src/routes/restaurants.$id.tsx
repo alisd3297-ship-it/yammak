@@ -5,7 +5,7 @@ import { Plus, Star } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
-import { BackButton, PageShell  } from "@/components/app-shell";
+import { BackButton, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart";
 import { formatIQD } from "@/lib/orders";
@@ -40,7 +40,11 @@ function RestaurantPage() {
           .eq("kind", "restaurant")
           .eq("is_demo", false)
           .maybeSingle(),
-        supabase.from("menu_categories").select("id, name, sort_order").eq("provider_id", id).order("sort_order"),
+        supabase
+          .from("menu_categories")
+          .select("id, name, sort_order")
+          .eq("provider_id", id)
+          .order("sort_order"),
         supabase
           .from("products")
           .select("id, name, description, price, category_id, is_available")
@@ -81,11 +85,16 @@ function RestaurantPage() {
               <h2 className="mb-3 text-base font-bold">{cat.name}</h2>
               <div className="space-y-3">
                 {items.map((p) => (
-                  <div key={p.id} className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft">
+                  <div
+                    key={p.id}
+                    className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft"
+                  >
                     <div className="min-w-0 flex-1">
                       <p className="font-bold">{p.name}</p>
                       <p className="truncate text-xs text-muted-foreground">{p.description}</p>
-                      <p className="mt-1 text-sm font-bold text-primary">{formatIQD(Number(p.price))}</p>
+                      <p className="mt-1 text-sm font-bold text-primary">
+                        {formatIQD(Number(p.price))}
+                      </p>
                     </div>
                     <Button
                       size="icon"

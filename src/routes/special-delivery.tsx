@@ -5,11 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { LocateFixed, MapPin, Plus, Trash2, Truck } from "lucide-react";
-import { BackButton, BottomNav, PageShell  } from "@/components/app-shell";
+import { BackButton, BottomNav, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useCustomerAreaGuard, useAccount  } from "@/lib/auth";
+import { useCustomerAreaGuard, useAccount } from "@/lib/auth";
 import { formatIQD } from "@/lib/orders";
 import { VEHICLE_HINTS, VEHICLE_LABELS, VEHICLE_ORDER, type VehicleType } from "@/lib/vehicles";
 import {
@@ -135,7 +135,9 @@ function SpecialDeliveryPage() {
         },
       });
       toast.success(
-        order.status === "new" ? "تم جدولة الطلب، راح نوزعه قرب الموعد" : "تم إرسال الطلب وجاري البحث عن مندوب",
+        order.status === "new"
+          ? "تم جدولة الطلب، راح نوزعه قرب الموعد"
+          : "تم إرسال الطلب وجاري البحث عن مندوب",
       );
       navigate({ to: "/orders/$id", params: { id: order.id } });
     } catch (e) {
@@ -168,9 +170,7 @@ function SpecialDeliveryPage() {
                 onClick={() => setVehicle(v)}
                 className={cn(
                   "rounded-xl border p-3 text-start transition active:scale-95",
-                  vehicle === v
-                    ? "border-primary bg-primary/10"
-                    : "border-border bg-background",
+                  vehicle === v ? "border-primary bg-primary/10" : "border-border bg-background",
                 )}
               >
                 <span className="block text-sm font-bold">{VEHICLE_LABELS[v]}</span>

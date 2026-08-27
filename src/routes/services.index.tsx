@@ -6,7 +6,7 @@ import * as Icons from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
 import { useCachedQuery } from "@/lib/offline-cache";
-import { BackButton, BottomNav, OfflineBanner, PageShell  } from "@/components/app-shell";
+import { BackButton, BottomNav, OfflineBanner, PageShell } from "@/components/app-shell";
 import { Input } from "@/components/ui/input";
 import { fuzzyScore } from "@/lib/search";
 import { cn } from "@/lib/utils";
@@ -18,7 +18,8 @@ export const Route = createFileRoute("/services/")({
       { title: "مهن وخدمات | لبابك" },
       {
         name: "description",
-        content: "كهربائي، سبّاك، صيانة تكييف، تنظيف ونجارة — اطلب مقدم خدمة معتمد في بغداد عبر لبابك.",
+        content:
+          "كهربائي، سبّاك، صيانة تكييف، تنظيف ونجارة — اطلب مقدم خدمة معتمد في بغداد عبر لبابك.",
       },
       { property: "og:title", content: "مهن وخدمات | لبابك" },
       { property: "og:description", content: "مقدمو خدمات مهنية معتمدون قريبون منك." },
@@ -105,7 +106,9 @@ function ServicesPage() {
           onClick={() => setCategoryId(null)}
           className={cn(
             "shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition",
-            categoryId === null ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+            categoryId === null
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-muted-foreground",
           )}
         >
           كل المهن
@@ -118,7 +121,9 @@ function ServicesPage() {
               onClick={() => setCategoryId(categoryId === c.id ? null : c.id)}
               className={cn(
                 "flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition",
-                categoryId === c.id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+                categoryId === c.id
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground",
               )}
             >
               <Icon className="size-3.5" />
@@ -142,9 +147,9 @@ function ServicesPage() {
 
       <div className="mt-4 space-y-3 px-4">
         {list.map((p) => {
-          const services = ((p.provider_services as { name: string; is_active: boolean }[] | null) ?? []).filter(
-            (s) => s.is_active,
-          );
+          const services = (
+            (p.provider_services as { name: string; is_active: boolean }[] | null) ?? []
+          ).filter((s) => s.is_active);
           return (
             <Link
               key={p.id}
@@ -170,7 +175,10 @@ function ServicesPage() {
                 </div>
                 {services.length > 0 && (
                   <p className="mt-1 truncate text-xs text-muted-foreground">
-                    {services.slice(0, 3).map((s) => s.name).join(" • ")}
+                    {services
+                      .slice(0, 3)
+                      .map((s) => s.name)
+                      .join(" • ")}
                   </p>
                 )}
               </div>
@@ -178,7 +186,9 @@ function ServicesPage() {
           );
         })}
         {!list.length && (
-          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">ما توجد خدمات مطابقة.</p>
+          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+            ما توجد خدمات مطابقة.
+          </p>
         )}
       </div>
 

@@ -57,7 +57,8 @@ export type AdminReport = {
         cost_known_items: number;
       }[]
     | null;
-  payments_by_currency: { currency: string; count: number; paid: number; refunded: number; net: number }[] | null;
+  payments_by_currency:
+    { currency: string; count: number; paid: number; refunded: number; net: number }[] | null;
   refunds: { pending: number; manual_required: number; failed: number; succeeded: number } | null;
   ads_by_currency: { currency: string; count: number; amount: number }[] | null;
   by_status: Record<string, number>;

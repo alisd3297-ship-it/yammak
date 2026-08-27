@@ -12,7 +12,13 @@ export const broadcastNotification = createServerFn({ method: "POST" })
     const audience: Audience = ["all", "customer", "worker", "provider"].includes(data.audience)
       ? data.audience
       : "all";
-    return { audience, title: title.slice(0, 120), body: String(data.body ?? "").trim().slice(0, 400) };
+    return {
+      audience,
+      title: title.slice(0, 120),
+      body: String(data.body ?? "")
+        .trim()
+        .slice(0, 400),
+    };
   })
   .handler(async ({ data, context }) => {
     const { data: staff, error: staffError } = await context.supabase.rpc("is_staff", {

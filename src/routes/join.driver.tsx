@@ -7,13 +7,18 @@ import { toast } from "sonner";
 import { Bike, Car } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { OPERATING_LOCATION } from "@/lib/location";
-import { BackButton, PageShell  } from "@/components/app-shell";
+import { BackButton, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAccount } from "@/lib/auth";
 import { applyAsDriver } from "@/lib/taxi.functions";
 import { TAXI_CLASSES, type TaxiClass } from "@/lib/taxi";
-import { DRIVER_VEHICLE_ORDER, VEHICLE_HINTS, VEHICLE_LABELS, type VehicleType } from "@/lib/vehicles";
+import {
+  DRIVER_VEHICLE_ORDER,
+  VEHICLE_HINTS,
+  VEHICLE_LABELS,
+  type VehicleType,
+} from "@/lib/vehicles";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/join/driver")({
@@ -53,7 +58,11 @@ function JoinDriverPage() {
   const { data: cities } = useQuery({
     queryKey: ["cities"],
     queryFn: async () => {
-      const { data } = await supabase.from("cities").select("id, name").eq("is_active", true).order("sort_order");
+      const { data } = await supabase
+        .from("cities")
+        .select("id, name")
+        .eq("is_active", true)
+        .order("sort_order");
       return data ?? [];
     },
   });
@@ -100,7 +109,9 @@ function JoinDriverPage() {
     return (
       <PageShell>
         <div className="px-5 py-16 text-center">
-          <p className="text-sm text-muted-foreground">سجّل دخولك أولاً حتى تقدر تقدّم طلب انضمام.</p>
+          <p className="text-sm text-muted-foreground">
+            سجّل دخولك أولاً حتى تقدر تقدّم طلب انضمام.
+          </p>
           <Link to="/auth" className="mt-3 inline-block font-semibold text-primary">
             تسجيل الدخول
           </Link>
@@ -143,7 +154,9 @@ function JoinDriverPage() {
               onClick={() => setWorkerKind(opt.key)}
               className={cn(
                 "flex flex-col items-center gap-2 rounded-2xl p-4 text-sm font-semibold shadow-soft transition",
-                workerKind === opt.key ? "bg-primary text-primary-foreground" : "bg-card text-foreground",
+                workerKind === opt.key
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-card text-foreground",
               )}
             >
               <opt.icon className="size-6" />
@@ -203,11 +216,30 @@ function JoinDriverPage() {
             </div>
           )}
 
-
-          <Input value={make} onChange={(e) => setMake(e.target.value)} placeholder="نوع المركبة (تويوتا، كيا…)" className="h-12" />
-          <Input value={model} onChange={(e) => setModel(e.target.value)} placeholder="الموديل والسنة" className="h-12" />
-          <Input value={color} onChange={(e) => setColor(e.target.value)} placeholder="اللون" className="h-12" />
-          <Input value={plate} onChange={(e) => setPlate(e.target.value)} placeholder="رقم اللوحة" className="h-12" />
+          <Input
+            value={make}
+            onChange={(e) => setMake(e.target.value)}
+            placeholder="نوع المركبة (تويوتا، كيا…)"
+            className="h-12"
+          />
+          <Input
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+            placeholder="الموديل والسنة"
+            className="h-12"
+          />
+          <Input
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
+            placeholder="اللون"
+            className="h-12"
+          />
+          <Input
+            value={plate}
+            onChange={(e) => setPlate(e.target.value)}
+            placeholder="رقم اللوحة"
+            className="h-12"
+          />
           <Input
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
@@ -233,11 +265,21 @@ function JoinDriverPage() {
             <div className="flex items-center justify-between rounded-xl bg-muted/60 px-3 py-2 text-sm">
               <span className="font-semibold">عدد المقاعد المتاحة للركاب</span>
               <div className="flex items-center gap-3">
-                <Button variant="outline" size="sm" className="size-9" onClick={() => setSeats((s) => Math.max(1, s - 1))}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="size-9"
+                  onClick={() => setSeats((s) => Math.max(1, s - 1))}
+                >
                   −
                 </Button>
                 <span className="w-6 text-center font-bold">{seats}</span>
-                <Button variant="outline" size="sm" className="size-9" onClick={() => setSeats((s) => Math.min(6, s + 1))}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="size-9"
+                  onClick={() => setSeats((s) => Math.min(6, s + 1))}
+                >
                   +
                 </Button>
               </div>
@@ -246,7 +288,8 @@ function JoinDriverPage() {
         </section>
 
         <p className="rounded-2xl bg-muted p-3 text-xs text-muted-foreground">
-          الطلب يُسجّل بحالة «قيد المراجعة». التفعيل واستلام الرحلات يبدأ بعد اعتماد إدارة لبابك فقط.
+          الطلب يُسجّل بحالة «قيد المراجعة». التفعيل واستلام الرحلات يبدأ بعد اعتماد إدارة لبابك
+          فقط.
         </p>
 
         <Button className="h-13 w-full text-base" disabled={saving} onClick={submit}>

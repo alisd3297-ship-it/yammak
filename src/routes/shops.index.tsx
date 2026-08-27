@@ -18,7 +18,8 @@ export const Route = createFileRoute("/shops/")({
       { title: "محلات | لبابك" },
       {
         name: "description",
-        content: "تصفّح تخصصات المحلات في لبابك: مخابز وأفران، حلويات، قصابات، خضار وفواكه، مياه وغيرها.",
+        content:
+          "تصفّح تخصصات المحلات في لبابك: مخابز وأفران، حلويات، قصابات، خضار وفواكه، مياه وغيرها.",
       },
       { property: "og:title", content: "محلات | لبابك" },
       { property: "og:description", content: "تخصصات المحلات القريبة منك مع توصيل سريع." },
@@ -38,7 +39,7 @@ function ShopsPage() {
       .from("providers")
       .select("id, name, description, keywords")
       .eq("status", "approved")
-        .eq("is_demo", false)
+      .eq("is_demo", false)
       .eq("kind", "store");
     return data ?? [];
   });
@@ -46,7 +47,9 @@ function ShopsPage() {
   const list = useMemo(() => {
     const rows = specialtiesWithCounts(query.data ?? []);
     if (!term.trim()) return rows;
-    return rows.filter((r) => fuzzyScore(term, [r.specialty.label, r.specialty.hint, ...r.specialty.terms]) > 0);
+    return rows.filter(
+      (r) => fuzzyScore(term, [r.specialty.label, r.specialty.hint, ...r.specialty.terms]) > 0,
+    );
   }, [query.data, term]);
 
   return (

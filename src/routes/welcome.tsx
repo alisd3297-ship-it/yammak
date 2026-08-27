@@ -17,7 +17,10 @@ export const Route = createFileRoute("/welcome")({
   head: () => ({
     meta: [
       { title: "شنو تحب تستخدم من لبابك؟" },
-      { name: "description", content: "اختر الخدمات التي تهمك في لبابك: مطاعم، متاجر، صيدليات، توصيل، تاكسي وخدمات." },
+      {
+        name: "description",
+        content: "اختر الخدمات التي تهمك في لبابك: مطاعم، متاجر، صيدليات، توصيل، تاكسي وخدمات.",
+      },
       { property: "og:title", content: "شنو تحب تستخدم من لبابك؟" },
       { property: "og:description", content: "خدماتك وطلباتك لبابك — اختر أقسامك المفضلة." },
       { property: "og:type", content: "website" },
@@ -122,7 +125,12 @@ function WelcomePage() {
         <Button className="h-12 w-full text-base" onClick={save} disabled={saving || isLoading}>
           {saving ? "جاري الحفظ..." : "يلا نبدأ"}
         </Button>
-        <button type="button" onClick={skip} disabled={saving} className="w-full text-sm text-muted-foreground">
+        <button
+          type="button"
+          onClick={skip}
+          disabled={saving}
+          className="w-full text-sm text-muted-foreground"
+        >
           {isSet ? "رجوع بدون تغيير" : "تخطي الآن"}
         </button>
       </div>

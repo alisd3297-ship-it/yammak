@@ -51,7 +51,6 @@ export const setupToolsStatus = createServerFn({ method: "GET" }).handler(async 
   return { enabled: setupToolsEnabled(getRequestHeader("host")) };
 });
 
-
 /**
  * تجهيز حسابات اختبار (زبون / مندوب / تاجر) بالأدوار الفعلية الموجودة في المشروع.
  * محمي برمز الإعداد السري، محصور على نطاق @yammak.test، وكلمة المرور تُدخل وقت التنفيذ.
@@ -60,7 +59,9 @@ export const provisionTestAccount = createServerFn({ method: "POST" })
   .inputValidator((data: { token: string; kind: string; email: string; password: string }) => ({
     token: String(data?.token ?? "").trim(),
     kind: String(data?.kind ?? "").trim(),
-    email: String(data?.email ?? "").trim().toLowerCase(),
+    email: String(data?.email ?? "")
+      .trim()
+      .toLowerCase(),
     password: String(data?.password ?? ""),
   }))
   .handler(async ({ data }) => {
@@ -68,9 +69,12 @@ export const provisionTestAccount = createServerFn({ method: "POST" })
     const helpers = await import("@/lib/admin-setup.server");
     if (!helpers.setupToolsEnabled(getRequestHeader("host")))
       return { ok: false as const, reason: "setup_disabled" };
-    if (!process.env["ADMIN_SETUP_TOKEN"]) return { ok: false as const, reason: "server_token_missing" };
-    if (!helpers.setupTokenMatches(data.token)) return { ok: false as const, reason: "invalid_token" };
-    if (!helpers.TEST_EMAIL_RE.test(data.email)) return { ok: false as const, reason: "invalid_email" };
+    if (!process.env["ADMIN_SETUP_TOKEN"])
+      return { ok: false as const, reason: "server_token_missing" };
+    if (!helpers.setupTokenMatches(data.token))
+      return { ok: false as const, reason: "invalid_token" };
+    if (!helpers.TEST_EMAIL_RE.test(data.email))
+      return { ok: false as const, reason: "invalid_email" };
     if (data.password.length < 10) return { ok: false as const, reason: "weak_password" };
     if (!["customer", "driver", "vendor", "service_provider"].includes(data.kind))
       return { ok: false as const, reason: "invalid_kind" };
@@ -83,7 +87,11 @@ export const provisionTestAccount = createServerFn({ method: "POST" })
           : data.kind === "service_provider"
             ? "مقدم خدمة اختبار"
             : "تاجر اختبار";
-    const { userId, created } = await helpers.upsertTestAuthUser(data.email, data.password, fullName);
+    const { userId, created } = await helpers.upsertTestAuthUser(
+      data.email,
+      data.password,
+      fullName,
+    );
     const cityId = await helpers.defaultCityId();
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

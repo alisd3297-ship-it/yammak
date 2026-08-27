@@ -2,8 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
-import { BackButton, BottomNav, PageShell, StatusDot  } from "@/components/app-shell";
-import { useCustomerAreaGuard, useAccount  } from "@/lib/auth";
+import { BackButton, BottomNav, PageShell, StatusDot } from "@/components/app-shell";
+import { useCustomerAreaGuard, useAccount } from "@/lib/auth";
 import { useServerFn } from "@tanstack/react-start";
 import { ShieldAlert } from "lucide-react";
 import { getPhoneVerification } from "@/lib/otp.functions";
@@ -64,7 +64,6 @@ function OrdersPage() {
     },
   });
 
-
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
@@ -87,7 +86,6 @@ function OrdersPage() {
         </div>
       </header>
 
-
       <div className="space-y-3 px-4 py-5">
         {account?.userId && verification && !verification.verified && (
           <Link
@@ -108,7 +106,9 @@ function OrdersPage() {
               <Link key={t.id} to="/taxi" className="block rounded-2xl bg-card p-4 shadow-soft">
                 <div className="flex items-center justify-between">
                   <p className="font-bold">رحلة #{t.code}</p>
-                  <span className="text-sm font-bold text-primary">{formatIQD(Number(t.fare))}</span>
+                  <span className="text-sm font-bold text-primary">
+                    {formatIQD(Number(t.fare))}
+                  </span>
                 </div>
                 <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
                   <StatusDot tone={tripTone(t.status as TripStatus)} />
@@ -150,7 +150,9 @@ function OrdersPage() {
           </Link>
         ))}
         {account?.userId && !orders?.length && (
-          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">ماكو طلبات لحد الآن.</p>
+          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+            ماكو طلبات لحد الآن.
+          </p>
         )}
       </div>
 

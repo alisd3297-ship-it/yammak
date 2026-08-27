@@ -117,7 +117,9 @@ function AdminSettlementsPage() {
                   }}
                   className={cn(
                     "rounded-full px-4 py-2 text-xs font-semibold",
-                    partyType === t ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+                    partyType === t
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground",
                   )}
                 >
                   {PARTY_TYPE_LABELS[t]}
@@ -145,7 +147,9 @@ function AdminSettlementsPage() {
                   onClick={() => setDays(d)}
                   className={cn(
                     "rounded-full px-4 py-2 text-xs font-semibold",
-                    days === d ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+                    days === d
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground",
                   )}
                 >
                   آخر {d} يوم
@@ -178,7 +182,9 @@ function AdminSettlementsPage() {
               onClick={() => setFilter(s)}
               className={cn(
                 "whitespace-nowrap rounded-full px-4 py-2 text-xs font-semibold",
-                filter === s ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+                filter === s
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground",
               )}
             >
               {s === "all" ? "الكل" : SETTLEMENT_STATUS_LABELS[s]}
@@ -198,7 +204,9 @@ function AdminSettlementsPage() {
             <article key={s.id} className="rounded-2xl bg-card p-4 shadow-soft">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-black">{s.partyName}</span>
-                <span className="text-xs text-muted-foreground">{PARTY_TYPE_LABELS[s.partyType]}</span>
+                <span className="text-xs text-muted-foreground">
+                  {PARTY_TYPE_LABELS[s.partyType]}
+                </span>
               </div>
               <div className="mt-2 flex items-center justify-between text-sm">
                 <span className="flex items-center gap-2">
@@ -219,7 +227,11 @@ function AdminSettlementsPage() {
                     size="sm"
                     disabled={busy === s.id}
                     onClick={() =>
-                      run("تم اعتماد التسوية", () => approve({ data: { settlementId: s.id } }), s.id)
+                      run(
+                        "تم اعتماد التسوية",
+                        () => approve({ data: { settlementId: s.id } }),
+                        s.id,
+                      )
                     }
                   >
                     اعتماد

@@ -51,7 +51,9 @@ function AdminDriversPage() {
   const [rejectFor, setRejectFor] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
 
-  const isStaff = (account?.roles ?? []).some((r) => ["super_admin", "admin", "supervisor"].includes(r));
+  const isStaff = (account?.roles ?? []).some((r) =>
+    ["super_admin", "admin", "supervisor"].includes(r),
+  );
 
   const { data: drivers } = useQuery({
     queryKey: ["admin-drivers"],
@@ -87,15 +89,21 @@ function AdminDriversPage() {
 
   async function decide(userId: string, ok: boolean, reason?: string) {
     try {
-      await approve({ data: { userId, approve: ok, reason: reason || (ok ? "اعتماد الإدارة" : "رفض من الإدارة") } });
-      toast.success(ok ? "تم اعتماد المندوب ومنحه صلاحية المندوب" : "تم رفض/تعليق المندوب وسحب صلاحياته");
+      await approve({
+        data: { userId, approve: ok, reason: reason || (ok ? "اعتماد الإدارة" : "رفض من الإدارة") },
+      });
+      toast.success(
+        ok ? "تم اعتماد المندوب ومنحه صلاحية المندوب" : "تم رفض/تعليق المندوب وسحب صلاحياته",
+      );
       qc.invalidateQueries({ queryKey: ["admin-drivers"] });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "تعذر تنفيذ الإجراء");
     }
   }
 
-  const pendingCount = (drivers ?? []).filter((d) => !d.is_approved && d.application_status !== "rejected").length;
+  const pendingCount = (drivers ?? []).filter(
+    (d) => !d.is_approved && d.application_status !== "rejected",
+  ).length;
 
   async function retry(tripId: string) {
     try {
@@ -166,7 +174,9 @@ function AdminDriversPage() {
               <article key={d.user_id} className="rounded-2xl bg-card p-4 shadow-soft">
                 <div className="flex items-center justify-between">
                   <p className="font-bold">
-                    {d.worker_kind === "taxi" || d.requested_kind === "taxi" ? "سائق تكسي" : "مندوب توصيل"}
+                    {d.worker_kind === "taxi" || d.requested_kind === "taxi"
+                      ? "سائق تكسي"
+                      : "مندوب توصيل"}
                   </p>
                   <span
                     className={cn(
@@ -178,15 +188,22 @@ function AdminDriversPage() {
                           : "bg-warning/20 text-warning-foreground",
                     )}
                   >
-                    {d.is_approved ? "معتمد" : d.application_status === "rejected" ? "مرفوض" : "قيد المراجعة"}
+                    {d.is_approved
+                      ? "معتمد"
+                      : d.application_status === "rejected"
+                        ? "مرفوض"
+                        : "قيد المراجعة"}
                   </span>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {[d.vehicle_make, d.vehicle_model, d.vehicle_color].filter(Boolean).join(" · ") || "بدون بيانات مركبة"}
+                  {[d.vehicle_make, d.vehicle_model, d.vehicle_color].filter(Boolean).join(" · ") ||
+                    "بدون بيانات مركبة"}
                   {d.plate_number ? ` · ${d.plate_number}` : ""}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {d.taxi_class ? `فئة: ${taxiClassLabel(d.taxi_class)} · ${d.taxi_seats} مقاعد` : null}
+                  {d.taxi_class
+                    ? `فئة: ${taxiClassLabel(d.taxi_class)} · ${d.taxi_seats} مقاعد`
+                    : null}
                   {d.vehicle_type ? `مركبة التوصيل: ${vehicleLabel(d.vehicle_type)}` : null}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
@@ -242,7 +259,9 @@ function AdminDriversPage() {
               </article>
             ))}
             {!drivers?.length && (
-              <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">ماكو طلبات سائقين حالياً.</p>
+              <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+                ماكو طلبات سائقين حالياً.
+              </p>
             )}
           </div>
         )}
@@ -253,21 +272,29 @@ function AdminDriversPage() {
               <article key={t.id} className="rounded-2xl bg-card p-4 shadow-soft">
                 <div className="flex items-center justify-between">
                   <p className="font-bold">رحلة #{t.code}</p>
-                  <span className="text-sm font-bold text-primary">{formatIQD(Number(t.fare))}</span>
+                  <span className="text-sm font-bold text-primary">
+                    {formatIQD(Number(t.fare))}
+                  </span>
                 </div>
                 <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
                   <StatusDot tone={tripTone(t.status as TripStatus)} />
-                  {TRIP_STATUS_LABELS[t.status as TripStatus]} · {taxiClassLabel(t.taxi_class)} · {t.passengers} راكب
+                  {TRIP_STATUS_LABELS[t.status as TripStatus]} · {taxiClassLabel(t.taxi_class)} ·{" "}
+                  {t.passengers} راكب
                 </p>
                 <p className="mt-2 text-xs text-muted-foreground">من: {t.pickup_text}</p>
                 <p className="text-xs text-muted-foreground">إلى: {t.destination_text}</p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {Number(t.distance_km).toFixed(1)} كم · {new Date(t.created_at).toLocaleString("ar-IQ-u-nu-latn")}
+                  {Number(t.distance_km).toFixed(1)} كم ·{" "}
+                  {new Date(t.created_at).toLocaleString("ar-IQ-u-nu-latn")}
                 </p>
                 {OPEN_TRIP_STATUSES.includes(t.status as TripStatus) && (
                   <div className="mt-3 flex gap-2">
                     {!t.driver_id && (
-                      <Button variant="secondary" className="h-10 flex-1" onClick={() => retry(t.id)}>
+                      <Button
+                        variant="secondary"
+                        className="h-10 flex-1"
+                        onClick={() => retry(t.id)}
+                      >
                         إعادة التوزيع
                       </Button>
                     )}
@@ -279,7 +306,9 @@ function AdminDriversPage() {
               </article>
             ))}
             {!trips?.length && (
-              <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">ماكو رحلات مسجلة.</p>
+              <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+                ماكو رحلات مسجلة.
+              </p>
             )}
           </div>
         )}
