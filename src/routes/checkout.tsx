@@ -302,11 +302,23 @@ function CheckoutPage() {
             {fulfillment === "delivery" ? (
               <Row
                 label="أجرة التوصيل"
-                value={deliveryFee == null ? "يتم الحساب…" : formatIQD(deliveryFee)}
+                value={
+                  feeError ? "تعذر الحساب" : deliveryFee == null ? "يتم الحساب…" : formatIQD(deliveryFee)
+                }
               />
             ) : (
               <Row label="أجرة التوصيل" value="بدون توصيل" />
             )}
+            {feeError && fulfillment === "delivery" && (
+              <button
+                type="button"
+                onClick={() => void refetchFee()}
+                className="mt-1 text-xs font-bold text-primary"
+              >
+                إعادة حساب أجرة التوصيل
+              </button>
+            )}
+
             <div className="mt-2 border-t border-border pt-2">
               <Row
                 label="الإجمالي"
