@@ -37,6 +37,7 @@ function AdDetailPage() {
           "id, category_id, title, body, price, currency, governorate, contact_phone, address_text, images, status, sort_order, published_at, expires_at, created_at, ad_categories(name)",
         )
         .eq("id", id)
+        .eq("is_demo", false)
         .maybeSingle();
       return ad as (AdRow & { ad_categories: { name: string } | null }) | null;
     },
