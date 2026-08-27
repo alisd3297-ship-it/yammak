@@ -67,6 +67,7 @@ import { Route as ShopsSlugRouteImport } from './routes/shops.$slug'
 import { Route as StoresIndexRouteImport } from './routes/stores.index'
 import { Route as StoresIdRouteImport } from './routes/stores.$id'
 import { Route as ApiPublicMaintenanceRouteImport } from './routes/api/public/maintenance'
+import { Route as ApiPublicPushDispatchRouteImport } from './routes/api/public/push-dispatch'
 import { Route as ApiPublicAdImageSplatRouteImport } from './routes/api/public/ad-image.$'
 import { Route as ApiPublicPaymentsStripeRouteImport } from './routes/api/public/payments.stripe'
 
@@ -360,6 +361,11 @@ const ApiPublicMaintenanceRoute = ApiPublicMaintenanceRouteImport.update({
   path: '/api/public/maintenance',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPushDispatchRoute = ApiPublicPushDispatchRouteImport.update({
+  id: '/api/public/push-dispatch',
+  path: '/api/public/push-dispatch',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAdImageSplatRoute = ApiPublicAdImageSplatRouteImport.update({
   id: '/api/public/ad-image/$',
   path: '/api/public/ad-image/$',
@@ -430,6 +436,7 @@ export interface FileRoutesByFullPath {
   '/shops/': typeof ShopsIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
+  '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
   '/api/public/ad-image/$': typeof ApiPublicAdImageSplatRoute
   '/api/public/payments/stripe': typeof ApiPublicPaymentsStripeRoute
 }
@@ -492,6 +499,7 @@ export interface FileRoutesByTo {
   '/shops': typeof ShopsIndexRoute
   '/stores': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
+  '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
   '/api/public/ad-image/$': typeof ApiPublicAdImageSplatRoute
   '/api/public/payments/stripe': typeof ApiPublicPaymentsStripeRoute
 }
@@ -555,6 +563,7 @@ export interface FileRoutesById {
   '/shops/': typeof ShopsIndexRoute
   '/stores/': typeof StoresIndexRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
+  '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
   '/api/public/ad-image/$': typeof ApiPublicAdImageSplatRoute
   '/api/public/payments/stripe': typeof ApiPublicPaymentsStripeRoute
 }
@@ -619,6 +628,7 @@ export interface FileRouteTypes {
     | '/shops/'
     | '/stores/'
     | '/api/public/maintenance'
+    | '/api/public/push-dispatch'
     | '/api/public/ad-image/$'
     | '/api/public/payments/stripe'
   fileRoutesByTo: FileRoutesByTo
@@ -681,6 +691,7 @@ export interface FileRouteTypes {
     | '/shops'
     | '/stores'
     | '/api/public/maintenance'
+    | '/api/public/push-dispatch'
     | '/api/public/ad-image/$'
     | '/api/public/payments/stripe'
   id:
@@ -743,6 +754,7 @@ export interface FileRouteTypes {
     | '/shops/'
     | '/stores/'
     | '/api/public/maintenance'
+    | '/api/public/push-dispatch'
     | '/api/public/ad-image/$'
     | '/api/public/payments/stripe'
   fileRoutesById: FileRoutesById
@@ -806,6 +818,7 @@ export interface RootRouteChildren {
   ShopsIndexRoute: typeof ShopsIndexRoute
   StoresIndexRoute: typeof StoresIndexRoute
   ApiPublicMaintenanceRoute: typeof ApiPublicMaintenanceRoute
+  ApiPublicPushDispatchRoute: typeof ApiPublicPushDispatchRoute
   ApiPublicAdImageSplatRoute: typeof ApiPublicAdImageSplatRoute
   ApiPublicPaymentsStripeRoute: typeof ApiPublicPaymentsStripeRoute
 }
@@ -1218,6 +1231,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicMaintenanceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/push-dispatch': {
+      id: '/api/public/push-dispatch'
+      path: '/api/public/push-dispatch'
+      fullPath: '/api/public/push-dispatch'
+      preLoaderRoute: typeof ApiPublicPushDispatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/ad-image/$': {
       id: '/api/public/ad-image/$'
       path: '/api/public/ad-image/$'
@@ -1294,6 +1314,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShopsIndexRoute: ShopsIndexRoute,
   StoresIndexRoute: StoresIndexRoute,
   ApiPublicMaintenanceRoute: ApiPublicMaintenanceRoute,
+  ApiPublicPushDispatchRoute: ApiPublicPushDispatchRoute,
   ApiPublicAdImageSplatRoute: ApiPublicAdImageSplatRoute,
   ApiPublicPaymentsStripeRoute: ApiPublicPaymentsStripeRoute,
 }
