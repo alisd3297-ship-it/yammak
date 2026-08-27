@@ -110,6 +110,15 @@ export function useDriverPresence(isAvailable: boolean) {
 
     requestNotificationPermission();
 
+    // إشعار الطلب وعرض التوصيل قد يصلان معاً؛ نمنع تكرار التنبيه للمندوب.
+    let lastAlertAt = 0;
+    const alertOnce = (opts: { title: string; body?: string; tag?: string | null; url?: string | null }) => {
+      const now = Date.now();
+      if (now - lastAlertAt < 8_000) return;
+      lastAlertAt = now;
+      fireAlert(opts);
+    };
+
     const channel = supabase
       .channel(`driver-alerts-${userId}`)
       .on(
@@ -117,7 +126,7 @@ export function useDriverPresence(isAvailable: boolean) {
         { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
         (payload) => {
           const row = payload.new as { title: string; body: string | null; order_id: string | null };
-          fireAlert({
+          alertOnce({
             title: row.title,
             body: row.body ?? "",
             tag: row.order_id,
@@ -132,7 +141,7 @@ export function useDriverPresence(isAvailable: boolean) {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "delivery_offers", filter: `driver_id=eq.${userId}` },
         () => {
-          fireAlert({ title: "عرض توصيل جديد", body: "لديك عرض جديد، افتح اللوحة للقبول" });
+          alertOnce({ title: "عرض توصيل جديد", body: "لديك عرض جديد، افتح اللوحة للقبول" });
           qc.invalidateQueries({ queryKey: ["driver-offers"] });
         },
       )
