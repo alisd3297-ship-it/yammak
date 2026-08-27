@@ -14,6 +14,8 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CartProvider } from "@/lib/cart";
 import { Toaster } from "@/components/ui/sonner";
 import { useSessionKeeper } from "@/lib/session-keeper";
+import { useAccount } from "@/lib/auth";
+import { useNativePush } from "@/lib/native-push";
 
 function NotFoundComponent() {
   return (
@@ -127,6 +129,15 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+/** تسجيل إشعارات الهاتف الأصلية بعد توفر جلسة المستخدم (داخل غلاف الموبايل فقط). */
+function NativePushBridge() {
+  const { data: account } = useAccount();
+  useNativePush(account?.userId ?? null, {
+    deepLink: (orderId) => (orderId ? `/orders/${orderId}` : "/notifications"),
+  });
+  return null;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
@@ -147,6 +158,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <NativePushBridge />
       <CartProvider>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />

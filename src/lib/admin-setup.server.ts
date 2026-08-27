@@ -1,12 +1,30 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 
+/** نطاقات الإنتاج التي تبقى فيها أدوات الإعداد مغلقة مهما كانت الإعدادات. */
+const PRODUCTION_HOSTS = ["lubabak.lovable.app"];
+
+/** هل هذا المضيف بيئة اختبار/معاينة؟ (localhost أو معاينة lovable) */
+export function isPreviewHost(host: string | null | undefined): boolean {
+  const h = (host ?? "").split(":")[0]?.trim().toLowerCase() ?? "";
+  if (!h) return false;
+  if (PRODUCTION_HOSTS.includes(h)) return false;
+  if (h === "localhost" || h === "127.0.0.1" || h.endsWith(".local")) return true;
+  // معاينة لوفبل: id-preview--<id>.lovable.app أو project--<id>-dev.lovable.app
+  if (h.endsWith(".lovable.app")) return h.includes("preview") || h.includes("-dev.");
+  return false;
+}
+
 /**
  * أدوات الإعداد وحسابات الاختبار مغلقة افتراضياً.
- * لتشغيلها في بيئة اختبار: اضبط ENABLE_SETUP_TOOLS=true في أسرار المشروع.
- * على الإنتاج تبقى مغلقة حتى لو عُرف رمز الإعداد.
+ * تشتغل فقط عندما يتحقق الشرطان معاً:
+ *  1) ENABLE_SETUP_TOOLS=true في أسرار المشروع.
+ *  2) الطلب قادم من مضيف اختبار/معاينة وليس نطاق الإنتاج.
+ * أي طلب على نطاق الإنتاج يبقى مغلقاً حتى لو عُرف رمز الإعداد.
  */
-export function setupToolsEnabled(): boolean {
-  return (process.env["ENABLE_SETUP_TOOLS"] ?? "").trim().toLowerCase() === "true";
+export function setupToolsEnabled(host?: string | null): boolean {
+  const flagged = (process.env["ENABLE_SETUP_TOOLS"] ?? "").trim().toLowerCase() === "true";
+  if (!flagged) return false;
+  return isPreviewHost(host);
 }
 
 /** مقارنة رمز الإعداد بشكل آمن زمنياً. */
