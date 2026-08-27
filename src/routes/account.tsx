@@ -2,10 +2,16 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Bell, ClipboardList, LogOut, MapPin, Megaphone, Plus, Trash2, Wallet } from "lucide-react";
+import { Bell, ClipboardList, LogOut, MapPin, Megaphone, Plus, Sparkles, Trash2, Wallet } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAccount } from "@/lib/auth";
 import { useSignOut } from "@/lib/sign-out";
+import {
+  SERVICE_PREF_OPTIONS,
+  useSaveServicePreferences,
+  useServicePreferences,
+  type ServicePrefKey,
+} from "@/lib/service-preferences";
 import { BackButton, BottomNav, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,6 +52,14 @@ function AccountPage() {
   const [label, setLabel] = useState("");
   const [addressText, setAddressText] = useState("");
   const [savingAddress, setSavingAddress] = useState(false);
+
+  const { prefs } = useServicePreferences();
+  const savePrefs = useSaveServicePreferences();
+  const [selectedPrefs, setSelectedPrefs] = useState<ServicePrefKey[]>([]);
+  const [savingPrefs, setSavingPrefs] = useState(false);
+  useEffect(() => {
+    setSelectedPrefs(prefs);
+  }, [prefs.join(",")]);
 
   useEffect(() => {
     if (!account?.profile) return;
@@ -168,6 +182,59 @@ function AccountPage() {
           حفظ التعديلات
         </Button>
       </section>
+
+      <section className="mx-4 mt-4 space-y-3 rounded-2xl bg-card p-5 shadow-card">
+        <h2 className="flex items-center gap-2 font-bold">
+          <Sparkles className="size-4 text-primary" /> خدماتي المفضلة
+        </h2>
+        <p className="text-xs text-muted-foreground">اختر الأقسام التي تحب تستخدمها من لبابك.</p>
+        <div className="grid grid-cols-2 gap-2">
+          {SERVICE_PREF_OPTIONS.map((opt) => {
+            const active = selectedPrefs.includes(opt.key);
+            const Icon = opt.icon;
+            return (
+              <button
+                key={opt.key}
+                type="button"
+                aria-pressed={active}
+                onClick={() =>
+                  setSelectedPrefs((prev) =>
+                    prev.includes(opt.key) ? prev.filter((k) => k !== opt.key) : [...prev, opt.key],
+                  )
+                }
+                className={`rounded-2xl border p-3 text-right text-sm ${
+                  active ? "border-primary bg-primary/10 font-bold" : "border-border"
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <Icon className="size-4 text-primary" aria-hidden /> {opt.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <Button
+          variant="secondary"
+          className="h-11 w-full"
+          disabled={savingPrefs}
+          onClick={async () => {
+            if (!userId) return;
+            setSavingPrefs(true);
+            try {
+              await savePrefs(userId, selectedPrefs);
+              toast.success("تم حفظ خدماتك المفضلة");
+            } catch {
+              toast.error("تعذر حفظ الاختيارات");
+            } finally {
+              setSavingPrefs(false);
+            }
+          }}
+        >
+          حفظ الخدمات المفضلة
+        </Button>
+      </section>
+
+
 
       <section className="mx-4 mt-4 space-y-3 rounded-2xl bg-card p-5 shadow-card">
         <h2 className="flex items-center gap-2 font-bold">

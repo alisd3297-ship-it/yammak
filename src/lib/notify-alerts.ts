@@ -25,7 +25,9 @@ function rememberSeen(id: string) {
     }
   }
 }
-let pendingSound = false;
+let pendingSound: AlertKind | null = null;
+/** آخر وقت تنبيه لكل طلب: يمنع تكرار النغمة لنفس الطلب. */
+const lastByTag = new Map<string, number>();
 
 const SOUND_PREF_KEY = "lubabak.alert-sound";
 
@@ -57,36 +59,58 @@ export function unlockAlertSound() {
     unlocked = true;
     // تنبيه وصل قبل تفاعل المستخدم: نشغّله الآن بعد فك القفل.
     if (pendingSound) {
-      pendingSound = false;
+      const kind = pendingSound;
+      pendingSound = null;
       lastPlayed = 0;
-      playAlertSound();
+      playAlertSound(kind);
     }
   });
 }
 
+/** نوع التنبيه: طلب جديد له نغمة أوضح وأطول من التحديثات العادية. */
+export type AlertKind = "default" | "order";
+
+/** نمط النغمة لكل نوع: [إزاحة بالثواني، التردد]. */
+const TONES: Record<AlertKind, Array<[number, number]>> = {
+  default: [
+    [0, 880],
+    [0.28, 1175],
+  ],
+  // نغمة طلب جديد: ثلاث نقرات صاعدة مكرّرة مرتين حتى ينتبه المندوب/التاجر
+  order: [
+    [0, 988],
+    [0.16, 1319],
+    [0.32, 1568],
+    [0.7, 988],
+    [0.86, 1319],
+    [1.02, 1568],
+  ],
+};
+
 /** نغمة تنبيه قصيرة (نقرتان) مع منع التكرار المزعج. */
-export function playAlertSound() {
+export function playAlertSound(kind: AlertKind = "default") {
   if (!alertSoundEnabled()) return;
   const now = Date.now();
-  if (now - lastPlayed < 6_000) return;
+  if (now - lastPlayed < (kind === "order" ? 4_000 : 6_000)) return;
   const ac = ctx();
   if (!ac) return;
   if (ac.state === "suspended") {
     void ac.resume();
     if (!unlocked) {
-      pendingSound = true;
+      pendingSound = kind;
       return; // المتصفح يمنع الصوت قبل تفاعل المستخدم
     }
   }
   lastPlayed = now;
   const start = ac.currentTime;
-  [0, 0.28].forEach((offset, i) => {
+  const peak = kind === "order" ? 0.3 : 0.22;
+  TONES[kind].forEach(([offset, freq]) => {
     const osc = ac.createOscillator();
     const gain = ac.createGain();
-    osc.type = "sine";
-    osc.frequency.value = i === 0 ? 880 : 1175;
+    osc.type = kind === "order" ? "triangle" : "sine";
+    osc.frequency.value = freq;
     gain.gain.setValueAtTime(0.0001, start + offset);
-    gain.gain.exponentialRampToValueAtTime(0.22, start + offset + 0.02);
+    gain.gain.exponentialRampToValueAtTime(peak, start + offset + 0.02);
     gain.gain.exponentialRampToValueAtTime(0.0001, start + offset + 0.22);
     osc.connect(gain).connect(ac.destination);
     osc.start(start + offset);
@@ -94,10 +118,10 @@ export function playAlertSound() {
   });
 }
 
-function vibrate() {
+function vibrate(kind: AlertKind = "default") {
   if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
     try {
-      navigator.vibrate([120, 60, 120]);
+      navigator.vibrate(kind === "order" ? [200, 100, 200, 100, 300] : [120, 60, 120]);
     } catch {
       // بعض المتصفحات تمنع الاهتزاز
     }
@@ -110,11 +134,29 @@ export function requestNotificationPermission() {
 }
 
 /** تنبيه كامل: صوت + toast + إشعار نظام (إن سمح المستخدم). */
-export function fireAlert(opts: { title: string; body?: string; tag?: string | null; url?: string | null }) {
+export function fireAlert(opts: {
+  title: string;
+  body?: string;
+  tag?: string | null;
+  url?: string | null;
+  kind?: AlertKind;
+}) {
   const { title, body = "", tag = null, url = null } = opts;
+  const kind: AlertKind = opts.kind ?? (tag ? "order" : "default");
+  // لا نكرر نغمة نفس الطلب خلال 30 ثانية حتى لا يكون التنبيه مزعجاً
+  const now = Date.now();
+  let silent = false;
+  if (tag) {
+    const prev = lastByTag.get(tag) ?? 0;
+    if (now - prev < 30_000) silent = true;
+    lastByTag.set(tag, now);
+    if (lastByTag.size > 200) lastByTag.clear();
+  }
   toast.info(title, { description: body || undefined });
-  playAlertSound();
-  vibrate();
+  if (!silent) {
+    playAlertSound(kind);
+    vibrate(kind);
+  }
   try {
     if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
       const n = new Notification(title, {
@@ -176,6 +218,7 @@ export function useAlertNotifications(
             title: row.title,
             body: row.body ?? "",
             tag: row.order_id,
+            kind: row.order_id ? "order" : "default",
             url: optsRef.current?.deepLink?.(row.order_id ?? null) ?? null,
           });
           optsRef.current?.onInsert?.();

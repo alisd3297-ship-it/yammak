@@ -112,7 +112,13 @@ export function useDriverPresence(isAvailable: boolean) {
 
     // إشعار الطلب وعرض التوصيل قد يصلان معاً؛ نمنع تكرار التنبيه للمندوب.
     let lastAlertAt = 0;
-    const alertOnce = (opts: { title: string; body?: string; tag?: string | null; url?: string | null }) => {
+    const alertOnce = (opts: {
+      title: string;
+      body?: string;
+      tag?: string | null;
+      url?: string | null;
+      kind?: "default" | "order";
+    }) => {
       const now = Date.now();
       if (now - lastAlertAt < 8_000) return;
       lastAlertAt = now;
@@ -130,6 +136,7 @@ export function useDriverPresence(isAvailable: boolean) {
             title: row.title,
             body: row.body ?? "",
             tag: row.order_id,
+            kind: row.order_id ? "order" : "default",
             url: row.order_id ? `/driver?order=${row.order_id}` : null,
           });
           qc.invalidateQueries({ queryKey: ["driver-offers"] });
@@ -141,7 +148,7 @@ export function useDriverPresence(isAvailable: boolean) {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "delivery_offers", filter: `driver_id=eq.${userId}` },
         () => {
-          alertOnce({ title: "عرض توصيل جديد", body: "لديك عرض جديد، افتح اللوحة للقبول" });
+          alertOnce({ title: "عرض توصيل جديد", body: "لديك عرض جديد، افتح اللوحة للقبول", kind: "order" });
           qc.invalidateQueries({ queryKey: ["driver-offers"] });
         },
       )
