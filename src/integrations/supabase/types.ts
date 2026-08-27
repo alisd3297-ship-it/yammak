@@ -1424,6 +1424,8 @@ export type Database = {
           is_blocked: boolean
           phone: string | null
           phone_verified_at: string | null
+          preferences_set_at: string | null
+          preferred_services: string[]
           updated_at: string
         }
         Insert: {
@@ -1435,6 +1437,8 @@ export type Database = {
           is_blocked?: boolean
           phone?: string | null
           phone_verified_at?: string | null
+          preferences_set_at?: string | null
+          preferred_services?: string[]
           updated_at?: string
         }
         Update: {
@@ -1446,6 +1450,8 @@ export type Database = {
           is_blocked?: boolean
           phone?: string | null
           phone_verified_at?: string | null
+          preferences_set_at?: string | null
+          preferred_services?: string[]
           updated_at?: string
         }
         Relationships: [
