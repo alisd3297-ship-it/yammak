@@ -6,6 +6,9 @@ import { createFileRoute } from "@tanstack/react-router";
  *   Authorization: Bearer <PUSH_DISPATCH_SECRET>
  * بدون أسرار FCM لا يُرسل شيء ويُرجع سبباً واضحاً.
  */
+/** مهلة انتظار تسجيل جهاز قبل اعتبار الإشعار منتهياً (لا يصل push بدون جهاز). */
+const NO_DEVICE_GRACE_MS = 30 * 60 * 1000;
+
 export const Route = createFileRoute("/api/public/push-dispatch")({
   server: {
     handlers: {
@@ -25,7 +28,7 @@ export const Route = createFileRoute("/api/public/push-dispatch")({
         const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
         const { data: pending, error } = await supabaseAdmin
           .from("notifications")
-          .select("id, user_id, title, body, kind, order_id")
+          .select("id, user_id, title, body, kind, order_id, created_at")
           .is("pushed_at", null)
           .gte("created_at", since)
           .order("created_at", { ascending: true })
@@ -46,6 +49,9 @@ export const Route = createFileRoute("/api/public/push-dispatch")({
         });
 
         let sent = 0;
+        let failed = 0;
+        let skippedNoDevice = 0;
+        let waitingNoDevice = 0;
         let reason: string | undefined;
         const invalidTokens: string[] = [];
         const doneIds: string[] = [];
@@ -53,22 +59,43 @@ export const Route = createFileRoute("/api/public/push-dispatch")({
         for (const n of pending) {
           const tokens = byUser.get(n.user_id) ?? [];
           if (tokens.length === 0) {
-            doneIds.push(n.id); // لا أجهزة مسجلة: نعتبرها منتهية حتى لا تتراكم
+            // قد يسجّل المستخدم جهازه بعد قليل: نترك الإشعار معلّقاً ضمن نافذة الانتظار،
+            // ولا نغلقه إلا بعد تجاوز المهلة حتى لا تتراكم الصفوف للأبد.
+            const age = Date.now() - new Date(n.created_at).getTime();
+            if (age > NO_DEVICE_GRACE_MS) {
+              doneIds.push(n.id);
+              skippedNoDevice += 1;
+            } else {
+              waitingNoDevice += 1;
+            }
             continue;
           }
-          const res = await sendFcm(tokens, {
-            title: n.title,
-            body: n.body ?? n.title,
-            orderId: n.order_id,
-            kind: n.order_id ? "order" : n.kind,
-          });
+          let res: Awaited<ReturnType<typeof sendFcm>>;
+          try {
+            res = await sendFcm(tokens, {
+              title: n.title,
+              body: n.body ?? n.title,
+              orderId: n.order_id,
+              kind: n.order_id ? "order" : n.kind,
+            });
+          } catch (err) {
+            // فشل شبكي/مصادقة: لا نعلّم الإشعار كمُرسل، ونتوقف لإعادة المحاولة لاحقاً
+            reason = err instanceof Error ? err.message : "fcm_send_failed";
+            failed += 1;
+            break;
+          }
           if (res.reason) {
             reason = res.reason;
             break; // إعدادات ناقصة: نتوقف ونترك الإشعارات لإرسال لاحق
           }
-          sent += res.sent;
           invalidTokens.push(...res.invalid);
-          doneIds.push(n.id);
+          if (res.sent > 0) {
+            sent += res.sent;
+            doneIds.push(n.id);
+          } else {
+            // كل الرموز فشلت: نترك الإشعار معلّقاً لمحاولة لاحقة
+            failed += 1;
+          }
         }
 
         if (doneIds.length > 0) {
@@ -84,7 +111,15 @@ export const Route = createFileRoute("/api/public/push-dispatch")({
             .in("token", invalidTokens);
         }
 
-        return Response.json({ ok: !reason, sent, ...(reason ? { reason } : {}) });
+        return Response.json({
+          ok: !reason,
+          sent,
+          failed,
+          waitingNoDevice,
+          skippedNoDevice,
+          invalidated: invalidTokens.length,
+          ...(reason ? { reason } : {}),
+        });
       },
     },
   },
