@@ -1,9 +1,9 @@
-import { Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as Icons from "lucide-react";
 import { Settings2 } from "lucide-react";
 import { adTone, formatAdPrice, type AdCategory, type AdRow } from "@/lib/ads";
 import { AdImage } from "@/components/ad-image";
+import { AdDetailsDialog } from "@/components/ad-details-dialog";
 import { useAdPreferences } from "@/lib/ad-preferences";
 import {
   Sheet,
