@@ -89,10 +89,10 @@ export function AdsTicker({
           const category = byId.get(ad.category_id);
           const Icon = categoryIcon(category?.icon ?? "Megaphone");
           return (
-            <Link
+            <button
               key={`${ad.id}-${index}`}
-              to="/ads/$id"
-              params={{ id: ad.id }}
+              type="button"
+              onClick={() => onSelect?.(ad)}
               className={cn(
                 "ad-ticker-item flex h-7 items-center gap-1.5 rounded-full px-2",
                 `ad-tone-${adTone(category?.color)}`,
