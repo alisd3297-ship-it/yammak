@@ -180,6 +180,32 @@ function OrderTrackPage() {
     ? (["new", "searching_driver", "offered_to_driver", "driver_accepted"] as OrderStatus[]).includes(status)
     : (["new", "awaiting_provider", "accepted"] as OrderStatus[]).includes(status);
 
+  // تعذر الجلب أو طلب غير موجود: نعرض رسالة واضحة بدل شاشة تحميل أبدية.
+  if (isError || (data && !order)) {
+    return (
+      <PageShell>
+        <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
+          <BackButton fallback="/orders" label="طلباتي" />
+          <h1 className="text-2xl font-black">الطلب</h1>
+        </header>
+        <div className="space-y-3 px-4 py-8 text-center">
+          <p className="text-sm text-muted-foreground">
+            {isError ? "تعذر تحميل الطلب، تحقق من الاتصال." : "هذا الطلب غير موجود أو ما عندك صلاحية عليه."}
+          </p>
+          {isError && (
+            <button
+              type="button"
+              onClick={() => void refetch()}
+              className="rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground"
+            >
+              إعادة المحاولة
+            </button>
+          )}
+        </div>
+      </PageShell>
+    );
+  }
+
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
