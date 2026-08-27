@@ -41,7 +41,9 @@ function DoctorsPage() {
         .is("deleted_at", null),
       supabase
         .from("providers")
-        .select("id, name, description, rating, is_open, keywords, address_text, profession_category_id")
+        .select(
+          "id, name, description, rating, is_open, keywords, address_text, profession_category_id",
+        )
         .eq("status", "approved")
         .eq("is_demo", false)
         .eq("kind", "profession"),
@@ -52,7 +54,9 @@ function DoctorsPage() {
         name: p.name,
         description: p.description,
         keywords: p.keywords,
-        categoryName: p.profession_category_id ? (catNames.get(p.profession_category_id) ?? null) : null,
+        categoryName: p.profession_category_id
+          ? (catNames.get(p.profession_category_id) ?? null)
+          : null,
       }),
     );
   });
@@ -64,7 +68,10 @@ function DoctorsPage() {
     const rows = query.data ?? [];
     if (!term.trim()) return rows;
     return rows
-      .map((p) => ({ p, score: fuzzyScore(term, [p.name, p.description ?? "", ...(p.keywords ?? [])]) }))
+      .map((p) => ({
+        p,
+        score: fuzzyScore(term, [p.name, p.description ?? "", ...(p.keywords ?? [])]),
+      }))
       .filter((r) => r.score > 0)
       .sort((a, b) => b.score - a.score)
       .map((r) => r.p);

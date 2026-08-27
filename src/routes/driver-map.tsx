@@ -43,7 +43,10 @@ function DriverMapPage() {
               ? ("dropoff" as const)
               : ("pickup" as const);
           return (
-            <section key={t.id} className="rounded-3xl border border-border bg-card p-4 shadow-card">
+            <section
+              key={t.id}
+              className="rounded-3xl border border-border bg-card p-4 shadow-card"
+            >
               <h2 className="text-base font-black">طلب #{t.code}</h2>
               <p className="mt-2 flex items-start gap-2 text-sm">
                 <PackageCheck className="mt-0.5 size-4 shrink-0 text-primary" />

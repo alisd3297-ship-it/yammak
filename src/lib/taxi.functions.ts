@@ -131,7 +131,8 @@ export const changeTripStatus = createServerFn({ method: "POST" })
     });
     if (error || !trip) {
       const m = error?.message ?? "";
-      if (m.includes("transition_not_allowed")) throw new Error("هذا التغيير غير مسموح بهذه المرحلة");
+      if (m.includes("transition_not_allowed"))
+        throw new Error("هذا التغيير غير مسموح بهذه المرحلة");
       if (m.includes("forbidden")) throw new Error("ما عندك صلاحية على هذه الرحلة");
       throw new Error("تعذر تحديث حالة الرحلة");
     }

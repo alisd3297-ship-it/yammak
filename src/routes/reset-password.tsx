@@ -12,7 +12,10 @@ export const Route = createFileRoute("/reset-password")({
   head: () => ({
     meta: [
       { title: "تعيين كلمة مرور جديدة | لبابك" },
-      { name: "description", content: "أكمل استعادة حسابك في لبابك بتعيين كلمة مرور جديدة بشكل آمن." },
+      {
+        name: "description",
+        content: "أكمل استعادة حسابك في لبابك بتعيين كلمة مرور جديدة بشكل آمن.",
+      },
       { property: "og:title", content: "تعيين كلمة مرور جديدة | لبابك" },
       { property: "og:description", content: "استعادة الوصول إلى حسابك في تطبيق لبابك." },
       { property: "og:type", content: "website" },

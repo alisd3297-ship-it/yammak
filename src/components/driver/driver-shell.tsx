@@ -129,9 +129,18 @@ export function useDriverPresence(isAvailable: boolean) {
       .channel(`driver-alerts-${userId}`)
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${userId}`,
+        },
         (payload) => {
-          const row = payload.new as { title: string; body: string | null; order_id: string | null };
+          const row = payload.new as {
+            title: string;
+            body: string | null;
+            order_id: string | null;
+          };
           alertOnce({
             title: row.title,
             body: row.body ?? "",
@@ -146,10 +155,36 @@ export function useDriverPresence(isAvailable: boolean) {
       )
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "delivery_offers", filter: `driver_id=eq.${userId}` },
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "delivery_offers",
+          filter: `driver_id=eq.${userId}`,
+        },
         () => {
-          alertOnce({ title: "عرض توصيل جديد", body: "لديك عرض جديد، افتح اللوحة للقبول", kind: "order" });
+          alertOnce({
+            title: "عرض توصيل جديد",
+            body: "لديك عرض جديد، افتح اللوحة للقبول",
+            kind: "order",
+          });
           qc.invalidateQueries({ queryKey: ["driver-offers"] });
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "trip_offers",
+          filter: `driver_id=eq.${userId}`,
+        },
+        () => {
+          alertOnce({
+            title: "طلب تكسي جديد",
+            body: "وصلك طلب رحلة، افتح اللوحة للقبول",
+            kind: "order",
+          });
+          qc.invalidateQueries({ queryKey: ["driver-trip-offers"] });
         },
       )
       .subscribe();
@@ -231,7 +266,12 @@ export function DriverShell({
                 online ? "justify-end bg-primary" : "justify-start bg-primary-foreground/40",
               )}
             >
-              <span className={cn("size-6 rounded-full", online ? "bg-primary-foreground" : "bg-primary-foreground")} />
+              <span
+                className={cn(
+                  "size-6 rounded-full",
+                  online ? "bg-primary-foreground" : "bg-primary-foreground",
+                )}
+              />
             </span>
           </button>
         )}

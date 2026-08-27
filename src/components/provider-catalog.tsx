@@ -20,7 +20,11 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
     queryKey: ["provider-catalog", providerId],
     queryFn: async () => {
       const [categories, products] = await Promise.all([
-        supabase.from("menu_categories").select("id, name, sort_order").eq("provider_id", providerId).order("sort_order"),
+        supabase
+          .from("menu_categories")
+          .select("id, name, sort_order")
+          .eq("provider_id", providerId)
+          .order("sort_order"),
         supabase
           .from("products")
           .select("id, name, price, cost_price, stock, is_available, category_id")
@@ -37,9 +41,11 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
 
   async function addCategory() {
     if (!catName.trim()) return;
-    const { error } = await supabase
-      .from("menu_categories")
-      .insert({ provider_id: providerId, name: catName.trim(), sort_order: (data?.categories.length ?? 0) + 1 });
+    const { error } = await supabase.from("menu_categories").insert({
+      provider_id: providerId,
+      name: catName.trim(),
+      sort_order: (data?.categories.length ?? 0) + 1,
+    });
     if (error) {
       toast.error("تعذر إضافة القسم");
       return;
@@ -107,7 +113,9 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
               {c.name}
             </span>
           ))}
-          {!data?.categories.length && <p className="text-xs text-muted-foreground">ماكو أقسام بعد.</p>}
+          {!data?.categories.length && (
+            <p className="text-xs text-muted-foreground">ماكو أقسام بعد.</p>
+          )}
         </div>
         <div className="mt-3 flex gap-2">
           <Input

@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
 import { useCachedQuery } from "@/lib/offline-cache";
-import { BackButton, BottomNav, OfflineBanner, PageShell  } from "@/components/app-shell";
+import { BackButton, BottomNav, OfflineBanner, PageShell } from "@/components/app-shell";
 import { Input } from "@/components/ui/input";
 import { fuzzyScore } from "@/lib/search";
 import { cn } from "@/lib/utils";
@@ -43,9 +43,11 @@ function RestaurantsPage() {
   const query = useCachedQuery(["restaurants"], async () => {
     const { data } = await supabase
       .from("providers")
-      .select("id, name, description, rating, orders_count, avg_prep_minutes, is_open, keywords, lat, lng, address_text")
+      .select(
+        "id, name, description, rating, orders_count, avg_prep_minutes, is_open, keywords, lat, lng, address_text",
+      )
       .eq("status", "approved")
-        .eq("is_demo", false)
+      .eq("is_demo", false)
       .eq("kind", "restaurant");
     return data ?? [];
   });
@@ -54,7 +56,10 @@ function RestaurantsPage() {
     let rows = query.data ?? [];
     if (term.trim()) {
       rows = rows
-        .map((p) => ({ p, score: fuzzyScore(term, [p.name, p.description ?? "", ...(p.keywords ?? [])]) }))
+        .map((p) => ({
+          p,
+          score: fuzzyScore(term, [p.name, p.description ?? "", ...(p.keywords ?? [])]),
+        }))
         .filter((r) => r.score > 0)
         .sort((a, b) => b.score - a.score)
         .map((r) => r.p);
@@ -119,7 +124,9 @@ function RestaurantsPage() {
             onClick={() => (s.key === "nearest" ? pickNearest() : setSort(s.key))}
             className={cn(
               "shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition",
-              sort === s.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+              sort === s.key
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground",
             )}
           >
             {s.label}
@@ -158,7 +165,9 @@ function RestaurantsPage() {
           </Link>
         ))}
         {!list.length && (
-          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">ما توجد نتائج مطابقة.</p>
+          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+            ما توجد نتائج مطابقة.
+          </p>
         )}
       </div>
 

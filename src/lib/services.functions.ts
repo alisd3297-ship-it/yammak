@@ -15,8 +15,10 @@ function friendly(message: string): string {
   if (message.includes("request_not_completed")) return "التقييم متاح بعد إكمال الخدمة";
   if (message.includes("already_rated")) return "قيّمت هذه الخدمة مسبقاً";
   if (message.includes("invalid_stars")) return "اختر تقييماً بين 1 و5";
-  if (message.includes("transition_not_allowed")) return "لا يمكن تنفيذ هذا الإجراء على حالة الطلب الحالية";
-  if (message.includes("forbidden") || message.includes("unauthorized")) return "غير مصرح بهذا الإجراء";
+  if (message.includes("transition_not_allowed"))
+    return "لا يمكن تنفيذ هذا الإجراء على حالة الطلب الحالية";
+  if (message.includes("forbidden") || message.includes("unauthorized"))
+    return "غير مصرح بهذا الإجراء";
   return "تعذر تنفيذ العملية، حاول مرة ثانية";
 }
 
@@ -50,8 +52,12 @@ export const createServiceRequest = createServerFn({ method: "POST" })
 export const changeServiceRequestStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (data: { requestId: string; status: ServiceStatus; reason?: string | null; scheduledAt?: string | null }) =>
-      data,
+    (data: {
+      requestId: string;
+      status: ServiceStatus;
+      reason?: string | null;
+      scheduledAt?: string | null;
+    }) => data,
   )
   .handler(async ({ data, context }) => {
     const { data: request, error } = await context.supabase.rpc("change_service_request_status", {

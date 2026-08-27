@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Loader2, Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { BackButton, AdminNav, PageShell  } from "@/components/app-shell";
+import { BackButton, AdminNav, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,7 +31,8 @@ export const Route = createFileRoute("/admin/services")({
       { title: "إدارة كتالوج الخدمات | لبابك" },
       {
         name: "description",
-        content: "إنشاء وتعديل وحذف أقسام الخدمات والتصنيفات الفرعية والخدمات وإعادة ترتيبها ونقلها بين الأقسام.",
+        content:
+          "إنشاء وتعديل وحذف أقسام الخدمات والتصنيفات الفرعية والخدمات وإعادة ترتيبها ونقلها بين الأقسام.",
       },
       { property: "og:title", content: "إدارة كتالوج الخدمات | لبابك" },
       { property: "og:description", content: "لوحة إدارة كتالوج الخدمات في تطبيق لبابك." },
@@ -111,7 +112,9 @@ function AdminServicesPage() {
           .order("sort_order"),
         supabase
           .from("services")
-          .select("id, name, description, icon, route_path, service_type, section_id, sort_order, is_active, deleted_at")
+          .select(
+            "id, name, description, icon, route_path, service_type, section_id, sort_order, is_active, deleted_at",
+          )
           .order("sort_order"),
         supabase.from("providers").select("id, profession_category_id"),
         supabase.from("provider_services").select("id, category_id"),
@@ -150,7 +153,11 @@ function AdminServicesPage() {
     return { bySection, byCategory };
   }, [data]);
 
-  async function run(key: string, fn: () => PromiseLike<{ error: { message: string } | null }>, okMsg: string) {
+  async function run(
+    key: string,
+    fn: () => PromiseLike<{ error: { message: string } | null }>,
+    okMsg: string,
+  ) {
     setBusy(key);
     try {
       const { error } = await fn();
@@ -175,7 +182,9 @@ function AdminServicesPage() {
       <header className="brand-gradient rounded-b-3xl px-5 pb-6 pt-7 text-primary-foreground">
         <BackButton fallback="/" label="رجوع" />
         <h1 className="text-2xl font-black">كتالوج الخدمات</h1>
-        <p className="mt-1 text-sm opacity-90">الأقسام والتصنيفات الفرعية والخدمات — إضافة وتعديل ونقل وحذف آمن.</p>
+        <p className="mt-1 text-sm opacity-90">
+          الأقسام والتصنيفات الفرعية والخدمات — إضافة وتعديل ونقل وحذف آمن.
+        </p>
       </header>
       <AdminNav />
 
@@ -193,7 +202,9 @@ function AdminServicesPage() {
               onClick={() => setTab(key)}
               className={cn(
                 "rounded-full px-4 py-2 text-xs font-semibold",
-                tab === key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+                tab === key
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground",
               )}
             >
               {label}
@@ -310,15 +321,24 @@ function SectionsTab({
         <div className="grid gap-3 sm:grid-cols-3">
           <div>
             <Label>الاسم</Label>
-            <Input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
+            <Input
+              value={draft.name}
+              onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+            />
           </div>
           <div>
             <Label>الأيقونة (lucide)</Label>
-            <Input value={draft.icon} onChange={(e) => setDraft({ ...draft, icon: e.target.value })} />
+            <Input
+              value={draft.icon}
+              onChange={(e) => setDraft({ ...draft, icon: e.target.value })}
+            />
           </div>
           <div>
             <Label>الوصف</Label>
-            <Input value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} />
+            <Input
+              value={draft.description}
+              onChange={(e) => setDraft({ ...draft, description: e.target.value })}
+            />
           </div>
         </div>
         <Button className="mt-3" onClick={create} disabled={busy === "new-section"}>
@@ -338,15 +358,29 @@ function SectionsTab({
             busy={busy === s.id}
             onUp={() => {
               const pair = reorder(sections, s.id, -1);
-              if (pair) void run(s.id, () => supabase.from("service_sections").upsert(pair as never), "تم الترتيب");
+              if (pair)
+                void run(
+                  s.id,
+                  () => supabase.from("service_sections").upsert(pair as never),
+                  "تم الترتيب",
+                );
             }}
             onDown={() => {
               const pair = reorder(sections, s.id, 1);
-              if (pair) void run(s.id, () => supabase.from("service_sections").upsert(pair as never), "تم الترتيب");
+              if (pair)
+                void run(
+                  s.id,
+                  () => supabase.from("service_sections").upsert(pair as never),
+                  "تم الترتيب",
+                );
             }}
             active={s.is_active}
             onToggle={(v) =>
-              run(s.id, () => supabase.from("service_sections").update({ is_active: v }).eq("id", s.id), v ? "تم التفعيل" : "تم التعطيل")
+              run(
+                s.id,
+                () => supabase.from("service_sections").update({ is_active: v }).eq("id", s.id),
+                v ? "تم التفعيل" : "تم التعطيل",
+              )
             }
             onDelete={() => {
               setMoveTo("");
@@ -357,7 +391,11 @@ function SectionsTab({
                 ? () =>
                     run(
                       s.id,
-                      () => supabase.from("service_sections").update({ deleted_at: null, is_active: true }).eq("id", s.id),
+                      () =>
+                        supabase
+                          .from("service_sections")
+                          .update({ deleted_at: null, is_active: true })
+                          .eq("id", s.id),
                       "تمت الاستعادة",
                     )
                 : undefined
@@ -368,14 +406,30 @@ function SectionsTab({
                 defaultValue={s.name}
                 onBlur={(e) =>
                   e.target.value !== s.name &&
-                  run(s.id, () => supabase.from("service_sections").update({ name: e.target.value }).eq("id", s.id), "تم الحفظ")
+                  run(
+                    s.id,
+                    () =>
+                      supabase
+                        .from("service_sections")
+                        .update({ name: e.target.value })
+                        .eq("id", s.id),
+                    "تم الحفظ",
+                  )
                 }
               />
               <Input
                 defaultValue={s.icon}
                 onBlur={(e) =>
                   e.target.value !== s.icon &&
-                  run(s.id, () => supabase.from("service_sections").update({ icon: e.target.value }).eq("id", s.id), "تم الحفظ")
+                  run(
+                    s.id,
+                    () =>
+                      supabase
+                        .from("service_sections")
+                        .update({ icon: e.target.value })
+                        .eq("id", s.id),
+                    "تم الحفظ",
+                  )
                 }
               />
               <Textarea
@@ -386,7 +440,11 @@ function SectionsTab({
                   e.target.value !== (s.description ?? "") &&
                   run(
                     s.id,
-                    () => supabase.from("service_sections").update({ description: e.target.value || null }).eq("id", s.id),
+                    () =>
+                      supabase
+                        .from("service_sections")
+                        .update({ description: e.target.value || null })
+                        .eq("id", s.id),
                     "تم الحفظ",
                   )
                 }
@@ -408,7 +466,11 @@ function SectionsTab({
           {dependents > 0 ? (
             <div>
               <Label>نقل العناصر إلى</Label>
-              <select className={selectClass()} value={moveTo} onChange={(e) => setMoveTo(e.target.value)}>
+              <select
+                className={selectClass()}
+                value={moveTo}
+                onChange={(e) => setMoveTo(e.target.value)}
+              >
                 <option value="">— بدون نقل —</option>
                 {allSections
                   .filter((x) => x.id !== pendingDelete?.id)
@@ -515,11 +577,17 @@ function CategoriesTab({
         <div className="grid gap-3 sm:grid-cols-3">
           <div>
             <Label>الاسم</Label>
-            <Input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
+            <Input
+              value={draft.name}
+              onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+            />
           </div>
           <div>
             <Label>الأيقونة</Label>
-            <Input value={draft.icon} onChange={(e) => setDraft({ ...draft, icon: e.target.value })} />
+            <Input
+              value={draft.icon}
+              onChange={(e) => setDraft({ ...draft, icon: e.target.value })}
+            />
           </div>
           <div>
             <Label>القسم الأب</Label>
@@ -555,16 +623,27 @@ function CategoriesTab({
             active={c.is_active}
             onUp={() => {
               const pair = reorder(categories, c.id, -1);
-              if (pair) void run(c.id, () => supabase.from("profession_categories").upsert(pair as never), "تم الترتيب");
+              if (pair)
+                void run(
+                  c.id,
+                  () => supabase.from("profession_categories").upsert(pair as never),
+                  "تم الترتيب",
+                );
             }}
             onDown={() => {
               const pair = reorder(categories, c.id, 1);
-              if (pair) void run(c.id, () => supabase.from("profession_categories").upsert(pair as never), "تم الترتيب");
+              if (pair)
+                void run(
+                  c.id,
+                  () => supabase.from("profession_categories").upsert(pair as never),
+                  "تم الترتيب",
+                );
             }}
             onToggle={(v) =>
               run(
                 c.id,
-                () => supabase.from("profession_categories").update({ is_active: v }).eq("id", c.id),
+                () =>
+                  supabase.from("profession_categories").update({ is_active: v }).eq("id", c.id),
                 v ? "تم التفعيل" : "تم التعطيل",
               )
             }
@@ -578,7 +657,10 @@ function CategoriesTab({
                     run(
                       c.id,
                       () =>
-                        supabase.from("profession_categories").update({ deleted_at: null, is_active: true }).eq("id", c.id),
+                        supabase
+                          .from("profession_categories")
+                          .update({ deleted_at: null, is_active: true })
+                          .eq("id", c.id),
                       "تمت الاستعادة",
                     )
                 : undefined
@@ -589,14 +671,30 @@ function CategoriesTab({
                 defaultValue={c.name}
                 onBlur={(e) =>
                   e.target.value !== c.name &&
-                  run(c.id, () => supabase.from("profession_categories").update({ name: e.target.value }).eq("id", c.id), "تم الحفظ")
+                  run(
+                    c.id,
+                    () =>
+                      supabase
+                        .from("profession_categories")
+                        .update({ name: e.target.value })
+                        .eq("id", c.id),
+                    "تم الحفظ",
+                  )
                 }
               />
               <Input
                 defaultValue={c.icon}
                 onBlur={(e) =>
                   e.target.value !== c.icon &&
-                  run(c.id, () => supabase.from("profession_categories").update({ icon: e.target.value }).eq("id", c.id), "تم الحفظ")
+                  run(
+                    c.id,
+                    () =>
+                      supabase
+                        .from("profession_categories")
+                        .update({ icon: e.target.value })
+                        .eq("id", c.id),
+                    "تم الحفظ",
+                  )
                 }
               />
               <select
@@ -638,7 +736,11 @@ function CategoriesTab({
           {dependents > 0 ? (
             <div>
               <Label>نقل الارتباطات إلى</Label>
-              <select className={selectClass()} value={moveTo} onChange={(e) => setMoveTo(e.target.value)}>
+              <select
+                className={selectClass()}
+                value={moveTo}
+                onChange={(e) => setMoveTo(e.target.value)}
+              >
                 <option value="">— بدون نقل —</option>
                 {categories
                   .filter((x) => x.id !== pendingDelete?.id && !x.deleted_at)
@@ -738,7 +840,13 @@ function ServicesTab({
         }),
       "تمت إضافة الخدمة",
     );
-    setDraft({ name: "", icon: "Sparkles", section_id: "", service_type: "profession", route_path: "" });
+    setDraft({
+      name: "",
+      icon: "Sparkles",
+      section_id: "",
+      service_type: "profession",
+      route_path: "",
+    });
   }
 
   return (
@@ -748,11 +856,17 @@ function ServicesTab({
         <div className="grid gap-3 sm:grid-cols-3">
           <div>
             <Label>الاسم</Label>
-            <Input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
+            <Input
+              value={draft.name}
+              onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+            />
           </div>
           <div>
             <Label>الأيقونة</Label>
-            <Input value={draft.icon} onChange={(e) => setDraft({ ...draft, icon: e.target.value })} />
+            <Input
+              value={draft.icon}
+              onChange={(e) => setDraft({ ...draft, icon: e.target.value })}
+            />
           </div>
           <div>
             <Label>القسم</Label>
@@ -810,14 +924,20 @@ function ServicesTab({
             active={s.is_active}
             onUp={() => {
               const pair = reorder(services, s.id, -1);
-              if (pair) void run(s.id, () => supabase.from("services").upsert(pair as never), "تم الترتيب");
+              if (pair)
+                void run(s.id, () => supabase.from("services").upsert(pair as never), "تم الترتيب");
             }}
             onDown={() => {
               const pair = reorder(services, s.id, 1);
-              if (pair) void run(s.id, () => supabase.from("services").upsert(pair as never), "تم الترتيب");
+              if (pair)
+                void run(s.id, () => supabase.from("services").upsert(pair as never), "تم الترتيب");
             }}
             onToggle={(v) =>
-              run(s.id, () => supabase.from("services").update({ is_active: v }).eq("id", s.id), v ? "تم التفعيل" : "تم التعطيل")
+              run(
+                s.id,
+                () => supabase.from("services").update({ is_active: v }).eq("id", s.id),
+                v ? "تم التفعيل" : "تم التعطيل",
+              )
             }
             onDelete={() => setPendingDelete(s)}
             onRestore={
@@ -825,7 +945,11 @@ function ServicesTab({
                 ? () =>
                     run(
                       s.id,
-                      () => supabase.from("services").update({ deleted_at: null, is_active: true }).eq("id", s.id),
+                      () =>
+                        supabase
+                          .from("services")
+                          .update({ deleted_at: null, is_active: true })
+                          .eq("id", s.id),
                       "تمت الاستعادة",
                     )
                 : undefined
@@ -836,14 +960,22 @@ function ServicesTab({
                 defaultValue={s.name}
                 onBlur={(e) =>
                   e.target.value !== s.name &&
-                  run(s.id, () => supabase.from("services").update({ name: e.target.value }).eq("id", s.id), "تم الحفظ")
+                  run(
+                    s.id,
+                    () => supabase.from("services").update({ name: e.target.value }).eq("id", s.id),
+                    "تم الحفظ",
+                  )
                 }
               />
               <Input
                 defaultValue={s.icon}
                 onBlur={(e) =>
                   e.target.value !== s.icon &&
-                  run(s.id, () => supabase.from("services").update({ icon: e.target.value }).eq("id", s.id), "تم الحفظ")
+                  run(
+                    s.id,
+                    () => supabase.from("services").update({ icon: e.target.value }).eq("id", s.id),
+                    "تم الحفظ",
+                  )
                 }
               />
               <select
@@ -852,7 +984,11 @@ function ServicesTab({
                 onChange={(e) =>
                   run(
                     s.id,
-                    () => supabase.from("services").update({ section_id: e.target.value || null }).eq("id", s.id),
+                    () =>
+                      supabase
+                        .from("services")
+                        .update({ section_id: e.target.value || null })
+                        .eq("id", s.id),
                     "تم نقل الخدمة",
                   )
                 }
@@ -872,7 +1008,11 @@ function ServicesTab({
                   e.target.value !== (s.description ?? "") &&
                   run(
                     s.id,
-                    () => supabase.from("services").update({ description: e.target.value || null }).eq("id", s.id),
+                    () =>
+                      supabase
+                        .from("services")
+                        .update({ description: e.target.value || null })
+                        .eq("id", s.id),
                     "تم الحفظ",
                   )
                 }
@@ -886,8 +1026,8 @@ function ServicesTab({
           <AlertDialogHeader>
             <AlertDialogTitle>حذف الخدمة «{pendingDelete?.name}»؟</AlertDialogTitle>
             <AlertDialogDescription>
-              التعطيل يخفي الخدمة عن الزبون ومقدم الخدمة مع الحفاظ على الطلبات والسجلات القديمة. الحذف النهائي لا يُنصح به
-              إن كانت الخدمة مستخدمة سابقاً.
+              التعطيل يخفي الخدمة عن الزبون ومقدم الخدمة مع الحفاظ على الطلبات والسجلات القديمة.
+              الحذف النهائي لا يُنصح به إن كانت الخدمة مستخدمة سابقاً.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-2">
@@ -897,7 +1037,11 @@ function ServicesTab({
               onClick={async () => {
                 const id = pendingDelete!.id;
                 setPendingDelete(null);
-                await run(id, () => supabase.rpc("admin_delete_service", { _id: id, _hard: false }), "تم تعطيل الخدمة");
+                await run(
+                  id,
+                  () => supabase.rpc("admin_delete_service", { _id: id, _hard: false }),
+                  "تم تعطيل الخدمة",
+                );
               }}
             >
               تعطيل (حذف مؤقت)
@@ -906,7 +1050,11 @@ function ServicesTab({
               onClick={async () => {
                 const id = pendingDelete!.id;
                 setPendingDelete(null);
-                await run(id, () => supabase.rpc("admin_delete_service", { _id: id, _hard: true }), "تم حذف الخدمة");
+                await run(
+                  id,
+                  () => supabase.rpc("admin_delete_service", { _id: id, _hard: true }),
+                  "تم حذف الخدمة",
+                );
               }}
             >
               حذف نهائي
@@ -949,9 +1097,13 @@ function RowCard({
     <div className={cn("rounded-2xl border bg-card p-4", deleted && "opacity-60")}>
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <span className="font-bold">{title}</span>
-        <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">{badge}</span>
+        <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
+          {badge}
+        </span>
         {deleted ? (
-          <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-[11px] text-destructive">محذوف مؤقتاً</span>
+          <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-[11px] text-destructive">
+            محذوف مؤقتاً
+          </span>
         ) : null}
         <div className="ms-auto flex items-center gap-1">
           {busy ? <Loader2 className="size-4 animate-spin text-muted-foreground" /> : null}

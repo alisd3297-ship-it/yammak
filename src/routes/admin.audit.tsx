@@ -13,7 +13,10 @@ export const Route = createFileRoute("/admin/audit")({
   head: () => ({
     meta: [
       { title: "سجل التدقيق الإداري | لبابك" },
-      { name: "description", content: "سجل كامل لعمليات الإدارة: الأدوار والموافقات والأقسام والخدمات والإعلانات." },
+      {
+        name: "description",
+        content: "سجل كامل لعمليات الإدارة: الأدوار والموافقات والأقسام والخدمات والإعلانات.",
+      },
       { property: "og:title", content: "سجل التدقيق الإداري | لبابك" },
       { property: "og:description", content: "متابعة كل عمليات المدير في تطبيق لبابك." },
       { property: "og:type", content: "website" },
@@ -39,7 +42,11 @@ const GROUPS: Array<{ key: string; label: string; entities: string[] }> = [
   { key: "all", label: "الكل", entities: [] },
   { key: "roles", label: "الأدوار والمستخدمون", entities: ["user_roles", "profiles"] },
   { key: "approvals", label: "الموافقات", entities: ["worker_profiles", "providers", "orders"] },
-  { key: "catalog", label: "الأقسام والخدمات", entities: ["service_sections", "services", "profession_categories"] },
+  {
+    key: "catalog",
+    label: "الأقسام والخدمات",
+    entities: ["service_sections", "services", "profession_categories"],
+  },
   { key: "ads", label: "الإعلانات", entities: ["ads", "ad_categories"] },
   {
     key: "settings",
@@ -75,7 +82,8 @@ const ACTION_SUFFIX: Record<string, string> = {
 
 function actionLabel(action: string, entity: string) {
   const suffix = action.startsWith(`${entity}_`) ? action.slice(entity.length + 1) : "";
-  if (suffix && ACTION_SUFFIX[suffix]) return `${ACTION_SUFFIX[suffix]} — ${ENTITY_LABEL[entity] ?? entity}`;
+  if (suffix && ACTION_SUFFIX[suffix])
+    return `${ACTION_SUFFIX[suffix]} — ${ENTITY_LABEL[entity] ?? entity}`;
   return action;
 }
 
@@ -84,7 +92,8 @@ function changedFields(before: unknown, after: unknown): string {
   const b = (before ?? {}) as Record<string, unknown>;
   const a = (after ?? {}) as Record<string, unknown>;
   const keys = Array.from(new Set([...Object.keys(b), ...Object.keys(a)])).filter(
-    (k) => !["updated_at", "created_at"].includes(k) && JSON.stringify(b[k]) !== JSON.stringify(a[k]),
+    (k) =>
+      !["updated_at", "created_at"].includes(k) && JSON.stringify(b[k]) !== JSON.stringify(a[k]),
   );
   if (keys.length === 0) return "";
   return keys
@@ -109,10 +118,15 @@ function AdminAuditPage() {
       if (entities.length > 0) query = query.in("entity", entities);
       const { data: rows, error } = await query;
       if (error) throw error;
-      const actorIds = Array.from(new Set((rows ?? []).map((r) => r.actor_id).filter(Boolean))) as string[];
+      const actorIds = Array.from(
+        new Set((rows ?? []).map((r) => r.actor_id).filter(Boolean)),
+      ) as string[];
       const names = new Map<string, string>();
       if (actorIds.length > 0) {
-        const { data: profiles } = await supabase.from("profiles").select("id, full_name").in("id", actorIds);
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, full_name")
+          .in("id", actorIds);
         (profiles ?? []).forEach((p) => names.set(p.id, p.full_name));
       }
       return (rows ?? []).map((r) => ({
@@ -124,14 +138,20 @@ function AdminAuditPage() {
 
   const term = search.trim();
   const rows = (data ?? []).filter(
-    (r) => term === "" || r.action.includes(term) || r.entity.includes(term) || r.actorName.includes(term),
+    (r) =>
+      term === "" ||
+      r.action.includes(term) ||
+      r.entity.includes(term) ||
+      r.actorName.includes(term),
   );
 
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
         <h1 className="text-2xl font-black">سجل التدقيق</h1>
-        <p className="mt-1 text-sm opacity-90">كل عمليات الإدارة مسجّلة: من قام بها، ومتى، وما الذي تغيّر</p>
+        <p className="mt-1 text-sm opacity-90">
+          كل عمليات الإدارة مسجّلة: من قام بها، ومتى، وما الذي تغيّر
+        </p>
       </header>
 
       <AdminNav />
@@ -145,7 +165,9 @@ function AdminAuditPage() {
                 onClick={() => setGroup(g.key)}
                 className={cn(
                   "whitespace-nowrap rounded-full px-4 py-2 text-xs font-semibold",
-                  group === g.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+                  group === g.key
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground",
                 )}
               >
                 {g.label}
@@ -164,7 +186,9 @@ function AdminAuditPage() {
         {isLoading ? (
           <p className="mt-6 text-sm text-muted-foreground">جاري التحميل…</p>
         ) : rows.length === 0 ? (
-          <p className="mt-6 text-sm text-muted-foreground">لا توجد عمليات مسجّلة ضمن هذا التصنيف.</p>
+          <p className="mt-6 text-sm text-muted-foreground">
+            لا توجد عمليات مسجّلة ضمن هذا التصنيف.
+          </p>
         ) : (
           <ul className="mt-4 space-y-3">
             {rows.map((r) => {

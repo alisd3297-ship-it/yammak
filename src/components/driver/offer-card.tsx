@@ -38,7 +38,9 @@ export const OfferCard = forwardRef<
           <p className="mt-2 text-base font-black">#{ord?.code}</p>
         </div>
         <div className="text-end">
-          <p className="text-xl font-black text-primary">{formatIQD(fee || Number(ord?.total ?? 0))}</p>
+          <p className="text-xl font-black text-primary">
+            {formatIQD(fee || Number(ord?.total ?? 0))}
+          </p>
           <p className="text-[11px] text-muted-foreground">{fee ? "أجر التوصيل" : "قيمة الطلب"}</p>
         </div>
       </div>
@@ -53,13 +55,15 @@ export const OfferCard = forwardRef<
           <span className="font-semibold">{ord?.dropoff_text ?? "نقطة التسليم غير محددة"}</span>
         </p>
         <p className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Navigation className="size-3.5" /> يبعد عنك {Number(offer.distance_km ?? 0).toFixed(1)} كم
+          <Navigation className="size-3.5" /> يبعد عنك {Number(offer.distance_km ?? 0).toFixed(1)}{" "}
+          كم
           {ord?.vehicle_type ? ` · ${vehicleLabel(ord.vehicle_type)}` : ""}
           {ord?.cargo_weight_kg ? ` · ${ord.cargo_weight_kg} كغم` : ""}
         </p>
         {ord?.scheduled_at && (
           <p className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Clock className="size-3.5" /> الموعد: {new Date(ord.scheduled_at).toLocaleString("ar-IQ-u-nu-latn")}
+            <Clock className="size-3.5" /> الموعد:{" "}
+            {new Date(ord.scheduled_at).toLocaleString("ar-IQ-u-nu-latn")}
           </p>
         )}
         {ord?.cargo_description && (

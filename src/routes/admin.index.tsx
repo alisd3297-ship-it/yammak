@@ -16,7 +16,8 @@ export const Route = createFileRoute("/admin/")({
       { title: "لوحة الإدارة | لبابك" },
       {
         name: "description",
-        content: "نظرة سريعة على الطلبات والمستخدمين والتجار والمندوبين والمبيعات وآخر النشاطات في لبابك.",
+        content:
+          "نظرة سريعة على الطلبات والمستخدمين والتجار والمندوبين والمبيعات وآخر النشاطات في لبابك.",
       },
       { property: "og:title", content: "لوحة الإدارة | لبابك" },
       { property: "og:description", content: "إحصاءات المنصة وآخر الطلبات في مكان واحد." },
@@ -124,7 +125,8 @@ function AdminHomePage() {
               <div>
                 <p className="font-bold">#{o.code}</p>
                 <p className="text-xs text-muted-foreground">
-                  {new Date(o.created_at).toLocaleString("ar-IQ-u-nu-latn")} · {formatIQD(Number(o.total))}
+                  {new Date(o.created_at).toLocaleString("ar-IQ-u-nu-latn")} ·{" "}
+                  {formatIQD(Number(o.total))}
                 </p>
               </div>
               <span className="flex items-center gap-2 text-xs font-semibold">
@@ -134,7 +136,9 @@ function AdminHomePage() {
             </Link>
           ))}
           {!recent?.length && (
-            <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">ماكو طلبات بعد.</p>
+            <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+              ماكو طلبات بعد.
+            </p>
           )}
         </div>
       </section>

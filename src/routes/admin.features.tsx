@@ -56,7 +56,9 @@ function AdminFeaturesPage() {
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-6 pt-7 text-primary-foreground">
         <h1 className="text-2xl font-black">مفاتيح الميزات</h1>
-        <p className="mt-1 text-sm opacity-90">فعّل كل ميزة تدريجياً بدون أي أثر على ما يعمل حالياً</p>
+        <p className="mt-1 text-sm opacity-90">
+          فعّل كل ميزة تدريجياً بدون أي أثر على ما يعمل حالياً
+        </p>
         <AdminNav />
       </header>
 

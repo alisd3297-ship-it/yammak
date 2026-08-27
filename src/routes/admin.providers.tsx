@@ -25,7 +25,11 @@ export const Route = createFileRoute("/admin/providers")({
   head: () => ({
     meta: [
       { title: "اعتماد مقدمي الخدمة | لبابك" },
-      { name: "description", content: "مراجعة طلبات مطاعم وكافتريات ومتاجر ومقدمي الخدمات واعتمادها أو رفضها أو تعليقها، ومتابعة طلبات الخدمات." },
+      {
+        name: "description",
+        content:
+          "مراجعة طلبات مطاعم وكافتريات ومتاجر ومقدمي الخدمات واعتمادها أو رفضها أو تعليقها، ومتابعة طلبات الخدمات.",
+      },
       { property: "og:title", content: "اعتماد مقدمي الخدمة | لبابك" },
       { property: "og:description", content: "لوحة إدارة اعتماد المزوّدين." },
       { property: "og:type", content: "website" },
@@ -79,7 +83,9 @@ function AdminProvidersPage() {
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("pending");
   const [view, setView] = useState<"providers" | "service-requests">("providers");
 
-  const isStaff = (account?.roles ?? []).some((r) => ["super_admin", "admin", "supervisor"].includes(r));
+  const isStaff = (account?.roles ?? []).some((r) =>
+    ["super_admin", "admin", "supervisor"].includes(r),
+  );
 
   // عدّاد طلبات اعتماد المندوبين المعلّقة
   const { data: pendingDrivers } = useQuery({
@@ -116,14 +122,19 @@ function AdminProvidersPage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("service_requests")
-        .select("id, code, status, service_name, price_amount, price_unit, currency, address_text, created_at, providers(name, owner_id)")
+        .select(
+          "id, code, status, service_name, price_amount, price_unit, currency, address_text, created_at, providers(name, owner_id)",
+        )
         .order("created_at", { ascending: false })
         .limit(50);
       return data ?? [];
     },
   });
 
-  async function apply(providerId: string, status: "approved" | "rejected" | "suspended" | "pending") {
+  async function apply(
+    providerId: string,
+    status: "approved" | "rejected" | "suspended" | "pending",
+  ) {
     try {
       await setStatus({ data: { providerId, status } });
       toast.success("تم تحديث حالة المزوّد");
@@ -172,11 +183,8 @@ function AdminProvidersPage() {
           </Link>
           <Link to="/admin/payments">المدفوعات</Link>
           <Link to="/admin/ads">الإعلانات</Link>
-
-
         </div>
       </header>
-
 
       <div className="mt-4 flex gap-2 px-4">
         {(
@@ -190,7 +198,9 @@ function AdminProvidersPage() {
             onClick={() => setView(v.key)}
             className={cn(
               "flex-1 rounded-full px-4 py-2 text-xs font-semibold transition",
-              view === v.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+              view === v.key
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground",
             )}
           >
             {v.label}
@@ -209,9 +219,16 @@ function AdminProvidersPage() {
                 </span>
               </div>
               <p className="mt-1 text-sm">{r.service_name}</p>
-              <p className="text-xs text-muted-foreground">{(r.providers as { name: string } | null)?.name}</p>
               <p className="text-xs text-muted-foreground">
-                {formatServicePrice(Number(r.price_amount), r.price_unit as ServicePriceUnit, r.currency)} — {r.address_text}
+                {(r.providers as { name: string } | null)?.name}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {formatServicePrice(
+                  Number(r.price_amount),
+                  r.price_unit as ServicePriceUnit,
+                  r.currency,
+                )}{" "}
+                — {r.address_text}
               </p>
               {!(r.providers as { owner_id: string | null } | null)?.owner_id && (
                 <p className="mt-2 rounded-xl bg-warning/15 px-3 py-2 text-[11px] font-semibold text-warning-foreground">
@@ -236,7 +253,9 @@ function AdminProvidersPage() {
             </article>
           ))}
           {!serviceRequests?.length && (
-            <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">ماكو طلبات خدمة.</p>
+            <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+              ماكو طلبات خدمة.
+            </p>
           )}
         </div>
       )}
@@ -248,7 +267,9 @@ function AdminProvidersPage() {
             onClick={() => setFilter(f)}
             className={cn(
               "shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition",
-              filter === f ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+              filter === f
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground",
             )}
           >
             {STATUS_LABELS[f]}
@@ -288,7 +309,9 @@ function AdminProvidersPage() {
           </article>
         ))}
         {!providers?.length && (
-          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">ماكو طلبات بهذه الحالة.</p>
+          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+            ماكو طلبات بهذه الحالة.
+          </p>
         )}
       </div>
     </PageShell>

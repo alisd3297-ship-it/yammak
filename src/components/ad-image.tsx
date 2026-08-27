@@ -62,7 +62,10 @@ export function AdImage({
 
   if (!path || failed) {
     return (
-      <div className={cn("flex items-center justify-center bg-muted text-muted-foreground", className)} aria-hidden>
+      <div
+        className={cn("flex items-center justify-center bg-muted text-muted-foreground", className)}
+        aria-hidden
+      >
         <ImageOff className="size-1/3 max-h-8 min-h-4" />
       </div>
     );

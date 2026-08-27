@@ -4,15 +4,11 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { ShieldCheck, ShieldAlert } from "lucide-react";
-import { BackButton, PageShell  } from "@/components/app-shell";
+import { BackButton, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  getPhoneVerification,
-  requestPhoneOtp,
-  verifyPhoneOtp,
-} from "@/lib/otp.functions";
+import { getPhoneVerification, requestPhoneOtp, verifyPhoneOtp } from "@/lib/otp.functions";
 import { maskPhone, normalizeIraqiPhone, otpErrorMessage } from "@/lib/otp";
 
 export const Route = createFileRoute("/verify-phone")({
@@ -208,8 +204,8 @@ function VerifyPhonePage() {
             </div>
 
             <p className="px-1 text-[11px] leading-relaxed text-muted-foreground">
-              الرمز صالح 5 دقائق، وعدد المحاولات محدود. ما نخزن الرمز نفسه بقاعدة البيانات، ولا
-              يمكن تأكيد الرقم من التطبيق بدون رمز صحيح.
+              الرمز صالح 5 دقائق، وعدد المحاولات محدود. ما نخزن الرمز نفسه بقاعدة البيانات، ولا يمكن
+              تأكيد الرقم من التطبيق بدون رمز صحيح.
             </p>
           </>
         )}

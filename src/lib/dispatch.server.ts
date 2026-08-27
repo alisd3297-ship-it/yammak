@@ -52,7 +52,11 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
   const { data: settings } = await supabaseAdmin
     .from("app_settings")
     .select("key, value")
-    .in("key", ["driver_offer_timeout_seconds", "driver_location_max_age_minutes", "max_offer_radius_km"]);
+    .in("key", [
+      "driver_offer_timeout_seconds",
+      "driver_location_max_age_minutes",
+      "max_offer_radius_km",
+    ]);
   const setting = (key: string, fallback: number) =>
     Number(settings?.find((s) => s.key === key)?.value ?? fallback);
   const timeout = Math.min(Math.max(setting("driver_offer_timeout_seconds", 120), 60), 300);
@@ -67,7 +71,11 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
     .gt("expires_at", new Date().toISOString())
     .maybeSingle();
   if (liveOffer)
-    return { assignedTo: null, status: "offered_to_driver", message: "هناك عرض قائم بانتظار رد المندوب" };
+    return {
+      assignedTo: null,
+      status: "offered_to_driver",
+      message: "هناك عرض قائم بانتظار رد المندوب",
+    };
 
   if (order.status === "ready_for_pickup" || order.status === "new") {
     await supabaseAdmin.rpc("system_change_order_status", {
@@ -143,28 +151,27 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
   const originLat: number = pickupLat ?? OPERATING_LOCATION_COORDS.lat;
   const originLng: number = pickupLng ?? OPERATING_LOCATION_COORDS.lng;
 
-
   const buildCandidates = (locations: { user_id: string; lat: number; lng: number }[]) =>
     (workers ?? [])
-    .filter((w) => !excluded.has(w.user_id))
-    .filter((w) => {
-      if (!requiredRank) return true;
-      const rank = w.vehicle_type ? VEHICLE_RANK[w.vehicle_type as VehicleType] : 1;
-      return rank >= requiredRank;
-    })
-    .map((w) => {
-      const loc = locations.find((l) => l.user_id === w.user_id);
-      if (!loc) return null;
-      const km = distanceKm(loc.lat, loc.lng, originLat, originLng);
-      const current = (activeOrders ?? []).filter((o) => o.driver_id === w.user_id);
-      if (current.length >= (w.max_active_orders ?? 2)) return null;
-      const conflicting = current.some((o) => {
-        if (o.dropoff_lat == null || o.dropoff_lng == null) return false;
-        return distanceKm(o.dropoff_lat, o.dropoff_lng, originLat, originLng) > radiusKm / 2;
-      });
-      if (conflicting) return null;
-      return { driverId: w.user_id, km };
-    })
+      .filter((w) => !excluded.has(w.user_id))
+      .filter((w) => {
+        if (!requiredRank) return true;
+        const rank = w.vehicle_type ? VEHICLE_RANK[w.vehicle_type as VehicleType] : 1;
+        return rank >= requiredRank;
+      })
+      .map((w) => {
+        const loc = locations.find((l) => l.user_id === w.user_id);
+        if (!loc) return null;
+        const km = distanceKm(loc.lat, loc.lng, originLat, originLng);
+        const current = (activeOrders ?? []).filter((o) => o.driver_id === w.user_id);
+        if (current.length >= (w.max_active_orders ?? 2)) return null;
+        const conflicting = current.some((o) => {
+          if (o.dropoff_lat == null || o.dropoff_lng == null) return false;
+          return distanceKm(o.dropoff_lat, o.dropoff_lng, originLat, originLng) > radiusKm / 2;
+        });
+        if (conflicting) return null;
+        return { driverId: w.user_id, km };
+      })
       .filter((c): c is { driverId: string; km: number } => c !== null && c.km <= radiusKm)
       .sort((a, b) => a.km - b.km);
 
@@ -236,7 +243,11 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
     order_id: order.id,
   });
 
-  return { assignedTo: chosen.driverId, status: "offered_to_driver", message: "تم إرسال الطلب لأقرب مندوب" };
+  return {
+    assignedTo: chosen.driverId,
+    status: "offered_to_driver",
+    message: "تم إرسال الطلب لأقرب مندوب",
+  };
 }
 
 /** صيانة دورية: إنهاء العروض المنتهية وإكمال الطلبات المسلَّمة بعد المهلة. */

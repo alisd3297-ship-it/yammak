@@ -29,7 +29,10 @@ export const Route = createFileRoute("/driver")({
   head: () => ({
     meta: [
       { title: "لوحة المندوب | لبابك" },
-      { name: "description", content: "حالتك، مهمتك الحالية، والعروض القريبة منك في لوحة مندوب لبابك." },
+      {
+        name: "description",
+        content: "حالتك، مهمتك الحالية، والعروض القريبة منك في لوحة مندوب لبابك.",
+      },
       { property: "og:title", content: "لوحة المندوب | لبابك" },
       { property: "og:description", content: "حالة الاتصال والمهمة الحالية والعروض القريبة." },
       { property: "og:type", content: "website" },
@@ -44,7 +47,12 @@ function DriverDashboard() {
   const { data: account } = useAccount();
   const { data: worker } = useWorkerProfile();
   const { data: offers, isError: offersError, refetch: refetchOffers } = useDriverOffers();
-  const { data: tasks, isLoading: tasksLoading, isError: tasksError, refetch: refetchTasks } = useDriverTasks();
+  const {
+    data: tasks,
+    isLoading: tasksLoading,
+    isError: tasksError,
+    refetch: refetchTasks,
+  } = useDriverTasks();
   const { data: history } = useDriverHistory();
   const actions = useDriverActions();
 
@@ -147,17 +155,19 @@ function DriverDashboard() {
           </div>
           <div className="space-y-3">
             {isOnline &&
-              (offers ?? []).slice(0, 3).map((o) => (
-                <OfferCard
-                  key={o.id}
-                  offer={o}
-                  {...(focusOrderId && o.order_id === focusOrderId
-                    ? { focused: true, ref: focusedOfferRef }
-                    : {})}
-                  onAccept={() => void actions.answerOffer(o.id, true)}
-                  onReject={() => void actions.answerOffer(o.id, false)}
-                />
-              ))}
+              (offers ?? [])
+                .slice(0, 3)
+                .map((o) => (
+                  <OfferCard
+                    key={o.id}
+                    offer={o}
+                    {...(focusOrderId && o.order_id === focusOrderId
+                      ? { focused: true, ref: focusedOfferRef }
+                      : {})}
+                    onAccept={() => void actions.answerOffer(o.id, true)}
+                    onReject={() => void actions.answerOffer(o.id, false)}
+                  />
+                ))}
             {!isOnline && (
               <p className="rounded-2xl bg-muted p-5 text-center text-sm text-muted-foreground">
                 حالتك «غير متصل» — اضغط زر الاتصال فوق حتى توصلك الطلبات القريبة.
@@ -190,15 +200,7 @@ function LoadError({ onRetry }: { onRetry: () => void }) {
   );
 }
 
-function Metric({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: typeof Bike;
-  label: string;
-  value: string;
-}) {
+function Metric({ icon: Icon, label, value }: { icon: typeof Bike; label: string; value: string }) {
   return (
     <div className="rounded-2xl bg-card p-3 text-center shadow-soft">
       <Icon className="mx-auto size-5 text-primary" />

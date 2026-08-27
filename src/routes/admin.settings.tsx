@@ -16,7 +16,8 @@ export const Route = createFileRoute("/admin/settings")({
       { title: "إعدادات النظام | لبابك" },
       {
         name: "description",
-        content: "إعدادات منصة لبابك العامة ومفاتيح الميزات وسجل التدقيق وإدارة الإعلانات في مكان واحد.",
+        content:
+          "إعدادات منصة لبابك العامة ومفاتيح الميزات وسجل التدقيق وإدارة الإعلانات في مكان واحد.",
       },
       { property: "og:title", content: "إعدادات النظام | لبابك" },
       { property: "og:description", content: "الإعدادات العامة لمنصة لبابك." },
@@ -41,7 +42,10 @@ function AdminSettingsPage() {
   const { data: settings, isLoading } = useQuery({
     queryKey: ["admin-app-settings"],
     queryFn: async () => {
-      const { data } = await supabase.from("app_settings").select("key, value, updated_at").order("key");
+      const { data } = await supabase
+        .from("app_settings")
+        .select("key, value, updated_at")
+        .order("key");
       return data ?? [];
     },
   });
@@ -109,7 +113,9 @@ function AdminSettingsPage() {
             );
           })}
           {!isLoading && !settings?.length && (
-            <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">ماكو إعدادات مسجلة.</p>
+            <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+              ماكو إعدادات مسجلة.
+            </p>
           )}
         </div>
       </section>

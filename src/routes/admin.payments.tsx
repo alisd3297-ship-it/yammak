@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { ArrowRight } from "lucide-react";
-import { BackButton, PageShell, StatusDot  } from "@/components/app-shell";
+import { BackButton, PageShell, StatusDot } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { adminListPayments, refundPayment } from "@/lib/payments.functions";
 import {
@@ -39,13 +39,7 @@ export const Route = createFileRoute("/admin/payments")({
 });
 
 const TONE_MAP = { ok: "success", warn: "warning", bad: "danger" } as const;
-const FILTERS: (PaymentStatus | "all")[] = [
-  "all",
-  "processing",
-  "succeeded",
-  "failed",
-  "refunded",
-];
+const FILTERS: (PaymentStatus | "all")[] = ["all", "processing", "succeeded", "failed", "refunded"];
 
 function AdminPaymentsPage() {
   const { data: account, isLoading: accountLoading } = useAccount();
@@ -106,7 +100,9 @@ function AdminPaymentsPage() {
               onClick={() => setFilter(f)}
               className={cn(
                 "rounded-full px-3 py-1.5 text-xs font-semibold",
-                filter === f ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+                filter === f
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground",
               )}
             >
               {f === "all" ? "الكل" : PAYMENT_STATUS_LABELS[f]}

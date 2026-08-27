@@ -17,7 +17,10 @@ export const Route = createFileRoute("/setup-admin")({
   head: () => ({
     meta: [
       { title: "إعداد المدير العام | لبابك" },
-      { name: "description", content: "مسار إعداد لمرة واحدة لمنح صلاحية المدير العام لمالك المشروع." },
+      {
+        name: "description",
+        content: "مسار إعداد لمرة واحدة لمنح صلاحية المدير العام لمالك المشروع.",
+      },
       { property: "og:title", content: "إعداد المدير العام | لبابك" },
       { property: "og:description", content: "منح صلاحية الإدارة لأول مرة برمز إعداد سري." },
       { property: "og:type", content: "website" },
@@ -65,8 +68,8 @@ function SetupAdminPage() {
     <div className="app-shell flex flex-col justify-center px-5 py-10">
       <h1 className="text-2xl font-black text-primary">إعداد المدير العام</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        هذا المسار يعمل مرة واحدة فقط: يمنح صلاحية «مدير عام» للحساب المسجل دخوله حالياً بعد إدخال رمز الإعداد
-        السري المخزّن في إعدادات المشروع.
+        هذا المسار يعمل مرة واحدة فقط: يمنح صلاحية «مدير عام» للحساب المسجل دخوله حالياً بعد إدخال
+        رمز الإعداد السري المخزّن في إعدادات المشروع.
       </p>
 
       {!account?.userId ? (

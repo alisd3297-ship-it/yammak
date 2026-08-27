@@ -39,10 +39,16 @@ export const Route = createFileRoute("/api/public/maintenance")({
     handlers: {
       // فحص صحة بسيط لا يكشف أي بيانات
       GET: async () =>
-        Response.json({ ok: true, service: "maintenance" }, { headers: { "cache-control": "no-store" } }),
+        Response.json(
+          { ok: true, service: "maintenance" },
+          { headers: { "cache-control": "no-store" } },
+        ),
       POST: async ({ request }) => {
         if (!(await authorize(request)))
-          return new Response("Unauthorized", { status: 401, headers: { "cache-control": "no-store" } });
+          return new Response("Unauthorized", {
+            status: 401,
+            headers: { "cache-control": "no-store" },
+          });
         try {
           const { runMaintenance } = await import("@/lib/dispatch.server");
           const result = await runMaintenance("pg_cron_http", 30);

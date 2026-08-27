@@ -83,7 +83,10 @@ export function AdsTicker({
     >
       <div
         className="ad-ticker-track flex w-max items-center gap-1.5 py-1"
-        style={{ animationDuration: `${duration}s`, animationPlayState: paused ? "paused" : "running" }}
+        style={{
+          animationDuration: `${duration}s`,
+          animationPlayState: paused ? "paused" : "running",
+        }}
       >
         {items.map((ad, index) => {
           const category = byId.get(ad.category_id);
@@ -101,7 +104,11 @@ export function AdsTicker({
               tabIndex={index >= ads.length ? -1 : 0}
             >
               {ad.images[0] ? (
-                <AdImage path={ad.images[0]} alt="" className="size-5 shrink-0 rounded-full object-cover" />
+                <AdImage
+                  path={ad.images[0]}
+                  alt=""
+                  className="size-5 shrink-0 rounded-full object-cover"
+                />
               ) : (
                 <Icon className="size-3.5 shrink-0 opacity-90" />
               )}
@@ -141,14 +148,21 @@ function AdsPrefsSheet({ categories }: { categories: AdCategory[] }) {
 
         <div className="mt-3 space-y-2 pb-6">
           <label className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft">
-            <Switch checked={prefs === null} onCheckedChange={() => showAll()} aria-label="كل الإعلانات" />
+            <Switch
+              checked={prefs === null}
+              onCheckedChange={() => showAll()}
+              aria-label="كل الإعلانات"
+            />
             <span className="text-sm font-bold">كل الإعلانات</span>
           </label>
 
           {categories.map((c) => {
             const Icon = categoryIcon(c.icon);
             return (
-              <label key={c.id} className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft">
+              <label
+                key={c.id}
+                className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft"
+              >
                 <Switch
                   checked={isVisible(c.id)}
                   onCheckedChange={() => toggle(c.id, allIds)}
@@ -161,7 +175,9 @@ function AdsPrefsSheet({ categories }: { categories: AdCategory[] }) {
           })}
 
           {categories.length === 0 ? (
-            <p className="text-center text-sm text-muted-foreground">ما توجد فئات إعلانات حالياً.</p>
+            <p className="text-center text-sm text-muted-foreground">
+              ما توجد فئات إعلانات حالياً.
+            </p>
           ) : null}
 
           <Button variant="outline" className="w-full" onClick={() => showAll()}>
@@ -192,7 +208,10 @@ export function AdsTickerBoard({
 
   return (
     <section
-      className={cn("flex h-10 items-center gap-2 overflow-hidden rounded-xl bg-card px-2 shadow-soft", className)}
+      className={cn(
+        "flex h-10 items-center gap-2 overflow-hidden rounded-xl bg-card px-2 shadow-soft",
+        className,
+      )}
       aria-label="شريط الإعلانات"
     >
       {visibleAds.length > 0 ? (

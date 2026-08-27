@@ -4,7 +4,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 function friendly(message: string): string {
   if (message.includes("missing_pickup")) return "حدد موقع الاستلام أو اكتب العنوان";
   if (message.includes("missing_dropoff")) return "حدد موقع التسليم أو اكتب العنوان";
-  if (message.includes("too_many_active_courier_orders")) return "عندك طلبات مندوب نشطة كثيرة، خلّصها أول";
+  if (message.includes("too_many_active_courier_orders"))
+    return "عندك طلبات مندوب نشطة كثيرة، خلّصها أول";
   if (message.includes("user_blocked")) return "حسابك موقوف حالياً";
   if (message.includes("unauthorized")) return "سجّل الدخول أول";
   return "تعذر إنشاء الطلب، حاول مرة ثانية";

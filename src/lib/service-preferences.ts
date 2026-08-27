@@ -2,7 +2,15 @@ import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Bike, Car, Pill, ShoppingCart, UtensilsCrossed, Wrench, type LucideIcon } from "lucide-react";
+import {
+  Bike,
+  Car,
+  Pill,
+  ShoppingCart,
+  UtensilsCrossed,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
 import { useAccount, isStaffAccount, isWorkerOnlyAccount } from "@/lib/auth";
 
 /**
@@ -12,12 +20,7 @@ import { useAccount, isStaffAccount, isWorkerOnlyAccount } from "@/lib/auth";
  */
 
 export type ServicePrefKey =
-  | "restaurants"
-  | "stores"
-  | "pharmacies"
-  | "courier"
-  | "taxi"
-  | "services";
+  "restaurants" | "stores" | "pharmacies" | "courier" | "taxi" | "services";
 
 export type ServicePrefOption = {
   key: ServicePrefKey;
@@ -28,12 +31,30 @@ export type ServicePrefOption = {
 };
 
 export const SERVICE_PREF_OPTIONS: ServicePrefOption[] = [
-  { key: "restaurants", label: "المطاعم", hint: "أكل وطلبات سفري", icon: UtensilsCrossed, to: "/restaurants" },
-  { key: "stores", label: "المتاجر والسوبرماركت", hint: "تسوّق يومي", icon: ShoppingCart, to: "/stores" },
+  {
+    key: "restaurants",
+    label: "المطاعم",
+    hint: "أكل وطلبات سفري",
+    icon: UtensilsCrossed,
+    to: "/restaurants",
+  },
+  {
+    key: "stores",
+    label: "المتاجر والسوبرماركت",
+    hint: "تسوّق يومي",
+    icon: ShoppingCart,
+    to: "/stores",
+  },
   { key: "pharmacies", label: "الصيدليات", hint: "أدوية ومستلزمات", icon: Pill, to: "/pharmacies" },
   { key: "courier", label: "التوصيل", hint: "مندوب وتوصيل خاص", icon: Bike, to: "/courier" },
   { key: "taxi", label: "التاكسي", hint: "نقل ورحلات", icon: Car, to: "/taxi" },
-  { key: "services", label: "الخدمات والمهن", hint: "كهربائي، سباك وغيرهم", icon: Wrench, to: "/services" },
+  {
+    key: "services",
+    label: "الخدمات والمهن",
+    hint: "كهربائي، سباك وغيرهم",
+    icon: Wrench,
+    to: "/services",
+  },
 ];
 
 const VALID_KEYS = new Set(SERVICE_PREF_OPTIONS.map((o) => o.key));

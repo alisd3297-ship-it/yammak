@@ -6,11 +6,11 @@ import { toast } from "sonner";
 import { Car, LocateFixed, MapPin, Navigation, Star, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
-import { BackButton, BottomNav, PageShell, StatusDot  } from "@/components/app-shell";
+import { BackButton, BottomNav, PageShell, StatusDot } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useCustomerAreaGuard, useAccount  } from "@/lib/auth";
+import { useCustomerAreaGuard, useAccount } from "@/lib/auth";
 import { formatIQD } from "@/lib/orders";
 import { cn } from "@/lib/utils";
 import {
@@ -31,7 +31,8 @@ export const Route = createFileRoute("/taxi")({
       { title: "اطلب تكسي | لبابك" },
       {
         name: "description",
-        content: "اطلب تكسي من موقعك إلى وجهتك داخل مدينتك بأجرة واضحة محسوبة مسبقاً ومتابعة حية للسائق.",
+        content:
+          "اطلب تكسي من موقعك إلى وجهتك داخل مدينتك بأجرة واضحة محسوبة مسبقاً ومتابعة حية للسائق.",
       },
       { property: "og:title", content: "اطلب تكسي | لبابك" },
       { property: "og:description", content: "تنقّل داخل المدينة مع سائقي لبابك المعتمدين." },
@@ -121,10 +122,16 @@ function TaxiPage() {
     refetchInterval: 15_000,
     queryFn: async () => {
       const [profile, worker, location] = await Promise.all([
-        supabase.from("profiles").select("full_name, phone").eq("id", activeTrip!.driver_id!).maybeSingle(),
+        supabase
+          .from("profiles")
+          .select("full_name, phone")
+          .eq("id", activeTrip!.driver_id!)
+          .maybeSingle(),
         supabase
           .from("worker_profiles")
-          .select("rating, ratings_count, vehicle_make, vehicle_model, vehicle_color, plate_number, taxi_class")
+          .select(
+            "rating, ratings_count, vehicle_make, vehicle_model, vehicle_color, plate_number, taxi_class",
+          )
           .eq("user_id", activeTrip!.driver_id!)
           .maybeSingle(),
         supabase
@@ -217,7 +224,9 @@ function TaxiPage() {
           <section className="rounded-2xl bg-card p-4 shadow-card">
             <div className="flex items-center justify-between">
               <p className="font-bold">رحلة #{activeTrip.code}</p>
-              <span className="text-sm font-bold text-primary">{formatIQD(Number(activeTrip.fare))}</span>
+              <span className="text-sm font-bold text-primary">
+                {formatIQD(Number(activeTrip.fare))}
+              </span>
             </div>
             <p className="mt-2 flex items-center gap-2 text-sm">
               <StatusDot tone={tripTone(activeTrip.status as TripStatus)} />
@@ -252,11 +261,15 @@ function TaxiPage() {
                 {driverInfo.worker && (
                   <p className="mt-1 flex items-center gap-1 text-muted-foreground">
                     <Star className="size-3 fill-warning text-warning" />
-                    {Number(driverInfo.worker.rating ?? 0).toFixed(1)} ({driverInfo.worker.ratings_count ?? 0})
+                    {Number(driverInfo.worker.rating ?? 0).toFixed(1)} (
+                    {driverInfo.worker.ratings_count ?? 0})
                   </p>
                 )}
                 {driverInfo.profile.phone && (
-                  <a href={`tel:${driverInfo.profile.phone}`} className="mt-1 inline-block font-semibold text-primary">
+                  <a
+                    href={`tel:${driverInfo.profile.phone}`}
+                    className="mt-1 inline-block font-semibold text-primary"
+                  >
                     اتصال بالسائق
                   </a>
                 )}
@@ -276,28 +289,39 @@ function TaxiPage() {
             {["searching_driver", "driver_assigned", "driver_arriving", "driver_arrived"].includes(
               activeTrip.status,
             ) && (
-              <Button variant="outline" className="mt-3 h-11 w-full" onClick={() => cancelTrip(activeTrip.id)}>
+              <Button
+                variant="outline"
+                className="mt-3 h-11 w-full"
+                onClick={() => cancelTrip(activeTrip.id)}
+              >
                 إلغاء الرحلة
               </Button>
             )}
           </section>
         ) : (
           <>
-            {lastCompleted && !(Array.isArray(lastCompleted.trip_ratings) ? lastCompleted.trip_ratings : []).length && (
-              <section className="rounded-2xl bg-card p-4 shadow-soft">
-                <p className="font-bold">قيّم رحلتك الأخيرة #{lastCompleted.code}</p>
-                <div className="mt-3 flex justify-center gap-2">
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <button key={n} onClick={() => setStars(n)} aria-label={`${n} نجوم`}>
-                      <Star className={cn("size-7", n <= stars ? "fill-warning text-warning" : "text-muted")} />
-                    </button>
-                  ))}
-                </div>
-                <Button className="mt-3 h-11 w-full" onClick={() => sendRating(lastCompleted.id)}>
-                  إرسال التقييم
-                </Button>
-              </section>
-            )}
+            {lastCompleted &&
+              !(Array.isArray(lastCompleted.trip_ratings) ? lastCompleted.trip_ratings : [])
+                .length && (
+                <section className="rounded-2xl bg-card p-4 shadow-soft">
+                  <p className="font-bold">قيّم رحلتك الأخيرة #{lastCompleted.code}</p>
+                  <div className="mt-3 flex justify-center gap-2">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <button key={n} onClick={() => setStars(n)} aria-label={`${n} نجوم`}>
+                        <Star
+                          className={cn(
+                            "size-7",
+                            n <= stars ? "fill-warning text-warning" : "text-muted",
+                          )}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                  <Button className="mt-3 h-11 w-full" onClick={() => sendRating(lastCompleted.id)}>
+                    إرسال التقييم
+                  </Button>
+                </section>
+              )}
 
             <section className="rounded-2xl bg-card p-4 shadow-soft">
               <h2 className="mb-3 flex items-center gap-2 font-bold">
@@ -313,7 +337,9 @@ function TaxiPage() {
                     }}
                     className={cn(
                       "rounded-2xl p-3 text-center text-xs font-semibold shadow-soft transition active:scale-95",
-                      taxiClass === c.key ? "bg-primary text-primary-foreground" : "bg-muted text-foreground",
+                      taxiClass === c.key
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-foreground",
                     )}
                   >
                     <span className="block text-sm">{c.label}</span>
@@ -352,7 +378,11 @@ function TaxiPage() {
               <h2 className="mb-3 flex items-center gap-2 font-bold">
                 <MapPin className="size-4 text-primary" /> نقطة الانطلاق
               </h2>
-              <Button variant="secondary" className="mb-3 h-11 w-full" onClick={() => locate("pickup")}>
+              <Button
+                variant="secondary"
+                className="mb-3 h-11 w-full"
+                onClick={() => locate("pickup")}
+              >
                 <LocateFixed className="size-4" /> استخدم موقعي الحالي
               </Button>
               {pickup && (
@@ -372,7 +402,11 @@ function TaxiPage() {
               <h2 className="mb-3 flex items-center gap-2 font-bold">
                 <Navigation className="size-4 text-primary" /> الوجهة
               </h2>
-              <Button variant="secondary" className="mb-3 h-11 w-full" onClick={() => locate("dest")}>
+              <Button
+                variant="secondary"
+                className="mb-3 h-11 w-full"
+                onClick={() => locate("dest")}
+              >
                 <LocateFixed className="size-4" /> تحديد الوجهة بموقعي الحالي
               </Button>
               {dest && (

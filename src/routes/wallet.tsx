@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Wallet as WalletIcon, ArrowDownCircle, ArrowUpCircle, ReceiptText } from "lucide-react";
-import { BackButton, BottomNav, PageShell  } from "@/components/app-shell";
+import { BackButton, BottomNav, PageShell } from "@/components/app-shell";
 import { requireSignedIn } from "@/lib/route-guards";
 import { getMyWallet, listMyInvoices, listMyRefundRequests } from "@/lib/wallet.functions";
 import { formatIQD } from "@/lib/payments";
@@ -22,7 +22,8 @@ export const Route = createFileRoute("/wallet")({
       { title: "محفظة لبابك | الرصيد والحركات" },
       {
         name: "description",
-        content: "رصيد محفظتك بالدينار العراقي، حركات الإيداع والخصم، طلبات الاسترجاع وفواتيرك في لبابك.",
+        content:
+          "رصيد محفظتك بالدينار العراقي، حركات الإيداع والخصم، طلبات الاسترجاع وفواتيرك في لبابك.",
       },
       { property: "og:title", content: "محفظة لبابك" },
       { property: "og:description", content: "رصيدك وحركاتك المالية في مكان واحد." },
@@ -125,7 +126,9 @@ function WalletPage() {
                     </span>
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">{r.reason}</p>
-                  {r.note && <p className="mt-1 text-xs text-muted-foreground">ملاحظة الإدارة: {r.note}</p>}
+                  {r.note && (
+                    <p className="mt-1 text-xs text-muted-foreground">ملاحظة الإدارة: {r.note}</p>
+                  )}
                 </article>
               ))}
             </div>

@@ -5,7 +5,13 @@ import * as Icons from "lucide-react";
 import { adTone, formatAdPrice, type AdCategory, type AdRow } from "@/lib/ads";
 import { AdImage } from "@/components/ad-image";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 function categoryIcon(name: string): Icons.LucideIcon {
@@ -90,7 +96,9 @@ export function AdDetailsDialog({
 
             <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
               <MapPin className="size-4 shrink-0" />
-              {ad.governorate ? <span className="font-bold text-foreground">{ad.governorate}</span> : null}
+              {ad.governorate ? (
+                <span className="font-bold text-foreground">{ad.governorate}</span>
+              ) : null}
               <span className="truncate">{ad.address_text}</span>
             </p>
 

@@ -10,7 +10,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { setAdStatus } from "@/lib/ads.functions";
-import { AD_STATUS_LABEL, AD_STATUS_TONE, formatAdPrice, type AdRow, type AdStatus } from "@/lib/ads";
+import {
+  AD_STATUS_LABEL,
+  AD_STATUS_TONE,
+  formatAdPrice,
+  type AdRow,
+  type AdStatus,
+} from "@/lib/ads";
 import { AdImage } from "@/components/ad-image";
 import { useAccount } from "@/lib/auth";
 import { cn } from "@/lib/utils";
@@ -23,7 +29,10 @@ export const Route = createFileRoute("/admin/ads")({
   head: () => ({
     meta: [
       { title: "إدارة الإعلانات | لبابك" },
-      { name: "description", content: "مراجعة إعلانات المستخدمين والموافقة والرفض والإيقاف وتحديد مدة النشر والترتيب." },
+      {
+        name: "description",
+        content: "مراجعة إعلانات المستخدمين والموافقة والرفض والإيقاف وتحديد مدة النشر والترتيب.",
+      },
       { property: "og:title", content: "إدارة الإعلانات | لبابك" },
       { property: "og:description", content: "لوحة الإدارة لمراجعة الإعلانات في تطبيق لبابك." },
       { property: "og:type", content: "website" },
@@ -47,9 +56,13 @@ function AdminAdsPage() {
   const decide = useServerFn(setAdStatus);
   const [filter, setFilter] = useState<AdStatus | "all">("pending");
   const [busy, setBusy] = useState<string | null>(null);
-  const [drafts, setDrafts] = useState<Record<string, { sort?: string; expires?: string; reason?: string }>>({});
+  const [drafts, setDrafts] = useState<
+    Record<string, { sort?: string; expires?: string; reason?: string }>
+  >({});
   const { data: account } = useAccount();
-  const isStaff = (account?.roles ?? []).some((r) => ["super_admin", "admin", "supervisor"].includes(r));
+  const isStaff = (account?.roles ?? []).some((r) =>
+    ["super_admin", "admin", "supervisor"].includes(r),
+  );
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-ads", filter],
@@ -136,9 +149,13 @@ function AdminAdsPage() {
         </div>
 
         {isLoading ? (
-          <p className="rounded-2xl bg-card p-5 text-center text-sm text-muted-foreground shadow-soft">جاري التحميل…</p>
+          <p className="rounded-2xl bg-card p-5 text-center text-sm text-muted-foreground shadow-soft">
+            جاري التحميل…
+          </p>
         ) : (data ?? []).length === 0 ? (
-          <p className="rounded-2xl bg-card p-5 text-center text-sm text-muted-foreground shadow-soft">لا توجد إعلانات هنا.</p>
+          <p className="rounded-2xl bg-card p-5 text-center text-sm text-muted-foreground shadow-soft">
+            لا توجد إعلانات هنا.
+          </p>
         ) : (
           (data ?? []).map((ad) => {
             const draft = drafts[ad.id] ?? {};
@@ -155,15 +172,25 @@ function AdminAdsPage() {
                 </div>
 
                 <div className="flex gap-3">
-                  <AdImage path={ad.images[0]} className="size-20 shrink-0 rounded-xl object-cover" />
+                  <AdImage
+                    path={ad.images[0]}
+                    className="size-20 shrink-0 rounded-xl object-cover"
+                  />
                   <div className="min-w-0 flex-1">
-                    <Link to="/ads/$id" params={{ id: ad.id }} className="font-bold underline-offset-4 hover:underline">
+                    <Link
+                      to="/ads/$id"
+                      params={{ id: ad.id }}
+                      className="font-bold underline-offset-4 hover:underline"
+                    >
                       {ad.title}
                     </Link>
                     <p className="line-clamp-2 text-xs text-muted-foreground">{ad.body}</p>
-                    <p className="text-sm font-bold text-primary">{formatAdPrice(ad.price, ad.currency)}</p>
+                    <p className="text-sm font-bold text-primary">
+                      {formatAdPrice(ad.price, ad.currency)}
+                    </p>
                     <p className="text-xs text-muted-foreground">
-                      {ad.contact_phone} — {ad.governorate ? `${ad.governorate} — ` : ""}{ad.address_text}
+                      {ad.contact_phone} — {ad.governorate ? `${ad.governorate} — ` : ""}
+                      {ad.address_text}
                     </p>
                   </div>
                 </div>
@@ -197,23 +224,51 @@ function AdminAdsPage() {
                   <Label htmlFor={`reason-${ad.id}`} className="text-xs">
                     سبب الرفض (عند الرفض)
                   </Label>
-                  <Input id={`reason-${ad.id}`} value={draft.reason ?? ""} onChange={(e) => update({ reason: e.target.value })} />
+                  <Input
+                    id={`reason-${ad.id}`}
+                    value={draft.reason ?? ""}
+                    onChange={(e) => update({ reason: e.target.value })}
+                  />
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                  <Button size="sm" disabled={busy === ad.id} onClick={() => void act(ad, "published")}>
+                  <Button
+                    size="sm"
+                    disabled={busy === ad.id}
+                    onClick={() => void act(ad, "published")}
+                  >
                     {busy === ad.id ? <Loader2 className="size-4 animate-spin" /> : null} نشر
                   </Button>
-                  <Button size="sm" variant="destructive" disabled={busy === ad.id} onClick={() => void act(ad, "rejected")}>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    disabled={busy === ad.id}
+                    onClick={() => void act(ad, "rejected")}
+                  >
                     رفض
                   </Button>
-                  <Button size="sm" variant="secondary" disabled={busy === ad.id} onClick={() => void act(ad, "paused")}>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    disabled={busy === ad.id}
+                    onClick={() => void act(ad, "paused")}
+                  >
                     إيقاف
                   </Button>
-                  <Button size="sm" variant="outline" disabled={busy === ad.id} onClick={() => void act(ad, "expired")}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={busy === ad.id}
+                    onClick={() => void act(ad, "expired")}
+                  >
                     إنهاء
                   </Button>
-                  <Button size="sm" variant="ghost" disabled={busy === ad.id} onClick={() => void act(ad, "pending")}>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    disabled={busy === ad.id}
+                    onClick={() => void act(ad, "pending")}
+                  >
                     إعادة للمراجعة
                   </Button>
                 </div>

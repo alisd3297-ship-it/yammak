@@ -59,7 +59,11 @@ export function ProviderServiceRequests({ providerId }: { providerId: string }) 
             <div className="flex items-center justify-between">
               <p className="font-bold">#{r.code}</p>
               <span className="text-sm font-bold text-primary">
-                {formatServicePrice(Number(r.price_amount), r.price_unit as ServicePriceUnit, r.currency)}
+                {formatServicePrice(
+                  Number(r.price_amount),
+                  r.price_unit as ServicePriceUnit,
+                  r.currency,
+                )}
               </span>
             </div>
             <p className="mt-1 text-sm">{r.service_name}</p>
@@ -73,7 +77,9 @@ export function ProviderServiceRequests({ providerId }: { providerId: string }) 
                 الموعد: {new Date(r.scheduled_at).toLocaleString("ar-IQ-u-nu-latn")}
               </p>
             )}
-            {r.description && <p className="text-xs text-muted-foreground">التفاصيل: {r.description}</p>}
+            {r.description && (
+              <p className="text-xs text-muted-foreground">التفاصيل: {r.description}</p>
+            )}
             {(steps.length > 0 || status === "requested") && (
               <div className="mt-3 flex flex-wrap gap-2">
                 {steps.map((s) => (
@@ -102,7 +108,9 @@ export function ProviderServiceRequests({ providerId }: { providerId: string }) 
         );
       })}
       {!requests?.length && (
-        <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">ماكو طلبات خدمة حالياً.</p>
+        <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+          ماكو طلبات خدمة حالياً.
+        </p>
       )}
     </div>
   );

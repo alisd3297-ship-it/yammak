@@ -79,7 +79,8 @@ export const assignDriverManually = createServerFn({ method: "POST" })
       if (m.includes("order_already_assigned")) throw new Error("الطلب مسند لمندوب آخر");
       if (m.includes("order_closed")) throw new Error("الطلب منتهي");
       if (m.includes("driver_not_eligible")) throw new Error("هذا المندوب غير معتمد للتوصيل");
-      if (m.includes("order_not_dispatchable")) throw new Error("حالة الطلب لا تسمح بتعيين مندوب الآن");
+      if (m.includes("order_not_dispatchable"))
+        throw new Error("حالة الطلب لا تسمح بتعيين مندوب الآن");
       throw new Error("تعذر تعيين المندوب");
     }
     await supabaseAdmin.from("audit_logs").insert({

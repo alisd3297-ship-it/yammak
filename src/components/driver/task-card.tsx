@@ -75,7 +75,9 @@ export function TaskCard({
           <span className="font-semibold">{task.dropoff_text ?? "نقطة التسليم غير محددة"}</span>
         </p>
         {task.vehicle_type && (
-          <p className="text-xs font-semibold text-primary">المركبة: {vehicleLabel(task.vehicle_type)}</p>
+          <p className="text-xs font-semibold text-primary">
+            المركبة: {vehicleLabel(task.vehicle_type)}
+          </p>
         )}
         {task.notes && <p className="text-xs text-muted-foreground">ملاحظات: {task.notes}</p>}
       </div>
@@ -105,15 +107,24 @@ export function TaskCard({
                     <Check className="size-3.5" /> تم التسليم
                   </span>
                 ) : (
-                  <Button size="sm" variant="outline" className="h-9" onClick={() => onCompleteStop(s.id)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-9"
+                    onClick={() => onCompleteStop(s.id)}
+                  >
                     تم التسليم
                   </Button>
                 )}
               </div>
               <p className="mt-1">{s.address_text}</p>
               {s.recipient_phone && (
-                <a href={`tel:${s.recipient_phone}`} className="mt-1 inline-flex items-center gap-1 text-primary">
-                  <Phone className="size-3.5" /> {s.recipient_name ?? "اتصال بالمستلم"} · {s.recipient_phone}
+                <a
+                  href={`tel:${s.recipient_phone}`}
+                  className="mt-1 inline-flex items-center gap-1 text-primary"
+                >
+                  <Phone className="size-3.5" /> {s.recipient_name ?? "اتصال بالمستلم"} ·{" "}
+                  {s.recipient_phone}
                 </a>
               )}
             </li>

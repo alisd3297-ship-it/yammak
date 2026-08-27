@@ -32,7 +32,10 @@ export const Route = createFileRoute("/api/public/ad-image/$")({
     handlers: {
       GET: async ({ params, request }) => {
         if (rateLimited(request))
-          return new Response("Too many requests", { status: 429, headers: { "retry-after": "60" } });
+          return new Response("Too many requests", {
+            status: 429,
+            headers: { "retry-after": "60" },
+          });
 
         const path = decodeURIComponent(params._splat ?? "");
         // مسار داخل مجلد المالك فقط: uuid/filename بدون أي تنقل بين المجلدات

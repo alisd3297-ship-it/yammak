@@ -7,11 +7,11 @@ import { LocateFixed, Star, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
-import { BackButton, PageShell  } from "@/components/app-shell";
+import { BackButton, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useCustomerAreaGuard, useAccount  } from "@/lib/auth";
+import { useCustomerAreaGuard, useAccount } from "@/lib/auth";
 import { createServiceRequest } from "@/lib/services.functions";
 import { formatServicePrice, PRICE_UNIT_LABELS, type ServicePriceUnit } from "@/lib/services";
 import { cn } from "@/lib/utils";
@@ -21,7 +21,10 @@ export const Route = createFileRoute("/services/$id")({
   head: () => ({
     meta: [
       { title: "مقدم خدمة | لبابك" },
-      { name: "description", content: "شوف خدمات مقدم الخدمة وأسعاره وقيّمه بعد إنجاز الشغل عبر لبابك." },
+      {
+        name: "description",
+        content: "شوف خدمات مقدم الخدمة وأسعاره وقيّمه بعد إنجاز الشغل عبر لبابك.",
+      },
       { property: "og:title", content: "مقدم خدمة | لبابك" },
       { property: "og:description", content: "اطلب خدمة مهنية معتمدة." },
       { property: "og:type", content: "website" },
@@ -51,7 +54,9 @@ function ServiceProviderPage() {
       const [provider, services] = await Promise.all([
         supabase
           .from("providers")
-          .select("id, name, description, rating, ratings_count, is_open, address_text, phone, status")
+          .select(
+            "id, name, description, rating, ratings_count, is_open, address_text, phone, status",
+          )
           .eq("id", id)
           .eq("is_demo", false)
           .maybeSingle(),
@@ -147,7 +152,11 @@ function ServiceProviderPage() {
               <div className="flex items-center justify-between gap-3">
                 <p className="font-bold">{s.name}</p>
                 <span className="shrink-0 text-sm font-bold text-primary">
-                  {formatServicePrice(Number(s.price_amount), s.price_unit as ServicePriceUnit, s.currency)}
+                  {formatServicePrice(
+                    Number(s.price_amount),
+                    s.price_unit as ServicePriceUnit,
+                    s.currency,
+                  )}
                 </span>
               </div>
               <p className="mt-1 text-xs text-muted-foreground">{s.description}</p>
@@ -199,7 +208,10 @@ function ServiceProviderPage() {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="اشرح المشكلة أو الشغل المطلوب"
           />
-          <label className="block text-xs font-semibold text-muted-foreground" htmlFor="scheduled-at">
+          <label
+            className="block text-xs font-semibold text-muted-foreground"
+            htmlFor="scheduled-at"
+          >
             موعد مفضل (اختياري)
           </label>
           <Input
@@ -214,7 +226,11 @@ function ServiceProviderPage() {
           </p>
         </div>
 
-        <Button className="h-13 w-full text-base" disabled={saving || !provider.is_open} onClick={submit}>
+        <Button
+          className="h-13 w-full text-base"
+          disabled={saving || !provider.is_open}
+          onClick={submit}
+        >
           {provider.is_open ? "إرسال طلب الخدمة" : "مقدم الخدمة غير متاح حالياً"}
         </Button>
       </section>

@@ -3,12 +3,17 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { TrendingUp } from "lucide-react";
-import { BackButton, PageShell, StatusDot  } from "@/components/app-shell";
+import { BackButton, PageShell, StatusDot } from "@/components/app-shell";
 import { requireWorker } from "@/lib/route-guards";
 import { useAccount } from "@/lib/auth";
 import { getDriverEarnings, listMySettlements } from "@/lib/finance.functions";
 import { formatIQD } from "@/lib/payments";
-import { SETTLEMENT_STATUS_LABELS, endOfToday, settlementTone, startOfDaysAgo } from "@/lib/finance";
+import {
+  SETTLEMENT_STATUS_LABELS,
+  endOfToday,
+  settlementTone,
+  startOfDaysAgo,
+} from "@/lib/finance";
 import { cn } from "@/lib/utils";
 import { driverSummary, useDriverHistory } from "@/lib/driver-data";
 
@@ -20,7 +25,8 @@ export const Route = createFileRoute("/driver-earnings")({
       { title: "أرباح المندوب | لبابك" },
       {
         name: "description",
-        content: "أرباح المندوب من التوصيل والرحلات، المبالغ المصروفة والمستحقة والتسويات في لبابك.",
+        content:
+          "أرباح المندوب من التوصيل والرحلات، المبالغ المصروفة والمستحقة والتسويات في لبابك.",
       },
       { property: "og:title", content: "أرباح المندوب | لبابك" },
       { property: "og:description", content: "أرباحك وتسوياتك بالتفصيل." },
@@ -140,7 +146,10 @@ function DriverEarningsPage() {
           )}
           <div className="space-y-2">
             {history?.map((h) => (
-              <article key={h.id} className="flex items-center justify-between rounded-2xl bg-card p-4 shadow-soft">
+              <article
+                key={h.id}
+                className="flex items-center justify-between rounded-2xl bg-card p-4 shadow-soft"
+              >
                 <div>
                   <p className="text-sm font-bold">طلب #{h.code}</p>
                   <p className="mt-0.5 text-xs text-muted-foreground">

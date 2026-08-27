@@ -13,7 +13,8 @@ export const Route = createFileRoute("/admin/sections")({
       { title: "الأقسام والتخصصات | لبابك" },
       {
         name: "description",
-        content: "إدارة أقسام لبابك الرئيسية وتخصصات المحلات مثل المخابز والحلويات والقصابات والخضار.",
+        content:
+          "إدارة أقسام لبابك الرئيسية وتخصصات المحلات مثل المخابز والحلويات والقصابات والخضار.",
       },
       { property: "og:title", content: "الأقسام والتخصصات | لبابك" },
       { property: "og:description", content: "أقسام المنصة وتخصصات المحلات." },
@@ -59,7 +60,9 @@ function AdminSectionsPage() {
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
         <h1 className="text-2xl font-black">الأقسام والتخصصات</h1>
-        <p className="mt-1 text-sm opacity-90">الأقسام الرئيسية للزبون وتخصصات المحلات القابلة للتوسع.</p>
+        <p className="mt-1 text-sm opacity-90">
+          الأقسام الرئيسية للزبون وتخصصات المحلات القابلة للتوسع.
+        </p>
       </header>
 
       <AdminNav />
@@ -86,7 +89,10 @@ function AdminSectionsPage() {
         <h2 className="mb-3 text-base font-black">تخصصات «محلات»</h2>
         <div className="space-y-2">
           {SHOP_SPECIALTIES.map((sp) => (
-            <div key={sp.slug} className="flex items-center justify-between rounded-2xl bg-card p-4 shadow-soft">
+            <div
+              key={sp.slug}
+              className="flex items-center justify-between rounded-2xl bg-card p-4 shadow-soft"
+            >
               <div>
                 <p className="font-bold">{sp.label}</p>
                 <p className="text-xs text-muted-foreground">{sp.hint}</p>
@@ -98,7 +104,8 @@ function AdminSectionsPage() {
           ))}
         </div>
         <p className="mt-3 rounded-2xl bg-muted p-4 text-xs text-muted-foreground">
-          يتم ربط المحل بتخصصه تلقائياً من اسمه وكلماته المفتاحية، وتقدر تضيف تخصصات جديدة بسهولة لاحقاً.
+          يتم ربط المحل بتخصصه تلقائياً من اسمه وكلماته المفتاحية، وتقدر تضيف تخصصات جديدة بسهولة
+          لاحقاً.
         </p>
       </section>
     </PageShell>

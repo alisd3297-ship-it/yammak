@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { CreditCard, Wallet } from "lucide-react";
 import { toast } from "sonner";
-import { BackButton, BottomNav, PageShell, StatusDot  } from "@/components/app-shell";
+import { BackButton, BottomNav, PageShell, StatusDot } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useFeature } from "@/lib/features";
@@ -68,7 +68,6 @@ function PaymentsPage() {
       setBusy(false);
     }
   };
-
 
   return (
     <PageShell>

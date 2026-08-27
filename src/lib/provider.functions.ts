@@ -11,7 +11,8 @@ function friendly(message: string): string {
   if (message.includes("missing_name")) return "اكتب اسم النشاط";
   if (message.includes("missing_category")) return "اختر تصنيف المهنة";
   if (message.includes("provider_not_found")) return "الطلب غير موجود";
-  if (message.includes("forbidden") || message.includes("unauthorized")) return "غير مصرح بهذا الإجراء";
+  if (message.includes("forbidden") || message.includes("unauthorized"))
+    return "غير مصرح بهذا الإجراء";
   return "تعذر تنفيذ العملية، حاول مرة ثانية";
 }
 
@@ -50,7 +51,9 @@ export const applyAsProvider = createServerFn({ method: "POST" })
 /** تغيير حالة اعتماد المزوّد — طاقم الإدارة فقط (التحقق داخل قاعدة البيانات). */
 export const setProviderStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { providerId: string; status: ProviderStatus; reason?: string | null }) => data)
+  .inputValidator(
+    (data: { providerId: string; status: ProviderStatus; reason?: string | null }) => data,
+  )
   .handler(async ({ data, context }) => {
     const { data: provider, error } = await context.supabase.rpc("set_provider_status", {
       _provider_id: data.providerId,

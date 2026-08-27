@@ -30,7 +30,6 @@ export const VEHICLE_RANK: Record<VehicleType, number> = {
   small_truck: 4,
 };
 
-
 export function vehicleLabel(v: string | null | undefined): string | null {
   if (!v) return null;
   return VEHICLE_LABELS[v as VehicleType] ?? null;

@@ -5,16 +5,34 @@ import { ArrowRight, ImagePlus, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { BackButton, PageShell  } from "@/components/app-shell";
+import { BackButton, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useAccount } from "@/lib/auth";
 import { createAd } from "@/lib/ads.functions";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AD_CURRENCIES, AD_IMAGES_MAX, IRAQ_GOVERNORATES, adImageUrl, type AdCategory, type AdCurrency } from "@/lib/ads";
-import { OPERATING_ADDRESS_PREFIX, OPERATING_LOCATION, OPERATING_LOCATION_LABEL, useOperatingCity } from "@/lib/location";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  AD_CURRENCIES,
+  AD_IMAGES_MAX,
+  IRAQ_GOVERNORATES,
+  adImageUrl,
+  type AdCategory,
+  type AdCurrency,
+} from "@/lib/ads";
+import {
+  OPERATING_ADDRESS_PREFIX,
+  OPERATING_LOCATION,
+  OPERATING_LOCATION_LABEL,
+  useOperatingCity,
+} from "@/lib/location";
 
 import { randomId } from "@/lib/utils";
 
@@ -22,9 +40,16 @@ export const Route = createFileRoute("/ads/new")({
   head: () => ({
     meta: [
       { title: "انشر إعلان جديد | لبابك" },
-      { name: "description", content: "انشر إعلانك في لبابك: عنوان، وصف، فئة، صور، سعر، رقم اتصال وعنوان — بعد مراجعة الإدارة." },
+      {
+        name: "description",
+        content:
+          "انشر إعلانك في لبابك: عنوان، وصف، فئة، صور، سعر، رقم اتصال وعنوان — بعد مراجعة الإدارة.",
+      },
       { property: "og:title", content: "انشر إعلان جديد | لبابك" },
-      { property: "og:description", content: "أضف إعلانك في لبابك ووصل لآلاف المستخدمين بعد موافقة الإدارة." },
+      {
+        property: "og:description",
+        content: "أضف إعلانك في لبابك ووصل لآلاف المستخدمين بعد موافقة الإدارة.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -80,7 +105,9 @@ function NewAdPage() {
       }
       const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
       const path = `${account.userId}/${randomId()}.${ext}`;
-      const { error } = await supabase.storage.from("ad-images").upload(path, file, { contentType: file.type });
+      const { error } = await supabase.storage
+        .from("ad-images")
+        .upload(path, file, { contentType: file.type });
       if (error) {
         toast.error("تعذر رفع الصورة");
       } else {
@@ -159,18 +186,37 @@ function NewAdPage() {
 
         <div className="space-y-1.5">
           <Label htmlFor="ad-title">عنوان الإعلان</Label>
-          <Input id="ad-title" value={title} onChange={(e) => setTitle(e.target.value)} required maxLength={120} />
+          <Input
+            id="ad-title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            maxLength={120}
+          />
         </div>
 
         <div className="space-y-1.5">
           <Label htmlFor="ad-body">وصف الإعلان</Label>
-          <Textarea id="ad-body" value={body} onChange={(e) => setBody(e.target.value)} required rows={5} maxLength={2000} />
+          <Textarea
+            id="ad-body"
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            required
+            rows={5}
+            maxLength={2000}
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <Label htmlFor="ad-price">السعر</Label>
-            <Input id="ad-price" inputMode="numeric" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="اختياري" />
+            <Input
+              id="ad-price"
+              inputMode="numeric"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="اختياري"
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="ad-currency">العملة</Label>
@@ -191,7 +237,13 @@ function NewAdPage() {
 
         <div className="space-y-1.5">
           <Label htmlFor="ad-phone">رقم الاتصال</Label>
-          <Input id="ad-phone" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+          <Input
+            id="ad-phone"
+            inputMode="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+          />
         </div>
 
         <div className="space-y-1.5">
@@ -238,7 +290,11 @@ function NewAdPage() {
           <div className="flex flex-wrap gap-2">
             {images.map((path) => (
               <div key={path} className="relative size-20 overflow-hidden rounded-xl">
-                <img src={previews[path] ?? adImageUrl(path)} alt="" className="size-full object-cover" />
+                <img
+                  src={previews[path] ?? adImageUrl(path)}
+                  alt=""
+                  className="size-full object-cover"
+                />
                 <button
                   type="button"
                   aria-label="حذف الصورة"
@@ -251,15 +307,29 @@ function NewAdPage() {
             ))}
             {images.length < AD_IMAGES_MAX ? (
               <label className="flex size-20 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl bg-card text-xs shadow-soft">
-                {uploading ? <Loader2 className="size-5 animate-spin" /> : <ImagePlus className="size-5" />}
+                {uploading ? (
+                  <Loader2 className="size-5 animate-spin" />
+                ) : (
+                  <ImagePlus className="size-5" />
+                )}
                 <span>إضافة</span>
-                <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => void onPick(e.target.files)} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => void onPick(e.target.files)}
+                />
               </label>
             ) : null}
           </div>
         </div>
 
-        <Button type="submit" disabled={saving || uploading || !categoryId || !governorate} className="h-12 w-full text-base font-bold">
+        <Button
+          type="submit"
+          disabled={saving || uploading || !categoryId || !governorate}
+          className="h-12 w-full text-base font-bold"
+        >
           {saving ? <Loader2 className="size-5 animate-spin" /> : null} إرسال للمراجعة
         </Button>
         <p className="text-center text-xs text-muted-foreground">

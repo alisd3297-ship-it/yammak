@@ -4,7 +4,12 @@ import { BackButton } from "@/components/app-shell";
 import { OfferCard } from "@/components/driver/offer-card";
 import { TaskCard } from "@/components/driver/task-card";
 import { TaxiSections } from "@/components/driver/taxi-sections";
-import { useDriverActions, useDriverOffers, useDriverTasks, useWorkerProfile } from "@/lib/driver-data";
+import {
+  useDriverActions,
+  useDriverOffers,
+  useDriverTasks,
+  useWorkerProfile,
+} from "@/lib/driver-data";
 import { requireWorker } from "@/lib/route-guards";
 
 export const Route = createFileRoute("/driver-tasks")({
@@ -13,7 +18,10 @@ export const Route = createFileRoute("/driver-tasks")({
   head: () => ({
     meta: [
       { title: "طلبات المندوب | لبابك" },
-      { name: "description", content: "الطلبات الجديدة المتاحة والمهام قيد التنفيذ للمندوب في لبابك." },
+      {
+        name: "description",
+        content: "الطلبات الجديدة المتاحة والمهام قيد التنفيذ للمندوب في لبابك.",
+      },
       { property: "og:title", content: "طلبات المندوب | لبابك" },
       { property: "og:description", content: "قبول الطلبات الجديدة ومتابعة المهام الحالية." },
       { property: "og:type", content: "website" },

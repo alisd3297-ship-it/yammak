@@ -23,7 +23,6 @@ import { cn } from "@/lib/utils";
 import { useAccount, homeRouteForAccount, isWorkerOnlyAccount } from "@/lib/auth";
 import { useSignOut } from "@/lib/sign-out";
 
-
 export function BrandHeader({ subtitle }: { subtitle?: string }) {
   return (
     <header className="brand-gradient rounded-b-3xl px-5 pb-6 pt-7 text-primary-foreground shadow-card">
@@ -37,12 +36,13 @@ export function BrandHeader({ subtitle }: { subtitle?: string }) {
           <NotificationsButton />
         </div>
         <h1 className="text-3xl font-black leading-none tracking-tight">لبابك</h1>
-        <p className="mt-1 max-w-[62%] text-sm/6 opacity-90">{subtitle ?? "خدماتك وطلباتك لبابك"}</p>
+        <p className="mt-1 max-w-[62%] text-sm/6 opacity-90">
+          {subtitle ?? "خدماتك وطلباتك لبابك"}
+        </p>
       </div>
     </header>
   );
 }
-
 
 function SignOutButton() {
   const { data: account } = useAccount();
@@ -65,9 +65,7 @@ function AccountButton() {
   const navigate = useNavigate();
   return (
     <button
-      onClick={() =>
-        navigate({ to: account?.userId ? homeRouteForAccount(account) : "/auth" })
-      }
+      onClick={() => navigate({ to: account?.userId ? homeRouteForAccount(account) : "/auth" })}
       className="flex size-11 items-center justify-center rounded-2xl bg-primary-foreground/15 backdrop-blur transition hover:bg-primary-foreground/25"
       aria-label="الحساب"
     >
@@ -75,7 +73,6 @@ function AccountButton() {
     </button>
   );
 }
-
 
 function NotificationsButton() {
   const { data: account } = useAccount();
@@ -154,7 +151,13 @@ export function PageShell({ children }: { children: ReactNode }) {
  * زر رجوع موحّد للصفحات الداخلية: يستخدم سجل التنقل عندما يكون متاحاً،
  * وإلا ينتقل إلى صفحة أب واضحة حتى لا يخرج المستخدم من التطبيق بالخطأ.
  */
-export function BackButton({ fallback = "/", label = "رجوع" }: { fallback?: string; label?: string }) {
+export function BackButton({
+  fallback = "/",
+  label = "رجوع",
+}: {
+  fallback?: string;
+  label?: string;
+}) {
   const router = useRouter();
   const canGoBack = useCanGoBack();
   return (
@@ -191,8 +194,6 @@ export function BottomNav() {
         { to: "/checkout", label: "السلة", icon: ShoppingCart, badge: count },
         { to: "/account", label: "حسابي", icon: User },
       ] as const);
-
-
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-[34rem] border-t border-border bg-card/95 backdrop-blur">
@@ -239,8 +240,8 @@ export function StatusDot({ tone }: { tone: "success" | "danger" | "muted" | "wa
 export function AdminEntry() {
   const { data: account } = useAccount();
   const check = useServerFn(superAdminExists);
-  const isAdmin = !!account?.roles.some((r) =>
-    r === "super_admin" || r === "admin" || r === "supervisor",
+  const isAdmin = !!account?.roles.some(
+    (r) => r === "super_admin" || r === "admin" || r === "supervisor",
   );
   const { data: status } = useQuery({
     queryKey: ["super-admin-exists"],

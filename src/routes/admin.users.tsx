@@ -19,7 +19,8 @@ export const Route = createFileRoute("/admin/users")({
       { title: "إدارة المستخدمين والأدوار | لبابك" },
       {
         name: "description",
-        content: "عرض المستخدمين وأدوارهم ومنح أو سحب الصلاحيات وحظر الحسابات وفق صلاحيات إدارية صارمة.",
+        content:
+          "عرض المستخدمين وأدوارهم ومنح أو سحب الصلاحيات وحظر الحسابات وفق صلاحيات إدارية صارمة.",
       },
       { property: "og:title", content: "إدارة المستخدمين والأدوار | لبابك" },
       { property: "og:description", content: "إدارة صلاحيات مستخدمي لبابك." },
@@ -110,7 +111,8 @@ function AdminUsersPage() {
               )}
             </div>
             <p className="text-xs text-muted-foreground">
-              {u.phone || "بدون رقم"} · انضم {new Date(u.created_at).toLocaleDateString("ar-IQ-u-nu-latn")}
+              {u.phone || "بدون رقم"} · انضم{" "}
+              {new Date(u.created_at).toLocaleDateString("ar-IQ-u-nu-latn")}
             </p>
 
             <div className="mt-3 flex flex-wrap gap-2">

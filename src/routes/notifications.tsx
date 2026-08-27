@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { BellOff } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { BackButton, PageShell  } from "@/components/app-shell";
+import { BackButton, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { useAccount } from "@/lib/auth";
 import { requireSignedIn } from "@/lib/route-guards";
@@ -16,7 +16,10 @@ export const Route = createFileRoute("/notifications")({
   head: () => ({
     meta: [
       { title: "الإشعارات | لبابك" },
-      { name: "description", content: "تابع إشعارات طلباتك ورحلاتك وعروض التوصيل داخل تطبيق لبابك." },
+      {
+        name: "description",
+        content: "تابع إشعارات طلباتك ورحلاتك وعروض التوصيل داخل تطبيق لبابك.",
+      },
       { property: "og:title", content: "الإشعارات | لبابك" },
       { property: "og:description", content: "إشعارات الطلبات والرحلات والعروض." },
       { property: "og:type", content: "website" },
@@ -64,7 +67,6 @@ function NotificationsPage() {
       void supabase.removeChannel(channel);
     };
   }, [userId, qc, refetch]);
-
 
   const markAllRead = async () => {
     if (!userId) return;

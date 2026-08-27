@@ -35,7 +35,9 @@ async function loadAccount(): Promise<AccountContext> {
     supabase.from("profiles").select("id, full_name, phone").eq("id", userId).maybeSingle(),
     supabase
       .from("worker_profiles")
-      .select("user_id, worker_kind, requested_kind, is_approved, is_available, application_status, rejection_reason")
+      .select(
+        "user_id, worker_kind, requested_kind, is_approved, is_available, application_status, rejection_reason",
+      )
       .eq("user_id", userId)
       .maybeSingle(),
     supabase
@@ -129,7 +131,6 @@ export function useRoleHomeRedirect() {
     sessionStorage.setItem("yammak:role-routed", account.userId);
     navigate({ to: target, replace: true });
   }, [account, navigate]);
-
 }
 
 export const ROLE_LABELS: Record<AppRole, string> = {

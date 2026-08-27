@@ -23,8 +23,9 @@ export function isNativeApp(): boolean {
 
 function platformName(): string {
   const p =
-    (window as unknown as { Capacitor?: { getPlatform?: () => string } }).Capacitor?.getPlatform?.() ??
-    "android";
+    (
+      window as unknown as { Capacitor?: { getPlatform?: () => string } }
+    ).Capacitor?.getPlatform?.() ?? "android";
   return ["android", "ios", "web"].includes(p) ? p : "android";
 }
 
@@ -42,7 +43,7 @@ async function vibrateOrder() {
 
 /** إنشاء قنوات أندرويد قبل أي إرسال (الـ payload يشير إلى نفس المعرفات). */
 async function ensureChannels(
-  PushNotifications: typeof import("@capacitor/push-notifications")["PushNotifications"],
+  PushNotifications: (typeof import("@capacitor/push-notifications"))["PushNotifications"],
 ) {
   const channels = [
     {

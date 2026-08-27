@@ -199,7 +199,9 @@ export async function processPendingRefunds(paymentIds?: string[]): Promise<{
 
   let query = supabaseAdmin
     .from("payments")
-    .select("id, amount, currency, provider, provider_intent_id, refunded_amount, refund_status, refund_requested_amount")
+    .select(
+      "id, amount, currency, provider, provider_intent_id, refunded_amount, refund_status, refund_requested_amount",
+    )
     .eq("refund_status", "pending")
     .limit(25);
   if (paymentIds?.length) query = query.in("id", paymentIds);
@@ -224,7 +226,10 @@ export async function processPendingRefunds(paymentIds?: string[]): Promise<{
   for (const row of list) {
     out.processed += 1;
     const remaining = Number(row.amount) - Number(row.refunded_amount ?? 0);
-    const amount = Math.min(Number(row.refund_requested_amount ?? remaining) || remaining, remaining);
+    const amount = Math.min(
+      Number(row.refund_requested_amount ?? remaining) || remaining,
+      remaining,
+    );
 
     if (!row.provider_intent_id || amount <= 0) {
       await supabaseAdmin.rpc("settle_payment_refund", {

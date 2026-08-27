@@ -52,7 +52,6 @@ function writeCache<T>(key: QueryKey, data: T) {
   }
 }
 
-
 export function useOnline() {
   const [online, setOnline] = useState(true);
   useEffect(() => {
@@ -98,4 +97,3 @@ export function useCachedQuery<T>(key: QueryKey, fetcher: () => Promise<T>) {
   const isStaleCache = !!cached && Date.now() - cached.at > CACHE_TTL_MS;
   return { ...query, isStaleCache };
 }
-

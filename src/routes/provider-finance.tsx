@@ -3,12 +3,17 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { PieChart } from "lucide-react";
-import { BackButton, PageShell, StatusDot  } from "@/components/app-shell";
+import { BackButton, PageShell, StatusDot } from "@/components/app-shell";
 import { requireProvider } from "@/lib/route-guards";
 import { useAccount } from "@/lib/auth";
 import { getProviderFinance, listMySettlements } from "@/lib/finance.functions";
 import { formatIQD } from "@/lib/payments";
-import { SETTLEMENT_STATUS_LABELS, endOfToday, settlementTone, startOfDaysAgo } from "@/lib/finance";
+import {
+  SETTLEMENT_STATUS_LABELS,
+  endOfToday,
+  settlementTone,
+  startOfDaysAgo,
+} from "@/lib/finance";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/provider-finance")({

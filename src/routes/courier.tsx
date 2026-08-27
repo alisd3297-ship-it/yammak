@@ -5,11 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { LocateFixed, MapPin, PackageCheck } from "lucide-react";
-import { BackButton, BottomNav, PageShell  } from "@/components/app-shell";
+import { BackButton, BottomNav, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useCustomerAreaGuard, useAccount  } from "@/lib/auth";
+import { useCustomerAreaGuard, useAccount } from "@/lib/auth";
 import { formatIQD } from "@/lib/orders";
 import { createCourierOrder, quoteCourierFee } from "@/lib/courier.functions";
 
@@ -20,7 +20,8 @@ export const Route = createFileRoute("/courier")({
       { title: "توصيل سريع | لبابك" },
       {
         name: "description",
-        content: "توصيل سريع لإرسال أو استلام أغراضك من أي نقطة إلى أخرى داخل مدينتك مع تسعير واضح.",
+        content:
+          "توصيل سريع لإرسال أو استلام أغراضك من أي نقطة إلى أخرى داخل مدينتك مع تسعير واضح.",
       },
       { property: "og:title", content: "توصيل سريع | لبابك" },
       { property: "og:description", content: "إرسال واستلام من نقطة لنقطة عبر مندوبي لبابك." },
@@ -137,7 +138,11 @@ function CourierPage() {
           <h2 className="mb-3 flex items-center gap-2 font-bold">
             <PackageCheck className="size-4 text-primary" /> نقطة التسليم
           </h2>
-          <Button variant="secondary" className="mb-3 h-11 w-full" onClick={() => locate("dropoff")}>
+          <Button
+            variant="secondary"
+            className="mb-3 h-11 w-full"
+            onClick={() => locate("dropoff")}
+          >
             <LocateFixed className="size-4" /> استخدم موقعي الحالي
           </Button>
           {dropoff && (

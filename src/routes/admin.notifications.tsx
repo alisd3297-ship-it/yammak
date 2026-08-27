@@ -94,7 +94,9 @@ function AdminNotificationsPage() {
               onClick={() => setAudience(a.key)}
               className={cn(
                 "rounded-full px-4 py-2 text-xs font-semibold",
-                audience === a.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+                audience === a.key
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground",
               )}
             >
               {a.label}
@@ -130,7 +132,9 @@ function AdminNotificationsPage() {
             </article>
           ))}
           {!recent?.length && (
-            <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">ماكو إشعارات بعد.</p>
+            <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+              ماكو إشعارات بعد.
+            </p>
           )}
         </div>
       </section>

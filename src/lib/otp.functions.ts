@@ -139,7 +139,8 @@ export const verifyPhoneOtp = createServerFn({ method: "POST" })
     };
     if (!outcome.verified) {
       // فشل التحقق يُحسب فعلياً في قاعدة البيانات (العدّاد محفوظ) ثم نرجع رسالة واضحة
-      if (outcome.reason === "otp_expired") throw new Error("انتهت صلاحية الرمز، اطلب رمزاً جديداً");
+      if (outcome.reason === "otp_expired")
+        throw new Error("انتهت صلاحية الرمز، اطلب رمزاً جديداً");
       if (outcome.reason === "otp_attempts_exceeded")
         throw new Error("تجاوزت عدد المحاولات، اطلب رمزاً جديداً");
       if (outcome.reason === "otp_not_requested") throw new Error("otp_not_requested");
@@ -148,4 +149,3 @@ export const verifyPhoneOtp = createServerFn({ method: "POST" })
 
     return { verified: true, phone: outcome.phone };
   });
-

@@ -18,7 +18,6 @@ export const OPERATING_LOCATION_COORDS = { lat: 32.6156, lng: 44.0537 } as const
 /** نص الموقع الحالي المعروض للمستخدم (العنوان يبقى حقلاً منفصلاً). */
 export const OPERATING_LOCATION_LABEL = `${OPERATING_LOCATION.governorate} — ${OPERATING_LOCATION.district}`;
 
-
 /** بادئة العنوان المقترحة عند اختيار «الموقع الحالي». */
 export const OPERATING_ADDRESS_PREFIX = `${OPERATING_LOCATION.district}، `;
 
@@ -40,7 +39,12 @@ export function useOperatingCity() {
         .eq("city_id", city.id)
         .eq("name", OPERATING_LOCATION.district)
         .maybeSingle();
-      return { cityId: city.id, cityName: city.name, areaId: area?.id ?? null, areaName: area?.name ?? null };
+      return {
+        cityId: city.id,
+        cityName: city.name,
+        areaId: area?.id ?? null,
+        areaName: area?.name ?? null,
+      };
     },
   });
 }

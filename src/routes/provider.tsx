@@ -35,7 +35,10 @@ export const Route = createFileRoute("/provider")({
   head: () => ({
     meta: [
       { title: "لوحة مقدم الخدمة | لبابك" },
-      { name: "description", content: "استقبل الطلبات، جهّزها، وأرسلها للمندوب من لوحة تحكم متجرك في لبابك." },
+      {
+        name: "description",
+        content: "استقبل الطلبات، جهّزها، وأرسلها للمندوب من لوحة تحكم متجرك في لبابك.",
+      },
       { property: "og:title", content: "لوحة مقدم الخدمة | لبابك" },
       { property: "og:description", content: "إدارة الطلبات وحالة المتجر." },
     ],
@@ -104,7 +107,10 @@ function ProviderDashboard() {
     setSavingOpen(true);
     const key = ["my-provider", account?.userId] as const;
     qc.setQueryData(key, (prev: typeof provider) => (prev ? { ...prev, is_open: open } : prev));
-    const { error } = await supabase.from("providers").update({ is_open: open }).eq("id", provider.id);
+    const { error } = await supabase
+      .from("providers")
+      .update({ is_open: open })
+      .eq("id", provider.id);
     setSavingOpen(false);
     if (error) {
       qc.setQueryData(key, (prev: typeof provider) => (prev ? { ...prev, is_open: !open } : prev));
@@ -160,7 +166,9 @@ function ProviderDashboard() {
       <header className="brand-gradient rounded-b-3xl px-5 pb-6 pt-7 text-primary-foreground shadow-card">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-black leading-tight">{provider?.name ?? "لوحة مقدم الخدمة"}</h1>
+            <h1 className="text-2xl font-black leading-tight">
+              {provider?.name ?? "لوحة مقدم الخدمة"}
+            </h1>
             <p className="mt-1 text-xs opacity-90">خدماتك وطلباتك لبابك</p>
           </div>
           <div className="flex items-center gap-2">
@@ -208,7 +216,9 @@ function ProviderDashboard() {
                       : "المتجر مغلق"}
                 </span>
                 <span className="block text-xs opacity-80">
-                  {provider.is_open ? "تستلم طلبات جديدة من الزبائن" : "الزبون يشاهد متجرك كغير متاح"}
+                  {provider.is_open
+                    ? "تستلم طلبات جديدة من الزبائن"
+                    : "الزبون يشاهد متجرك كغير متاح"}
                 </span>
               </span>
             </span>
@@ -216,7 +226,9 @@ function ProviderDashboard() {
               aria-hidden
               className={cn(
                 "flex h-8 w-14 items-center rounded-full p-1 transition",
-                provider.is_open ? "justify-end bg-primary" : "justify-start bg-primary-foreground/40",
+                provider.is_open
+                  ? "justify-end bg-primary"
+                  : "justify-start bg-primary-foreground/40",
               )}
             >
               <span className="size-6 rounded-full bg-primary-foreground" />
@@ -250,7 +262,9 @@ function ProviderDashboard() {
               onClick={() => setTab(t.key)}
               className={cn(
                 "flex-1 rounded-full px-4 py-2 text-xs font-semibold transition",
-                tab === t.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+                tab === t.key
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground",
               )}
             >
               {t.label}
@@ -286,7 +300,12 @@ function ProviderDashboard() {
         </div>
       )}
 
-      <div className={cn("space-y-3 px-4 py-5", provider && (isProfession || tab !== "orders") && "hidden")}>
+      <div
+        className={cn(
+          "space-y-3 px-4 py-5",
+          provider && (isProfession || tab !== "orders") && "hidden",
+        )}
+      >
         {!provider && (
           <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
             ما عندك نشاط مرتبط بحسابك.{" "}
@@ -296,7 +315,9 @@ function ProviderDashboard() {
           </p>
         )}
         {provider?.status !== "approved" && provider && (
-          <p className="rounded-2xl bg-warning/15 p-4 text-sm">نشاطك قيد المراجعة من الإدارة، ما راح تستلم طلبات قبل الاعتماد.</p>
+          <p className="rounded-2xl bg-warning/15 p-4 text-sm">
+            نشاطك قيد المراجعة من الإدارة، ما راح تستلم طلبات قبل الاعتماد.
+          </p>
         )}
 
         {(orders ?? []).map((o) => {
@@ -348,7 +369,9 @@ function ProviderDashboard() {
           );
         })}
         {provider && !orders?.length && (
-          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">ماكو طلبات حالياً.</p>
+          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+            ماكو طلبات حالياً.
+          </p>
         )}
       </div>
     </PageShell>

@@ -158,7 +158,11 @@ export function fireAlert(opts: {
     vibrate(kind);
   }
   try {
-    if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
+    if (
+      typeof window !== "undefined" &&
+      "Notification" in window &&
+      Notification.permission === "granted"
+    ) {
       const n = new Notification(title, {
         body: body || title,
         icon: "/icon-192.png",
@@ -204,7 +208,12 @@ export function useAlertNotifications(
       .channel(`alerts-${userId}`)
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${userId}`,
+        },
         (payload) => {
           const row = payload.new as {
             id: string;

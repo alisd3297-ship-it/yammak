@@ -32,7 +32,11 @@ export async function runTripDispatch(tripId: string): Promise<TripDispatchResul
   const { data: settings } = await supabaseAdmin
     .from("app_settings")
     .select("key, value")
-    .in("key", ["taxi_offer_timeout_seconds", "driver_location_max_age_minutes", "max_offer_radius_km"]);
+    .in("key", [
+      "taxi_offer_timeout_seconds",
+      "driver_location_max_age_minutes",
+      "max_offer_radius_km",
+    ]);
   const setting = (key: string, fallback: number) =>
     Number(settings?.find((s) => s.key === key)?.value ?? fallback);
   const timeout = Math.min(Math.max(setting("taxi_offer_timeout_seconds", 90), 45), 300);
@@ -104,7 +108,11 @@ export async function runTripDispatch(tripId: string): Promise<TripDispatchResul
     .sort((a, b) => a.km - b.km);
 
   if (!candidates.length)
-    return { assignedTo: null, status: "searching_driver", message: "ماكو سائق متاح حالياً، نكمل البحث" };
+    return {
+      assignedTo: null,
+      status: "searching_driver",
+      message: "ماكو سائق متاح حالياً، نكمل البحث",
+    };
 
   // إرسال العرض ذرياً داخل قاعدة البيانات لمنع عرضين على نفس الرحلة أو نفس السائق
   let chosen: { driverId: string; km: number } | null = null;
@@ -121,7 +129,11 @@ export async function runTripDispatch(tripId: string): Promise<TripDispatchResul
     }
   }
   if (!chosen)
-    return { assignedTo: null, status: "searching_driver", message: "ماكو سائق متاح حالياً، نكمل البحث" };
+    return {
+      assignedTo: null,
+      status: "searching_driver",
+      message: "ماكو سائق متاح حالياً، نكمل البحث",
+    };
   await supabaseAdmin.from("notifications").insert({
     user_id: chosen.driverId,
     title: "طلب رحلة جديد",
