@@ -137,11 +137,11 @@ function AdsPage() {
             </p>
           ) : (
             filtered.map((ad) => (
-              <Link
+              <button
                 key={ad.id}
-                to="/ads/$id"
-                params={{ id: ad.id }}
-                className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft transition active:scale-[0.99]"
+                type="button"
+                onClick={() => setSelectedAd(ad)}
+                className="flex w-full items-center gap-3 rounded-2xl bg-card p-3 text-start shadow-soft transition active:scale-[0.99]"
               >
                 <AdImage path={ad.images[0]} alt={ad.title} className="size-16 shrink-0 rounded-xl object-cover" />
                 <div className="min-w-0 flex-1">
@@ -152,7 +152,7 @@ function AdsPage() {
                   </p>
                   <p className="mt-1 text-sm font-bold text-primary">{formatAdPrice(ad.price, ad.currency)}</p>
                 </div>
-              </Link>
+              </button>
             ))
           )}
         </div>

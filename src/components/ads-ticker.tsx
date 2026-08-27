@@ -188,6 +188,7 @@ export function AdsTickerBoard({
 }) {
   const { isVisible } = useAdPreferences();
   const visibleAds = ads.filter((ad) => isVisible(ad.category_id));
+  const [selected, setSelected] = useState<AdRow | null>(null);
 
   return (
     <section
@@ -195,13 +196,21 @@ export function AdsTickerBoard({
       aria-label="شريط الإعلانات"
     >
       {visibleAds.length > 0 ? (
-        <AdsTicker ads={visibleAds} categories={categories} />
+        <AdsTicker ads={visibleAds} categories={categories} onSelect={setSelected} />
       ) : (
         <p className="min-w-0 flex-1 truncate text-[11px] text-muted-foreground">
           ما توجد إعلانات للفئات المختارة.
         </p>
       )}
       <AdsPrefsSheet categories={categories} />
+      <AdDetailsDialog
+        ad={selected}
+        categories={categories}
+        open={selected !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelected(null);
+        }}
+      />
     </section>
   );
 }
