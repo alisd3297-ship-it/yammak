@@ -2,10 +2,16 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Bell, ClipboardList, LogOut, MapPin, Megaphone, Plus, Trash2, Wallet } from "lucide-react";
+import { Bell, ClipboardList, LogOut, MapPin, Megaphone, Plus, Sparkles, Trash2, Wallet } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAccount } from "@/lib/auth";
 import { useSignOut } from "@/lib/sign-out";
+import {
+  SERVICE_PREF_OPTIONS,
+  useSaveServicePreferences,
+  useServicePreferences,
+  type ServicePrefKey,
+} from "@/lib/service-preferences";
 import { BackButton, BottomNav, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,6 +52,14 @@ function AccountPage() {
   const [label, setLabel] = useState("");
   const [addressText, setAddressText] = useState("");
   const [savingAddress, setSavingAddress] = useState(false);
+
+  const { prefs } = useServicePreferences();
+  const savePrefs = useSaveServicePreferences();
+  const [selectedPrefs, setSelectedPrefs] = useState<ServicePrefKey[]>([]);
+  const [savingPrefs, setSavingPrefs] = useState(false);
+  useEffect(() => {
+    setSelectedPrefs(prefs);
+  }, [prefs.join(",")]);
 
   useEffect(() => {
     if (!account?.profile) return;
