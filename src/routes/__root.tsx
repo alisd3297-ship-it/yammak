@@ -16,6 +16,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { useSessionKeeper } from "@/lib/session-keeper";
 import { useAccount } from "@/lib/auth";
 import { useNativePush } from "@/lib/native-push";
+import { installGlobalErrorLogging, logAppError } from "@/lib/error-log";
 
 function NotFoundComponent() {
   return (
@@ -44,6 +45,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    void logAppError(error, { kind: "boundary" });
   }, [error]);
 
   return (
@@ -143,6 +145,9 @@ function RootComponent() {
 
   // الحفاظ على جلسة المصادقة بعد إعادة فتح التطبيق
   useSessionKeeper();
+
+  // تجميع أخطاء الواجهة في لوحة مراقبة الإدارة
+  useEffect(() => installGlobalErrorLogging(), []);
 
   // تسجيل عامل الخدمة لتوفير صفحة بديلة عند انقطاع الاتصال (غلاف Capacitor والويب)
   useEffect(() => {
