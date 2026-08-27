@@ -189,7 +189,6 @@ export function useDriverPresence(isAvailable: boolean) {
       )
       .subscribe();
 
-
     return () => {
       void supabase.removeChannel(channel);
     };
