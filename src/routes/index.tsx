@@ -10,6 +10,7 @@ import { normalizeArabic, fuzzyScore } from "@/lib/search";
 import { AdsTickerBoard } from "@/components/ads-ticker";
 import { useAdsBoard } from "@/routes/ads.index";
 import { useRoleHomeRedirect, useCustomerAreaGuard } from "@/lib/auth";
+import { useOnboardingRedirect } from "@/lib/service-preferences";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -96,6 +97,8 @@ function MainTile({ item }: { item: MainService }) {
 function CustomerHome() {
   useCustomerAreaGuard();
   useRoleHomeRedirect();
+  // زبون جديد لم يختر خدماته بعد: نعرض له شاشة الترحيب أولاً
+  useOnboardingRedirect();
   const [term, setTerm] = useState("");
   const adsBoard = useAdsBoard();
 

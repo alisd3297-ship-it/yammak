@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAccount, homeRouteForAccount } from "@/lib/auth";
+import { useServicePreferences } from "@/lib/service-preferences";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,6 +32,7 @@ function AuthPage() {
   // نوع الحساب عند التسجيل: زبون يتفعل مباشرة، مندوب يمر بطلب اعتماد من الإدارة
   const [accountType, setAccountType] = useState<"customer" | "driver">("customer");
   const [pendingDriverSignup, setPendingDriverSignup] = useState(false);
+  const { needsOnboarding } = useServicePreferences();
 
   useEffect(() => {
     // لا نوجّه إلا بوجود جلسة فعلية (وليس بيانات مخزّنة قديمة بعد الخروج)
@@ -40,9 +42,15 @@ function AuthPage() {
         navigate({ to: "/join/driver", replace: true });
         return;
       }
-      navigate({ to: homeRouteForAccount(account), replace: true });
+      // زبون بلا اختيارات محفوظة: شاشة «شنو تحب تستخدم من لبابك؟» قبل الرئيسية
+      const target = homeRouteForAccount(account);
+      if (target === "/" && needsOnboarding) {
+        navigate({ to: "/welcome", replace: true });
+        return;
+      }
+      navigate({ to: target, replace: true });
     }
-  }, [account, navigate, pendingDriverSignup]);
+  }, [account, navigate, pendingDriverSignup, needsOnboarding]);
 
 
   function authErrorMessage(message: string): string {
