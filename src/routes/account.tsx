@@ -171,6 +171,56 @@ function AccountPage() {
 
       <section className="mx-4 mt-4 space-y-3 rounded-2xl bg-card p-5 shadow-card">
         <h2 className="flex items-center gap-2 font-bold">
+          <Sparkles className="size-4 text-primary" /> خدماتي المفضلة
+        </h2>
+        <p className="text-xs text-muted-foreground">اختر الأقسام التي تحب تستخدمها من لبابك.</p>
+        <div className="grid grid-cols-2 gap-2">
+          {SERVICE_PREF_OPTIONS.map((opt) => {
+            const active = selectedPrefs.includes(opt.key);
+            return (
+              <button
+                key={opt.key}
+                type="button"
+                aria-pressed={active}
+                onClick={() =>
+                  setSelectedPrefs((prev) =>
+                    prev.includes(opt.key) ? prev.filter((k) => k !== opt.key) : [...prev, opt.key],
+                  )
+                }
+                className={`rounded-2xl border p-3 text-right text-sm ${
+                  active ? "border-primary bg-primary/10 font-bold" : "border-border"
+                }`}
+              >
+                <span aria-hidden>{opt.emoji}</span> {opt.label}
+              </button>
+            );
+          })}
+        </div>
+        <Button
+          variant="secondary"
+          className="h-11 w-full"
+          disabled={savingPrefs}
+          onClick={async () => {
+            if (!userId) return;
+            setSavingPrefs(true);
+            try {
+              await savePrefs(userId, selectedPrefs);
+              toast.success("تم حفظ خدماتك المفضلة");
+            } catch {
+              toast.error("تعذر حفظ الاختيارات");
+            } finally {
+              setSavingPrefs(false);
+            }
+          }}
+        >
+          حفظ الخدمات المفضلة
+        </Button>
+      </section>
+
+
+
+      <section className="mx-4 mt-4 space-y-3 rounded-2xl bg-card p-5 shadow-card">
+        <h2 className="flex items-center gap-2 font-bold">
           <MapPin className="size-4 text-primary" /> عناويني المحفوظة
         </h2>
         {(addresses.data ?? []).length === 0 ? (
