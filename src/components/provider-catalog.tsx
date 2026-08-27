@@ -41,13 +41,11 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
 
   async function addCategory() {
     if (!catName.trim()) return;
-    const { error } = await supabase
-      .from("menu_categories")
-      .insert({
-        provider_id: providerId,
-        name: catName.trim(),
-        sort_order: (data?.categories.length ?? 0) + 1,
-      });
+    const { error } = await supabase.from("menu_categories").insert({
+      provider_id: providerId,
+      name: catName.trim(),
+      sort_order: (data?.categories.length ?? 0) + 1,
+    });
     if (error) {
       toast.error("تعذر إضافة القسم");
       return;
