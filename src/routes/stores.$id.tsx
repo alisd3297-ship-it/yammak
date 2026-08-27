@@ -46,6 +46,7 @@ function StorePage() {
           .select("id, name, description, rating, is_open, address_text, kind")
           .eq("id", id)
           .eq("kind", "store")
+          .eq("is_demo", false)
           .maybeSingle(),
         supabase.from("menu_categories").select("id, name, sort_order").eq("provider_id", id).order("sort_order"),
         supabase
