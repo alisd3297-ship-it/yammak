@@ -170,11 +170,12 @@
   background-color: color-mix(in oklab, black 22%, var(--ad-bg));
 }
 .ad-ticker-item {
-  background-color: color-mix(in oklab, white 14%, var(--ad-bg));
+  --ad-fg: oklch(0.99 0 0);
+  background-color: var(--ad-bg, oklch(0.55 0.21 27));
   color: var(--ad-fg);
 }
 .ad-ticker-price {
-  background-color: color-mix(in oklab, black 25%, var(--ad-bg));
+  background-color: color-mix(in oklab, black 25%, var(--ad-bg, oklch(0.55 0.21 27)));
 }
 
 @keyframes ad-ticker-scroll {
