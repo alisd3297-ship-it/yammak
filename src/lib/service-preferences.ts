@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAccount, isStaffAccount, isWorkerOnlyAccount } from "@/lib/auth";
@@ -94,4 +96,20 @@ export function useSaveServicePreferences() {
     if (error) throw error;
     await qc.invalidateQueries({ queryKey: ["service-preferences", userId] });
   };
+}
+
+/**
+ * يحوّل الزبون الجديد إلى شاشة اختيار الخدمات بعد أول تسجيل دخول فقط.
+ * الحسابات ذات الأدوار الخاصة (إدارة/مندوب/تاجر) لا تتأثر.
+ */
+export function useOnboardingRedirect() {
+  const navigate = useNavigate();
+  const { needsOnboarding } = useServicePreferences();
+
+  useEffect(() => {
+    if (!needsOnboarding) return;
+    navigate({ to: "/welcome", replace: true });
+  }, [needsOnboarding, navigate]);
+
+  return needsOnboarding;
 }

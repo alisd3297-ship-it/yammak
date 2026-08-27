@@ -31,6 +31,7 @@ import { Route as SpecialDeliveryRouteImport } from './routes/special-delivery'
 import { Route as TaxiRouteImport } from './routes/taxi'
 import { Route as VerifyPhoneRouteImport } from './routes/verify-phone'
 import { Route as WalletRouteImport } from './routes/wallet'
+import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAdsRouteImport } from './routes/admin.ads'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
@@ -178,6 +179,11 @@ const VerifyPhoneRoute = VerifyPhoneRouteImport.update({
 const WalletRoute = WalletRouteImport.update({
   id: '/wallet',
   path: '/wallet',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -394,6 +400,7 @@ export interface FileRoutesByFullPath {
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
   '/wallet': typeof WalletRoute
+  '/welcome': typeof WelcomeRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/courier': typeof AdminCourierRoute
@@ -456,6 +463,7 @@ export interface FileRoutesByTo {
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
   '/wallet': typeof WalletRoute
+  '/welcome': typeof WelcomeRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/courier': typeof AdminCourierRoute
@@ -519,6 +527,7 @@ export interface FileRoutesById {
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
   '/wallet': typeof WalletRoute
+  '/welcome': typeof WelcomeRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/courier': typeof AdminCourierRoute
@@ -583,6 +592,7 @@ export interface FileRouteTypes {
     | '/taxi'
     | '/verify-phone'
     | '/wallet'
+    | '/welcome'
     | '/admin/ads'
     | '/admin/audit'
     | '/admin/courier'
@@ -645,6 +655,7 @@ export interface FileRouteTypes {
     | '/taxi'
     | '/verify-phone'
     | '/wallet'
+    | '/welcome'
     | '/admin/ads'
     | '/admin/audit'
     | '/admin/courier'
@@ -707,6 +718,7 @@ export interface FileRouteTypes {
     | '/taxi'
     | '/verify-phone'
     | '/wallet'
+    | '/welcome'
     | '/admin/ads'
     | '/admin/audit'
     | '/admin/courier'
@@ -770,6 +782,7 @@ export interface RootRouteChildren {
   TaxiRoute: typeof TaxiRoute
   VerifyPhoneRoute: typeof VerifyPhoneRoute
   WalletRoute: typeof WalletRoute
+  WelcomeRoute: typeof WelcomeRoute
   AdminAdsRoute: typeof AdminAdsRoute
   AdminAuditRoute: typeof AdminAuditRoute
   AdminCourierRoute: typeof AdminCourierRoute
@@ -964,6 +977,13 @@ declare module '@tanstack/react-router' {
       path: '/wallet'
       fullPath: '/wallet'
       preLoaderRoute: typeof WalletRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -1258,6 +1278,7 @@ const rootRouteChildren: RootRouteChildren = {
   TaxiRoute: TaxiRoute,
   VerifyPhoneRoute: VerifyPhoneRoute,
   WalletRoute: WalletRoute,
+  WelcomeRoute: WelcomeRoute,
   AdminAdsRoute: AdminAdsRoute,
   AdminAuditRoute: AdminAuditRoute,
   AdminCourierRoute: AdminCourierRoute,
