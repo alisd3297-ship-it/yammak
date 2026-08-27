@@ -32,3 +32,12 @@ export function paymentTone(status: PaymentStatus): "ok" | "warn" | "bad" {
 export function formatIQD(value: number): string {
   return `${Math.round(value).toLocaleString("en-US")} د.ع`;
 }
+
+/** تنسيق مبلغ حسب عملته الفعلية (الدينار العراقي أو الدولار) بدل افتراض الدينار دائماً. */
+export function formatMoney(value: number, currency?: string | null): string {
+  const code = (currency ?? "IQD").toUpperCase();
+  if (code === "USD") return `$${Number(value).toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+  if (code !== "IQD") return `${Number(value).toLocaleString("en-US", { maximumFractionDigits: 2 })} ${code}`;
+  return formatIQD(value);
+}
+
