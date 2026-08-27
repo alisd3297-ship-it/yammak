@@ -26,7 +26,6 @@ import { Route as ProviderFinanceRouteImport } from './routes/provider-finance'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SetupAdminRouteImport } from './routes/setup-admin'
 import { Route as SetupTestAccountsRouteImport } from './routes/setup-test-accounts'
-import { Route as SetupTestAdminRouteImport } from './routes/setup-test-admin'
 import { Route as SpecialDeliveryRouteImport } from './routes/special-delivery'
 import { Route as TaxiRouteImport } from './routes/taxi'
 import { Route as VerifyPhoneRouteImport } from './routes/verify-phone'
@@ -154,11 +153,6 @@ const SetupAdminRoute = SetupAdminRouteImport.update({
 const SetupTestAccountsRoute = SetupTestAccountsRouteImport.update({
   id: '/setup-test-accounts',
   path: '/setup-test-accounts',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SetupTestAdminRoute = SetupTestAdminRouteImport.update({
-  id: '/setup-test-admin',
-  path: '/setup-test-admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SpecialDeliveryRoute = SpecialDeliveryRouteImport.update({
@@ -395,7 +389,6 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
   '/setup-test-accounts': typeof SetupTestAccountsRoute
-  '/setup-test-admin': typeof SetupTestAdminRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
@@ -458,7 +451,6 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
   '/setup-test-accounts': typeof SetupTestAccountsRoute
-  '/setup-test-admin': typeof SetupTestAdminRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
@@ -522,7 +514,6 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
   '/setup-test-accounts': typeof SetupTestAccountsRoute
-  '/setup-test-admin': typeof SetupTestAdminRoute
   '/special-delivery': typeof SpecialDeliveryRoute
   '/taxi': typeof TaxiRoute
   '/verify-phone': typeof VerifyPhoneRoute
@@ -587,7 +578,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/setup-admin'
     | '/setup-test-accounts'
-    | '/setup-test-admin'
     | '/special-delivery'
     | '/taxi'
     | '/verify-phone'
@@ -650,7 +640,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/setup-admin'
     | '/setup-test-accounts'
-    | '/setup-test-admin'
     | '/special-delivery'
     | '/taxi'
     | '/verify-phone'
@@ -713,7 +702,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/setup-admin'
     | '/setup-test-accounts'
-    | '/setup-test-admin'
     | '/special-delivery'
     | '/taxi'
     | '/verify-phone'
@@ -777,7 +765,6 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SetupAdminRoute: typeof SetupAdminRoute
   SetupTestAccountsRoute: typeof SetupTestAccountsRoute
-  SetupTestAdminRoute: typeof SetupTestAdminRoute
   SpecialDeliveryRoute: typeof SpecialDeliveryRoute
   TaxiRoute: typeof TaxiRoute
   VerifyPhoneRoute: typeof VerifyPhoneRoute
@@ -942,13 +929,6 @@ declare module '@tanstack/react-router' {
       path: '/setup-test-accounts'
       fullPath: '/setup-test-accounts'
       preLoaderRoute: typeof SetupTestAccountsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/setup-test-admin': {
-      id: '/setup-test-admin'
-      path: '/setup-test-admin'
-      fullPath: '/setup-test-admin'
-      preLoaderRoute: typeof SetupTestAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/special-delivery': {
@@ -1273,7 +1253,6 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SetupAdminRoute: SetupAdminRoute,
   SetupTestAccountsRoute: SetupTestAccountsRoute,
-  SetupTestAdminRoute: SetupTestAdminRoute,
   SpecialDeliveryRoute: SpecialDeliveryRoute,
   TaxiRoute: TaxiRoute,
   VerifyPhoneRoute: VerifyPhoneRoute,
