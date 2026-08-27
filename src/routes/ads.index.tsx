@@ -10,6 +10,7 @@ import { useAccount } from "@/lib/auth";
 import { AD_STATUS_LABEL, AD_STATUS_TONE, IRAQ_GOVERNORATES, formatAdPrice, type AdCategory, type AdRow } from "@/lib/ads";
 import { OPERATING_LOCATION } from "@/lib/location";
 import { AdImage } from "@/components/ad-image";
+import { AdDetailsDialog } from "@/components/ad-details-dialog";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/ads/")({
@@ -183,6 +184,15 @@ function AdsPage() {
           </section>
         ) : null}
       </div>
+
+      <AdDetailsDialog
+        ad={selectedAd}
+        categories={categories}
+        open={selectedAd !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedAd(null);
+        }}
+      />
 
       <BottomNav />
     </PageShell>
