@@ -41,16 +41,16 @@ async function vibrateOrder() {
 }
 
 /** إنشاء قنوات أندرويد قبل أي إرسال (الـ payload يشير إلى نفس المعرفات). */
-async function ensureChannels(PushNotifications: {
-  createChannel: (o: Record<string, unknown>) => Promise<unknown>;
-}) {
+async function ensureChannels(
+  PushNotifications: typeof import("@capacitor/push-notifications")["PushNotifications"],
+) {
   const channels = [
     {
       id: ORDER_CHANNEL_ID,
       name: "طلبات لبابك",
       description: "تنبيه فوري عند وصول طلب جديد",
-      importance: 5,
-      visibility: 1,
+      importance: 5 as const,
+      visibility: 1 as const,
       sound: "default",
       vibration: true,
     },
@@ -58,8 +58,8 @@ async function ensureChannels(PushNotifications: {
       id: DEFAULT_CHANNEL_ID,
       name: "إشعارات لبابك",
       description: "إشعارات عامة",
-      importance: 4,
-      visibility: 1,
+      importance: 4 as const,
+      visibility: 1 as const,
       sound: "default",
       vibration: true,
     },
