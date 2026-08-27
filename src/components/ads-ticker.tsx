@@ -1,9 +1,9 @@
-import { Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as Icons from "lucide-react";
 import { Settings2 } from "lucide-react";
 import { adTone, formatAdPrice, type AdCategory, type AdRow } from "@/lib/ads";
 import { AdImage } from "@/components/ad-image";
+import { AdDetailsDialog } from "@/components/ad-details-dialog";
 import { useAdPreferences } from "@/lib/ad-preferences";
 import {
   Sheet,
@@ -28,10 +28,12 @@ function categoryIcon(name: string): Icons.LucideIcon {
 export function AdsTicker({
   ads,
   categories,
+  onSelect,
   className,
 }: {
   ads: AdRow[];
   categories: AdCategory[];
+  onSelect?: (ad: AdRow) => void;
   className?: string;
 }) {
   const [paused, setPaused] = useState(false);
@@ -87,10 +89,10 @@ export function AdsTicker({
           const category = byId.get(ad.category_id);
           const Icon = categoryIcon(category?.icon ?? "Megaphone");
           return (
-            <Link
+            <button
               key={`${ad.id}-${index}`}
-              to="/ads/$id"
-              params={{ id: ad.id }}
+              type="button"
+              onClick={() => onSelect?.(ad)}
               className={cn(
                 "ad-ticker-item flex h-7 items-center gap-1.5 rounded-full px-2",
                 `ad-tone-${adTone(category?.color)}`,
@@ -107,7 +109,7 @@ export function AdsTicker({
               <span className="ad-ticker-price whitespace-nowrap rounded-full px-1.5 text-[10px] font-bold">
                 {formatAdPrice(ad.price, ad.currency)}
               </span>
-            </Link>
+            </button>
           );
         })}
       </div>
@@ -186,6 +188,7 @@ export function AdsTickerBoard({
 }) {
   const { isVisible } = useAdPreferences();
   const visibleAds = ads.filter((ad) => isVisible(ad.category_id));
+  const [selected, setSelected] = useState<AdRow | null>(null);
 
   return (
     <section
@@ -193,13 +196,21 @@ export function AdsTickerBoard({
       aria-label="شريط الإعلانات"
     >
       {visibleAds.length > 0 ? (
-        <AdsTicker ads={visibleAds} categories={categories} />
+        <AdsTicker ads={visibleAds} categories={categories} onSelect={setSelected} />
       ) : (
         <p className="min-w-0 flex-1 truncate text-[11px] text-muted-foreground">
           ما توجد إعلانات للفئات المختارة.
         </p>
       )}
       <AdsPrefsSheet categories={categories} />
+      <AdDetailsDialog
+        ad={selected}
+        categories={categories}
+        open={selected !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelected(null);
+        }}
+      />
     </section>
   );
 }

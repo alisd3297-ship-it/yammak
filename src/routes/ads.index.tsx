@@ -10,6 +10,7 @@ import { useAccount } from "@/lib/auth";
 import { AD_STATUS_LABEL, AD_STATUS_TONE, IRAQ_GOVERNORATES, formatAdPrice, type AdCategory, type AdRow } from "@/lib/ads";
 import { OPERATING_LOCATION } from "@/lib/location";
 import { AdImage } from "@/components/ad-image";
+import { AdDetailsDialog } from "@/components/ad-details-dialog";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/ads/")({
@@ -57,6 +58,7 @@ function AdsPage() {
   const { data } = useAdsBoard();
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [governorate, setGovernorate] = useState<string | null>(OPERATING_LOCATION.governorate);
+  const [selectedAd, setSelectedAd] = useState<AdRow | null>(null);
 
   const mine = useQuery({
     queryKey: ["my-ads", account?.userId],
@@ -137,11 +139,11 @@ function AdsPage() {
             </p>
           ) : (
             filtered.map((ad) => (
-              <Link
+              <button
                 key={ad.id}
-                to="/ads/$id"
-                params={{ id: ad.id }}
-                className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft transition active:scale-[0.99]"
+                type="button"
+                onClick={() => setSelectedAd(ad)}
+                className="flex w-full items-center gap-3 rounded-2xl bg-card p-3 text-start shadow-soft transition active:scale-[0.99]"
               >
                 <AdImage path={ad.images[0]} alt={ad.title} className="size-16 shrink-0 rounded-xl object-cover" />
                 <div className="min-w-0 flex-1">
@@ -152,7 +154,7 @@ function AdsPage() {
                   </p>
                   <p className="mt-1 text-sm font-bold text-primary">{formatAdPrice(ad.price, ad.currency)}</p>
                 </div>
-              </Link>
+              </button>
             ))
           )}
         </div>
@@ -182,6 +184,15 @@ function AdsPage() {
           </section>
         ) : null}
       </div>
+
+      <AdDetailsDialog
+        ad={selectedAd}
+        categories={categories}
+        open={selectedAd !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedAd(null);
+        }}
+      />
 
       <BottomNav />
     </PageShell>
