@@ -24,6 +24,7 @@ import { Route as MapRouteImport } from './routes/map'
 import { Route as NearbyRouteImport } from './routes/nearby'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PaymentsRouteImport } from './routes/payments'
+import { Route as PlusRouteImport } from './routes/plus'
 import { Route as ProviderRouteImport } from './routes/provider'
 import { Route as ProviderFinanceRouteImport } from './routes/provider-finance'
 import { Route as RequestAnythingRouteImport } from './routes/request-anything'
@@ -149,6 +150,11 @@ const NotificationsRoute = NotificationsRouteImport.update({
 const PaymentsRoute = PaymentsRouteImport.update({
   id: '/payments',
   path: '/payments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlusRoute = PlusRouteImport.update({
+  id: '/plus',
+  path: '/plus',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProviderRoute = ProviderRouteImport.update({
@@ -423,6 +429,7 @@ export interface FileRoutesByFullPath {
   '/nearby': typeof NearbyRoute
   '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
+  '/plus': typeof PlusRoute
   '/provider': typeof ProviderRoute
   '/provider-finance': typeof ProviderFinanceRoute
   '/request-anything': typeof RequestAnythingRoute
@@ -491,6 +498,7 @@ export interface FileRoutesByTo {
   '/nearby': typeof NearbyRoute
   '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
+  '/plus': typeof PlusRoute
   '/provider': typeof ProviderRoute
   '/provider-finance': typeof ProviderFinanceRoute
   '/request-anything': typeof RequestAnythingRoute
@@ -560,6 +568,7 @@ export interface FileRoutesById {
   '/nearby': typeof NearbyRoute
   '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
+  '/plus': typeof PlusRoute
   '/provider': typeof ProviderRoute
   '/provider-finance': typeof ProviderFinanceRoute
   '/request-anything': typeof RequestAnythingRoute
@@ -630,6 +639,7 @@ export interface FileRouteTypes {
     | '/nearby'
     | '/notifications'
     | '/payments'
+    | '/plus'
     | '/provider'
     | '/provider-finance'
     | '/request-anything'
@@ -698,6 +708,7 @@ export interface FileRouteTypes {
     | '/nearby'
     | '/notifications'
     | '/payments'
+    | '/plus'
     | '/provider'
     | '/provider-finance'
     | '/request-anything'
@@ -766,6 +777,7 @@ export interface FileRouteTypes {
     | '/nearby'
     | '/notifications'
     | '/payments'
+    | '/plus'
     | '/provider'
     | '/provider-finance'
     | '/request-anything'
@@ -835,6 +847,7 @@ export interface RootRouteChildren {
   NearbyRoute: typeof NearbyRoute
   NotificationsRoute: typeof NotificationsRoute
   PaymentsRoute: typeof PaymentsRoute
+  PlusRoute: typeof PlusRoute
   ProviderRoute: typeof ProviderRoute
   ProviderFinanceRoute: typeof ProviderFinanceRoute
   RequestAnythingRoute: typeof RequestAnythingRoute
@@ -993,6 +1006,13 @@ declare module '@tanstack/react-router' {
       path: '/payments'
       fullPath: '/payments'
       preLoaderRoute: typeof PaymentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plus': {
+      id: '/plus'
+      path: '/plus'
+      fullPath: '/plus'
+      preLoaderRoute: typeof PlusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/provider': {
@@ -1371,6 +1391,7 @@ const rootRouteChildren: RootRouteChildren = {
   NearbyRoute: NearbyRoute,
   NotificationsRoute: NotificationsRoute,
   PaymentsRoute: PaymentsRoute,
+  PlusRoute: PlusRoute,
   ProviderRoute: ProviderRoute,
   ProviderFinanceRoute: ProviderFinanceRoute,
   RequestAnythingRoute: RequestAnythingRoute,
