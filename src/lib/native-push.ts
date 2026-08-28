@@ -141,14 +141,16 @@ export function useNativePush(
         // التطبيق مفتوح: أندرويد لا يعرض الإشعار تلقائياً، فننبّه داخل التطبيق
         const recvHandle = await PushNotifications.addListener("pushNotificationReceived", (n) => {
           const orderId = (n.data?.["orderId"] as string | undefined) || null;
+          const dataKind = (n.data?.["kind"] as string | undefined) || "";
+          const urgent = Boolean(orderId) || dataKind.startsWith("trip");
           fireAlert({
             title: n.title ?? "إشعار جديد",
             body: n.body ?? "",
             tag: orderId,
-            kind: orderId ? "order" : "default",
-            url: optsRef.current?.deepLink?.(orderId) ?? null,
+            kind: urgent ? "order" : "default",
+            url: optsRef.current?.deepLink?.(orderId) ?? (dataKind.startsWith("trip") ? "/driver" : null),
           });
-          playAlertSound(orderId ? "order" : "default");
+          playAlertSound(urgent ? "order" : "default");
           void vibrateOrder();
         });
         removers.push(() => void recvHandle.remove());
