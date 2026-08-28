@@ -12,8 +12,15 @@ import { playAlertSound, fireAlert } from "@/lib/notify-alerts";
  * ملاحظة: التسليم الفعلي للإشعار يتطلب إعداد FCM (Android) و APNs (iOS) خارجياً.
  */
 
-export const ORDER_CHANNEL_ID = "lubabak_orders";
-export const DEFAULT_CHANNEL_ID = "lubabak_default";
+/**
+ * معرّفات القنوات: لاحقة v2 مقصودة — أندرويد يحتفظ بإعدادات أي قناة أُنشئت سابقاً
+ * (حتى لو كانت صامتة)، فلا ينفع تعديلها؛ الحل قناة بمعرّف جديد بصوت وأهمية قصوى.
+ */
+export const ORDER_CHANNEL_ID = "lubabak_orders_v2";
+export const TAXI_CHANNEL_ID = "lubabak_taxi_v2";
+export const DEFAULT_CHANNEL_ID = "lubabak_default_v2";
+/** قنوات قديمة قد تكون صامتة على أجهزة المستخدمين: نحذفها بعد إنشاء البدائل. */
+const LEGACY_CHANNEL_IDS = ["lubabak_orders", "lubabak_default"];
 
 export function isNativeApp(): boolean {
   if (typeof window === "undefined") return false;
