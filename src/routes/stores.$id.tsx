@@ -9,6 +9,7 @@ import { requireCustomerFlow } from "@/lib/route-guards";
 import { BackButton, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { CustomerTabPanel } from "@/components/customer-tab-panel";
+import { ProductImage } from "@/components/product-image";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/lib/cart";
 import { formatIQD } from "@/lib/orders";
