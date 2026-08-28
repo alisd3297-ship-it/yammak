@@ -125,8 +125,11 @@ export const pushReadiness = createServerFn({ method: "GET" })
         bike: summarize(workerRows.filter((w) => w.vehicle_type === "bike")),
       },
       pendingPush: pendingPush ?? 0,
+      // فحص فعلي لمصادقة FCM من الخادم (لا يُظهر أي سر)
+      fcm: await (await import("@/lib/push.server")).fcmSelfCheck(),
     };
   });
+
 
 /** هل لحساب المستخدم الحالي جهاز إشعارات نشط؟ (تشخيص ذاتي للمندوب). */
 export const myPushDevice = createServerFn({ method: "GET" })

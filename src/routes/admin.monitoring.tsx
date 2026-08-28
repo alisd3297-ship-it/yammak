@@ -97,7 +97,14 @@ function PushReadinessPanel() {
             {stats.data.workers.bike.total}
           </li>
           <li>إشعارات بانتظار الإرسال للهاتف: {stats.data.pendingPush}</li>
+          <li>
+            حالة اتصال FCM:{" "}
+            <span className={stats.data.fcm.ok ? "text-emerald-600" : "text-destructive"}>
+              {stats.data.fcm.ok ? "جاهز للإرسال" : `غير جاهز (${stats.data.fcm.step})`}
+            </span>
+          </li>
         </ul>
+
       ) : null}
       <p className="mt-3 text-[11px] text-muted-foreground">
         رمز الجهاز يُسجَّل فقط عند فتح التطبيق المُثبّت على الهاتف (APK) والموافقة على إذن

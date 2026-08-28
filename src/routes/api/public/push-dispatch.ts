@@ -10,6 +10,21 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/api/public/push-dispatch")({
   server: {
     handlers: {
+      // فحص جاهزية FCM (محمي بنفس السر، ولا يعيد أي قيمة سرية)
+      GET: async ({ request }) => {
+        const secret = process.env["PUSH_DISPATCH_SECRET"];
+        if (!secret) {
+          return Response.json({ ok: false, reason: "dispatch_secret_missing" }, { status: 503 });
+        }
+        if ((request.headers.get("authorization") ?? "") !== `Bearer ${secret}`) {
+          return Response.json({ ok: false, reason: "unauthorized" }, { status: 401 });
+        }
+        const { fcmSelfCheck } = await import("@/lib/push.server");
+        return Response.json(await fcmSelfCheck(), {
+          headers: { "cache-control": "no-store" },
+        });
+      },
+
       POST: async ({ request }) => {
         const secret = process.env["PUSH_DISPATCH_SECRET"];
         if (!secret) {
