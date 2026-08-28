@@ -187,10 +187,19 @@ jarsigner -verify -verbose -certs android/app/build/outputs/bundle/release/app-r
 - فتح صفحة الطلب عند الضغط على الإشعار (بالخلفية أو بعد الإغلاق).
 - مرسل `/api/public/push-dispatch` مع محاولات إعادة: لا يُعلَّم الإشعار مُرسلاً إلا بعد نجاح فعلي، وتُعطَّل الرموز غير الصالحة.
 
-ينقص (خارج المشروع — لا يمكن توليده هنا):
-1. أسرار: `FCM_PROJECT_ID`، `FCM_SERVICE_ACCOUNT_JSON`، `PUSH_DISPATCH_SECRET` في Project Settings → Secrets.
-2. جدولة استدعاء `/api/public/push-dispatch` كل دقيقة بترويسة `Authorization: Bearer <PUSH_DISPATCH_SECRET>`.
-3. بناء native: `npx cap add android` / `npx cap add ios` (مجلدا android/ و ios/ غير موجودين حالياً).
-4. أندرويد: `google-services.json` داخل `android/app/`. iOS: `GoogleService-Info.plist` + مفتاح APNs في Firebase + تفعيل Push Notifications capability.
+تم على الخادم:
+1. الأسرار `FCM_PROJECT_ID` (= `lababak-834cc`) و`FCM_SERVICE_ACCOUNT_JSON` و`PUSH_DISPATCH_SECRET` مخزّنة في Cloud Secrets وتُقرأ داخل `src/lib/push.server.ts` فقط (لا تظهر في الواجهة ولا في السجلات).
+2. الإرسال الفوري عند جاهزية طلب مطعم/سوبرماركت: `dispatch.server.ts → pushNotificationNow()`، بالإضافة إلى دورة `runMaintenance` كل دقيقة كشبكة أمان.
+3. فحص جاهزية فعلي: `GET /api/public/push-dispatch` بترويسة `Authorization: Bearer <PUSH_DISPATCH_SECRET>` (أو بطاقة «حالة اتصال FCM» في `/admin/monitoring`) — يتحقق من صلاحية JSON ومطابقة المشروع ونجاح مصادقة Google وقبول FCM لطلب `validate_only` دون إرسال إشعار حقيقي.
 
-حتى تكتمل هذه الخطوات لا يصل إشعار إلى جهاز حقيقي؛ التنبيه داخل التطبيق (صوت/اهتزاز/toast) يعمل بدونها.
+ينقص (يُنفَّذ على جهاز/جهاز بناء خارج المشروع):
+1. `npx cap add android` (مجلد `android/` غير موجود هنا).
+2. تنزيل `google-services.json` من Firebase Console لمشروع **lababak-834cc** لتطبيق أندرويد بحزمة **iq.lubabak.app**، ووضعه في `android/app/google-services.json`، ثم:
+   - في `android/build.gradle`: `classpath 'com.google.gms:google-services:4.4.2'`.
+   - في `android/app/build.gradle`: `apply plugin: 'com.google.gms.google-services'` والتأكد أن `applicationId = "iq.lubabak.app"`.
+   - `npx cap sync android` ثم بناء APK/AAB (راجع قسم التوقيع أعلاه).
+3. iOS (لاحقاً): `GoogleService-Info.plist` + مفتاح APNs في Firebase + تفعيل Push Notifications capability.
+4. اختبار على جهاز أندرويد حقيقي: فتح التطبيق وتسجيل الدخول كمندوب → قبول إذن الإشعارات → يظهر الجهاز في `push_devices` وفي `/admin/monitoring` → إنشاء طلب مطعم وجعله «جاهز» → يصل الإشعار بصوت واهتزاز على قناة `lubabak_orders_v2` حتى والتطبيق مغلق.
+
+قبل تثبيت APK على جهاز حقيقي لا يوجد أي `push_devices` (المتصفح لا يسجّل رمز جهاز)؛ التنبيه داخل التطبيق (صوت/اهتزاز/toast) يعمل بدونها.
+
