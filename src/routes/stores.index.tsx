@@ -11,6 +11,9 @@ import { Input } from "@/components/ui/input";
 import { fuzzyScore } from "@/lib/search";
 import { cn } from "@/lib/utils";
 import { isPharmacyProvider } from "@/lib/verticals";
+import { VerifiedBadge } from "@/components/verified-badge";
+import { formatIQD } from "@/lib/orders";
+import { sortByCheapest, useCheapestPrices } from "@/lib/cheapest";
 
 export const Route = createFileRoute("/stores/")({
   beforeLoad: requireCustomerFlow,
@@ -30,11 +33,12 @@ export const Route = createFileRoute("/stores/")({
   component: StoresPage,
 });
 
-type SortKey = "rating" | "popular" | "open" | "nearest";
+type SortKey = "rating" | "popular" | "open" | "nearest" | "cheapest";
 
 const SORTS: { key: SortKey; label: string }[] = [
   { key: "rating", label: "الأعلى تقييماً" },
   { key: "popular", label: "الأكثر طلباً" },
+  { key: "cheapest", label: "أرخص خيار" },
   { key: "open", label: "المتاح الآن" },
   { key: "nearest", label: "الأقرب إليك" },
 ];
@@ -50,7 +54,7 @@ function StoresPage() {
     const { data } = await supabase
       .from("providers")
       .select(
-        "id, name, description, rating, orders_count, is_open, keywords, lat, lng, address_text",
+        "id, name, description, rating, orders_count, is_open, keywords, lat, lng, address_text, verification_status",
       )
       .eq("status", "approved")
       .eq("is_demo", false)
@@ -64,6 +68,9 @@ function StoresPage() {
     for (const p of query.data ?? []) for (const k of p.keywords ?? []) set.add(k);
     return [...set].slice(0, 12);
   }, [query.data]);
+
+  const ids = useMemo(() => (query.data ?? []).map((p) => p.id), [query.data]);
+  const { data: prices } = useCheapestPrices(ids);
 
   const list = useMemo(() => {
     let rows = query.data ?? [];
@@ -81,6 +88,7 @@ function StoresPage() {
     const sorted = [...rows];
     if (sort === "rating") sorted.sort((a, b) => Number(b.rating) - Number(a.rating));
     if (sort === "popular") sorted.sort((a, b) => b.orders_count - a.orders_count);
+    if (sort === "cheapest") return sortByCheapest(sorted, prices ?? {});
     if (sort === "open") sorted.sort((a, b) => Number(b.is_open) - Number(a.is_open));
     if (sort === "nearest" && coords)
       sorted.sort((a, b) => {
@@ -89,7 +97,7 @@ function StoresPage() {
         return da - db;
       });
     return sorted;
-  }, [query.data, term, sort, tag, coords]);
+  }, [query.data, term, sort, tag, coords, prices]);
 
   function pickNearest() {
     setSort("nearest");
@@ -186,7 +194,15 @@ function StoresPage() {
               <StoreIcon className="size-6" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate font-bold">{p.name}</p>
+              <div className="flex items-center gap-2">
+                <p className="truncate font-bold">{p.name}</p>
+                <VerifiedBadge status={p.verification_status} />
+              </div>
+              {prices?.[p.id] != null && (
+                <p className="text-xs font-bold text-muted-foreground">
+                  يبدأ من {formatIQD(prices[p.id]!)}
+                </p>
+              )}
               <p className="truncate text-xs text-muted-foreground">{p.description}</p>
               <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">

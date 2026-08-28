@@ -12,6 +12,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/lib/cart";
+import {
+  estimateEta,
+  LOAD_LABELS,
+  LOAD_TONES,
+  useDeliveryZones,
+  useOrdersLoad,
+  zoneForPoint,
+} from "@/lib/delivery-zones";
 import { formatIQD, type Fulfillment } from "@/lib/orders";
 import { createOrder, quoteDeliveryFee } from "@/lib/orders.functions";
 import { useCustomerAreaGuard, useAccount } from "@/lib/auth";
@@ -57,6 +65,17 @@ function CheckoutPage() {
     },
   });
   const isRestaurant = providerInfo?.kind === "restaurant";
+
+  // مؤشر ضغط الطلبات ووقت الوصول المتوقع (معلومة للزبون، لا تغيّر التسعير الرسمي)
+  const load = useOrdersLoad();
+  const zones = useDeliveryZones();
+  const level = load.data?.level ?? "low";
+  const eta = estimateEta({
+    zone: zoneForPoint(zones.data, coords),
+    km: 0,
+    prepMinutes: 0,
+    level,
+  });
 
   // أجرة التوصيل تُحسب من قواعد التسعير في الخادم، لا من الواجهة
   const {
@@ -161,6 +180,30 @@ function CheckoutPage() {
         </div>
       ) : (
         <div className="space-y-5 px-4 py-5">
+          {cart.baskets.length > 1 && (
+            <section className="rounded-2xl bg-card p-3 shadow-soft">
+              <p className="mb-2 text-xs font-bold text-muted-foreground">
+                عندك {cart.baskets.length} سلال من متاجر مختلفة — اختر السلة الحالية وأرسلها، وباقي
+                السلال تبقى محفوظة.
+              </p>
+              <div className="flex gap-2 overflow-x-auto">
+                {cart.baskets.map((b) => (
+                  <button
+                    key={b.providerId}
+                    type="button"
+                    onClick={() => cart.setActive(b.providerId)}
+                    className={
+                      b.providerId === cart.providerId
+                        ? "whitespace-nowrap rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground"
+                        : "whitespace-nowrap rounded-full bg-muted px-4 py-2 text-xs font-bold text-muted-foreground"
+                    }
+                  >
+                    {b.providerName} ({b.count})
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
           <div className="space-y-3">
             {cart.items.map((item) => (
               <div
@@ -313,6 +356,18 @@ function CheckoutPage() {
               placeholder="ملاحظات للمطعم أو المندوب"
             />
           </section>
+
+          {fulfillment === "delivery" && (
+            <section className="flex items-center justify-between gap-3 rounded-2xl bg-card p-4 shadow-soft">
+              <div>
+                <p className="text-xs text-muted-foreground">الوصول المتوقع</p>
+                <p className="text-sm font-bold">{eta.label}</p>
+              </div>
+              <span className={`rounded-full px-3 py-1 text-xs font-bold ${LOAD_TONES[level]}`}>
+                ضغط الطلبات: {LOAD_LABELS[level]}
+              </span>
+            </section>
+          )}
 
           <section className="rounded-2xl bg-card p-4 text-sm shadow-soft">
             <Row label="مجموع الطلب" value={formatIQD(cart.total)} />

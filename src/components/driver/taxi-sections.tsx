@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { DriverStandQueue } from "@/components/taxi-stands";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { MapPin, Navigation } from "lucide-react";
@@ -83,6 +84,7 @@ export function TaxiSections({ enabled }: { enabled: boolean }) {
 
   return (
     <>
+      <DriverStandQueue />
       {!!tripOffers?.length && (
         <section>
           <h2 className="mb-3 text-base font-black">عروض رحلات تكسي</h2>

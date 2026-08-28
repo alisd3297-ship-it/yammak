@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Sparkles, Plus, Trash2, MapPin } from "lucide-react";
+import { Sparkles, Plus, Trash2, MapPin, Mic, MicOff, Camera, Store, Gift } from "lucide-react";
 import { BackButton, BottomNav, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,9 @@ import { useUserLocation } from "@/lib/geo";
 import { OPERATING_ADDRESS_PREFIX } from "@/lib/location";
 import { parseRequestText, type ParsedLine } from "@/lib/request-parser";
 import { submitCustomRequest, listMyCustomRequests } from "@/lib/custom-requests.functions";
+import { extractItemsFromImage } from "@/lib/vision.functions";
+import { useVoiceInput } from "@/lib/voice-input";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/request-anything")({
   ssr: false,
@@ -23,10 +26,10 @@ export const Route = createFileRoute("/request-anything")({
       { title: "اطلب أي شي | لبابك" },
       {
         name: "description",
-        content: "اكتب طلبك بلغتك الطبيعية ونحوّله إلى طلب منظم بالعناصر والعنوان والملاحظات.",
+        content: "اكتب طلبك أو سجّله بصوتك أو صوّره، ونحوّله إلى طلب منظم بالعناصر والعنوان.",
       },
       { property: "og:title", content: "اطلب أي شي | لبابك" },
-      { property: "og:description", content: "طلب حر يتحول إلى طلب منظم." },
+      { property: "og:description", content: "طلب حر بالنص أو الصوت أو الصورة، مع «جيبلي من هنانا»." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -41,20 +44,39 @@ const STATUS_LABELS: Record<string, string> = {
   rejected: "مرفوض",
 };
 
+type Mode = "text" | "voice" | "image" | "errand";
+
+const MODES: { key: Mode; label: string }[] = [
+  { key: "text", label: "كتابة" },
+  { key: "voice", label: "بالصوت" },
+  { key: "image", label: "من صورة" },
+  { key: "errand", label: "جيبلي من هنانا" },
+];
+
 function RequestAnythingPage() {
   useCustomerAreaGuard();
   const qc = useQueryClient();
   const geo = useUserLocation();
   const submit = useServerFn(submitCustomRequest);
   const listFn = useServerFn(listMyCustomRequests);
+  const readImage = useServerFn(extractItemsFromImage);
 
+  const [mode, setMode] = useState<Mode>("text");
   const [raw, setRaw] = useState("");
   const [confirming, setConfirming] = useState(false);
   const [items, setItems] = useState<ParsedLine[]>([]);
   const [address, setAddress] = useState(OPERATING_ADDRESS_PREFIX);
   const [notes, setNotes] = useState("");
   const [budget, setBudget] = useState("");
+  const [sourcePlace, setSourcePlace] = useState("");
+  const [forSomeoneElse, setForSomeoneElse] = useState(false);
+  const [recipientName, setRecipientName] = useState("");
+  const [recipientPhone, setRecipientPhone] = useState("");
   const [busy, setBusy] = useState(false);
+  const [reading, setReading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const voice = useVoiceInput((text) => setRaw((prev) => (prev ? `${prev}\n${text}` : text)));
 
   const { data: history } = useQuery({
     queryKey: ["my-custom-requests"],
@@ -63,12 +85,38 @@ function RequestAnythingPage() {
 
   const preview = useMemo(() => parseRequestText(raw), [raw]);
 
+  async function onPickImage(file: File) {
+    if (reading) return;
+    setReading(true);
+    try {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(new Error("تعذر قراءة الملف"));
+        reader.readAsDataURL(file);
+      });
+      const result = await readImage({ data: { imageDataUrl: dataUrl } });
+      setRaw((prev) => (prev ? `${prev}\n${result.text}` : result.text));
+      toast.success(`قرينا ${result.items.length} عنصر من الصورة`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر قراءة الصورة");
+    } finally {
+      setReading(false);
+    }
+  }
+
   function startConfirm() {
     if (!raw.trim()) {
       toast.error("اكتب طلبك أولاً");
       return;
     }
-    setItems(preview.length ? preview : [{ name: raw.trim().slice(0, 120), quantity: 1, note: null }]);
+    if (mode === "errand" && !sourcePlace.trim()) {
+      toast.error("حدد من وين نجيب الطلب");
+      return;
+    }
+    setItems(
+      preview.length ? preview : [{ name: raw.trim().slice(0, 120), quantity: 1, note: null }],
+    );
     setConfirming(true);
   }
 
@@ -76,6 +124,10 @@ function RequestAnythingPage() {
     if (busy) return;
     if (!address.trim()) {
       toast.error("حدد عنوان التسليم");
+      return;
+    }
+    if (forSomeoneElse && !recipientPhone.trim()) {
+      toast.error("اكتب رقم هاتف المستلم");
       return;
     }
     setBusy(true);
@@ -90,6 +142,10 @@ function RequestAnythingPage() {
           notes: notes || null,
           budget: budget ? Number(budget) : null,
           currency: "IQD",
+          inputKind: mode,
+          sourcePlace: mode === "errand" ? sourcePlace : null,
+          recipientName: forSomeoneElse ? recipientName : null,
+          recipientPhone: forSomeoneElse ? recipientPhone : null,
         },
       });
       toast.success("وصل طلبك، فريق لبابك راح يحوّله إلى طلب منظم");
@@ -97,6 +153,10 @@ function RequestAnythingPage() {
       setItems([]);
       setNotes("");
       setBudget("");
+      setSourcePlace("");
+      setRecipientName("");
+      setRecipientPhone("");
+      setForSomeoneElse(false);
       setConfirming(false);
       void qc.invalidateQueries({ queryKey: ["my-custom-requests"] });
     } catch (e) {
@@ -113,12 +173,48 @@ function RequestAnythingPage() {
         <h1 className="flex items-center gap-2 text-2xl font-black">
           <Sparkles className="size-6" /> اطلب أي شي
         </h1>
-        <p className="mt-1 text-sm opacity-90">اكتب طلبك بلغتك وإحنا نرتبه إلك</p>
+        <p className="mt-1 text-sm opacity-90">اكتب أو احچي أو صوّر — وإحنا نرتبه إلك</p>
       </header>
 
       <div className="space-y-5 px-4 py-5">
         {!confirming ? (
           <section className="rounded-2xl bg-card p-4 shadow-soft">
+            <div className="mb-3 flex gap-2 overflow-x-auto">
+              {MODES.map((m) => (
+                <button
+                  key={m.key}
+                  type="button"
+                  onClick={() => setMode(m.key)}
+                  className={cn(
+                    "whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-bold transition",
+                    mode === m.key
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground",
+                  )}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+
+            {mode === "errand" && (
+              <div className="mb-3">
+                <label className="mb-1 block text-sm font-bold" htmlFor="src">
+                  من وين نجيبه؟
+                </label>
+                <Input
+                  id="src"
+                  value={sourcePlace}
+                  onChange={(e) => setSourcePlace(e.target.value)}
+                  className="h-11"
+                  placeholder="اسم المحل أو المكان، مثلاً: صيدلية الشفاء - شارع السدة"
+                />
+                <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+                  <Store className="size-3" /> المندوب راح يروح للمكان ويشتري الطلب ويوصله إلك.
+                </p>
+              </div>
+            )}
+
             <label className="mb-2 block text-sm font-bold" htmlFor="raw">
               شنو تحتاج؟
             </label>
@@ -129,6 +225,60 @@ function RequestAnythingPage() {
               rows={5}
               placeholder={"مثال:\n2 صمون\nكيلو طماطة\nعلبة دواء بنادول"}
             />
+
+            {mode === "voice" && (
+              <div className="mt-3">
+                {voice.supported ? (
+                  <Button
+                    type="button"
+                    variant={voice.listening ? "destructive" : "outline"}
+                    className="h-11 w-full"
+                    onClick={voice.toggle}
+                  >
+                    {voice.listening ? (
+                      <>
+                        <MicOff className="me-1 size-4" /> إيقاف التسجيل
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="me-1 size-4" /> ابدأ الكلام
+                      </>
+                    )}
+                  </Button>
+                ) : (
+                  <p className="rounded-xl bg-muted p-3 text-xs text-muted-foreground">
+                    جهازك ما يدعم الإدخال الصوتي، تكدر تكتب طلبك يدوياً.
+                  </p>
+                )}
+              </div>
+            )}
+
+            {mode === "image" && (
+              <div className="mt-3">
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) void onPickImage(file);
+                    e.target.value = "";
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-11 w-full"
+                  disabled={reading}
+                  onClick={() => fileRef.current?.click()}
+                >
+                  <Camera className="me-1 size-4" />
+                  {reading ? "نقرأ الصورة…" : "اختر صورة القائمة"}
+                </Button>
+              </div>
+            )}
+
             {preview.length > 0 && (
               <div className="mt-3 rounded-xl bg-muted p-3 text-xs text-muted-foreground">
                 فهمنا {preview.length} عنصر — تكدر تعدلهم بالخطوة الجاية.
@@ -187,6 +337,12 @@ function RequestAnythingPage() {
               </Button>
             </div>
 
+            {mode === "errand" && sourcePlace.trim() && (
+              <div className="rounded-xl bg-muted p-3 text-xs text-muted-foreground">
+                <Store className="me-1 inline size-3" /> نجيبه من: {sourcePlace}
+              </div>
+            )}
+
             <div>
               <label className="mb-1 block text-sm font-bold" htmlFor="addr">
                 عنوان التسليم
@@ -200,6 +356,37 @@ function RequestAnythingPage() {
               <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
                 <MapPin className="size-3" /> {geo.label}
               </p>
+            </div>
+
+            <div className="rounded-xl bg-muted/60 p-3">
+              <label className="flex items-center gap-2 text-sm font-bold">
+                <input
+                  type="checkbox"
+                  checked={forSomeoneElse}
+                  onChange={(e) => setForSomeoneElse(e.target.checked)}
+                  className="size-4 accent-[hsl(var(--primary))]"
+                />
+                <Gift className="size-4 text-primary" /> الطلب لشخص آخر
+              </label>
+              {forSomeoneElse && (
+                <div className="mt-3 grid grid-cols-2 gap-3">
+                  <Input
+                    value={recipientName}
+                    onChange={(e) => setRecipientName(e.target.value)}
+                    className="h-11"
+                    placeholder="اسم المستلم"
+                    aria-label="اسم المستلم"
+                  />
+                  <Input
+                    value={recipientPhone}
+                    onChange={(e) => setRecipientPhone(e.target.value)}
+                    className="h-11"
+                    placeholder="رقم المستلم"
+                    inputMode="tel"
+                    aria-label="رقم المستلم"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -232,7 +419,11 @@ function RequestAnythingPage() {
             </div>
 
             <div className="flex gap-2">
-              <Button variant="outline" className="h-12 flex-1" onClick={() => setConfirming(false)}>
+              <Button
+                variant="outline"
+                className="h-12 flex-1"
+                onClick={() => setConfirming(false)}
+              >
                 رجوع للتعديل
               </Button>
               <Button className="h-12 flex-1" onClick={() => void send()} disabled={busy}>

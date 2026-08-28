@@ -2,8 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { THEME_LABELS, useTheme, type ThemeMode } from "@/lib/theme";
 import {
   Bell,
+  Briefcase,
   ClipboardList,
   Crown,
   Gift,
@@ -11,8 +13,13 @@ import {
   MapPin,
   Megaphone,
   Plus,
+  MessagesSquare,
+  Moon,
+  ShieldCheck,
+  ShoppingBag,
   Sparkles,
   Trash2,
+  Users,
   Wallet,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -352,7 +359,24 @@ function AccountPage() {
         >
           <Sparkles className="size-5 text-primary" /> طلباتي الحرة
         </Link>
+        <Link to="/quotes" className="flex items-center gap-3 px-5 py-4 text-sm font-semibold">
+          <MessagesSquare className="size-5 text-primary" /> عروض الأسعار
+        </Link>
+        <Link to="/marketplace" className="flex items-center gap-3 px-5 py-4 text-sm font-semibold">
+          <ShoppingBag className="size-5 text-primary" /> سوق لبابك
+        </Link>
+        <Link to="/family" className="flex items-center gap-3 px-5 py-4 text-sm font-semibold">
+          <Users className="size-5 text-primary" /> حساب العائلة
+        </Link>
+        <Link to="/business" className="flex items-center gap-3 px-5 py-4 text-sm font-semibold">
+          <Briefcase className="size-5 text-primary" /> لبابك للأعمال
+        </Link>
+        <Link to="/guarantee" className="flex items-center gap-3 px-5 py-4 text-sm font-semibold">
+          <ShieldCheck className="size-5 text-primary" /> ضمان لبابك
+        </Link>
       </section>
+
+      <ThemeCard />
 
       <div className="mx-4 mt-4">
         <Button
@@ -366,5 +390,34 @@ function AccountPage() {
 
       <BottomNav />
     </PageShell>
+  );
+}
+
+/** الوضع الليلي الذكي: فاتح، ليلي، أو تلقائي حسب وقت الجهاز. */
+function ThemeCard() {
+  const { mode, setMode } = useTheme();
+  const modes: ThemeMode[] = ["light", "dark", "auto"];
+  return (
+    <section className="mx-4 mt-4 rounded-2xl bg-card p-4 shadow-soft">
+      <p className="flex items-center gap-2 text-sm font-bold">
+        <Moon className="size-5 text-primary" /> مظهر التطبيق
+      </p>
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        {modes.map((m) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => setMode(m)}
+            className={
+              mode === m
+                ? "rounded-xl bg-primary px-3 py-2 text-xs font-bold text-primary-foreground"
+                : "rounded-xl bg-muted px-3 py-2 text-xs font-bold text-muted-foreground"
+            }
+          >
+            {THEME_LABELS[m]}
+          </button>
+        ))}
+      </div>
+    </section>
   );
 }

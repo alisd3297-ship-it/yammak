@@ -7,6 +7,7 @@ import { Car, LocateFixed, MapPin, Navigation, Star, Users } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
 import { BackButton, BottomNav, PageShell, StatusDot } from "@/components/app-shell";
+import { TaxiStandsBoard } from "@/components/taxi-stands";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -220,6 +221,7 @@ function TaxiPage() {
       </header>
 
       <div className="space-y-5 px-4 py-5">
+        <TaxiStandsBoard coords={pickup} />
         {activeTrip ? (
           <section className="rounded-2xl bg-card p-4 shadow-card">
             <div className="flex items-center justify-between">

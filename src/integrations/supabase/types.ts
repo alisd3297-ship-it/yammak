@@ -292,6 +292,92 @@ export type Database = {
         }
         Relationships: []
       }
+      business_accounts: {
+        Row: {
+          billing_address: string | null
+          created_at: string
+          currency: string
+          id: string
+          is_active: boolean
+          monthly_limit: number
+          name: string
+          owner_id: string
+          phone: string | null
+          status: string
+          tax_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          billing_address?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          is_active?: boolean
+          monthly_limit?: number
+          name: string
+          owner_id: string
+          phone?: string | null
+          status?: string
+          tax_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          billing_address?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          is_active?: boolean
+          monthly_limit?: number
+          name?: string
+          owner_id?: string
+          phone?: string | null
+          status?: string
+          tax_number?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      business_members: {
+        Row: {
+          business_id: string
+          can_order: boolean
+          created_at: string
+          id: string
+          member_role: string
+          monthly_limit: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          business_id: string
+          can_order?: boolean
+          created_at?: string
+          id?: string
+          member_role?: string
+          monthly_limit?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          business_id?: string
+          can_order?: boolean
+          created_at?: string
+          id?: string
+          member_role?: string
+          monthly_limit?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_members_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "business_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cities: {
         Row: {
           created_at: string
@@ -363,12 +449,19 @@ export type Database = {
           currency: string
           customer_id: string
           id: string
+          image_url: string | null
+          input_kind: string
           items: Json
           lat: number | null
           lng: number | null
           notes: string | null
           order_id: string | null
           raw_text: string
+          recipient_name: string | null
+          recipient_phone: string | null
+          source_lat: number | null
+          source_lng: number | null
+          source_place_text: string | null
           status: string
           updated_at: string
         }
@@ -379,12 +472,19 @@ export type Database = {
           currency?: string
           customer_id?: string
           id?: string
+          image_url?: string | null
+          input_kind?: string
           items?: Json
           lat?: number | null
           lng?: number | null
           notes?: string | null
           order_id?: string | null
           raw_text: string
+          recipient_name?: string | null
+          recipient_phone?: string | null
+          source_lat?: number | null
+          source_lng?: number | null
+          source_place_text?: string | null
           status?: string
           updated_at?: string
         }
@@ -395,12 +495,19 @@ export type Database = {
           currency?: string
           customer_id?: string
           id?: string
+          image_url?: string | null
+          input_kind?: string
           items?: Json
           lat?: number | null
           lng?: number | null
           notes?: string | null
           order_id?: string | null
           raw_text?: string
+          recipient_name?: string | null
+          recipient_phone?: string | null
+          source_lat?: number | null
+          source_lng?: number | null
+          source_place_text?: string | null
           status?: string
           updated_at?: string
         }
@@ -578,6 +685,148 @@ export type Database = {
           },
         ]
       }
+      delivery_zones: {
+        Row: {
+          base_fee: number
+          center_lat: number | null
+          center_lng: number | null
+          city_id: string | null
+          created_at: string
+          eta_max_minutes: number
+          eta_min_minutes: number
+          id: string
+          is_active: boolean
+          max_fee: number
+          min_fee: number
+          name: string
+          per_km_fee: number
+          radius_km: number
+          sort_order: number
+          surge_multiplier: number
+          updated_at: string
+        }
+        Insert: {
+          base_fee?: number
+          center_lat?: number | null
+          center_lng?: number | null
+          city_id?: string | null
+          created_at?: string
+          eta_max_minutes?: number
+          eta_min_minutes?: number
+          id?: string
+          is_active?: boolean
+          max_fee?: number
+          min_fee?: number
+          name: string
+          per_km_fee?: number
+          radius_km?: number
+          sort_order?: number
+          surge_multiplier?: number
+          updated_at?: string
+        }
+        Update: {
+          base_fee?: number
+          center_lat?: number | null
+          center_lng?: number | null
+          city_id?: string | null
+          created_at?: string
+          eta_max_minutes?: number
+          eta_min_minutes?: number
+          id?: string
+          is_active?: boolean
+          max_fee?: number
+          min_fee?: number
+          name?: string
+          per_km_fee?: number
+          radius_km?: number
+          sort_order?: number
+          surge_multiplier?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_zones_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      family_accounts: {
+        Row: {
+          created_at: string
+          currency: string
+          id: string
+          is_active: boolean
+          monthly_limit: number
+          name: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          id?: string
+          is_active?: boolean
+          monthly_limit?: number
+          name?: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          id?: string
+          is_active?: boolean
+          monthly_limit?: number
+          name?: string
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      family_members: {
+        Row: {
+          can_order: boolean
+          created_at: string
+          family_id: string
+          id: string
+          member_name: string
+          monthly_limit: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          can_order?: boolean
+          created_at?: string
+          family_id: string
+          id?: string
+          member_name?: string
+          monthly_limit?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          can_order?: boolean
+          created_at?: string
+          family_id?: string
+          id?: string
+          member_name?: string
+          monthly_limit?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "family_members_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "family_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feature_flags: {
         Row: {
           audience: string
@@ -663,6 +912,72 @@ export type Database = {
             columns: ["city_id"]
             isOneToOne: false
             referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guarantee_claims: {
+        Row: {
+          compensation_amount: number
+          created_at: string
+          currency: string
+          decided_at: string | null
+          decided_by: string | null
+          description: string
+          id: string
+          order_id: string | null
+          reason: string
+          resolution_note: string | null
+          service_request_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          compensation_amount?: number
+          created_at?: string
+          currency?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          description?: string
+          id?: string
+          order_id?: string | null
+          reason: string
+          resolution_note?: string | null
+          service_request_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          compensation_amount?: number
+          created_at?: string
+          currency?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          description?: string
+          id?: string
+          order_id?: string | null
+          reason?: string
+          resolution_note?: string | null
+          service_request_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guarantee_claims_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "guarantee_claims_service_request_id_fkey"
+            columns: ["service_request_id"]
+            isOneToOne: false
+            referencedRelation: "service_requests"
             referencedColumns: ["id"]
           },
         ]
@@ -774,6 +1089,78 @@ export type Database = {
           source?: string
         }
         Relationships: []
+      }
+      marketplace_listings: {
+        Row: {
+          city_id: string | null
+          contact_phone: string
+          created_at: string
+          currency: string
+          description: string
+          id: string
+          images: string[]
+          price: number | null
+          provider_id: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          seller_id: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          city_id?: string | null
+          contact_phone?: string
+          created_at?: string
+          currency?: string
+          description?: string
+          id?: string
+          images?: string[]
+          price?: number | null
+          provider_id?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          seller_id: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          city_id?: string | null
+          contact_phone?: string
+          created_at?: string
+          currency?: string
+          description?: string
+          id?: string
+          images?: string[]
+          price?: number | null
+          provider_id?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          seller_id?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_listings_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_listings_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       menu_categories: {
         Row: {
@@ -1021,6 +1408,7 @@ export type Database = {
           admin_approved_at: string | null
           admin_approved_by: string | null
           admin_review_reason: string | null
+          business_account_id: string | null
           cancel_reason: string | null
           cargo_description: string | null
           cargo_weight_kg: number | null
@@ -1030,6 +1418,7 @@ export type Database = {
           created_at: string
           customer_id: string
           delivery_fee: number
+          delivery_zone_id: string | null
           dispatch_alerted_at: string | null
           dispatch_attempts: number
           dispatch_last_attempt_at: string | null
@@ -1037,8 +1426,13 @@ export type Database = {
           dropoff_lat: number | null
           dropoff_lng: number | null
           dropoff_text: string | null
+          eta_max_minutes: number | null
+          eta_min_minutes: number | null
+          family_account_id: string | null
           fulfillment: string
+          gift_message: string | null
           id: string
+          is_gift: boolean
           notes: string | null
           order_type: Database["public"]["Enums"]["order_type"]
           party_size: number | null
@@ -1047,6 +1441,8 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          recipient_name: string | null
+          recipient_phone: string | null
           requires_admin_approval: boolean
           scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
@@ -1059,6 +1455,7 @@ export type Database = {
           admin_approved_at?: string | null
           admin_approved_by?: string | null
           admin_review_reason?: string | null
+          business_account_id?: string | null
           cancel_reason?: string | null
           cargo_description?: string | null
           cargo_weight_kg?: number | null
@@ -1068,6 +1465,7 @@ export type Database = {
           created_at?: string
           customer_id: string
           delivery_fee?: number
+          delivery_zone_id?: string | null
           dispatch_alerted_at?: string | null
           dispatch_attempts?: number
           dispatch_last_attempt_at?: string | null
@@ -1075,8 +1473,13 @@ export type Database = {
           dropoff_lat?: number | null
           dropoff_lng?: number | null
           dropoff_text?: string | null
+          eta_max_minutes?: number | null
+          eta_min_minutes?: number | null
+          family_account_id?: string | null
           fulfillment?: string
+          gift_message?: string | null
           id?: string
+          is_gift?: boolean
           notes?: string | null
           order_type?: Database["public"]["Enums"]["order_type"]
           party_size?: number | null
@@ -1085,6 +1488,8 @@ export type Database = {
           pickup_lng?: number | null
           pickup_text?: string | null
           provider_id?: string | null
+          recipient_name?: string | null
+          recipient_phone?: string | null
           requires_admin_approval?: boolean
           scheduled_at?: string | null
           status?: Database["public"]["Enums"]["order_status"]
@@ -1097,6 +1502,7 @@ export type Database = {
           admin_approved_at?: string | null
           admin_approved_by?: string | null
           admin_review_reason?: string | null
+          business_account_id?: string | null
           cancel_reason?: string | null
           cargo_description?: string | null
           cargo_weight_kg?: number | null
@@ -1106,6 +1512,7 @@ export type Database = {
           created_at?: string
           customer_id?: string
           delivery_fee?: number
+          delivery_zone_id?: string | null
           dispatch_alerted_at?: string | null
           dispatch_attempts?: number
           dispatch_last_attempt_at?: string | null
@@ -1113,8 +1520,13 @@ export type Database = {
           dropoff_lat?: number | null
           dropoff_lng?: number | null
           dropoff_text?: string | null
+          eta_max_minutes?: number | null
+          eta_min_minutes?: number | null
+          family_account_id?: string | null
           fulfillment?: string
+          gift_message?: string | null
           id?: string
+          is_gift?: boolean
           notes?: string | null
           order_type?: Database["public"]["Enums"]["order_type"]
           party_size?: number | null
@@ -1123,6 +1535,8 @@ export type Database = {
           pickup_lng?: number | null
           pickup_text?: string | null
           provider_id?: string | null
+          recipient_name?: string | null
+          recipient_phone?: string | null
           requires_admin_approval?: boolean
           scheduled_at?: string | null
           status?: Database["public"]["Enums"]["order_status"]
@@ -1133,10 +1547,31 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "orders_business_account_id_fkey"
+            columns: ["business_account_id"]
+            isOneToOne: false
+            referencedRelation: "business_accounts"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "orders_city_id_fkey"
             columns: ["city_id"]
             isOneToOne: false
             referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_delivery_zone_id_fkey"
+            columns: ["delivery_zone_id"]
+            isOneToOne: false
+            referencedRelation: "delivery_zones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_family_account_id_fkey"
+            columns: ["family_account_id"]
+            isOneToOne: false
+            referencedRelation: "family_accounts"
             referencedColumns: ["id"]
           },
           {
@@ -1783,6 +2218,9 @@ export type Database = {
           ratings_count: number
           status: Database["public"]["Enums"]["provider_status"]
           updated_at: string
+          verification_status: string
+          verified_at: string | null
+          verified_by: string | null
         }
         Insert: {
           address_text?: string | null
@@ -1811,6 +2249,9 @@ export type Database = {
           ratings_count?: number
           status?: Database["public"]["Enums"]["provider_status"]
           updated_at?: string
+          verification_status?: string
+          verified_at?: string | null
+          verified_by?: string | null
         }
         Update: {
           address_text?: string | null
@@ -1839,6 +2280,9 @@ export type Database = {
           ratings_count?: number
           status?: Database["public"]["Enums"]["provider_status"]
           updated_at?: string
+          verification_status?: string
+          verified_at?: string | null
+          verified_by?: string | null
         }
         Relationships: [
           {
@@ -1896,6 +2340,136 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      quote_offers: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          eta_minutes: number | null
+          id: string
+          message: string | null
+          provider_id: string
+          request_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          eta_minutes?: number | null
+          id?: string
+          message?: string | null
+          provider_id: string
+          request_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          eta_minutes?: number | null
+          id?: string
+          message?: string | null
+          provider_id?: string
+          request_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_offers_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_offers_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "quote_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quote_requests: {
+        Row: {
+          accepted_offer_id: string | null
+          address_text: string
+          budget: number | null
+          category_id: string | null
+          city_id: string | null
+          created_at: string
+          currency: string
+          customer_id: string
+          description: string
+          id: string
+          scheduled_at: string | null
+          service_request_id: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_offer_id?: string | null
+          address_text?: string
+          budget?: number | null
+          category_id?: string | null
+          city_id?: string | null
+          created_at?: string
+          currency?: string
+          customer_id: string
+          description?: string
+          id?: string
+          scheduled_at?: string | null
+          service_request_id?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_offer_id?: string | null
+          address_text?: string
+          budget?: number | null
+          category_id?: string | null
+          city_id?: string | null
+          created_at?: string
+          currency?: string
+          customer_id?: string
+          description?: string
+          id?: string
+          scheduled_at?: string | null
+          service_request_id?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_requests_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "profession_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_requests_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_requests_service_request_id_fkey"
+            columns: ["service_request_id"]
+            isOneToOne: false
+            referencedRelation: "service_requests"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ratings: {
         Row: {
@@ -2412,6 +2986,91 @@ export type Database = {
         }
         Relationships: []
       }
+      taxi_stand_queue: {
+        Row: {
+          created_at: string
+          driver_id: string
+          id: string
+          joined_at: string
+          left_at: string | null
+          stand_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          driver_id: string
+          id?: string
+          joined_at?: string
+          left_at?: string | null
+          stand_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          driver_id?: string
+          id?: string
+          joined_at?: string
+          left_at?: string | null
+          stand_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "taxi_stand_queue_stand_id_fkey"
+            columns: ["stand_id"]
+            isOneToOne: false
+            referencedRelation: "taxi_stands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      taxi_stands: {
+        Row: {
+          city_id: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          lat: number | null
+          lng: number | null
+          name: string
+          radius_km: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          city_id?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          lat?: number | null
+          lng?: number | null
+          name: string
+          radius_km?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          city_id?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          lat?: number | null
+          lng?: number | null
+          name?: string
+          radius_km?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "taxi_stands_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trip_offers: {
         Row: {
           distance_km: number | null
@@ -2826,6 +3485,7 @@ export type Database = {
           admin_approved_at: string | null
           admin_approved_by: string | null
           admin_review_reason: string | null
+          business_account_id: string | null
           cancel_reason: string | null
           cargo_description: string | null
           cargo_weight_kg: number | null
@@ -2835,6 +3495,7 @@ export type Database = {
           created_at: string
           customer_id: string
           delivery_fee: number
+          delivery_zone_id: string | null
           dispatch_alerted_at: string | null
           dispatch_attempts: number
           dispatch_last_attempt_at: string | null
@@ -2842,8 +3503,13 @@ export type Database = {
           dropoff_lat: number | null
           dropoff_lng: number | null
           dropoff_text: string | null
+          eta_max_minutes: number | null
+          eta_min_minutes: number | null
+          family_account_id: string | null
           fulfillment: string
+          gift_message: string | null
           id: string
+          is_gift: boolean
           notes: string | null
           order_type: Database["public"]["Enums"]["order_type"]
           party_size: number | null
@@ -2852,6 +3518,8 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          recipient_name: string | null
+          recipient_phone: string | null
           requires_admin_approval: boolean
           scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
@@ -3025,6 +3693,9 @@ export type Database = {
           ratings_count: number
           status: Database["public"]["Enums"]["provider_status"]
           updated_at: string
+          verification_status: string
+          verified_at: string | null
+          verified_by: string | null
         }
         SetofOptions: {
           from: "*"
@@ -3129,6 +3800,7 @@ export type Database = {
           admin_approved_at: string | null
           admin_approved_by: string | null
           admin_review_reason: string | null
+          business_account_id: string | null
           cancel_reason: string | null
           cargo_description: string | null
           cargo_weight_kg: number | null
@@ -3138,6 +3810,7 @@ export type Database = {
           created_at: string
           customer_id: string
           delivery_fee: number
+          delivery_zone_id: string | null
           dispatch_alerted_at: string | null
           dispatch_attempts: number
           dispatch_last_attempt_at: string | null
@@ -3145,8 +3818,13 @@ export type Database = {
           dropoff_lat: number | null
           dropoff_lng: number | null
           dropoff_text: string | null
+          eta_max_minutes: number | null
+          eta_min_minutes: number | null
+          family_account_id: string | null
           fulfillment: string
+          gift_message: string | null
           id: string
+          is_gift: boolean
           notes: string | null
           order_type: Database["public"]["Enums"]["order_type"]
           party_size: number | null
@@ -3155,6 +3833,8 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          recipient_name: string | null
+          recipient_phone: string | null
           requires_admin_approval: boolean
           scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
@@ -3365,6 +4045,7 @@ export type Database = {
           admin_approved_at: string | null
           admin_approved_by: string | null
           admin_review_reason: string | null
+          business_account_id: string | null
           cancel_reason: string | null
           cargo_description: string | null
           cargo_weight_kg: number | null
@@ -3374,6 +4055,7 @@ export type Database = {
           created_at: string
           customer_id: string
           delivery_fee: number
+          delivery_zone_id: string | null
           dispatch_alerted_at: string | null
           dispatch_attempts: number
           dispatch_last_attempt_at: string | null
@@ -3381,8 +4063,13 @@ export type Database = {
           dropoff_lat: number | null
           dropoff_lng: number | null
           dropoff_text: string | null
+          eta_max_minutes: number | null
+          eta_min_minutes: number | null
+          family_account_id: string | null
           fulfillment: string
+          gift_message: string | null
           id: string
+          is_gift: boolean
           notes: string | null
           order_type: Database["public"]["Enums"]["order_type"]
           party_size: number | null
@@ -3391,6 +4078,8 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          recipient_name: string | null
+          recipient_phone: string | null
           requires_admin_approval: boolean
           scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
@@ -3422,6 +4111,7 @@ export type Database = {
           admin_approved_at: string | null
           admin_approved_by: string | null
           admin_review_reason: string | null
+          business_account_id: string | null
           cancel_reason: string | null
           cargo_description: string | null
           cargo_weight_kg: number | null
@@ -3431,6 +4121,7 @@ export type Database = {
           created_at: string
           customer_id: string
           delivery_fee: number
+          delivery_zone_id: string | null
           dispatch_alerted_at: string | null
           dispatch_attempts: number
           dispatch_last_attempt_at: string | null
@@ -3438,8 +4129,13 @@ export type Database = {
           dropoff_lat: number | null
           dropoff_lng: number | null
           dropoff_text: string | null
+          eta_max_minutes: number | null
+          eta_min_minutes: number | null
+          family_account_id: string | null
           fulfillment: string
+          gift_message: string | null
           id: string
+          is_gift: boolean
           notes: string | null
           order_type: Database["public"]["Enums"]["order_type"]
           party_size: number | null
@@ -3448,6 +4144,8 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          recipient_name: string | null
+          recipient_phone: string | null
           requires_admin_approval: boolean
           scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
@@ -3582,6 +4280,7 @@ export type Database = {
           admin_approved_at: string | null
           admin_approved_by: string | null
           admin_review_reason: string | null
+          business_account_id: string | null
           cancel_reason: string | null
           cargo_description: string | null
           cargo_weight_kg: number | null
@@ -3591,6 +4290,7 @@ export type Database = {
           created_at: string
           customer_id: string
           delivery_fee: number
+          delivery_zone_id: string | null
           dispatch_alerted_at: string | null
           dispatch_attempts: number
           dispatch_last_attempt_at: string | null
@@ -3598,8 +4298,13 @@ export type Database = {
           dropoff_lat: number | null
           dropoff_lng: number | null
           dropoff_text: string | null
+          eta_max_minutes: number | null
+          eta_min_minutes: number | null
+          family_account_id: string | null
           fulfillment: string
+          gift_message: string | null
           id: string
+          is_gift: boolean
           notes: string | null
           order_type: Database["public"]["Enums"]["order_type"]
           party_size: number | null
@@ -3608,6 +4313,8 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          recipient_name: string | null
+          recipient_phone: string | null
           requires_admin_approval: boolean
           scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
@@ -3785,6 +4492,14 @@ export type Database = {
           _from: Database["public"]["Enums"]["trip_status"]
           _to: Database["public"]["Enums"]["trip_status"]
         }
+        Returns: boolean
+      }
+      is_business_member: {
+        Args: { _business_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_family_member: {
+        Args: { _family_id: string; _user_id: string }
         Returns: boolean
       }
       is_phone_verified: { Args: { _user_id: string }; Returns: boolean }
@@ -4043,6 +4758,7 @@ export type Database = {
           admin_approved_at: string | null
           admin_approved_by: string | null
           admin_review_reason: string | null
+          business_account_id: string | null
           cancel_reason: string | null
           cargo_description: string | null
           cargo_weight_kg: number | null
@@ -4052,6 +4768,7 @@ export type Database = {
           created_at: string
           customer_id: string
           delivery_fee: number
+          delivery_zone_id: string | null
           dispatch_alerted_at: string | null
           dispatch_attempts: number
           dispatch_last_attempt_at: string | null
@@ -4059,8 +4776,13 @@ export type Database = {
           dropoff_lat: number | null
           dropoff_lng: number | null
           dropoff_text: string | null
+          eta_max_minutes: number | null
+          eta_min_minutes: number | null
+          family_account_id: string | null
           fulfillment: string
+          gift_message: string | null
           id: string
+          is_gift: boolean
           notes: string | null
           order_type: Database["public"]["Enums"]["order_type"]
           party_size: number | null
@@ -4069,6 +4791,8 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          recipient_name: string | null
+          recipient_phone: string | null
           requires_admin_approval: boolean
           scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
@@ -4162,6 +4886,9 @@ export type Database = {
           ratings_count: number
           status: Database["public"]["Enums"]["provider_status"]
           updated_at: string
+          verification_status: string
+          verified_at: string | null
+          verified_by: string | null
         }
         SetofOptions: {
           from: "*"
@@ -4271,6 +4998,7 @@ export type Database = {
           admin_approved_at: string | null
           admin_approved_by: string | null
           admin_review_reason: string | null
+          business_account_id: string | null
           cancel_reason: string | null
           cargo_description: string | null
           cargo_weight_kg: number | null
@@ -4280,6 +5008,7 @@ export type Database = {
           created_at: string
           customer_id: string
           delivery_fee: number
+          delivery_zone_id: string | null
           dispatch_alerted_at: string | null
           dispatch_attempts: number
           dispatch_last_attempt_at: string | null
@@ -4287,8 +5016,13 @@ export type Database = {
           dropoff_lat: number | null
           dropoff_lng: number | null
           dropoff_text: string | null
+          eta_max_minutes: number | null
+          eta_min_minutes: number | null
+          family_account_id: string | null
           fulfillment: string
+          gift_message: string | null
           id: string
+          is_gift: boolean
           notes: string | null
           order_type: Database["public"]["Enums"]["order_type"]
           party_size: number | null
@@ -4297,6 +5031,8 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          recipient_name: string | null
+          recipient_phone: string | null
           requires_admin_approval: boolean
           scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]
@@ -4321,6 +5057,7 @@ export type Database = {
           admin_approved_at: string | null
           admin_approved_by: string | null
           admin_review_reason: string | null
+          business_account_id: string | null
           cancel_reason: string | null
           cargo_description: string | null
           cargo_weight_kg: number | null
@@ -4330,6 +5067,7 @@ export type Database = {
           created_at: string
           customer_id: string
           delivery_fee: number
+          delivery_zone_id: string | null
           dispatch_alerted_at: string | null
           dispatch_attempts: number
           dispatch_last_attempt_at: string | null
@@ -4337,8 +5075,13 @@ export type Database = {
           dropoff_lat: number | null
           dropoff_lng: number | null
           dropoff_text: string | null
+          eta_max_minutes: number | null
+          eta_min_minutes: number | null
+          family_account_id: string | null
           fulfillment: string
+          gift_message: string | null
           id: string
+          is_gift: boolean
           notes: string | null
           order_type: Database["public"]["Enums"]["order_type"]
           party_size: number | null
@@ -4347,6 +5090,8 @@ export type Database = {
           pickup_lng: number | null
           pickup_text: string | null
           provider_id: string | null
+          recipient_name: string | null
+          recipient_phone: string | null
           requires_admin_approval: boolean
           scheduled_at: string | null
           status: Database["public"]["Enums"]["order_status"]

@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BusinessRouteImport } from './routes/business'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CourierRouteImport } from './routes/courier'
 import { Route as DriverRouteImport } from './routes/driver'
@@ -20,6 +21,8 @@ import { Route as DriverAccountRouteImport } from './routes/driver-account'
 import { Route as DriverEarningsRouteImport } from './routes/driver-earnings'
 import { Route as DriverMapRouteImport } from './routes/driver-map'
 import { Route as DriverTasksRouteImport } from './routes/driver-tasks'
+import { Route as FamilyRouteImport } from './routes/family'
+import { Route as GuaranteeRouteImport } from './routes/guarantee'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as NearbyRouteImport } from './routes/nearby'
 import { Route as NotificationsRouteImport } from './routes/notifications'
@@ -28,6 +31,7 @@ import { Route as PlusRouteImport } from './routes/plus'
 import { Route as ProviderRouteImport } from './routes/provider'
 import { Route as ProviderFinanceRouteImport } from './routes/provider-finance'
 import { Route as ProviderInsightsRouteImport } from './routes/provider-insights'
+import { Route as QuotesRouteImport } from './routes/quotes'
 import { Route as ReferralsRouteImport } from './routes/referrals'
 import { Route as RequestAnythingRouteImport } from './routes/request-anything'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -44,6 +48,8 @@ import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminCourierRouteImport } from './routes/admin.courier'
 import { Route as AdminDriversRouteImport } from './routes/admin.drivers'
 import { Route as AdminFeaturesRouteImport } from './routes/admin.features'
+import { Route as AdminMapRouteImport } from './routes/admin.map'
+import { Route as AdminMarketplaceRouteImport } from './routes/admin.marketplace'
 import { Route as AdminMonitoringRouteImport } from './routes/admin.monitoring'
 import { Route as AdminNotificationsRouteImport } from './routes/admin.notifications'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
@@ -56,12 +62,15 @@ import { Route as AdminServicesRouteImport } from './routes/admin.services'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminSettlementsRouteImport } from './routes/admin.settlements'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminZonesRouteImport } from './routes/admin.zones'
 import { Route as AdsIndexRouteImport } from './routes/ads.index'
 import { Route as AdsIdRouteImport } from './routes/ads.$id'
 import { Route as AdsNewRouteImport } from './routes/ads.new'
 import { Route as DoctorsIndexRouteImport } from './routes/doctors.index'
 import { Route as JoinDriverRouteImport } from './routes/join.driver'
 import { Route as JoinProviderRouteImport } from './routes/join.provider'
+import { Route as MarketplaceIndexRouteImport } from './routes/marketplace.index'
+import { Route as MarketplaceNewRouteImport } from './routes/marketplace.new'
 import { Route as OrdersIndexRouteImport } from './routes/orders.index'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as PharmaciesIndexRouteImport } from './routes/pharmacies.index'
@@ -99,6 +108,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BusinessRoute = BusinessRouteImport.update({
+  id: '/business',
+  path: '/business',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
@@ -132,6 +146,16 @@ const DriverMapRoute = DriverMapRouteImport.update({
 const DriverTasksRoute = DriverTasksRouteImport.update({
   id: '/driver-tasks',
   path: '/driver-tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FamilyRoute = FamilyRouteImport.update({
+  id: '/family',
+  path: '/family',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuaranteeRoute = GuaranteeRouteImport.update({
+  id: '/guarantee',
+  path: '/guarantee',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MapRoute = MapRouteImport.update({
@@ -172,6 +196,11 @@ const ProviderFinanceRoute = ProviderFinanceRouteImport.update({
 const ProviderInsightsRoute = ProviderInsightsRouteImport.update({
   id: '/provider-insights',
   path: '/provider-insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuotesRoute = QuotesRouteImport.update({
+  id: '/quotes',
+  path: '/quotes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReferralsRoute = ReferralsRouteImport.update({
@@ -254,6 +283,16 @@ const AdminFeaturesRoute = AdminFeaturesRouteImport.update({
   path: '/admin/features',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminMapRoute = AdminMapRouteImport.update({
+  id: '/admin/map',
+  path: '/admin/map',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminMarketplaceRoute = AdminMarketplaceRouteImport.update({
+  id: '/admin/marketplace',
+  path: '/admin/marketplace',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminMonitoringRoute = AdminMonitoringRouteImport.update({
   id: '/admin/monitoring',
   path: '/admin/monitoring',
@@ -314,6 +353,11 @@ const AdminUsersRoute = AdminUsersRouteImport.update({
   path: '/admin/users',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminZonesRoute = AdminZonesRouteImport.update({
+  id: '/admin/zones',
+  path: '/admin/zones',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdsIndexRoute = AdsIndexRouteImport.update({
   id: '/ads/',
   path: '/ads/',
@@ -342,6 +386,16 @@ const JoinDriverRoute = JoinDriverRouteImport.update({
 const JoinProviderRoute = JoinProviderRouteImport.update({
   id: '/join/provider',
   path: '/join/provider',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceIndexRoute = MarketplaceIndexRouteImport.update({
+  id: '/marketplace/',
+  path: '/marketplace/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceNewRoute = MarketplaceNewRouteImport.update({
+  id: '/marketplace/new',
+  path: '/marketplace/new',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrdersIndexRoute = OrdersIndexRouteImport.update({
@@ -430,6 +484,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/assistant': typeof AssistantRoute
   '/auth': typeof AuthRoute
+  '/business': typeof BusinessRoute
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
   '/driver': typeof DriverRoute
@@ -437,6 +492,8 @@ export interface FileRoutesByFullPath {
   '/driver-earnings': typeof DriverEarningsRoute
   '/driver-map': typeof DriverMapRoute
   '/driver-tasks': typeof DriverTasksRoute
+  '/family': typeof FamilyRoute
+  '/guarantee': typeof GuaranteeRoute
   '/map': typeof MapRoute
   '/nearby': typeof NearbyRoute
   '/notifications': typeof NotificationsRoute
@@ -445,6 +502,7 @@ export interface FileRoutesByFullPath {
   '/provider': typeof ProviderRoute
   '/provider-finance': typeof ProviderFinanceRoute
   '/provider-insights': typeof ProviderInsightsRoute
+  '/quotes': typeof QuotesRoute
   '/referrals': typeof ReferralsRoute
   '/request-anything': typeof RequestAnythingRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -460,6 +518,8 @@ export interface FileRoutesByFullPath {
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
   '/admin/features': typeof AdminFeaturesRoute
+  '/admin/map': typeof AdminMapRoute
+  '/admin/marketplace': typeof AdminMarketplaceRoute
   '/admin/monitoring': typeof AdminMonitoringRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -472,10 +532,12 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/settlements': typeof AdminSettlementsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/zones': typeof AdminZonesRoute
   '/ads/$id': typeof AdsIdRoute
   '/ads/new': typeof AdsNewRoute
   '/join/driver': typeof JoinDriverRoute
   '/join/provider': typeof JoinProviderRoute
+  '/marketplace/new': typeof MarketplaceNewRoute
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/services/$id': typeof ServicesIdRoute
@@ -484,6 +546,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/ads/': typeof AdsIndexRoute
   '/doctors/': typeof DoctorsIndexRoute
+  '/marketplace/': typeof MarketplaceIndexRoute
   '/orders/': typeof OrdersIndexRoute
   '/pharmacies/': typeof PharmaciesIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
@@ -501,6 +564,7 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/assistant': typeof AssistantRoute
   '/auth': typeof AuthRoute
+  '/business': typeof BusinessRoute
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
   '/driver': typeof DriverRoute
@@ -508,6 +572,8 @@ export interface FileRoutesByTo {
   '/driver-earnings': typeof DriverEarningsRoute
   '/driver-map': typeof DriverMapRoute
   '/driver-tasks': typeof DriverTasksRoute
+  '/family': typeof FamilyRoute
+  '/guarantee': typeof GuaranteeRoute
   '/map': typeof MapRoute
   '/nearby': typeof NearbyRoute
   '/notifications': typeof NotificationsRoute
@@ -516,6 +582,7 @@ export interface FileRoutesByTo {
   '/provider': typeof ProviderRoute
   '/provider-finance': typeof ProviderFinanceRoute
   '/provider-insights': typeof ProviderInsightsRoute
+  '/quotes': typeof QuotesRoute
   '/referrals': typeof ReferralsRoute
   '/request-anything': typeof RequestAnythingRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -531,6 +598,8 @@ export interface FileRoutesByTo {
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
   '/admin/features': typeof AdminFeaturesRoute
+  '/admin/map': typeof AdminMapRoute
+  '/admin/marketplace': typeof AdminMarketplaceRoute
   '/admin/monitoring': typeof AdminMonitoringRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -543,10 +612,12 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/settlements': typeof AdminSettlementsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/zones': typeof AdminZonesRoute
   '/ads/$id': typeof AdsIdRoute
   '/ads/new': typeof AdsNewRoute
   '/join/driver': typeof JoinDriverRoute
   '/join/provider': typeof JoinProviderRoute
+  '/marketplace/new': typeof MarketplaceNewRoute
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/services/$id': typeof ServicesIdRoute
@@ -555,6 +626,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/ads': typeof AdsIndexRoute
   '/doctors': typeof DoctorsIndexRoute
+  '/marketplace': typeof MarketplaceIndexRoute
   '/orders': typeof OrdersIndexRoute
   '/pharmacies': typeof PharmaciesIndexRoute
   '/restaurants': typeof RestaurantsIndexRoute
@@ -573,6 +645,7 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/assistant': typeof AssistantRoute
   '/auth': typeof AuthRoute
+  '/business': typeof BusinessRoute
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
   '/driver': typeof DriverRoute
@@ -580,6 +653,8 @@ export interface FileRoutesById {
   '/driver-earnings': typeof DriverEarningsRoute
   '/driver-map': typeof DriverMapRoute
   '/driver-tasks': typeof DriverTasksRoute
+  '/family': typeof FamilyRoute
+  '/guarantee': typeof GuaranteeRoute
   '/map': typeof MapRoute
   '/nearby': typeof NearbyRoute
   '/notifications': typeof NotificationsRoute
@@ -588,6 +663,7 @@ export interface FileRoutesById {
   '/provider': typeof ProviderRoute
   '/provider-finance': typeof ProviderFinanceRoute
   '/provider-insights': typeof ProviderInsightsRoute
+  '/quotes': typeof QuotesRoute
   '/referrals': typeof ReferralsRoute
   '/request-anything': typeof RequestAnythingRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -603,6 +679,8 @@ export interface FileRoutesById {
   '/admin/courier': typeof AdminCourierRoute
   '/admin/drivers': typeof AdminDriversRoute
   '/admin/features': typeof AdminFeaturesRoute
+  '/admin/map': typeof AdminMapRoute
+  '/admin/marketplace': typeof AdminMarketplaceRoute
   '/admin/monitoring': typeof AdminMonitoringRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -615,10 +693,12 @@ export interface FileRoutesById {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/settlements': typeof AdminSettlementsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/zones': typeof AdminZonesRoute
   '/ads/$id': typeof AdsIdRoute
   '/ads/new': typeof AdsNewRoute
   '/join/driver': typeof JoinDriverRoute
   '/join/provider': typeof JoinProviderRoute
+  '/marketplace/new': typeof MarketplaceNewRoute
   '/orders/$id': typeof OrdersIdRoute
   '/restaurants/$id': typeof RestaurantsIdRoute
   '/services/$id': typeof ServicesIdRoute
@@ -627,6 +707,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/ads/': typeof AdsIndexRoute
   '/doctors/': typeof DoctorsIndexRoute
+  '/marketplace/': typeof MarketplaceIndexRoute
   '/orders/': typeof OrdersIndexRoute
   '/pharmacies/': typeof PharmaciesIndexRoute
   '/restaurants/': typeof RestaurantsIndexRoute
@@ -646,6 +727,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/assistant'
     | '/auth'
+    | '/business'
     | '/checkout'
     | '/courier'
     | '/driver'
@@ -653,6 +735,8 @@ export interface FileRouteTypes {
     | '/driver-earnings'
     | '/driver-map'
     | '/driver-tasks'
+    | '/family'
+    | '/guarantee'
     | '/map'
     | '/nearby'
     | '/notifications'
@@ -661,6 +745,7 @@ export interface FileRouteTypes {
     | '/provider'
     | '/provider-finance'
     | '/provider-insights'
+    | '/quotes'
     | '/referrals'
     | '/request-anything'
     | '/reset-password'
@@ -676,6 +761,8 @@ export interface FileRouteTypes {
     | '/admin/courier'
     | '/admin/drivers'
     | '/admin/features'
+    | '/admin/map'
+    | '/admin/marketplace'
     | '/admin/monitoring'
     | '/admin/notifications'
     | '/admin/orders'
@@ -688,10 +775,12 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/settlements'
     | '/admin/users'
+    | '/admin/zones'
     | '/ads/$id'
     | '/ads/new'
     | '/join/driver'
     | '/join/provider'
+    | '/marketplace/new'
     | '/orders/$id'
     | '/restaurants/$id'
     | '/services/$id'
@@ -700,6 +789,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/ads/'
     | '/doctors/'
+    | '/marketplace/'
     | '/orders/'
     | '/pharmacies/'
     | '/restaurants/'
@@ -717,6 +807,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/assistant'
     | '/auth'
+    | '/business'
     | '/checkout'
     | '/courier'
     | '/driver'
@@ -724,6 +815,8 @@ export interface FileRouteTypes {
     | '/driver-earnings'
     | '/driver-map'
     | '/driver-tasks'
+    | '/family'
+    | '/guarantee'
     | '/map'
     | '/nearby'
     | '/notifications'
@@ -732,6 +825,7 @@ export interface FileRouteTypes {
     | '/provider'
     | '/provider-finance'
     | '/provider-insights'
+    | '/quotes'
     | '/referrals'
     | '/request-anything'
     | '/reset-password'
@@ -747,6 +841,8 @@ export interface FileRouteTypes {
     | '/admin/courier'
     | '/admin/drivers'
     | '/admin/features'
+    | '/admin/map'
+    | '/admin/marketplace'
     | '/admin/monitoring'
     | '/admin/notifications'
     | '/admin/orders'
@@ -759,10 +855,12 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/settlements'
     | '/admin/users'
+    | '/admin/zones'
     | '/ads/$id'
     | '/ads/new'
     | '/join/driver'
     | '/join/provider'
+    | '/marketplace/new'
     | '/orders/$id'
     | '/restaurants/$id'
     | '/services/$id'
@@ -771,6 +869,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/ads'
     | '/doctors'
+    | '/marketplace'
     | '/orders'
     | '/pharmacies'
     | '/restaurants'
@@ -788,6 +887,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/assistant'
     | '/auth'
+    | '/business'
     | '/checkout'
     | '/courier'
     | '/driver'
@@ -795,6 +895,8 @@ export interface FileRouteTypes {
     | '/driver-earnings'
     | '/driver-map'
     | '/driver-tasks'
+    | '/family'
+    | '/guarantee'
     | '/map'
     | '/nearby'
     | '/notifications'
@@ -803,6 +905,7 @@ export interface FileRouteTypes {
     | '/provider'
     | '/provider-finance'
     | '/provider-insights'
+    | '/quotes'
     | '/referrals'
     | '/request-anything'
     | '/reset-password'
@@ -818,6 +921,8 @@ export interface FileRouteTypes {
     | '/admin/courier'
     | '/admin/drivers'
     | '/admin/features'
+    | '/admin/map'
+    | '/admin/marketplace'
     | '/admin/monitoring'
     | '/admin/notifications'
     | '/admin/orders'
@@ -830,10 +935,12 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/settlements'
     | '/admin/users'
+    | '/admin/zones'
     | '/ads/$id'
     | '/ads/new'
     | '/join/driver'
     | '/join/provider'
+    | '/marketplace/new'
     | '/orders/$id'
     | '/restaurants/$id'
     | '/services/$id'
@@ -842,6 +949,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/ads/'
     | '/doctors/'
+    | '/marketplace/'
     | '/orders/'
     | '/pharmacies/'
     | '/restaurants/'
@@ -860,6 +968,7 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   AssistantRoute: typeof AssistantRoute
   AuthRoute: typeof AuthRoute
+  BusinessRoute: typeof BusinessRoute
   CheckoutRoute: typeof CheckoutRoute
   CourierRoute: typeof CourierRoute
   DriverRoute: typeof DriverRoute
@@ -867,6 +976,8 @@ export interface RootRouteChildren {
   DriverEarningsRoute: typeof DriverEarningsRoute
   DriverMapRoute: typeof DriverMapRoute
   DriverTasksRoute: typeof DriverTasksRoute
+  FamilyRoute: typeof FamilyRoute
+  GuaranteeRoute: typeof GuaranteeRoute
   MapRoute: typeof MapRoute
   NearbyRoute: typeof NearbyRoute
   NotificationsRoute: typeof NotificationsRoute
@@ -875,6 +986,7 @@ export interface RootRouteChildren {
   ProviderRoute: typeof ProviderRoute
   ProviderFinanceRoute: typeof ProviderFinanceRoute
   ProviderInsightsRoute: typeof ProviderInsightsRoute
+  QuotesRoute: typeof QuotesRoute
   ReferralsRoute: typeof ReferralsRoute
   RequestAnythingRoute: typeof RequestAnythingRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -890,6 +1002,8 @@ export interface RootRouteChildren {
   AdminCourierRoute: typeof AdminCourierRoute
   AdminDriversRoute: typeof AdminDriversRoute
   AdminFeaturesRoute: typeof AdminFeaturesRoute
+  AdminMapRoute: typeof AdminMapRoute
+  AdminMarketplaceRoute: typeof AdminMarketplaceRoute
   AdminMonitoringRoute: typeof AdminMonitoringRoute
   AdminNotificationsRoute: typeof AdminNotificationsRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
@@ -902,10 +1016,12 @@ export interface RootRouteChildren {
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSettlementsRoute: typeof AdminSettlementsRoute
   AdminUsersRoute: typeof AdminUsersRoute
+  AdminZonesRoute: typeof AdminZonesRoute
   AdsIdRoute: typeof AdsIdRoute
   AdsNewRoute: typeof AdsNewRoute
   JoinDriverRoute: typeof JoinDriverRoute
   JoinProviderRoute: typeof JoinProviderRoute
+  MarketplaceNewRoute: typeof MarketplaceNewRoute
   OrdersIdRoute: typeof OrdersIdRoute
   RestaurantsIdRoute: typeof RestaurantsIdRoute
   ServicesIdRoute: typeof ServicesIdRoute
@@ -914,6 +1030,7 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdsIndexRoute: typeof AdsIndexRoute
   DoctorsIndexRoute: typeof DoctorsIndexRoute
+  MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
   PharmaciesIndexRoute: typeof PharmaciesIndexRoute
   RestaurantsIndexRoute: typeof RestaurantsIndexRoute
@@ -955,6 +1072,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/business': {
+      id: '/business'
+      path: '/business'
+      fullPath: '/business'
+      preLoaderRoute: typeof BusinessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -1004,6 +1128,20 @@ declare module '@tanstack/react-router' {
       path: '/driver-tasks'
       fullPath: '/driver-tasks'
       preLoaderRoute: typeof DriverTasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/family': {
+      id: '/family'
+      path: '/family'
+      fullPath: '/family'
+      preLoaderRoute: typeof FamilyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guarantee': {
+      id: '/guarantee'
+      path: '/guarantee'
+      fullPath: '/guarantee'
+      preLoaderRoute: typeof GuaranteeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/map': {
@@ -1060,6 +1198,13 @@ declare module '@tanstack/react-router' {
       path: '/provider-insights'
       fullPath: '/provider-insights'
       preLoaderRoute: typeof ProviderInsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/quotes': {
+      id: '/quotes'
+      path: '/quotes'
+      fullPath: '/quotes'
+      preLoaderRoute: typeof QuotesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/referrals': {
@@ -1174,6 +1319,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminFeaturesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/map': {
+      id: '/admin/map'
+      path: '/admin/map'
+      fullPath: '/admin/map'
+      preLoaderRoute: typeof AdminMapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/marketplace': {
+      id: '/admin/marketplace'
+      path: '/admin/marketplace'
+      fullPath: '/admin/marketplace'
+      preLoaderRoute: typeof AdminMarketplaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/monitoring': {
       id: '/admin/monitoring'
       path: '/admin/monitoring'
@@ -1258,6 +1417,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/zones': {
+      id: '/admin/zones'
+      path: '/admin/zones'
+      fullPath: '/admin/zones'
+      preLoaderRoute: typeof AdminZonesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/ads/': {
       id: '/ads/'
       path: '/ads'
@@ -1298,6 +1464,20 @@ declare module '@tanstack/react-router' {
       path: '/join/provider'
       fullPath: '/join/provider'
       preLoaderRoute: typeof JoinProviderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace/': {
+      id: '/marketplace/'
+      path: '/marketplace'
+      fullPath: '/marketplace/'
+      preLoaderRoute: typeof MarketplaceIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace/new': {
+      id: '/marketplace/new'
+      path: '/marketplace/new'
+      fullPath: '/marketplace/new'
+      preLoaderRoute: typeof MarketplaceNewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/orders/': {
@@ -1420,6 +1600,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRoute: AccountRoute,
   AssistantRoute: AssistantRoute,
   AuthRoute: AuthRoute,
+  BusinessRoute: BusinessRoute,
   CheckoutRoute: CheckoutRoute,
   CourierRoute: CourierRoute,
   DriverRoute: DriverRoute,
@@ -1427,6 +1608,8 @@ const rootRouteChildren: RootRouteChildren = {
   DriverEarningsRoute: DriverEarningsRoute,
   DriverMapRoute: DriverMapRoute,
   DriverTasksRoute: DriverTasksRoute,
+  FamilyRoute: FamilyRoute,
+  GuaranteeRoute: GuaranteeRoute,
   MapRoute: MapRoute,
   NearbyRoute: NearbyRoute,
   NotificationsRoute: NotificationsRoute,
@@ -1435,6 +1618,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderRoute: ProviderRoute,
   ProviderFinanceRoute: ProviderFinanceRoute,
   ProviderInsightsRoute: ProviderInsightsRoute,
+  QuotesRoute: QuotesRoute,
   ReferralsRoute: ReferralsRoute,
   RequestAnythingRoute: RequestAnythingRoute,
   ResetPasswordRoute: ResetPasswordRoute,
@@ -1450,6 +1634,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCourierRoute: AdminCourierRoute,
   AdminDriversRoute: AdminDriversRoute,
   AdminFeaturesRoute: AdminFeaturesRoute,
+  AdminMapRoute: AdminMapRoute,
+  AdminMarketplaceRoute: AdminMarketplaceRoute,
   AdminMonitoringRoute: AdminMonitoringRoute,
   AdminNotificationsRoute: AdminNotificationsRoute,
   AdminOrdersRoute: AdminOrdersRoute,
@@ -1462,10 +1648,12 @@ const rootRouteChildren: RootRouteChildren = {
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSettlementsRoute: AdminSettlementsRoute,
   AdminUsersRoute: AdminUsersRoute,
+  AdminZonesRoute: AdminZonesRoute,
   AdsIdRoute: AdsIdRoute,
   AdsNewRoute: AdsNewRoute,
   JoinDriverRoute: JoinDriverRoute,
   JoinProviderRoute: JoinProviderRoute,
+  MarketplaceNewRoute: MarketplaceNewRoute,
   OrdersIdRoute: OrdersIdRoute,
   RestaurantsIdRoute: RestaurantsIdRoute,
   ServicesIdRoute: ServicesIdRoute,
@@ -1474,6 +1662,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdsIndexRoute: AdsIndexRoute,
   DoctorsIndexRoute: DoctorsIndexRoute,
+  MarketplaceIndexRoute: MarketplaceIndexRoute,
   OrdersIndexRoute: OrdersIndexRoute,
   PharmaciesIndexRoute: PharmaciesIndexRoute,
   RestaurantsIndexRoute: RestaurantsIndexRoute,

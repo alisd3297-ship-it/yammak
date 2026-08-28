@@ -22,6 +22,13 @@ export const submitCustomRequest = createServerFn({ method: "POST" })
       notes?: string | null;
       budget?: number | null;
       currency?: string;
+      sourcePlace?: string | null;
+      sourceLat?: number | null;
+      sourceLng?: number | null;
+      imageUrl?: string | null;
+      inputKind?: "text" | "voice" | "image" | "errand";
+      recipientName?: string | null;
+      recipientPhone?: string | null;
     }) => data,
   )
   .handler(async ({ data, context }) => {
@@ -39,6 +46,8 @@ export const submitCustomRequest = createServerFn({ method: "POST" })
         note: i.note?.trim() || null,
       }));
 
+    const kind = data.inputKind ?? "text";
+
     const { data: row, error } = await context.supabase
       .from("custom_requests")
       .insert({
@@ -51,9 +60,19 @@ export const submitCustomRequest = createServerFn({ method: "POST" })
         notes: data.notes?.trim() ? data.notes.trim().slice(0, 500) : null,
         budget: data.budget != null && data.budget > 0 ? data.budget : null,
         currency: data.currency === "USD" ? "USD" : "IQD",
+        source_place_text: data.sourcePlace?.trim() ? data.sourcePlace.trim().slice(0, 300) : null,
+        source_lat: data.sourceLat ?? null,
+        source_lng: data.sourceLng ?? null,
+        image_url: data.imageUrl?.trim() ? data.imageUrl.trim().slice(0, 500) : null,
+        input_kind: ["text", "voice", "image", "errand"].includes(kind) ? kind : "text",
+        recipient_name: data.recipientName?.trim() ? data.recipientName.trim().slice(0, 120) : null,
+        recipient_phone: data.recipientPhone?.trim()
+          ? data.recipientPhone.trim().slice(0, 30)
+          : null,
       })
       .select("id, status, created_at")
       .maybeSingle();
+
 
     if (error || !row) throw new Error(friendly(error?.message ?? ""));
 
