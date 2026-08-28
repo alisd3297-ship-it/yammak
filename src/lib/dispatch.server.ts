@@ -245,13 +245,28 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
     fee > 0 ? `أجرة التوصيل: ${fee.toLocaleString("en-US")} د.ع` : null,
     `المسافة ${chosen.km.toFixed(1)} كم`,
   ].filter(Boolean);
-  await supabaseAdmin.from("notifications").insert({
-    user_id: chosen.driverId,
-    title: "طلب توصيل جديد",
-    body: parts.join(" · "),
-    kind: "offer",
-    order_id: order.id,
-  });
+  const { data: notif } = await supabaseAdmin
+    .from("notifications")
+    .insert({
+      user_id: chosen.driverId,
+      title: "طلب توصيل جديد",
+      body: parts.join(" · "),
+      kind: "offer",
+      order_id: order.id,
+    })
+    .select("id")
+    .maybeSingle();
+
+  // إرسال فوري للهاتف حتى والتطبيق مغلق؛ أي فشل يترك الإشعار معلّقاً لتلتقطه الصيانة
+  if (notif?.id) {
+    try {
+      const { pushNotificationNow } = await import("@/lib/push.server");
+      await pushNotificationNow(notif.id);
+    } catch {
+      // متروك للصيانة الدورية
+    }
+  }
+
 
   return {
     assignedTo: chosen.driverId,
