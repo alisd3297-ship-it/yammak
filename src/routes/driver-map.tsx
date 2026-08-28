@@ -4,10 +4,12 @@ import { DriverShell } from "@/components/driver/driver-shell";
 import { BackButton } from "@/components/app-shell";
 import { DriverMap } from "@/components/driver/driver-map";
 import { useDriverTasks } from "@/lib/driver-data";
+import { requireWorker } from "@/lib/route-guards";
 import { DRIVER_STAGE_ORDER, stageOf } from "@/lib/driver-flow";
 
 export const Route = createFileRoute("/driver-map")({
   ssr: false,
+  beforeLoad: requireWorker,
   head: () => ({
     meta: [
       { title: "خريطة المهمة | لبابك" },
