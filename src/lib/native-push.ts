@@ -52,6 +52,9 @@ async function vibrateOrder() {
 async function ensureChannels(
   PushNotifications: (typeof import("@capacitor/push-notifications"))["PushNotifications"],
 ) {
+  // مهم: لا نمرر sound نهائياً. Capacitor يحوّل قيمة sound إلى ملف داخل res/raw،
+  // وإذا لم يوجد الملف تُنشأ القناة بصوت غير صالح = إشعار صامت.
+  // بترك sound فارغاً يستخدم أندرويد نغمة الإشعار الافتراضية للنظام.
   const channels = [
     {
       id: ORDER_CHANNEL_ID,
@@ -59,8 +62,17 @@ async function ensureChannels(
       description: "تنبيه فوري عند وصول طلب جديد",
       importance: 5 as const,
       visibility: 1 as const,
-      sound: "default",
       vibration: true,
+      lights: true,
+    },
+    {
+      id: TAXI_CHANNEL_ID,
+      name: "رحلات التكسي",
+      description: "تنبيه صوتي فوري عند وصول عرض رحلة تكسي",
+      importance: 5 as const,
+      visibility: 1 as const,
+      vibration: true,
+      lights: true,
     },
     {
       id: DEFAULT_CHANNEL_ID,
@@ -68,7 +80,6 @@ async function ensureChannels(
       description: "إشعارات عامة",
       importance: 4 as const,
       visibility: 1 as const,
-      sound: "default",
       vibration: true,
     },
   ];
@@ -77,6 +88,13 @@ async function ensureChannels(
       await PushNotifications.createChannel(ch);
     } catch {
       // القنوات مدعومة على أندرويد فقط
+    }
+  }
+  for (const id of LEGACY_CHANNEL_IDS) {
+    try {
+      await PushNotifications.deleteChannel({ id });
+    } catch {
+      // القناة القديمة غير موجودة أو المنصة ليست أندرويد
     }
   }
 }
