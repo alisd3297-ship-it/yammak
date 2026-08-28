@@ -4416,6 +4416,7 @@ export type Database = {
       expire_stale_offers: { Args: { _order_id?: string }; Returns: number }
       expire_stale_orders: { Args: never; Returns: Json }
       expire_stale_trip_offers: { Args: { _trip_id?: string }; Returns: number }
+      expire_stale_trips: { Args: never; Returns: Json }
       feature_enabled: {
         Args: { _key: string; _user_id?: string }
         Returns: boolean
@@ -4599,6 +4600,7 @@ export type Database = {
           owner_id: string
         }[]
       }
+      platform_active_orders: { Args: { minutes?: number }; Returns: number }
       provider_dashboard_stats: {
         Args: { _days?: number; _provider_id: string }
         Returns: Json
@@ -5147,6 +5149,13 @@ export type Database = {
       taxi_class_rank: {
         Args: { _c: Database["public"]["Enums"]["taxi_class"] }
         Returns: number
+      }
+      taxi_stand_waiting_counts: {
+        Args: never
+        Returns: {
+          stand_id: string
+          waiting: number
+        }[]
       }
       trip_actor: {
         Args: { _trip_id: string; _user_id: string }
