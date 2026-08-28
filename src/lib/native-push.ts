@@ -148,7 +148,9 @@ export function useNativePush(
             body: n.body ?? "",
             tag: orderId,
             kind: urgent ? "order" : "default",
-            url: optsRef.current?.deepLink?.(orderId) ?? (dataKind.startsWith("trip") ? "/driver" : null),
+            url:
+              optsRef.current?.deepLink?.(orderId) ??
+              (dataKind.startsWith("trip") ? "/driver" : null),
           });
           playAlertSound(urgent ? "order" : "default");
           void vibrateOrder();
