@@ -107,16 +107,18 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
       .map((o) => o.driver_id),
   );
 
+  // المرشحون: كل مندوب توصيل معتمد ومتاح (دراجة، سيارة، ستوتة، شاحنة حمل)
+  // بالإضافة إلى سائقي التكسي الذين فعّلوا خيار التوصيل (delivery_enabled).
   const { data: workers } = await supabaseAdmin
     .from("worker_profiles")
-    .select("user_id, max_active_orders, vehicle_type, rating, ratings_count")
-    .eq("worker_kind", "delivery")
+    .select("user_id, max_active_orders, vehicle_type, rating, ratings_count, worker_kind")
+    .or("worker_kind.eq.delivery,and(worker_kind.eq.taxi,delivery_enabled.eq.true)")
     .eq("is_approved", true)
     .eq("is_available", true);
 
   // نوع المركبة يقيّد فقط طلبات التوصيل الخاص/المندوب المستقل التي تحدد مركبة مطلوبة.
-  // طلبات المطاعم والمتاجر تقبل كل أنواع المركبات (دراجة، ستوتة، سيارة، شاحنة حمل، تكسي)
-  // ما دام حساب المندوب مفعّلاً للتوصيل ومعتمداً ومتاحاً.
+  // طلبات المطاعم والمتاجر تقبل كل أنواع المركبات ما دام الحساب معتمداً ومتاحاً.
+
   const vehicleConstrained =
     order.order_type === "special_delivery" || order.order_type === "courier";
   const requiredRank =

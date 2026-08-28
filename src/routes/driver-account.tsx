@@ -150,6 +150,29 @@ function DriverAccountPage() {
           </div>
         </section>
 
+        {worker?.worker_kind === "taxi" && (
+          <section className="rounded-3xl bg-card p-4 shadow-soft">
+            <p className="flex items-center gap-2 text-sm font-black">
+              <Car className="size-4 text-primary" /> استلام طلبات التوصيل
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              فعّل الخيار حتى تصلك طلبات المطاعم والمتاجر إضافةً إلى رحلات التكسي.
+            </p>
+            <button
+              aria-pressed={!!worker?.delivery_enabled}
+              onClick={() => void actions.setDeliveryEnabled(!worker?.delivery_enabled)}
+              className={cn(
+                "mt-3 w-full rounded-2xl p-3 text-sm font-bold transition",
+                worker?.delivery_enabled ? "bg-primary text-primary-foreground" : "bg-muted",
+              )}
+            >
+              {worker?.delivery_enabled ? "مفعّل للتوصيل" : "غير مفعّل للتوصيل"}
+            </button>
+          </section>
+        )}
+
+
+
         <section className="overflow-hidden rounded-3xl bg-card shadow-soft">
           <SettingLink to="/driver-earnings" icon={Wallet} label="الأرباح والتسويات" />
           <SettingLink to="/notifications" icon={Bell} label="الإشعارات" />

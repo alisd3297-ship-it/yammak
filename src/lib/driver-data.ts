@@ -66,7 +66,7 @@ export function useWorkerProfile() {
       const { data } = await supabase
         .from("worker_profiles")
         .select(
-          "user_id, is_approved, is_available, worker_kind, rating, ratings_count, vehicle, vehicle_type, vehicle_make, vehicle_model, vehicle_color, plate_number, taxi_class, taxi_seats, max_active_orders, application_status, rejection_reason",
+          "user_id, is_approved, is_available, worker_kind, delivery_enabled, rating, ratings_count, vehicle, vehicle_type, vehicle_make, vehicle_model, vehicle_color, plate_number, taxi_class, taxi_seats, max_active_orders, application_status, rejection_reason",
         )
         .eq("user_id", account!.userId!)
         .maybeSingle();
@@ -229,6 +229,27 @@ export function useDriverActions() {
       toast.success("تم حفظ نوع وسيلة النقل");
       qc.invalidateQueries({ queryKey: ["worker-profile"] });
     },
+    /** تفعيل استلام طلبات التوصيل لسائق التكسي (مطاعم ومتاجر) إضافةً إلى الرحلات. */
+    async setDeliveryEnabled(value: boolean) {
+      if (!account?.userId) return;
+      const key = ["worker-profile", account.userId] as const;
+      const previous = qc.getQueryData(key);
+      qc.setQueryData(key, (old: unknown) =>
+        old && typeof old === "object" ? { ...(old as object), delivery_enabled: value } : old,
+      );
+      const { error } = await supabase
+        .from("worker_profiles")
+        .update({ delivery_enabled: value } as never)
+        .eq("user_id", account.userId);
+      if (error) {
+        qc.setQueryData(key, previous);
+        toast.error("تعذر تحديث تفعيل التوصيل");
+        return;
+      }
+      toast.success(value ? "صرت تستلم طلبات التوصيل أيضاً" : "توقفت طلبات التوصيل");
+      qc.invalidateQueries({ queryKey: ["worker-profile"] });
+    },
+
 
     async answerOffer(offerId: string, accept: boolean) {
       try {
