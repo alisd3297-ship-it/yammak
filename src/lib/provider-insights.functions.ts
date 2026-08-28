@@ -2,14 +2,14 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export type ProviderStats = {
-  currency: string;
-  orders: { total: number; completed: number; cancelled: number };
+  orders_total: number;
+  orders_completed: number;
+  orders_cancelled: number;
+  orders_active: number;
   revenue: number;
-  avgOrder: number;
-  topProducts: { name: string; quantity: number; revenue: number }[];
+  avg_ticket: number;
+  top_products: { name: string; quantity: number; revenue: number }[];
   daily: { day: string; orders: number; revenue: number }[];
-  rating: number;
-  ratingsCount: number;
 };
 
 /** إحصاءات لوحة التاجر الذكية (المنطق داخل قاعدة البيانات مع تحقق الملكية). */
