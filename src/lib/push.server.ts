@@ -158,12 +158,15 @@ export async function sendFcm(
           },
           apns: {
             headers: {
+              // alert دائماً: يضمن عرض الإشعار وتشغيل الصوت والتطبيق مغلق
+              "apns-push-type": "alert",
               "apns-priority": "10",
-              ...(urgent ? { "apns-push-type": "alert" } : {}),
+              ...(msg.orderId ? { "apns-collapse-id": msg.orderId.slice(0, 63) } : {}),
             },
             payload: {
               aps: {
-                sound: "default",
+                // كائن الصوت يضمن أعلى مستوى للنغمة على iOS
+                sound: { name: "default", volume: 1.0, critical: 0 },
                 badge: 1,
                 ...(urgent ? { "interruption-level": "time-sensitive" } : {}),
                 ...(msg.orderId ? { "thread-id": msg.orderId } : {}),
