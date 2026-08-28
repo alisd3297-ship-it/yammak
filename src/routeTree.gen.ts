@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
+import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CourierRouteImport } from './routes/courier'
@@ -83,6 +84,11 @@ const IndexRoute = IndexRouteImport.update({
 const AccountRoute = AccountRouteImport.update({
   id: '/account',
   path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssistantRoute = AssistantRouteImport.update({
+  id: '/assistant',
+  path: '/assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -404,6 +410,7 @@ const ApiPublicPaymentsStripeRoute = ApiPublicPaymentsStripeRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/assistant': typeof AssistantRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
@@ -471,6 +478,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/assistant': typeof AssistantRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
@@ -539,6 +547,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/assistant': typeof AssistantRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
@@ -608,6 +617,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/account'
+    | '/assistant'
     | '/auth'
     | '/checkout'
     | '/courier'
@@ -675,6 +685,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/account'
+    | '/assistant'
     | '/auth'
     | '/checkout'
     | '/courier'
@@ -742,6 +753,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/account'
+    | '/assistant'
     | '/auth'
     | '/checkout'
     | '/courier'
@@ -810,6 +822,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
+  AssistantRoute: typeof AssistantRoute
   AuthRoute: typeof AuthRoute
   CheckoutRoute: typeof CheckoutRoute
   CourierRoute: typeof CourierRoute
@@ -889,6 +902,13 @@ declare module '@tanstack/react-router' {
       path: '/account'
       fullPath: '/account'
       preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/assistant': {
+      id: '/assistant'
+      path: '/assistant'
+      fullPath: '/assistant'
+      preLoaderRoute: typeof AssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -1338,6 +1358,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
+  AssistantRoute: AssistantRoute,
   AuthRoute: AuthRoute,
   CheckoutRoute: CheckoutRoute,
   CourierRoute: CourierRoute,
