@@ -16,11 +16,12 @@ import {
   type ServiceRequestStatus,
 } from "@/lib/services";
 import { cn } from "@/lib/utils";
-import { Plus, Pencil } from "lucide-react";
+import { Plus, Pencil, UserCog } from "lucide-react";
 import {
   ProviderFormDialog,
   type ProviderFormValue,
 } from "@/components/admin/provider-form-dialog";
+import { ProviderAccountDialog } from "@/components/admin/provider-account-dialog";
 
 import { requireStaff } from "@/lib/route-guards";
 
@@ -100,6 +101,8 @@ function AdminProvidersPage() {
     setFormOpen(true);
   }
 
+  const [accountFor, setAccountFor] = useState<{ id: string; name: string } | null>(null);
+
   const isStaff = (account?.roles ?? []).some((r) =>
     ["super_admin", "admin", "supervisor"].includes(r),
   );
@@ -126,7 +129,7 @@ function AdminProvidersPage() {
       const { data } = await supabase
         .from("providers")
         .select(
-          "id, name, kind, status, phone, address_text, description, created_at, city_id, lat, lng, logo_url, opening_time, closing_time, delivery_fee_override, min_order_amount, is_open, keywords, profession_category_id",
+          "id, name, kind, status, phone, address_text, description, created_at, owner_id, city_id, lat, lng, logo_url, opening_time, closing_time, delivery_fee_override, min_order_amount, is_open, keywords, profession_category_id",
         )
         .eq("status", filter)
         .order("created_at", { ascending: false })
@@ -328,6 +331,14 @@ function AdminProvidersPage() {
                 <Pencil className="size-4" />
                 تعديل
               </Button>
+              <Button
+                variant="outline"
+                className="h-10"
+                onClick={() => setAccountFor({ id: p.id, name: p.name })}
+              >
+                <UserCog className="size-4" />
+                {p.owner_id ? "إدارة الحساب" : "إنشاء حساب دخول"}
+              </Button>
               {p.status !== "approved" && (
                 <Button className="h-10 flex-1" onClick={() => apply(p.id, "approved")}>
                   اعتماد
@@ -352,6 +363,13 @@ function AdminProvidersPage() {
           </p>
         )}
       </div>
+
+      <ProviderAccountDialog
+        open={Boolean(accountFor)}
+        onOpenChange={(v) => !v && setAccountFor(null)}
+        providerId={accountFor?.id ?? null}
+        providerName={accountFor?.name ?? ""}
+      />
 
       <ProviderFormDialog
         open={formOpen}
