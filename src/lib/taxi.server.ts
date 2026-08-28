@@ -134,12 +134,26 @@ export async function runTripDispatch(tripId: string): Promise<TripDispatchResul
       status: "searching_driver",
       message: "ماكو سائق متاح حالياً، نكمل البحث",
     };
-  await supabaseAdmin.from("notifications").insert({
-    user_id: chosen.driverId,
-    title: "طلب رحلة جديد",
-    body: "وصلك عرض رحلة تكسي، لديك مهلة للرد",
-    kind: "trip_offer",
-  });
+  const { data: notif } = await supabaseAdmin
+    .from("notifications")
+    .insert({
+      user_id: chosen.driverId,
+      title: "طلب رحلة جديد",
+      body: "وصلك عرض رحلة تكسي، لديك مهلة للرد",
+      kind: "trip_offer",
+    })
+    .select("id")
+    .maybeSingle();
+  // إرسال فوري بدل انتظار دورة الصيانة (الرحلة حسّاسة للوقت)
+  if (notif?.id) {
+    try {
+      const { pushNotificationNow } = await import("@/lib/push.server");
+      await pushNotificationNow(notif.id);
+    } catch (err) {
+      console.error("[taxi] immediate push failed", err);
+    }
+  }
+
 
   return { assignedTo: null, status: "searching_driver", message: "تم إرسال الرحلة لأقرب سائق" };
 }
