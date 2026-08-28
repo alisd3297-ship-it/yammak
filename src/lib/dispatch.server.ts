@@ -328,12 +328,24 @@ export async function runMaintenance(source = "manual", minSeconds = 30) {
     // لا نوقف الصيانة العامة بسبب الرحلات
   }
 
+  // إرسال إشعارات الهاتف المعلّقة ضمن نفس الدورة (كل دقيقة) بدل الاعتماد على مجدول خارجي
+  let pushed = 0;
+  try {
+    const { dispatchPendingPush } = await import("@/lib/push.server");
+    const push = await dispatchPendingPush(100);
+    pushed = push.sent;
+  } catch {
+    // فشل الإرسال لا يوقف الصيانة؛ تبقى الإشعارات معلّقة للدورة القادمة
+  }
+
   const result = {
     skipped: false,
     expired: Number(expired ?? 0) + tripExpired,
     completed: Number(completed ?? 0),
     redispatched,
+    pushed,
   };
+
 
   await supabaseAdmin.from("maintenance_runs").insert({
     source,
