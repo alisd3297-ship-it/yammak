@@ -4836,6 +4836,10 @@ export type Database = {
         }
       }
       redeem_referral: { Args: { _code: string }; Returns: Json }
+      register_push_device: {
+        Args: { _platform?: string; _token: string }
+        Returns: boolean
+      }
       reject_delivery_offer: {
         Args: { _offer_id: string; _reason?: string }
         Returns: string
