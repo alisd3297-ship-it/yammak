@@ -3593,6 +3593,50 @@ export type Database = {
         Args: { _hard?: boolean; _id: string; _reassign_to?: string }
         Returns: undefined
       }
+      admin_link_provider_owner: {
+        Args: { _owner_id: string; _provider_id: string }
+        Returns: {
+          address_text: string | null
+          approval_code: string | null
+          area_id: string | null
+          avg_prep_minutes: number
+          city_id: string | null
+          closing_time: string | null
+          commission_percent: number
+          cover_url: string | null
+          created_at: string
+          delivery_fee_override: number | null
+          description: string | null
+          id: string
+          is_demo: boolean
+          is_open: boolean
+          keywords: string[]
+          kind: Database["public"]["Enums"]["provider_kind"]
+          lat: number | null
+          lng: number | null
+          logo_url: string | null
+          min_order_amount: number
+          name: string
+          opening_time: string | null
+          orders_count: number
+          owner_id: string | null
+          phone: string | null
+          profession_category_id: string | null
+          rating: number
+          ratings_count: number
+          status: Database["public"]["Enums"]["provider_status"]
+          updated_at: string
+          verification_status: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "providers"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       admin_list_users: {
         Args: { _limit?: number; _search?: string }
         Returns: {
