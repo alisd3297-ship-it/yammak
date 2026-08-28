@@ -182,3 +182,167 @@ export async function sendFcm(
 
   return { sent, invalid };
 }
+
+/** مهلة انتظار تسجيل جهاز قبل اعتبار الإشعار منتهياً (لا يصل push بدون جهاز). */
+const NO_DEVICE_GRACE_MS = 30 * 60 * 1000;
+
+export type PushDispatchResult = {
+  ok: boolean;
+  sent: number;
+  failed: number;
+  waitingNoDevice: number;
+  skippedNoDevice: number;
+  invalidated: number;
+  reason?: string;
+};
+
+/**
+ * إرسال الإشعارات المعلّقة (pushed_at = null) إلى أجهزة أصحابها.
+ * تُستدعى من الصيانة الدورية (كل دقيقة) ومن نقطة /api/public/push-dispatch معاً،
+ * حتى لا يعتمد التسليم على مجدول خارجي وحده.
+ */
+export async function dispatchPendingPush(limit = 100): Promise<PushDispatchResult> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+  const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const { data: pending, error } = await supabaseAdmin
+    .from("notifications")
+    .select("id, user_id, title, body, kind, order_id, created_at")
+    .is("pushed_at", null)
+    .gte("created_at", since)
+    .order("created_at", { ascending: true })
+    .limit(limit);
+  if (error)
+    return {
+      ok: false,
+      sent: 0,
+      failed: 0,
+      waitingNoDevice: 0,
+      skippedNoDevice: 0,
+      invalidated: 0,
+      reason: error.message,
+    };
+  if (!pending || pending.length === 0)
+    return { ok: true, sent: 0, failed: 0, waitingNoDevice: 0, skippedNoDevice: 0, invalidated: 0 };
+
+  const userIds = [...new Set(pending.map((n) => n.user_id))];
+  const { data: devices } = await supabaseAdmin
+    .from("push_devices")
+    .select("user_id, token")
+    .eq("is_active", true)
+    .in("user_id", userIds);
+
+  const byUser = new Map<string, string[]>();
+  (devices ?? []).forEach((d) => {
+    byUser.set(d.user_id, [...(byUser.get(d.user_id) ?? []), d.token]);
+  });
+
+  let sent = 0;
+  let failed = 0;
+  let skippedNoDevice = 0;
+  let waitingNoDevice = 0;
+  let reason: string | undefined;
+  const invalidTokens: string[] = [];
+  const doneIds: string[] = [];
+
+  for (const n of pending) {
+    const tokens = byUser.get(n.user_id) ?? [];
+    if (tokens.length === 0) {
+      const age = Date.now() - new Date(n.created_at).getTime();
+      if (age > NO_DEVICE_GRACE_MS) {
+        doneIds.push(n.id);
+        skippedNoDevice += 1;
+      } else {
+        waitingNoDevice += 1;
+      }
+      continue;
+    }
+    let res: Awaited<ReturnType<typeof sendFcm>>;
+    try {
+      res = await sendFcm(tokens, {
+        title: n.title,
+        body: n.body ?? n.title,
+        orderId: n.order_id,
+        kind: n.order_id ? "order" : n.kind,
+      });
+    } catch (err) {
+      reason = err instanceof Error ? err.message : "fcm_send_failed";
+      failed += 1;
+      break;
+    }
+    if (res.reason) {
+      reason = res.reason;
+      break;
+    }
+    invalidTokens.push(...res.invalid);
+    if (res.sent > 0) {
+      sent += res.sent;
+      doneIds.push(n.id);
+    } else {
+      failed += 1;
+    }
+  }
+
+  if (doneIds.length > 0) {
+    await supabaseAdmin
+      .from("notifications")
+      .update({ pushed_at: new Date().toISOString() })
+      .in("id", doneIds);
+  }
+  if (invalidTokens.length > 0) {
+    await supabaseAdmin
+      .from("push_devices")
+      .update({ is_active: false })
+      .in("token", invalidTokens);
+  }
+
+  return {
+    ok: !reason,
+    sent,
+    failed,
+    waitingNoDevice,
+    skippedNoDevice,
+    invalidated: invalidTokens.length,
+    ...(reason ? { reason } : {}),
+  };
+}
+
+/**
+ * إرسال فوري لإشعار واحد لمستخدم واحد (أقل زمن وصول لعروض المندوب).
+ * أي فشل يترك pushed_at فارغاً فتلتقطه الصيانة الدورية لاحقاً.
+ */
+export async function pushNotificationNow(notificationId: string): Promise<boolean> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data: n } = await supabaseAdmin
+    .from("notifications")
+    .select("id, user_id, title, body, kind, order_id, pushed_at")
+    .eq("id", notificationId)
+    .maybeSingle();
+  if (!n || n.pushed_at) return false;
+
+  const { data: devices } = await supabaseAdmin
+    .from("push_devices")
+    .select("token")
+    .eq("is_active", true)
+    .eq("user_id", n.user_id);
+  const tokens = (devices ?? []).map((d) => d.token);
+  if (tokens.length === 0) return false;
+
+  const res = await sendFcm(tokens, {
+    title: n.title,
+    body: n.body ?? n.title,
+    orderId: n.order_id,
+    kind: n.order_id ? "order" : n.kind,
+  });
+  if (res.invalid.length > 0) {
+    await supabaseAdmin.from("push_devices").update({ is_active: false }).in("token", res.invalid);
+  }
+  if (res.sent > 0) {
+    await supabaseAdmin
+      .from("notifications")
+      .update({ pushed_at: new Date().toISOString() })
+      .eq("id", n.id);
+    return true;
+  }
+  return false;
+}

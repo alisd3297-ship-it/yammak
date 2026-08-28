@@ -23,7 +23,7 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
   const { data: order } = await supabaseAdmin
     .from("orders")
     .select(
-      "id, status, provider_id, driver_id, customer_id, pickup_lat, pickup_lng, vehicle_type, scheduled_at, order_type, dispatch_attempts, dispatch_last_attempt_at",
+      "id, status, provider_id, driver_id, customer_id, pickup_lat, pickup_lng, vehicle_type, scheduled_at, order_type, fulfillment, dispatch_attempts, dispatch_last_attempt_at",
     )
     .eq("id", orderId)
     .maybeSingle();
@@ -32,6 +32,9 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
     return { assignedTo: order.driver_id, status: order.status, message: "الطلب مسند مسبقاً" };
   if (order.status === "cancelled" || order.status === "completed")
     return { assignedTo: null, status: order.status, message: "الطلب منتهي" };
+  // طلبات السفري/الصالة لا تحتاج مندوباً إطلاقاً
+  if (order.fulfillment && order.fulfillment !== "delivery")
+    return { assignedTo: null, status: order.status, message: "طلب استلام من المحل" };
   // الطلب المجدول لا يدخل التوزيع قبل اقتراب موعده
   if (order.scheduled_at && new Date(order.scheduled_at).getTime() - Date.now() > 15 * 60_000)
     return { assignedTo: null, status: order.status, message: "الطلب مجدول لوقت لاحق" };
@@ -245,13 +248,27 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
     fee > 0 ? `أجرة التوصيل: ${fee.toLocaleString("en-US")} د.ع` : null,
     `المسافة ${chosen.km.toFixed(1)} كم`,
   ].filter(Boolean);
-  await supabaseAdmin.from("notifications").insert({
-    user_id: chosen.driverId,
-    title: "طلب توصيل جديد",
-    body: parts.join(" · "),
-    kind: "offer",
-    order_id: order.id,
-  });
+  const { data: notif } = await supabaseAdmin
+    .from("notifications")
+    .insert({
+      user_id: chosen.driverId,
+      title: "طلب توصيل جديد",
+      body: parts.join(" · "),
+      kind: "offer",
+      order_id: order.id,
+    })
+    .select("id")
+    .maybeSingle();
+
+  // إرسال فوري للهاتف حتى والتطبيق مغلق؛ أي فشل يترك الإشعار معلّقاً لتلتقطه الصيانة
+  if (notif?.id) {
+    try {
+      const { pushNotificationNow } = await import("@/lib/push.server");
+      await pushNotificationNow(notif.id);
+    } catch {
+      // متروك للصيانة الدورية
+    }
+  }
 
   return {
     assignedTo: chosen.driverId,
@@ -268,7 +285,7 @@ export async function runMaintenance(source = "manual", minSeconds = 30) {
     _min_seconds: minSeconds,
   });
   if (claimed === false) {
-    return { skipped: true, expired: 0, completed: 0, redispatched: 0 };
+    return { skipped: true, expired: 0, completed: 0, redispatched: 0, pushed: 0 };
   }
 
   const { data: expired } = await supabaseAdmin.rpc("expire_stale_offers", {});
@@ -292,6 +309,7 @@ export async function runMaintenance(source = "manual", minSeconds = 30) {
     .from("orders")
     .select("id")
     .in("status", ["searching_driver", "ready_for_pickup", "offered_to_driver"])
+    .eq("fulfillment", "delivery")
     .is("driver_id", null)
     .limit(40);
 
@@ -328,11 +346,22 @@ export async function runMaintenance(source = "manual", minSeconds = 30) {
     // لا نوقف الصيانة العامة بسبب الرحلات
   }
 
+  // إرسال إشعارات الهاتف المعلّقة ضمن نفس الدورة (كل دقيقة) بدل الاعتماد على مجدول خارجي
+  let pushed = 0;
+  try {
+    const { dispatchPendingPush } = await import("@/lib/push.server");
+    const push = await dispatchPendingPush(100);
+    pushed = push.sent;
+  } catch {
+    // فشل الإرسال لا يوقف الصيانة؛ تبقى الإشعارات معلّقة للدورة القادمة
+  }
+
   const result = {
     skipped: false,
     expired: Number(expired ?? 0) + tripExpired,
     completed: Number(completed ?? 0),
     redispatched,
+    pushed,
   };
 
   await supabaseAdmin.from("maintenance_runs").insert({
