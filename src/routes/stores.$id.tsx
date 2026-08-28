@@ -196,6 +196,7 @@ type ProductRowProps = {
     price: number;
     is_available: boolean;
     stock: number | null;
+    image_url?: string | null;
   };
   closed?: boolean;
   onAdd: () => void;
