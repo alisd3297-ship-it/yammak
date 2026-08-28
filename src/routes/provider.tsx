@@ -11,6 +11,7 @@ import { ProviderServiceRequests } from "@/components/provider-service-requests"
 import { ProviderCustomerTabs } from "@/components/provider-customer-tabs";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { OrderChat } from "@/components/order-chat";
 
 import { useAccount } from "@/lib/auth";
 import { useSignOut } from "@/lib/sign-out";
@@ -373,6 +374,9 @@ function ProviderDashboard() {
                   </Button>
                 </div>
               )}
+              <div className="mt-3">
+                <OrderChat orderId={o.id} />
+              </div>
             </article>
           );
         })}
