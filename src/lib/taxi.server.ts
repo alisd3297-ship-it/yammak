@@ -144,9 +144,13 @@ export async function runTripDispatch(tripId: string): Promise<TripDispatchResul
   return { assignedTo: null, status: "searching_driver", message: "تم إرسال الرحلة لأقرب سائق" };
 }
 
-/** صيانة الرحلات: إنهاء العروض المنتهية وإعادة توزيع الرحلات المعلّقة. */
+/** صيانة الرحلات: إنهاء العروض المنتهية، إلغاء الرحلات العالقة، وإعادة توزيع الباقي. */
 export async function runTripMaintenance(): Promise<{ expired: number; redispatched: number }> {
   const { data: expired } = await supabaseAdmin.rpc("expire_stale_trip_offers", {});
+
+  // إلغاء الرحلات العالقة في البحث عن سائق بعد المهلة (كانت تبقى للأبد)
+  await supabaseAdmin.rpc("expire_stale_trips");
+
 
   const { data: stuck } = await supabaseAdmin
     .from("trips")
