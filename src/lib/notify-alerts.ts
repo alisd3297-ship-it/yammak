@@ -219,15 +219,17 @@ export function useAlertNotifications(
             id: string;
             title: string;
             body: string | null;
+            kind: string | null;
             order_id: string | null;
           };
           if (seen.has(row.id)) return;
           rememberSeen(row.id);
+          const isTrip = (row.kind ?? "").startsWith("trip");
           fireAlert({
             title: row.title,
             body: row.body ?? "",
-            tag: row.order_id,
-            kind: row.order_id ? "order" : "default",
+            tag: row.order_id ?? (isTrip ? row.id : null),
+            kind: row.order_id || isTrip ? "order" : "default",
             url: optsRef.current?.deepLink?.(row.order_id ?? null) ?? null,
           });
           optsRef.current?.onInsert?.();
