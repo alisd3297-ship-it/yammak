@@ -192,8 +192,15 @@ export async function sendFcm(
       }),
     });
     if (res.ok) sent += 1;
-    else if (res.status === 404 || res.status === 400) invalid.push(deviceToken);
+    else if (res.status === 404 || res.status === 400) {
+      invalid.push(deviceToken);
+      // نص الخطأ من Google لا يحتوي أسراراً؛ يساعد في تشخيص الرمز التالف.
+      console.error("[push] fcm rejected token", res.status, (await res.text()).slice(0, 200));
+    } else {
+      console.error("[push] fcm send failed", res.status, (await res.text()).slice(0, 200));
+    }
   }
+
 
   return { sent, invalid };
 }
