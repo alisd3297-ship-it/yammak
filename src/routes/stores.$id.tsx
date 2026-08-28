@@ -56,7 +56,7 @@ function StorePage() {
           .order("sort_order"),
         supabase
           .from("products")
-          .select("id, name, description, price, category_id, is_available, stock")
+          .select("id, name, description, price, category_id, is_available, stock, image_url")
           .eq("provider_id", id)
           .order("sort_order"),
       ]);
