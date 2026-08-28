@@ -355,6 +355,65 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_requests: {
+        Row: {
+          address_text: string
+          budget: number | null
+          created_at: string
+          currency: string
+          customer_id: string
+          id: string
+          items: Json
+          lat: number | null
+          lng: number | null
+          notes: string | null
+          order_id: string | null
+          raw_text: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          address_text?: string
+          budget?: number | null
+          created_at?: string
+          currency?: string
+          customer_id?: string
+          id?: string
+          items?: Json
+          lat?: number | null
+          lng?: number | null
+          notes?: string | null
+          order_id?: string | null
+          raw_text: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          address_text?: string
+          budget?: number | null
+          created_at?: string
+          currency?: string
+          customer_id?: string
+          id?: string
+          items?: Json
+          lat?: number | null
+          lng?: number | null
+          notes?: string | null
+          order_id?: string | null
+          raw_text?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_requests_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_tab_items: {
         Row: {
           created_at: string
@@ -840,6 +899,38 @@ export type Database = {
           },
         ]
       }
+      order_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          order_id: string
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          order_id: string
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          order_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_messages_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_status_history: {
         Row: {
           changed_by: string | null
@@ -1283,6 +1374,48 @@ export type Database = {
         }
         Relationships: []
       }
+      plus_subscriptions: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          expires_at: string | null
+          id: string
+          payment_id: string | null
+          plan: string
+          started_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          expires_at?: string | null
+          id?: string
+          payment_id?: string | null
+          plan?: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          expires_at?: string | null
+          id?: string
+          payment_id?: string | null
+          plan?: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pricing_rules: {
         Row: {
           base_fee: number
@@ -1465,6 +1598,7 @@ export type Database = {
           phone_verified_at: string | null
           preferences_set_at: string | null
           preferred_services: string[]
+          referral_code: string | null
           updated_at: string
         }
         Insert: {
@@ -1478,6 +1612,7 @@ export type Database = {
           phone_verified_at?: string | null
           preferences_set_at?: string | null
           preferred_services?: string[]
+          referral_code?: string | null
           updated_at?: string
         }
         Update: {
@@ -1491,6 +1626,7 @@ export type Database = {
           phone_verified_at?: string | null
           preferences_set_at?: string | null
           preferred_services?: string[]
+          referral_code?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -1499,6 +1635,56 @@ export type Database = {
             columns: ["city_id"]
             isOneToOne: false
             referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      promotions: {
+        Row: {
+          created_at: string
+          description: string | null
+          discount_percent: number
+          ends_at: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          provider_id: string
+          starts_at: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          discount_percent?: number
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          provider_id: string
+          starts_at?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          discount_percent?: number
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          provider_id?: string
+          starts_at?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promotions_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
             referencedColumns: ["id"]
           },
         ]
@@ -1751,6 +1937,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      referrals: {
+        Row: {
+          code: string
+          created_at: string
+          currency: string
+          id: string
+          referee_id: string
+          referrer_id: string
+          reward_amount: number
+          rewarded_at: string | null
+          status: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          currency?: string
+          id?: string
+          referee_id: string
+          referrer_id: string
+          reward_amount?: number
+          rewarded_at?: string | null
+          status?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          referee_id?: string
+          referrer_id?: string
+          reward_amount?: number
+          rewarded_at?: string | null
+          status?: string
+        }
+        Relationships: []
       }
       refund_requests: {
         Row: {
@@ -3491,6 +3713,7 @@ export type Database = {
         Args: { _key: string; _user_id?: string }
         Returns: boolean
       }
+      gen_referral_code: { Args: never; Returns: string }
       generate_settlement: {
         Args: {
           _from: string
@@ -3660,6 +3883,10 @@ export type Database = {
           owner_id: string
         }[]
       }
+      provider_dashboard_stats: {
+        Args: { _days?: number; _provider_id: string }
+        Returns: Json
+      }
       provider_finance_summary: {
         Args: { _from: string; _provider_id: string; _to: string }
         Returns: Json
@@ -3765,6 +3992,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      redeem_referral: { Args: { _code: string }; Returns: Json }
       reject_delivery_offer: {
         Args: { _offer_id: string; _reason?: string }
         Returns: string
