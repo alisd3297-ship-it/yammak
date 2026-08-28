@@ -104,7 +104,6 @@ function PushReadinessPanel() {
             </span>
           </li>
         </ul>
-
       ) : null}
       <p className="mt-3 text-[11px] text-muted-foreground">
         رمز الجهاز يُسجَّل فقط عند فتح التطبيق المُثبّت على الهاتف (APK) والموافقة على إذن

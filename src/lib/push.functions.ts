@@ -130,7 +130,6 @@ export const pushReadiness = createServerFn({ method: "GET" })
     };
   });
 
-
 /** هل لحساب المستخدم الحالي جهاز إشعارات نشط؟ (تشخيص ذاتي للمندوب). */
 export const myPushDevice = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])

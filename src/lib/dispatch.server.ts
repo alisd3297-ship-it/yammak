@@ -248,7 +248,11 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
     _new_status: "offered_to_driver",
   });
   if (offerStatusError) {
-    console.error("dispatch: failed to move order to offered_to_driver", order.id, offerStatusError);
+    console.error(
+      "dispatch: failed to move order to offered_to_driver",
+      order.id,
+      offerStatusError,
+    );
   }
   // إشعار مختصر ومفيد للمندوب: رقم الطلب، المتجر، منطقة التسليم، وأجرة التوصيل.
   const { data: orderInfo } = await supabaseAdmin
