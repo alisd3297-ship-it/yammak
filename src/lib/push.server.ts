@@ -71,10 +71,23 @@ const CHANNEL_ORDERS = "lubabak_orders_v2";
 const CHANNEL_TAXI = "lubabak_taxi_v2";
 const CHANNEL_DEFAULT = "lubabak_default_v2";
 
+/**
+ * الإشعارات العاجلة (طلب جديد، عرض للمندوب، تحديث حالة طلب، طلب خدمة، عرض سعر)
+ * تذهب لقناة عالية الأهمية بصوت واهتزاز حتى والتطبيق مغلق.
+ */
+const URGENT_KIND = /^(order|offer|delivery|dispatch|service|request|quote|tab|payment)/i;
+
+function isUrgent(msg: { kind?: string | null; orderId?: string | null }): boolean {
+  return Boolean(msg.orderId) || URGENT_KIND.test(msg.kind ?? "") || isTaxi(msg);
+}
+
+function isTaxi(msg: { kind?: string | null }): boolean {
+  return (msg.kind ?? "").startsWith("trip") || (msg.kind ?? "").startsWith("taxi");
+}
+
 function androidChannelId(msg: { kind?: string | null; orderId?: string | null }): string {
-  const kind = msg.kind ?? "";
-  if (kind.startsWith("trip")) return CHANNEL_TAXI;
-  if (kind === "order" || kind === "offer" || msg.orderId) return CHANNEL_ORDERS;
+  if (isTaxi(msg)) return CHANNEL_TAXI;
+  if (isUrgent(msg)) return CHANNEL_ORDERS;
   return CHANNEL_DEFAULT;
 }
 
@@ -107,6 +120,9 @@ export async function sendFcm(
   const invalid: string[] = [];
   let sent = 0;
 
+  const urgent = isUrgent(msg);
+  const channelId = androidChannelId(msg);
+
   for (const deviceToken of tokens) {
     const res = await fetch(url, {
       method: "POST",
@@ -114,25 +130,45 @@ export async function sendFcm(
       body: JSON.stringify({
         message: {
           token: deviceToken,
+          // notification + data معاً: النظام يعرض الإشعار بصوت القناة والتطبيق مغلق،
+          // وفي المقدمة يستلمه التطبيق ويشغّل نغمته الداخلية.
           notification: { title: msg.title, body: msg.body },
           data: {
             orderId: msg.orderId ?? "",
             kind: msg.kind ?? "",
+            urgent: urgent ? "1" : "0",
           },
           android: {
             priority: "HIGH",
+            ...(urgent ? { ttl: "180s" } : {}),
             notification: {
-              channel_id: androidChannelId(msg),
+              channel_id: channelId,
               sound: "default",
-              default_vibrate_timings: true,
+              default_sound: true,
+              default_vibrate_timings: !urgent,
+              ...(urgent
+                ? { vibrate_timings: ["0s", "0.2s", "0.1s", "0.2s", "0.1s", "0.4s"] }
+                : {}),
               default_light_settings: true,
-              notification_priority: "PRIORITY_MAX",
+              notification_priority: urgent ? "PRIORITY_MAX" : "PRIORITY_HIGH",
               visibility: "PUBLIC",
+              // تجميع إشعارات نفس الطلب بدل تكديسها
+              ...(msg.orderId ? { tag: msg.orderId } : {}),
             },
           },
           apns: {
-            headers: { "apns-priority": "10" },
-            payload: { aps: { sound: "default", badge: 1 } },
+            headers: {
+              "apns-priority": "10",
+              ...(urgent ? { "apns-push-type": "alert" } : {}),
+            },
+            payload: {
+              aps: {
+                sound: "default",
+                badge: 1,
+                ...(urgent ? { "interruption-level": "time-sensitive" } : {}),
+                ...(msg.orderId ? { "thread-id": msg.orderId } : {}),
+              },
+            },
           },
         },
       }),

@@ -16,6 +16,11 @@ import {
   type ServiceRequestStatus,
 } from "@/lib/services";
 import { cn } from "@/lib/utils";
+import { Plus, Pencil } from "lucide-react";
+import {
+  ProviderFormDialog,
+  type ProviderFormValue,
+} from "@/components/admin/provider-form-dialog";
 
 import { requireStaff } from "@/lib/route-guards";
 
@@ -82,6 +87,18 @@ function AdminProvidersPage() {
   const setRequestStatus = useServerFn(changeServiceRequestStatus);
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("pending");
   const [view, setView] = useState<"providers" | "service-requests">("providers");
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<ProviderFormValue | null>(null);
+
+  function openCreate() {
+    setEditing(null);
+    setFormOpen(true);
+  }
+
+  function openEdit(p: ProviderFormValue) {
+    setEditing(p);
+    setFormOpen(true);
+  }
 
   const isStaff = (account?.roles ?? []).some((r) =>
     ["super_admin", "admin", "supervisor"].includes(r),
@@ -108,7 +125,9 @@ function AdminProvidersPage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("providers")
-        .select("id, name, kind, status, phone, address_text, description, created_at")
+        .select(
+          "id, name, kind, status, phone, address_text, description, created_at, city_id, lat, lng, logo_url, opening_time, closing_time, delivery_fee_override, min_order_amount, is_open, keywords, profession_category_id",
+        )
         .eq("status", filter)
         .order("created_at", { ascending: false })
         .limit(50);
@@ -169,8 +188,19 @@ function AdminProvidersPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <h1 className="text-2xl font-black">اعتماد مقدمي الخدمة</h1>
-        <p className="mt-1 text-sm opacity-90">راجع طلبات مطاعم وكافتريات ومتاجر</p>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-black">مقدمو الخدمات</h1>
+            <p className="mt-1 text-sm opacity-90">أضف وراجع مطاعم ومحلات ومقدمي خدمات</p>
+          </div>
+          <Button
+            onClick={openCreate}
+            className="h-10 shrink-0 rounded-full bg-primary-foreground px-4 text-sm font-bold text-primary hover:bg-primary-foreground/90"
+          >
+            <Plus className="size-4" />
+            إضافة مطعم / محل / مقدم خدمة
+          </Button>
+        </div>
         <div className="mt-3 flex gap-4 text-sm font-semibold underline">
           <Link to="/admin/courier">طلبات المندوب المستقل</Link>
           <Link to="/admin/drivers">
@@ -290,6 +320,14 @@ function AdminProvidersPage() {
             <p className="text-xs text-muted-foreground">{p.address_text}</p>
             {p.phone && <p className="text-xs text-muted-foreground">هاتف: {p.phone}</p>}
             <div className="mt-3 flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                className="h-10"
+                onClick={() => openEdit(p as ProviderFormValue)}
+              >
+                <Pencil className="size-4" />
+                تعديل
+              </Button>
               {p.status !== "approved" && (
                 <Button className="h-10 flex-1" onClick={() => apply(p.id, "approved")}>
                   اعتماد
@@ -314,6 +352,15 @@ function AdminProvidersPage() {
           </p>
         )}
       </div>
+
+      <ProviderFormDialog
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        provider={editing}
+        onSaved={() => {
+          qc.invalidateQueries({ queryKey: ["admin-providers"] });
+        }}
+      />
     </PageShell>
   );
 }

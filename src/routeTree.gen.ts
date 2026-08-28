@@ -87,6 +87,7 @@ import { Route as ApiPublicMaintenanceRouteImport } from './routes/api/public/ma
 import { Route as ApiPublicPushDispatchRouteImport } from './routes/api/public/push-dispatch'
 import { Route as ApiPublicAdImageSplatRouteImport } from './routes/api/public/ad-image.$'
 import { Route as ApiPublicPaymentsStripeRouteImport } from './routes/api/public/payments.stripe'
+import { Route as ApiPublicProviderImageSplatRouteImport } from './routes/api/public/provider-image.$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -478,6 +479,12 @@ const ApiPublicPaymentsStripeRoute = ApiPublicPaymentsStripeRouteImport.update({
   path: '/api/public/payments/stripe',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicProviderImageSplatRoute =
+  ApiPublicProviderImageSplatRouteImport.update({
+    id: '/api/public/provider-image/$',
+    path: '/api/public/provider-image/$',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -558,6 +565,7 @@ export interface FileRoutesByFullPath {
   '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
   '/api/public/ad-image/$': typeof ApiPublicAdImageSplatRoute
   '/api/public/payments/stripe': typeof ApiPublicPaymentsStripeRoute
+  '/api/public/provider-image/$': typeof ApiPublicProviderImageSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -638,6 +646,7 @@ export interface FileRoutesByTo {
   '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
   '/api/public/ad-image/$': typeof ApiPublicAdImageSplatRoute
   '/api/public/payments/stripe': typeof ApiPublicPaymentsStripeRoute
+  '/api/public/provider-image/$': typeof ApiPublicProviderImageSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -719,6 +728,7 @@ export interface FileRoutesById {
   '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
   '/api/public/ad-image/$': typeof ApiPublicAdImageSplatRoute
   '/api/public/payments/stripe': typeof ApiPublicPaymentsStripeRoute
+  '/api/public/provider-image/$': typeof ApiPublicProviderImageSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -801,6 +811,7 @@ export interface FileRouteTypes {
     | '/api/public/push-dispatch'
     | '/api/public/ad-image/$'
     | '/api/public/payments/stripe'
+    | '/api/public/provider-image/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -881,6 +892,7 @@ export interface FileRouteTypes {
     | '/api/public/push-dispatch'
     | '/api/public/ad-image/$'
     | '/api/public/payments/stripe'
+    | '/api/public/provider-image/$'
   id:
     | '__root__'
     | '/'
@@ -961,6 +973,7 @@ export interface FileRouteTypes {
     | '/api/public/push-dispatch'
     | '/api/public/ad-image/$'
     | '/api/public/payments/stripe'
+    | '/api/public/provider-image/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1042,6 +1055,7 @@ export interface RootRouteChildren {
   ApiPublicPushDispatchRoute: typeof ApiPublicPushDispatchRoute
   ApiPublicAdImageSplatRoute: typeof ApiPublicAdImageSplatRoute
   ApiPublicPaymentsStripeRoute: typeof ApiPublicPaymentsStripeRoute
+  ApiPublicProviderImageSplatRoute: typeof ApiPublicProviderImageSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1592,6 +1606,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaymentsStripeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/provider-image/$': {
+      id: '/api/public/provider-image/$'
+      path: '/api/public/provider-image/$'
+      fullPath: '/api/public/provider-image/$'
+      preLoaderRoute: typeof ApiPublicProviderImageSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1674,6 +1695,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicPushDispatchRoute: ApiPublicPushDispatchRoute,
   ApiPublicAdImageSplatRoute: ApiPublicAdImageSplatRoute,
   ApiPublicPaymentsStripeRoute: ApiPublicPaymentsStripeRoute,
+  ApiPublicProviderImageSplatRoute: ApiPublicProviderImageSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
