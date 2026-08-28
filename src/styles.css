@@ -81,6 +81,9 @@
   --border: oklch(0.91 0.004 250);
   --input: oklch(0.91 0.004 250);
   --ring: oklch(0.55 0.21 27);
+  /* ألوان الأيقونات: أساسي مشبع (هوية لبابك الحمراء) وثانوي أوضح من muted */
+  --icon-strong: oklch(0.52 0.22 27);
+  --icon-soft: oklch(0.42 0.03 250);
   --sidebar: oklch(0.17 0.008 250);
   --sidebar-foreground: oklch(0.97 0 0);
   --sidebar-primary: oklch(0.55 0.21 27);
