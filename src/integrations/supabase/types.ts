@@ -2197,9 +2197,11 @@ export type Database = {
           area_id: string | null
           avg_prep_minutes: number
           city_id: string | null
+          closing_time: string | null
           commission_percent: number
           cover_url: string | null
           created_at: string
+          delivery_fee_override: number | null
           description: string | null
           id: string
           is_demo: boolean
@@ -2209,7 +2211,9 @@ export type Database = {
           lat: number | null
           lng: number | null
           logo_url: string | null
+          min_order_amount: number
           name: string
+          opening_time: string | null
           orders_count: number
           owner_id: string | null
           phone: string | null
@@ -2228,9 +2232,11 @@ export type Database = {
           area_id?: string | null
           avg_prep_minutes?: number
           city_id?: string | null
+          closing_time?: string | null
           commission_percent?: number
           cover_url?: string | null
           created_at?: string
+          delivery_fee_override?: number | null
           description?: string | null
           id?: string
           is_demo?: boolean
@@ -2240,7 +2246,9 @@ export type Database = {
           lat?: number | null
           lng?: number | null
           logo_url?: string | null
+          min_order_amount?: number
           name: string
+          opening_time?: string | null
           orders_count?: number
           owner_id?: string | null
           phone?: string | null
@@ -2259,9 +2267,11 @@ export type Database = {
           area_id?: string | null
           avg_prep_minutes?: number
           city_id?: string | null
+          closing_time?: string | null
           commission_percent?: number
           cover_url?: string | null
           created_at?: string
+          delivery_fee_override?: number | null
           description?: string | null
           id?: string
           is_demo?: boolean
@@ -2271,7 +2281,9 @@ export type Database = {
           lat?: number | null
           lng?: number | null
           logo_url?: string | null
+          min_order_amount?: number
           name?: string
+          opening_time?: string | null
           orders_count?: number
           owner_id?: string | null
           phone?: string | null
@@ -3608,6 +3620,71 @@ export type Database = {
         }
         Returns: boolean
       }
+      admin_upsert_provider: {
+        Args: {
+          _address_text?: string
+          _area_id?: string
+          _city_id?: string
+          _closing_time?: string
+          _cover_url?: string
+          _delivery_fee_override?: number
+          _description?: string
+          _is_open?: boolean
+          _keywords?: string[]
+          _kind: Database["public"]["Enums"]["provider_kind"]
+          _lat?: number
+          _lng?: number
+          _logo_url?: string
+          _min_order_amount?: number
+          _name: string
+          _opening_time?: string
+          _phone?: string
+          _profession_category_id?: string
+          _provider_id?: string
+          _status?: Database["public"]["Enums"]["provider_status"]
+        }
+        Returns: {
+          address_text: string | null
+          approval_code: string | null
+          area_id: string | null
+          avg_prep_minutes: number
+          city_id: string | null
+          closing_time: string | null
+          commission_percent: number
+          cover_url: string | null
+          created_at: string
+          delivery_fee_override: number | null
+          description: string | null
+          id: string
+          is_demo: boolean
+          is_open: boolean
+          keywords: string[]
+          kind: Database["public"]["Enums"]["provider_kind"]
+          lat: number | null
+          lng: number | null
+          logo_url: string | null
+          min_order_amount: number
+          name: string
+          opening_time: string | null
+          orders_count: number
+          owner_id: string | null
+          phone: string | null
+          profession_category_id: string | null
+          rating: number
+          ratings_count: number
+          status: Database["public"]["Enums"]["provider_status"]
+          updated_at: string
+          verification_status: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "providers"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       apply_as_driver: {
         Args: {
           _city_id?: string
@@ -3672,9 +3749,11 @@ export type Database = {
           area_id: string | null
           avg_prep_minutes: number
           city_id: string | null
+          closing_time: string | null
           commission_percent: number
           cover_url: string | null
           created_at: string
+          delivery_fee_override: number | null
           description: string | null
           id: string
           is_demo: boolean
@@ -3684,7 +3763,9 @@ export type Database = {
           lat: number | null
           lng: number | null
           logo_url: string | null
+          min_order_amount: number
           name: string
+          opening_time: string | null
           orders_count: number
           owner_id: string | null
           phone: string | null
@@ -4867,9 +4948,11 @@ export type Database = {
           area_id: string | null
           avg_prep_minutes: number
           city_id: string | null
+          closing_time: string | null
           commission_percent: number
           cover_url: string | null
           created_at: string
+          delivery_fee_override: number | null
           description: string | null
           id: string
           is_demo: boolean
@@ -4879,7 +4962,9 @@ export type Database = {
           lat: number | null
           lng: number | null
           logo_url: string | null
+          min_order_amount: number
           name: string
+          opening_time: string | null
           orders_count: number
           owner_id: string | null
           phone: string | null

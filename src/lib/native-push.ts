@@ -142,7 +142,11 @@ export function useNativePush(
         const recvHandle = await PushNotifications.addListener("pushNotificationReceived", (n) => {
           const orderId = (n.data?.["orderId"] as string | undefined) || null;
           const dataKind = (n.data?.["kind"] as string | undefined) || "";
-          const urgent = Boolean(orderId) || dataKind.startsWith("trip");
+          // الخادم يحدد العجلة (urgent) بحسب نوع الإشعار؛ نحتفظ باحتياطي محلي
+          const urgent =
+            (n.data?.["urgent"] as string | undefined) === "1" ||
+            Boolean(orderId) ||
+            dataKind.startsWith("trip");
           fireAlert({
             title: n.title ?? "إشعار جديد",
             body: n.body ?? "",
