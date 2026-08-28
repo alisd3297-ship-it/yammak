@@ -25,6 +25,7 @@ import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PaymentsRouteImport } from './routes/payments'
 import { Route as ProviderRouteImport } from './routes/provider'
 import { Route as ProviderFinanceRouteImport } from './routes/provider-finance'
+import { Route as RequestAnythingRouteImport } from './routes/request-anything'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SetupAdminRouteImport } from './routes/setup-admin'
 import { Route as SetupTestAccountsRouteImport } from './routes/setup-test-accounts'
@@ -152,6 +153,11 @@ const ProviderRoute = ProviderRouteImport.update({
 const ProviderFinanceRoute = ProviderFinanceRouteImport.update({
   id: '/provider-finance',
   path: '/provider-finance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RequestAnythingRoute = RequestAnythingRouteImport.update({
+  id: '/request-anything',
+  path: '/request-anything',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -412,6 +418,7 @@ export interface FileRoutesByFullPath {
   '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
   '/provider-finance': typeof ProviderFinanceRoute
+  '/request-anything': typeof RequestAnythingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
   '/setup-test-accounts': typeof SetupTestAccountsRoute
@@ -478,6 +485,7 @@ export interface FileRoutesByTo {
   '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
   '/provider-finance': typeof ProviderFinanceRoute
+  '/request-anything': typeof RequestAnythingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
   '/setup-test-accounts': typeof SetupTestAccountsRoute
@@ -545,6 +553,7 @@ export interface FileRoutesById {
   '/payments': typeof PaymentsRoute
   '/provider': typeof ProviderRoute
   '/provider-finance': typeof ProviderFinanceRoute
+  '/request-anything': typeof RequestAnythingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
   '/setup-test-accounts': typeof SetupTestAccountsRoute
@@ -613,6 +622,7 @@ export interface FileRouteTypes {
     | '/payments'
     | '/provider'
     | '/provider-finance'
+    | '/request-anything'
     | '/reset-password'
     | '/setup-admin'
     | '/setup-test-accounts'
@@ -679,6 +689,7 @@ export interface FileRouteTypes {
     | '/payments'
     | '/provider'
     | '/provider-finance'
+    | '/request-anything'
     | '/reset-password'
     | '/setup-admin'
     | '/setup-test-accounts'
@@ -745,6 +756,7 @@ export interface FileRouteTypes {
     | '/payments'
     | '/provider'
     | '/provider-finance'
+    | '/request-anything'
     | '/reset-password'
     | '/setup-admin'
     | '/setup-test-accounts'
@@ -812,6 +824,7 @@ export interface RootRouteChildren {
   PaymentsRoute: typeof PaymentsRoute
   ProviderRoute: typeof ProviderRoute
   ProviderFinanceRoute: typeof ProviderFinanceRoute
+  RequestAnythingRoute: typeof RequestAnythingRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SetupAdminRoute: typeof SetupAdminRoute
   SetupTestAccountsRoute: typeof SetupTestAccountsRoute
@@ -974,6 +987,13 @@ declare module '@tanstack/react-router' {
       path: '/provider-finance'
       fullPath: '/provider-finance'
       preLoaderRoute: typeof ProviderFinanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/request-anything': {
+      id: '/request-anything'
+      path: '/request-anything'
+      fullPath: '/request-anything'
+      preLoaderRoute: typeof RequestAnythingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -1332,6 +1352,7 @@ const rootRouteChildren: RootRouteChildren = {
   PaymentsRoute: PaymentsRoute,
   ProviderRoute: ProviderRoute,
   ProviderFinanceRoute: ProviderFinanceRoute,
+  RequestAnythingRoute: RequestAnythingRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SetupAdminRoute: SetupAdminRoute,
   SetupTestAccountsRoute: SetupTestAccountsRoute,
