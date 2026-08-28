@@ -128,3 +128,15 @@ export const pushReadiness = createServerFn({ method: "GET" })
       pendingPush: pendingPush ?? 0,
     };
   });
+
+/** هل لحساب المستخدم الحالي جهاز إشعارات نشط؟ (تشخيص ذاتي للمندوب). */
+export const myPushDevice = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { count } = await context.supabase
+      .from("push_devices")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", context.userId)
+      .eq("is_active", true);
+    return { active: (count ?? 0) > 0 };
+  });
