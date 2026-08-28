@@ -206,6 +206,7 @@ function ProductRow({ product, closed, onAdd }: ProductRowProps) {
   const soldOut = !product.is_available || product.stock === 0 || !!closed;
   return (
     <div className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft">
+      <ProductImage src={product.image_url} alt={product.name} />
       <div className="min-w-0 flex-1">
         <p className="font-bold">{product.name}</p>
         <p className="truncate text-xs text-muted-foreground">{product.description}</p>
