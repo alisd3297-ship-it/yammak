@@ -63,6 +63,21 @@ async function accessToken(sa: ServiceAccount): Promise<string> {
   return json.access_token;
 }
 
+/**
+ * معرّفات القنوات (نسخة v2): أندرويد يحتفظ بإعدادات القناة القديمة حتى لو كانت صامتة،
+ * فأي تصحيح للصوت يحتاج معرّف قناة جديد. يجب أن تطابق src/lib/native-push.ts.
+ */
+const CHANNEL_ORDERS = "lubabak_orders_v2";
+const CHANNEL_TAXI = "lubabak_taxi_v2";
+const CHANNEL_DEFAULT = "lubabak_default_v2";
+
+function androidChannelId(msg: { kind?: string | null; orderId?: string | null }): string {
+  const kind = msg.kind ?? "";
+  if (kind.startsWith("trip")) return CHANNEL_TAXI;
+  if (kind === "order" || kind === "offer" || msg.orderId) return CHANNEL_ORDERS;
+  return CHANNEL_DEFAULT;
+}
+
 export type PushMessage = {
   title: string;
   body: string;
