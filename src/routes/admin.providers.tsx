@@ -307,7 +307,7 @@ function AdminProvidersPage() {
       <div className={cn("space-y-3 px-4 py-5", view !== "providers" && "hidden")}>
         <Button onClick={openCreate} className="h-14 w-full rounded-2xl text-base font-bold">
           <Plus className="size-5" />
-          إضافة مطعم / محل / مقدم خدمة + حساب دخول
+          إضافة حساب مطعم / محل
         </Button>
 
         {(providers ?? []).map((p) => (
