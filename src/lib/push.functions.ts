@@ -12,21 +12,21 @@ export const registerPushDevice = createServerFn({ method: "POST" })
   }))
   .handler(async ({ data, context }) => {
     if (!data.token) return { ok: false as const, reason: "empty_token" };
-    const { error } = await context.supabase.from("push_devices").upsert(
-      {
-        user_id: context.userId,
-        token: data.token,
-        platform: data.platform,
-        is_active: true,
-        last_seen_at: new Date().toISOString(),
-      },
-      { onConflict: "token" },
-    );
+    // عبر RPC آمنة: نفس الهاتف قد يكون مسجّلاً سابقاً بحساب آخر (دراجة/تكسي/زبون)،
+    // وسياسة الصفوف تمنع تحديث صف يملكه مستخدم آخر، فتفشل إعادة التسجيل بصمت.
+    // الدالة تنقل ملكية الرمز للحساب الحالي ذرياً.
+    const rpc = context.supabase.rpc as unknown as (
+      fn: string,
+      args: Record<string, unknown>,
+    ) => Promise<{ error: { message: string } | null }>;
+    const { error } = await rpc("register_push_device", {
+      _token: data.token,
+      _platform: data.platform,
+    });
     if (error) {
-      console.error("[push] device upsert failed", error.message);
+      console.error("[push] device register failed", error.message);
       return { ok: false as const, reason: error.message };
     }
-    // أي رموز قديمة لنفس الجهاز/المستخدم تبقى، لكن نحدّث الرمز الحالي كنشط أعلاه
     return { ok: true as const };
   });
 
@@ -78,3 +78,64 @@ export const pushDeliveryStatus = createServerFn({ method: "GET" }).handler(asyn
     missing,
   };
 });
+
+/**
+ * تشخيص فعلي لجاهزية إشعارات الهاتف (لموظفي الإدارة):
+ * عدد الأجهزة المسجّلة، الأجهزة حسب دور العامل، والإشعارات المعلّقة.
+ * لا يكشف أي رمز جهاز ولا أي سرّ.
+ */
+export const pushReadiness = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: isStaff } = await context.supabase.rpc("is_staff");
+    if (!isStaff) throw new Error("forbidden");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const [{ data: devices }, { data: workers }, { count: pendingPush }] = await Promise.all([
+      supabaseAdmin.from("push_devices").select("user_id, platform, is_active"),
+      supabaseAdmin
+        .from("worker_profiles")
+        .select("user_id, worker_kind, vehicle_type, is_approved, is_available"),
+      supabaseAdmin
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .is("pushed_at", null),
+    ]);
+
+    const activeUsers = new Set(
+      (devices ?? []).filter((d) => d.is_active).map((d) => d.user_id as string),
+    );
+    const workerRows = workers ?? [];
+    const summarize = (rows: typeof workerRows) => ({
+      total: rows.length,
+      withDevice: rows.filter((w) => activeUsers.has(w.user_id as string)).length,
+    });
+
+    return {
+      devices: {
+        total: (devices ?? []).length,
+        active: (devices ?? []).filter((d) => d.is_active).length,
+        android: (devices ?? []).filter((d) => d.is_active && d.platform === "android").length,
+        ios: (devices ?? []).filter((d) => d.is_active && d.platform === "ios").length,
+      },
+      workers: {
+        delivery: summarize(workerRows.filter((w) => w.worker_kind === "delivery")),
+        taxi: summarize(workerRows.filter((w) => w.worker_kind === "taxi")),
+        bike: summarize(workerRows.filter((w) => w.vehicle_type === "bike")),
+      },
+      pendingPush: pendingPush ?? 0,
+    };
+  });
+
+/** هل لحساب المستخدم الحالي جهاز إشعارات نشط؟ (تشخيص ذاتي للمندوب). */
+export const myPushDevice = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { count } = await context.supabase
+      .from("push_devices")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", context.userId)
+      .eq("is_active", true);
+    return { active: (count ?? 0) > 0 };
+  });

@@ -5,6 +5,8 @@ import { AlertTriangle, BellRing, CheckCircle2, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminNav, PageShell } from "@/components/app-shell";
 import { requireStaff } from "@/lib/route-guards";
+import { pushDeliveryStatus, pushReadiness } from "@/lib/push.functions";
+
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/monitoring")({
@@ -57,6 +59,52 @@ function fmtDate(value: string) {
 function pct(part: number, total: number) {
   if (total <= 0) return "0%";
   return `${Math.round((part / total) * 100)}%`;
+}
+
+/** جاهزية إشعارات الهاتف: إعداد FCM + أجهزة المناديب المسجّلة فعلياً. */
+function PushReadinessPanel() {
+  const cfg = useQuery({ queryKey: ["push-config"], queryFn: () => pushDeliveryStatus() });
+  const stats = useQuery({ queryKey: ["push-readiness"], queryFn: () => pushReadiness() });
+
+  return (
+    <section className="rounded-2xl border bg-card p-4">
+      <h2 className="text-sm font-bold text-foreground">جاهزية إشعارات الهاتف</h2>
+      {cfg.data ? (
+        cfg.data.configured ? (
+          <p className="mt-2 text-xs font-semibold text-emerald-600">إعداد FCM مكتمل.</p>
+        ) : (
+          <p className="mt-2 rounded-xl border border-destructive/30 bg-destructive/5 p-2 text-xs font-semibold text-destructive">
+            إشعارات الهاتف معطّلة: الأسرار الناقصة {cfg.data.missing.join("، ") || "غير محددة"}.
+            أضفها من إعدادات المشروع ← Secrets.
+          </p>
+        )
+      ) : null}
+      {stats.data ? (
+        <ul className="mt-3 space-y-1 text-xs text-muted-foreground">
+          <li>
+            أجهزة نشطة: {stats.data.devices.active} (أندرويد {stats.data.devices.android})
+          </li>
+          <li>
+            مناديب توصيل بجهاز مسجّل: {stats.data.workers.delivery.withDevice} من{" "}
+            {stats.data.workers.delivery.total}
+          </li>
+          <li>
+            سائقو تكسي بجهاز مسجّل: {stats.data.workers.taxi.withDevice} من{" "}
+            {stats.data.workers.taxi.total}
+          </li>
+          <li>
+            دراجات بجهاز مسجّل: {stats.data.workers.bike.withDevice} من{" "}
+            {stats.data.workers.bike.total}
+          </li>
+          <li>إشعارات بانتظار الإرسال للهاتف: {stats.data.pendingPush}</li>
+        </ul>
+      ) : null}
+      <p className="mt-3 text-[11px] text-muted-foreground">
+        رمز الجهاز يُسجَّل فقط عند فتح التطبيق المُثبّت على الهاتف (APK) والموافقة على إذن
+        الإشعارات؛ المتصفح لا يسجّل جهازاً.
+      </p>
+    </section>
+  );
 }
 
 function StatCard({
@@ -269,6 +317,8 @@ function AdminMonitoringPage() {
                 icon={<BellRing className="size-4" />}
               />
             </section>
+
+            <PushReadinessPanel />
 
             <section className="rounded-2xl border bg-card p-4">
               <h2 className="text-sm font-bold text-foreground">الطلبات حسب الخدمة</h2>
