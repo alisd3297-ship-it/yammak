@@ -12,6 +12,22 @@ const DEDUPE_MS = 60_000;
 const MAX_PER_SESSION = 25;
 let sent = 0;
 
+/** ضوضاء معروفة لا تعكس خللاً فعلياً في التطبيق. */
+const IGNORED_PATTERNS = [
+  "Hydration failed",
+  "hydration-mismatch",
+  "There was an error while hydrating",
+  "Text content does not match",
+  "ResizeObserver loop",
+  "Script error.",
+  "Load failed",
+  "NetworkError when attempting to fetch resource",
+];
+
+function isIgnored(message: string) {
+  return IGNORED_PATTERNS.some((p) => message.includes(p));
+}
+
 function shouldSend(key: string) {
   if (sent >= MAX_PER_SESSION) return false;
   const now = Date.now();
@@ -21,6 +37,7 @@ function shouldSend(key: string) {
   if (recent.size > 100) recent.clear();
   return true;
 }
+
 
 export async function logAppError(
   error: unknown,
