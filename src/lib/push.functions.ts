@@ -79,3 +79,52 @@ export const pushDeliveryStatus = createServerFn({ method: "GET" }).handler(asyn
     missing,
   };
 });
+
+/**
+ * تشخيص فعلي لجاهزية إشعارات الهاتف (لموظفي الإدارة):
+ * عدد الأجهزة المسجّلة، الأجهزة حسب دور العامل، والإشعارات المعلّقة.
+ * لا يكشف أي رمز جهاز ولا أي سرّ.
+ */
+export const pushReadiness = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: isStaff } = await context.supabase.rpc("is_staff");
+    if (!isStaff) throw new Error("forbidden");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const [{ data: devices }, { data: workers }, { count: pendingPush }] = await Promise.all([
+      supabaseAdmin.from("push_devices").select("user_id, platform, is_active"),
+      supabaseAdmin
+        .from("worker_profiles")
+        .select("user_id, worker_kind, vehicle_type, is_approved, is_available"),
+      supabaseAdmin
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .is("pushed_at", null),
+    ]);
+
+    const activeUsers = new Set(
+      (devices ?? []).filter((d) => d.is_active).map((d) => d.user_id as string),
+    );
+    const workerRows = workers ?? [];
+    const summarize = (rows: typeof workerRows) => ({
+      total: rows.length,
+      withDevice: rows.filter((w) => activeUsers.has(w.user_id as string)).length,
+    });
+
+    return {
+      devices: {
+        total: (devices ?? []).length,
+        active: (devices ?? []).filter((d) => d.is_active).length,
+        android: (devices ?? []).filter((d) => d.is_active && d.platform === "android").length,
+        ios: (devices ?? []).filter((d) => d.is_active && d.platform === "ios").length,
+      },
+      workers: {
+        delivery: summarize(workerRows.filter((w) => w.worker_kind === "delivery")),
+        taxi: summarize(workerRows.filter((w) => w.worker_kind === "taxi")),
+        bike: summarize(workerRows.filter((w) => w.vehicle_type === "bike")),
+      },
+      pendingPush: pendingPush ?? 0,
+    };
+  });
