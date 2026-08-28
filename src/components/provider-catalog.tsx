@@ -87,6 +87,7 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
       price,
       cost_price: form.cost !== "" && Number.isFinite(Number(form.cost)) ? Number(form.cost) : null,
       stock,
+      image_url: newImage?.url ?? null,
       sort_order: (data?.products.length ?? 0) + 1,
     });
     if (error) {
@@ -94,7 +95,39 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
       return;
     }
     setForm({ name: "", price: "", cost: "", stock: "", categoryId: "" });
+    setNewImage(null);
+    if (newImageRef.current) newImageRef.current.value = "";
     refresh();
+  }
+
+  /** رفع صورة للمنتج الجديد قبل الحفظ. */
+  async function pickNewImage(file: File | undefined) {
+    if (!file) return;
+    setUploading("new");
+    try {
+      const url = await uploadProductImage(providerId, file);
+      setNewImage({ url, preview: URL.createObjectURL(file) });
+      toast.success("تم رفع الصورة");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر رفع الصورة");
+    } finally {
+      setUploading(null);
+    }
+  }
+
+  /** تغيير أو إضافة صورة لمنتج محفوظ. */
+  async function changeProductImage(id: string, file: File | undefined) {
+    if (!file) return;
+    setUploading(id);
+    try {
+      const url = await uploadProductImage(providerId, file);
+      await patchProduct(id, { image_url: url });
+      toast.success("تم تحديث صورة المنتج");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر رفع الصورة");
+    } finally {
+      setUploading(null);
+    }
   }
 
   type ProductPatch = {
@@ -102,6 +135,7 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
     cost_price?: number | null;
     stock?: number | null;
     is_available?: boolean;
+    image_url?: string | null;
   };
 
   async function patchProduct(id: string, patch: ProductPatch) {
