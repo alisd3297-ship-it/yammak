@@ -283,7 +283,7 @@ export async function runMaintenance(source = "manual", minSeconds = 30) {
     _min_seconds: minSeconds,
   });
   if (claimed === false) {
-    return { skipped: true, expired: 0, completed: 0, redispatched: 0 };
+    return { skipped: true, expired: 0, completed: 0, redispatched: 0, pushed: 0 };
   }
 
   const { data: expired } = await supabaseAdmin.rpc("expire_stale_offers", {});
