@@ -10,7 +10,8 @@ export const Route = createFileRoute("/family")({
       { title: "حساب العائلة | لبابك" },
       {
         name: "description",
-        content: "أنشئ حساب عائلة في لبابك، أضف أفراد العائلة، وحدد صلاحية الطلب وحد الإنفاق الشهري.",
+        content:
+          "أنشئ حساب عائلة في لبابك، أضف أفراد العائلة، وحدد صلاحية الطلب وحد الإنفاق الشهري.",
       },
       { property: "og:title", content: "حساب العائلة | لبابك" },
       { property: "og:description", content: "طلبات العائلة بحساب واحد وحدود إنفاق واضحة." },

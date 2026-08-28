@@ -46,7 +46,6 @@ export const requireSupabaseAuth = createMiddleware({ type: "function" }).server
       throw new Error(message);
     }
 
-
     const request = getRequest();
 
     if (!request?.headers) {

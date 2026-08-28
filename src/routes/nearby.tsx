@@ -117,7 +117,10 @@ function NearbyPage() {
                   {p.lat != null && p.lng != null && (
                     <a
                       className="mt-2 inline-block text-xs font-semibold text-primary"
-                      href={directionsUrl({ lat: p.lat, lng: p.lng }, geo.precise ? geo.point : null)}
+                      href={directionsUrl(
+                        { lat: p.lat, lng: p.lng },
+                        geo.precise ? geo.point : null,
+                      )}
                       target="_blank"
                       rel="noreferrer"
                     >

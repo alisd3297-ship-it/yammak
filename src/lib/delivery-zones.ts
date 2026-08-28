@@ -106,13 +106,10 @@ export function useOrdersLoad() {
     staleTime: 60_000,
     refetchInterval: 120_000,
     queryFn: async (): Promise<{ active: number; level: LoadLevel }> => {
-      const since = new Date(Date.now() - 45 * 60_000).toISOString();
-      const { count } = await supabase
-        .from("orders")
-        .select("id", { count: "exact", head: true })
-        .gte("created_at", since)
-        .not("status", "in", "(completed,cancelled,delivered)");
-      const active = count ?? 0;
+      // دالة مجمّعة على مستوى المنصة: قراءة جدول الطلبات مباشرة محصورة بطلبات المستخدم
+      // نفسه بموجب RLS، فكانت تعطي رقماً خاطئاً للضغط.
+      const { data, error } = await supabase.rpc("platform_active_orders", { minutes: 45 });
+      const active = error ? 0 : (data ?? 0);
       return { active, level: loadLevelOf(active) };
     },
   });

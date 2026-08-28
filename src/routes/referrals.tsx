@@ -63,7 +63,7 @@ function ReferralsPage() {
     void copy();
   }
 
-  async function useCode() {
+  async function redeemCode() {
     if (busy) return;
     setBusy(true);
     try {
@@ -132,7 +132,7 @@ function ReferralsPage() {
                 className="h-11 flex-1 tracking-widest"
                 aria-label="كود الإحالة"
               />
-              <Button className="h-11 px-5" onClick={() => void useCode()} disabled={busy}>
+              <Button className="h-11 px-5" onClick={() => void redeemCode()} disabled={busy}>
                 تفعيل
               </Button>
             </div>
@@ -150,7 +150,9 @@ function ReferralsPage() {
                 >
                   <span>{new Date(r.createdAt).toLocaleDateString("ar-IQ-u-nu-latn")}</span>
                   <span
-                    className={r.status === "rewarded" ? "font-bold text-success" : "text-muted-foreground"}
+                    className={
+                      r.status === "rewarded" ? "font-bold text-success" : "text-muted-foreground"
+                    }
                   >
                     {r.status === "rewarded" ? formatIQD(r.reward) : "بانتظار أول طلب"}
                   </span>

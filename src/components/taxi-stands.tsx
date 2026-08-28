@@ -26,13 +26,11 @@ export function useTaxiStands(coords?: { lat: number; lng: number } | null) {
         .select("id, name, lat, lng, sort_order")
         .eq("is_active", true)
         .order("sort_order");
-      const { data: queue } = await supabase
-        .from("taxi_stand_queue")
-        .select("stand_id")
-        .is("left_at", null);
+      // عدّ المنتظرين عبر دالة مجمّعة: لا تكشف هوية أي سائق
+      const { data: queue } = await supabase.rpc("taxi_stand_waiting_counts");
 
       const counts = new Map<string, number>();
-      for (const row of queue ?? []) counts.set(row.stand_id, (counts.get(row.stand_id) ?? 0) + 1);
+      for (const row of queue ?? []) counts.set(row.stand_id, row.waiting ?? 0);
 
       const rows = (stands ?? []).map((s) => ({
         id: s.id,

@@ -39,7 +39,12 @@ export function OrderChat({ orderId, disabled }: { orderId: string; disabled?: b
       .channel(`order-messages-${orderId}`)
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "order_messages", filter: `order_id=eq.${orderId}` },
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "order_messages",
+          filter: `order_id=eq.${orderId}`,
+        },
         () => void qc.invalidateQueries({ queryKey: ["order-messages", orderId] }),
       )
       .subscribe();

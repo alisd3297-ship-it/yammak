@@ -29,7 +29,10 @@ export const Route = createFileRoute("/request-anything")({
         content: "اكتب طلبك أو سجّله بصوتك أو صوّره، ونحوّله إلى طلب منظم بالعناصر والعنوان.",
       },
       { property: "og:title", content: "اطلب أي شي | لبابك" },
-      { property: "og:description", content: "طلب حر بالنص أو الصوت أو الصورة، مع «جيبلي من هنانا»." },
+      {
+        property: "og:description",
+        content: "طلب حر بالنص أو الصوت أو الصورة، مع «جيبلي من هنانا».",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

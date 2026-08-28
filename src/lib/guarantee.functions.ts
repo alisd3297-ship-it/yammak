@@ -159,7 +159,6 @@ export const decideClaim = createServerFn({ method: "POST" })
           _reason: "تعويض ضمان لبابك",
           _idempotency_key: `guarantee:${claim.id}`,
         });
-
       } catch {
         /* التعويض اليدوي ممكن من لوحة المحفظة */
       }

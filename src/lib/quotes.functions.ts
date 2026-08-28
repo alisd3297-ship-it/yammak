@@ -36,7 +36,6 @@ export const QUOTE_STATUS_LABELS: Record<string, string> = {
   cancelled: "ملغى",
 };
 
-
 /** إنشاء «طلب عرض سعر» يستقبل عروضاً من مقدمي الخدمة. */
 export const createQuoteRequest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -177,8 +176,12 @@ export const listOpenQuoteRequests = createServerFn({ method: "GET" })
 export const submitQuoteOffer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (data: { requestId: string; amount: number; etaMinutes?: number | null; message?: string | null }) =>
-      data,
+    (data: {
+      requestId: string;
+      amount: number;
+      etaMinutes?: number | null;
+      message?: string | null;
+    }) => data,
   )
   .handler(async ({ data, context }) => {
     const amount = Number(data.amount);

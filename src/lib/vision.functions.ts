@@ -29,7 +29,7 @@ export const extractItemsFromImage = createServerFn({ method: "POST" })
             role: "system",
             content:
               "أنت مساعد عراقي يقرأ صور قوائم المشتريات والوصفات ورفوف المنتجات. " +
-              "أعد JSON فقط بالشكل: {\"items\":[{\"name\":\"...\",\"quantity\":1,\"note\":null}]} " +
+              'أعد JSON فقط بالشكل: {"items":[{"name":"...","quantity":1,"note":null}]} ' +
               "بأسماء عربية مختصرة وكميات صحيحة. لا تكتب أي شرح خارج JSON.",
           },
           {
