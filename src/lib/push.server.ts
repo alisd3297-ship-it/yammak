@@ -63,6 +63,21 @@ async function accessToken(sa: ServiceAccount): Promise<string> {
   return json.access_token;
 }
 
+/**
+ * معرّفات القنوات (نسخة v2): أندرويد يحتفظ بإعدادات القناة القديمة حتى لو كانت صامتة،
+ * فأي تصحيح للصوت يحتاج معرّف قناة جديد. يجب أن تطابق src/lib/native-push.ts.
+ */
+const CHANNEL_ORDERS = "lubabak_orders_v2";
+const CHANNEL_TAXI = "lubabak_taxi_v2";
+const CHANNEL_DEFAULT = "lubabak_default_v2";
+
+function androidChannelId(msg: { kind?: string | null; orderId?: string | null }): string {
+  const kind = msg.kind ?? "";
+  if (kind.startsWith("trip")) return CHANNEL_TAXI;
+  if (kind === "order" || kind === "offer" || msg.orderId) return CHANNEL_ORDERS;
+  return CHANNEL_DEFAULT;
+}
+
 export type PushMessage = {
   title: string;
   body: string;
@@ -107,10 +122,12 @@ export async function sendFcm(
           android: {
             priority: "HIGH",
             notification: {
-              channel_id:
-                msg.kind === "order" || msg.orderId ? "lubabak_orders" : "lubabak_default",
+              channel_id: androidChannelId(msg),
               sound: "default",
               default_vibrate_timings: true,
+              default_light_settings: true,
+              notification_priority: "PRIORITY_MAX",
+              visibility: "PUBLIC",
             },
           },
           apns: {
