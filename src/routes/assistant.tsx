@@ -31,10 +31,22 @@ export const Route = createFileRoute("/assistant")({
 
 const QUICK = ["دواء", "صمون", "كهربائي", "بيتزا", "غاز", "تكسي"];
 
-const INTENTS: { keys: string[]; label: string; to: "/taxi" | "/courier" | "/services" | "/pharmacies" | "/doctors" | "/request-anything" }[] = [
+const INTENTS: {
+  keys: string[];
+  label: string;
+  to: "/taxi" | "/courier" | "/services" | "/pharmacies" | "/doctors" | "/request-anything";
+}[] = [
   { keys: ["تكسي", "سيارة", "توصيلة", "مشوار"], label: "احجز تكسي", to: "/taxi" },
-  { keys: ["مندوب", "ارسال", "استلام", "توصيل غرض", "طرد"], label: "اطلب مندوب توصيل", to: "/courier" },
-  { keys: ["كهربائي", "سباك", "نجار", "صيانة", "مبرد", "فني"], label: "مهن وخدمات", to: "/services" },
+  {
+    keys: ["مندوب", "ارسال", "استلام", "توصيل غرض", "طرد"],
+    label: "اطلب مندوب توصيل",
+    to: "/courier",
+  },
+  {
+    keys: ["كهربائي", "سباك", "نجار", "صيانة", "مبرد", "فني"],
+    label: "مهن وخدمات",
+    to: "/services",
+  },
   { keys: ["دواء", "صيدلية", "علاج", "بنادول"], label: "الصيدليات", to: "/pharmacies" },
   { keys: ["طبيب", "دكتور", "استشارة"], label: "الأطباء", to: "/doctors" },
 ];
@@ -109,7 +121,11 @@ function AssistantPage() {
   }, [query, data]);
 
   const empty =
-    answer && !answer.intent && !answer.products.length && !answer.services.length && !answer.providers.length;
+    answer &&
+    !answer.intent &&
+    !answer.products.length &&
+    !answer.services.length &&
+    !answer.providers.length;
 
   return (
     <PageShell>
@@ -155,9 +171,7 @@ function AssistantPage() {
           ))}
         </div>
 
-        {isPending && submitted && (
-          <p className="text-sm text-muted-foreground">جاري البحث…</p>
-        )}
+        {isPending && submitted && <p className="text-sm text-muted-foreground">جاري البحث…</p>}
 
         {answer?.intent && (
           <Link

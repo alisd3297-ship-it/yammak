@@ -119,7 +119,11 @@ function ProviderInsightsPage() {
           <StatCard label="مبيعات مكتملة" value={formatIQD(Number(stats?.revenue ?? 0))} />
           <StatCard label="متوسط الطلب" value={formatIQD(Number(stats?.avg_ticket ?? 0))} />
           <StatCard label="طلبات مكتملة" value={String(stats?.orders_completed ?? 0)} />
-          <StatCard label="طلبات ملغاة" value={String(stats?.orders_cancelled ?? 0)} tone="danger" />
+          <StatCard
+            label="طلبات ملغاة"
+            value={String(stats?.orders_cancelled ?? 0)}
+            tone="danger"
+          />
         </section>
 
         <section className="rounded-2xl bg-card p-4 shadow-soft">
@@ -217,15 +221,7 @@ function ProviderInsightsPage() {
   );
 }
 
-function StatCard({
-  label,
-  value,
-  tone,
-}: {
-  label: string;
-  value: string;
-  tone?: "danger";
-}) {
+function StatCard({ label, value, tone }: { label: string; value: string; tone?: "danger" }) {
   return (
     <div className="rounded-2xl bg-card p-4 shadow-soft">
       <p className="text-xs text-muted-foreground">{label}</p>

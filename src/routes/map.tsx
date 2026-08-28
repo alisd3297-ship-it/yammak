@@ -49,7 +49,8 @@ function ServicesMapPage() {
   );
 
   const focus = points.find((p) => p.id === focusId) ?? null;
-  const center = focus?.lat != null && focus.lng != null ? { lat: focus.lat, lng: focus.lng } : geo.point;
+  const center =
+    focus?.lat != null && focus.lng != null ? { lat: focus.lat, lng: focus.lng } : geo.point;
 
   return (
     <PageShell>
@@ -109,11 +110,7 @@ function ServicesMapPage() {
                 focusId === p.id && "ring-2 ring-primary",
               )}
             >
-              <button
-                type="button"
-                className="w-full text-start"
-                onClick={() => setFocusId(p.id)}
-              >
+              <button type="button" className="w-full text-start" onClick={() => setFocusId(p.id)}>
                 <p className="font-bold">{p.name}</p>
                 <p className="text-xs text-muted-foreground">
                   {formatKm(p.km)} · {p.isOpen ? "مفتوح" : "مغلق"}

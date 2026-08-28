@@ -26,7 +26,8 @@ export const Route = createFileRoute("/quotes")({
       { title: "طلب عرض سعر | لبابك" },
       {
         name: "description",
-        content: "اطلب عروض أسعار من مقدمي الخدمة في لبابك، قارن الأسعار وأوقات التنفيذ واختر الأنسب.",
+        content:
+          "اطلب عروض أسعار من مقدمي الخدمة في لبابك، قارن الأسعار وأوقات التنفيذ واختر الأنسب.",
       },
       { property: "og:title", content: "طلب عرض سعر | لبابك" },
       { property: "og:description", content: "قارن عروض المهنيين واختر الأنسب إلك." },
@@ -163,10 +164,7 @@ function QuotesPage() {
                       {o.message && <p className="mt-1 text-xs">{o.message}</p>}
                     </div>
                     {r.status !== "accepted" ? (
-                      <Button
-                        className="h-9 px-3 text-xs"
-                        onClick={() => void accept(r.id, o.id)}
-                      >
+                      <Button className="h-9 px-3 text-xs" onClick={() => void accept(r.id, o.id)}>
                         قبول
                       </Button>
                     ) : (
