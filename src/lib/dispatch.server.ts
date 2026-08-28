@@ -243,10 +243,13 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
     return { assignedTo: null, status: "searching_driver", message: "لا يوجد مندوب مناسب حالياً" };
   }
   await supabaseAdmin.rpc("mark_dispatch_attempt", { _order_id: order.id, _found: true });
-  await supabaseAdmin.rpc("system_change_order_status", {
+  const { error: offerStatusError } = await supabaseAdmin.rpc("system_change_order_status", {
     _order_id: order.id,
     _new_status: "offered_to_driver",
   });
+  if (offerStatusError) {
+    console.error("dispatch: failed to move order to offered_to_driver", order.id, offerStatusError);
+  }
   // إشعار مختصر ومفيد للمندوب: رقم الطلب، المتجر، منطقة التسليم، وأجرة التوصيل.
   const { data: orderInfo } = await supabaseAdmin
     .from("orders")
