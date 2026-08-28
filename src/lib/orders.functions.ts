@@ -115,8 +115,23 @@ export const changeOrderStatus = createServerFn({ method: "POST" })
       }
     }
 
+    // «الطلب جاهز»: نبدأ البحث عن مندوب من الخادم مباشرة، فلا يعتمد التوزيع على
+    // نجاح نداء إضافي من المتصفح. أي فشل هنا تلتقطه الصيانة الدورية كل دقيقة.
+    if (data.status === "ready_for_pickup") {
+      try {
+        const { runDispatch } = await import("@/lib/dispatch.server");
+        await runDispatch(order.id);
+      } catch (err) {
+        console.error("[changeOrderStatus] auto dispatch failed", {
+          orderId: order.id,
+          message: err instanceof Error ? err.message : "unknown",
+        });
+      }
+    }
+
     return { id: order.id, status: order.status as OrderStatus };
   });
+
 
 /**
  * تقدير أجرة التوصيل قبل تأكيد الطلب اعتماداً على قواعد التسعير،
