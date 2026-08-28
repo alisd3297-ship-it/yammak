@@ -120,9 +120,8 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
   const vehicleConstrained =
     order.order_type === "special_delivery" || order.order_type === "courier";
   const requiredRank =
-    vehicleConstrained && order.vehicle_type
-      ? VEHICLE_RANK[order.vehicle_type as VehicleType]
-      : 0;
+    vehicleConstrained && order.vehicle_type ? VEHICLE_RANK[order.vehicle_type as VehicleType] : 0;
+
 
 
   const freshAfter = new Date(Date.now() - maxAgeMin * 60_000).toISOString();
