@@ -47,6 +47,8 @@ export async function logAppError(
   const err = error as { message?: string; stack?: string } | null;
   const message = String(err?.message ?? error ?? "خطأ غير معروف").slice(0, 500);
   if (!message || message === "undefined") return;
+  if (isIgnored(message)) return;
+
 
   const kind = options.kind ?? "error";
   if (!shouldSend(`${kind}:${message}`)) return;
