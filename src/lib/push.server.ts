@@ -134,7 +134,6 @@ export async function sendFcm(
   const invalid: string[] = [];
   let sent = 0;
 
-
   const urgent = isUrgent(msg);
   const channelId = androidChannelId(msg);
 
@@ -200,7 +199,6 @@ export async function sendFcm(
       console.error("[push] fcm send failed", res.status, (await res.text()).slice(0, 200));
     }
   }
-
 
   return { sent, invalid };
 }
