@@ -31,6 +31,9 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
   const qc = useQueryClient();
   const [catName, setCatName] = useState("");
   const [form, setForm] = useState({ name: "", price: "", cost: "", stock: "", categoryId: "" });
+  const [newImage, setNewImage] = useState<{ url: string; preview: string } | null>(null);
+  const [uploading, setUploading] = useState<string | null>(null);
+  const newImageRef = useRef<HTMLInputElement>(null);
 
   const { data } = useQuery({
     queryKey: ["provider-catalog", providerId],
