@@ -89,6 +89,7 @@ function RestaurantPage() {
                     key={p.id}
                     className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft"
                   >
+                    <ProductImage src={p.image_url} alt={p.name} />
                     <div className="min-w-0 flex-1">
                       <p className="font-bold">{p.name}</p>
                       <p className="truncate text-xs text-muted-foreground">{p.description}</p>
