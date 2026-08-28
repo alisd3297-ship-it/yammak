@@ -3788,6 +3788,7 @@ export type Database = {
         Returns: boolean
       }
       is_phone_verified: { Args: { _user_id: string }; Returns: boolean }
+      is_plus: { Args: { _user_id: string }; Returns: boolean }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
       issue_invoice: {
         Args: { _subject_id: string; _subject_type: string }
@@ -4263,6 +4264,7 @@ export type Database = {
         Args: { _pickup_lat: number; _pickup_lng: number; _stops: Json }
         Returns: number
       }
+      subscribe_plus: { Args: { _plan?: string }; Returns: Json }
       system_assign_driver: {
         Args: { _driver_id: string; _order_id: string }
         Returns: {
