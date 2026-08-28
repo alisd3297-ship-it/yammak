@@ -171,8 +171,6 @@ function DriverAccountPage() {
           </section>
         )}
 
-
-
         <section className="overflow-hidden rounded-3xl bg-card shadow-soft">
           <SettingLink to="/driver-earnings" icon={Wallet} label="الأرباح والتسويات" />
           <SettingLink to="/notifications" icon={Bell} label="الإشعارات" />

@@ -154,7 +154,6 @@ export async function runTripDispatch(tripId: string): Promise<TripDispatchResul
     }
   }
 
-
   return { assignedTo: null, status: "searching_driver", message: "تم إرسال الرحلة لأقرب سائق" };
 }
 
