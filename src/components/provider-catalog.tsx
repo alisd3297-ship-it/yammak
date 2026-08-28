@@ -230,6 +230,34 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
               </option>
             ))}
           </select>
+          <div className="flex items-center gap-3 rounded-xl bg-muted/50 p-3">
+            <ProductImage src={newImage?.preview} alt="صورة المنتج الجديد" />
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold">صورة المنتج (اختيارية)</p>
+              <p className="text-[11px] text-muted-foreground">JPG أو PNG، حد أقصى 5 ميغابايت</p>
+            </div>
+            <input
+              ref={newImageRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => pickNewImage(e.target.files?.[0])}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              className="h-10"
+              disabled={uploading === "new"}
+              onClick={() => newImageRef.current?.click()}
+            >
+              {uploading === "new" ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <ImagePlus className="size-4" />
+              )}
+              {newImage ? "تغيير" : "رفع صورة"}
+            </Button>
+          </div>
           <Button className="h-11 w-full" onClick={addProduct}>
             حفظ المنتج
           </Button>
