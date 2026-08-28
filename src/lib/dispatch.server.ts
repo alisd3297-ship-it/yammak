@@ -23,7 +23,7 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
   const { data: order } = await supabaseAdmin
     .from("orders")
     .select(
-      "id, status, provider_id, driver_id, pickup_lat, pickup_lng, vehicle_type, scheduled_at, order_type, dispatch_attempts, dispatch_last_attempt_at",
+      "id, status, provider_id, driver_id, customer_id, pickup_lat, pickup_lng, vehicle_type, scheduled_at, order_type, dispatch_attempts, dispatch_last_attempt_at",
     )
     .eq("id", orderId)
     .maybeSingle();
@@ -61,7 +61,10 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
     Number(settings?.find((s) => s.key === key)?.value ?? fallback);
   const timeout = Math.min(Math.max(setting("driver_offer_timeout_seconds", 120), 60), 300);
   const maxAgeMin = setting("driver_location_max_age_minutes", 10);
-  const radiusKm = setting("max_offer_radius_km", 15);
+  const baseRadiusKm = setting("max_offer_radius_km", 15);
+  // امتياز «لبابك بلس»: نوسّع دائرة البحث لزبائن الاشتراك حتى يُسند طلبهم أسرع
+  const { data: isPlus } = await supabaseAdmin.rpc("is_plus", { _user_id: order.customer_id });
+  const radiusKm = isPlus === true ? baseRadiusKm * 1.5 : baseRadiusKm;
 
   const { data: liveOffer } = await supabaseAdmin
     .from("delivery_offers")
@@ -103,7 +106,7 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
 
   const { data: workers } = await supabaseAdmin
     .from("worker_profiles")
-    .select("user_id, max_active_orders, vehicle_type")
+    .select("user_id, max_active_orders, vehicle_type, rating, ratings_count")
     .eq("worker_kind", "delivery")
     .eq("is_approved", true)
     .eq("is_available", true);
@@ -170,10 +173,17 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
           return distanceKm(o.dropoff_lat, o.dropoff_lng, originLat, originLng) > radiusKm / 2;
         });
         if (conflicting) return null;
-        return { driverId: w.user_id, km };
+        // توزيع ذكي: المسافة أساس الترتيب، مع خصم على الحمل الحالي ومكافأة للتقييم العالي
+        // (التقييم يُحتسب فقط بعد عدد كافٍ من التقييمات حتى لا يتحيّز للجدد).
+        const rating = Number(w.rating ?? 0);
+        const rated = Number(w.ratings_count ?? 0) >= 5;
+        const score = km + current.length * 1.5 - (rated ? (rating - 4) * 0.8 : 0);
+        return { driverId: w.user_id, km, score };
       })
-      .filter((c): c is { driverId: string; km: number } => c !== null && c.km <= radiusKm)
-      .sort((a, b) => a.km - b.km);
+      .filter(
+        (c): c is { driverId: string; km: number; score: number } => c !== null && c.km <= radiusKm,
+      )
+      .sort((a, b) => a.score - b.score);
 
   let candidates = buildCandidates((freshLocations ?? []) as never);
   if (!candidates.length) candidates = buildCandidates((staleLocations ?? []) as never);
@@ -195,7 +205,7 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
 
   // إرسال العرض بشكل ذري داخل قاعدة البيانات: قفل على الطلب والسائق مع إعادة فحص
   // العروض القائمة وسعة السائق، فلا يمكن إرسال عرضين للطلب نفسه أو تجاوز السعة عند التزامن.
-  let chosen: { driverId: string; km: number } | null = null;
+  let chosen: { driverId: string; km: number; score: number } | null = null;
   for (const candidate of candidates.slice(0, 5)) {
     const { data: ok } = await supabaseAdmin.rpc("try_offer_delivery", {
       _order_id: order.id,

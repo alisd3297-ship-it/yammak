@@ -1,6 +1,7 @@
 import { Check, MapPin, PackageCheck, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DriverMap } from "@/components/driver/driver-map";
+import { OrderChat } from "@/components/order-chat";
 import { formatIQD, isCourierType } from "@/lib/orders";
 import { vehicleLabel } from "@/lib/vehicles";
 import { cn } from "@/lib/utils";
@@ -143,6 +144,10 @@ export function TaskCard({
           {action.label}
         </Button>
       )}
+
+      <div className="mt-4">
+        <OrderChat orderId={task.id} />
+      </div>
     </article>
   );
 }

@@ -11,6 +11,7 @@ import { ProviderServiceRequests } from "@/components/provider-service-requests"
 import { ProviderCustomerTabs } from "@/components/provider-customer-tabs";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { OrderChat } from "@/components/order-chat";
 
 import { useAccount } from "@/lib/auth";
 import { useSignOut } from "@/lib/sign-out";
@@ -236,12 +237,20 @@ function ProviderDashboard() {
           </button>
         )}
 
-        <Link
-          to="/provider-finance"
-          className="mt-3 inline-block rounded-full bg-primary-foreground/15 px-4 py-2 text-xs font-semibold backdrop-blur"
-        >
-          مالية النشاط والتسويات
-        </Link>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Link
+            to="/provider-finance"
+            className="inline-block rounded-full bg-primary-foreground/15 px-4 py-2 text-xs font-semibold backdrop-blur"
+          >
+            مالية النشاط والتسويات
+          </Link>
+          <Link
+            to="/provider-insights"
+            className="inline-block rounded-full bg-primary-foreground/15 px-4 py-2 text-xs font-semibold backdrop-blur"
+          >
+            لوحة ذكية وعروض
+          </Link>
+        </div>
       </header>
 
       {provider && (
@@ -365,6 +374,9 @@ function ProviderDashboard() {
                   </Button>
                 </div>
               )}
+              <div className="mt-3">
+                <OrderChat orderId={o.id} />
+              </div>
             </article>
           );
         })}

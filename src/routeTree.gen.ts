@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
+import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CourierRouteImport } from './routes/courier'
@@ -19,10 +20,16 @@ import { Route as DriverAccountRouteImport } from './routes/driver-account'
 import { Route as DriverEarningsRouteImport } from './routes/driver-earnings'
 import { Route as DriverMapRouteImport } from './routes/driver-map'
 import { Route as DriverTasksRouteImport } from './routes/driver-tasks'
+import { Route as MapRouteImport } from './routes/map'
+import { Route as NearbyRouteImport } from './routes/nearby'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PaymentsRouteImport } from './routes/payments'
+import { Route as PlusRouteImport } from './routes/plus'
 import { Route as ProviderRouteImport } from './routes/provider'
 import { Route as ProviderFinanceRouteImport } from './routes/provider-finance'
+import { Route as ProviderInsightsRouteImport } from './routes/provider-insights'
+import { Route as ReferralsRouteImport } from './routes/referrals'
+import { Route as RequestAnythingRouteImport } from './routes/request-anything'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SetupAdminRouteImport } from './routes/setup-admin'
 import { Route as SetupTestAccountsRouteImport } from './routes/setup-test-accounts'
@@ -82,6 +89,11 @@ const AccountRoute = AccountRouteImport.update({
   path: '/account',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AssistantRoute = AssistantRouteImport.update({
+  id: '/assistant',
+  path: '/assistant',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -122,6 +134,16 @@ const DriverTasksRoute = DriverTasksRouteImport.update({
   path: '/driver-tasks',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MapRoute = MapRouteImport.update({
+  id: '/map',
+  path: '/map',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NearbyRoute = NearbyRouteImport.update({
+  id: '/nearby',
+  path: '/nearby',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NotificationsRoute = NotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
@@ -132,6 +154,11 @@ const PaymentsRoute = PaymentsRouteImport.update({
   path: '/payments',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlusRoute = PlusRouteImport.update({
+  id: '/plus',
+  path: '/plus',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProviderRoute = ProviderRouteImport.update({
   id: '/provider',
   path: '/provider',
@@ -140,6 +167,21 @@ const ProviderRoute = ProviderRouteImport.update({
 const ProviderFinanceRoute = ProviderFinanceRouteImport.update({
   id: '/provider-finance',
   path: '/provider-finance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProviderInsightsRoute = ProviderInsightsRouteImport.update({
+  id: '/provider-insights',
+  path: '/provider-insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReferralsRoute = ReferralsRouteImport.update({
+  id: '/referrals',
+  path: '/referrals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RequestAnythingRoute = RequestAnythingRouteImport.update({
+  id: '/request-anything',
+  path: '/request-anything',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -386,6 +428,7 @@ const ApiPublicPaymentsStripeRoute = ApiPublicPaymentsStripeRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/assistant': typeof AssistantRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
@@ -394,10 +437,16 @@ export interface FileRoutesByFullPath {
   '/driver-earnings': typeof DriverEarningsRoute
   '/driver-map': typeof DriverMapRoute
   '/driver-tasks': typeof DriverTasksRoute
+  '/map': typeof MapRoute
+  '/nearby': typeof NearbyRoute
   '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
+  '/plus': typeof PlusRoute
   '/provider': typeof ProviderRoute
   '/provider-finance': typeof ProviderFinanceRoute
+  '/provider-insights': typeof ProviderInsightsRoute
+  '/referrals': typeof ReferralsRoute
+  '/request-anything': typeof RequestAnythingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
   '/setup-test-accounts': typeof SetupTestAccountsRoute
@@ -450,6 +499,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/assistant': typeof AssistantRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
@@ -458,10 +508,16 @@ export interface FileRoutesByTo {
   '/driver-earnings': typeof DriverEarningsRoute
   '/driver-map': typeof DriverMapRoute
   '/driver-tasks': typeof DriverTasksRoute
+  '/map': typeof MapRoute
+  '/nearby': typeof NearbyRoute
   '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
+  '/plus': typeof PlusRoute
   '/provider': typeof ProviderRoute
   '/provider-finance': typeof ProviderFinanceRoute
+  '/provider-insights': typeof ProviderInsightsRoute
+  '/referrals': typeof ReferralsRoute
+  '/request-anything': typeof RequestAnythingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
   '/setup-test-accounts': typeof SetupTestAccountsRoute
@@ -515,6 +571,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/assistant': typeof AssistantRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
@@ -523,10 +580,16 @@ export interface FileRoutesById {
   '/driver-earnings': typeof DriverEarningsRoute
   '/driver-map': typeof DriverMapRoute
   '/driver-tasks': typeof DriverTasksRoute
+  '/map': typeof MapRoute
+  '/nearby': typeof NearbyRoute
   '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
+  '/plus': typeof PlusRoute
   '/provider': typeof ProviderRoute
   '/provider-finance': typeof ProviderFinanceRoute
+  '/provider-insights': typeof ProviderInsightsRoute
+  '/referrals': typeof ReferralsRoute
+  '/request-anything': typeof RequestAnythingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
   '/setup-test-accounts': typeof SetupTestAccountsRoute
@@ -581,6 +644,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/account'
+    | '/assistant'
     | '/auth'
     | '/checkout'
     | '/courier'
@@ -589,10 +653,16 @@ export interface FileRouteTypes {
     | '/driver-earnings'
     | '/driver-map'
     | '/driver-tasks'
+    | '/map'
+    | '/nearby'
     | '/notifications'
     | '/payments'
+    | '/plus'
     | '/provider'
     | '/provider-finance'
+    | '/provider-insights'
+    | '/referrals'
+    | '/request-anything'
     | '/reset-password'
     | '/setup-admin'
     | '/setup-test-accounts'
@@ -645,6 +715,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/account'
+    | '/assistant'
     | '/auth'
     | '/checkout'
     | '/courier'
@@ -653,10 +724,16 @@ export interface FileRouteTypes {
     | '/driver-earnings'
     | '/driver-map'
     | '/driver-tasks'
+    | '/map'
+    | '/nearby'
     | '/notifications'
     | '/payments'
+    | '/plus'
     | '/provider'
     | '/provider-finance'
+    | '/provider-insights'
+    | '/referrals'
+    | '/request-anything'
     | '/reset-password'
     | '/setup-admin'
     | '/setup-test-accounts'
@@ -709,6 +786,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/account'
+    | '/assistant'
     | '/auth'
     | '/checkout'
     | '/courier'
@@ -717,10 +795,16 @@ export interface FileRouteTypes {
     | '/driver-earnings'
     | '/driver-map'
     | '/driver-tasks'
+    | '/map'
+    | '/nearby'
     | '/notifications'
     | '/payments'
+    | '/plus'
     | '/provider'
     | '/provider-finance'
+    | '/provider-insights'
+    | '/referrals'
+    | '/request-anything'
     | '/reset-password'
     | '/setup-admin'
     | '/setup-test-accounts'
@@ -774,6 +858,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
+  AssistantRoute: typeof AssistantRoute
   AuthRoute: typeof AuthRoute
   CheckoutRoute: typeof CheckoutRoute
   CourierRoute: typeof CourierRoute
@@ -782,10 +867,16 @@ export interface RootRouteChildren {
   DriverEarningsRoute: typeof DriverEarningsRoute
   DriverMapRoute: typeof DriverMapRoute
   DriverTasksRoute: typeof DriverTasksRoute
+  MapRoute: typeof MapRoute
+  NearbyRoute: typeof NearbyRoute
   NotificationsRoute: typeof NotificationsRoute
   PaymentsRoute: typeof PaymentsRoute
+  PlusRoute: typeof PlusRoute
   ProviderRoute: typeof ProviderRoute
   ProviderFinanceRoute: typeof ProviderFinanceRoute
+  ProviderInsightsRoute: typeof ProviderInsightsRoute
+  ReferralsRoute: typeof ReferralsRoute
+  RequestAnythingRoute: typeof RequestAnythingRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SetupAdminRoute: typeof SetupAdminRoute
   SetupTestAccountsRoute: typeof SetupTestAccountsRoute
@@ -852,6 +943,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/assistant': {
+      id: '/assistant'
+      path: '/assistant'
+      fullPath: '/assistant'
+      preLoaderRoute: typeof AssistantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -908,6 +1006,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DriverTasksRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/map': {
+      id: '/map'
+      path: '/map'
+      fullPath: '/map'
+      preLoaderRoute: typeof MapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nearby': {
+      id: '/nearby'
+      path: '/nearby'
+      fullPath: '/nearby'
+      preLoaderRoute: typeof NearbyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/notifications': {
       id: '/notifications'
       path: '/notifications'
@@ -922,6 +1034,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PaymentsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/plus': {
+      id: '/plus'
+      path: '/plus'
+      fullPath: '/plus'
+      preLoaderRoute: typeof PlusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/provider': {
       id: '/provider'
       path: '/provider'
@@ -934,6 +1053,27 @@ declare module '@tanstack/react-router' {
       path: '/provider-finance'
       fullPath: '/provider-finance'
       preLoaderRoute: typeof ProviderFinanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/provider-insights': {
+      id: '/provider-insights'
+      path: '/provider-insights'
+      fullPath: '/provider-insights'
+      preLoaderRoute: typeof ProviderInsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/referrals': {
+      id: '/referrals'
+      path: '/referrals'
+      fullPath: '/referrals'
+      preLoaderRoute: typeof ReferralsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/request-anything': {
+      id: '/request-anything'
+      path: '/request-anything'
+      fullPath: '/request-anything'
+      preLoaderRoute: typeof RequestAnythingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -1278,6 +1418,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
+  AssistantRoute: AssistantRoute,
   AuthRoute: AuthRoute,
   CheckoutRoute: CheckoutRoute,
   CourierRoute: CourierRoute,
@@ -1286,10 +1427,16 @@ const rootRouteChildren: RootRouteChildren = {
   DriverEarningsRoute: DriverEarningsRoute,
   DriverMapRoute: DriverMapRoute,
   DriverTasksRoute: DriverTasksRoute,
+  MapRoute: MapRoute,
+  NearbyRoute: NearbyRoute,
   NotificationsRoute: NotificationsRoute,
   PaymentsRoute: PaymentsRoute,
+  PlusRoute: PlusRoute,
   ProviderRoute: ProviderRoute,
   ProviderFinanceRoute: ProviderFinanceRoute,
+  ProviderInsightsRoute: ProviderInsightsRoute,
+  ReferralsRoute: ReferralsRoute,
+  RequestAnythingRoute: RequestAnythingRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SetupAdminRoute: SetupAdminRoute,
   SetupTestAccountsRoute: SetupTestAccountsRoute,

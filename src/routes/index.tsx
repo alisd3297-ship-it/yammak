@@ -99,6 +99,54 @@ function MainTile({ item }: { item: MainService }) {
   );
 }
 
+/** مدخل سريع للميزات الجديدة (طلب حر، مساعد، قريب منك، الخريطة). */
+function QuickAction({
+  to,
+  title,
+  hint,
+  icon: Icon,
+  highlight,
+}: {
+  to: "/request-anything" | "/assistant" | "/nearby" | "/map";
+  title: string;
+  hint: string;
+  icon: Icons.LucideIcon;
+  highlight?: boolean;
+}) {
+  return (
+    <Link
+      to={to}
+      className={
+        highlight
+          ? "flex items-center gap-3 rounded-2xl bg-primary p-3 text-primary-foreground shadow-card transition active:scale-[0.98]"
+          : "flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft transition active:scale-[0.98]"
+      }
+    >
+      <span
+        className={
+          highlight
+            ? "flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-foreground/20"
+            : "flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground"
+        }
+      >
+        <Icon className="size-5" />
+      </span>
+      <span className="min-w-0">
+        <span className="block truncate text-sm font-bold">{title}</span>
+        <span
+          className={
+            highlight
+              ? "block truncate text-[11px] opacity-90"
+              : "block truncate text-[11px] text-muted-foreground"
+          }
+        >
+          {hint}
+        </span>
+      </span>
+    </Link>
+  );
+}
+
 function CustomerHome() {
   useCustomerAreaGuard();
   useRoleHomeRedirect();
@@ -176,6 +224,26 @@ function CustomerHome() {
       <OfflineBanner stale={catalog.isStaleCache} />
 
       <AdminEntry />
+
+      <section className="mt-4 px-4">
+        <div className="grid grid-cols-2 gap-3">
+          <QuickAction
+            to="/request-anything"
+            title="اطلب أي شي"
+            hint="اكتبه بلغتك ونرتبه إلك"
+            icon={Icons.Sparkles}
+            highlight
+          />
+          <QuickAction
+            to="/assistant"
+            title="مساعد لبابك"
+            hint="دلّني على المنتج"
+            icon={Icons.Bot}
+          />
+          <QuickAction to="/nearby" title="قريب منك" hint="عروض ومتاجر" icon={Icons.MapPin} />
+          <QuickAction to="/map" title="خريطة الخدمات" hint="شوف الأقرب" icon={Icons.Map} />
+        </div>
+      </section>
 
       <section className="mt-4 px-4">
         <div className="mb-2 flex items-center justify-between">
