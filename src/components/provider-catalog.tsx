@@ -267,9 +267,28 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
       <section className="space-y-2">
         {(data?.products ?? []).map((p) => (
           <div key={p.id} className="rounded-2xl bg-card p-4 shadow-soft">
-            <div className="flex items-center justify-between">
-              <p className="font-bold">{p.name}</p>
-              <span className="text-sm font-bold text-primary">{formatIQD(Number(p.price))}</span>
+            <div className="flex items-center gap-3">
+              <ProductImage src={p.image_url} alt={p.name} className="size-14" />
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-bold">{p.name}</p>
+                <span className="text-sm font-bold text-primary">{formatIQD(Number(p.price))}</span>
+              </div>
+              <label className="cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => changeProductImage(p.id, e.target.files?.[0])}
+                />
+                <span className="inline-flex h-9 items-center gap-1.5 rounded-md border border-input px-3 text-xs font-semibold">
+                  {uploading === p.id ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <ImagePlus className="size-4" />
+                  )}
+                  {p.image_url ? "تغيير الصورة" : "إضافة صورة"}
+                </span>
+              </label>
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-3">
               <label className="flex items-center gap-2 text-xs font-semibold">
