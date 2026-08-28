@@ -27,6 +27,7 @@ import { Route as PaymentsRouteImport } from './routes/payments'
 import { Route as PlusRouteImport } from './routes/plus'
 import { Route as ProviderRouteImport } from './routes/provider'
 import { Route as ProviderFinanceRouteImport } from './routes/provider-finance'
+import { Route as ReferralsRouteImport } from './routes/referrals'
 import { Route as RequestAnythingRouteImport } from './routes/request-anything'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SetupAdminRouteImport } from './routes/setup-admin'
@@ -165,6 +166,11 @@ const ProviderRoute = ProviderRouteImport.update({
 const ProviderFinanceRoute = ProviderFinanceRouteImport.update({
   id: '/provider-finance',
   path: '/provider-finance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReferralsRoute = ReferralsRouteImport.update({
+  id: '/referrals',
+  path: '/referrals',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RequestAnythingRoute = RequestAnythingRouteImport.update({
@@ -432,6 +438,7 @@ export interface FileRoutesByFullPath {
   '/plus': typeof PlusRoute
   '/provider': typeof ProviderRoute
   '/provider-finance': typeof ProviderFinanceRoute
+  '/referrals': typeof ReferralsRoute
   '/request-anything': typeof RequestAnythingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
@@ -501,6 +508,7 @@ export interface FileRoutesByTo {
   '/plus': typeof PlusRoute
   '/provider': typeof ProviderRoute
   '/provider-finance': typeof ProviderFinanceRoute
+  '/referrals': typeof ReferralsRoute
   '/request-anything': typeof RequestAnythingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
@@ -571,6 +579,7 @@ export interface FileRoutesById {
   '/plus': typeof PlusRoute
   '/provider': typeof ProviderRoute
   '/provider-finance': typeof ProviderFinanceRoute
+  '/referrals': typeof ReferralsRoute
   '/request-anything': typeof RequestAnythingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
@@ -642,6 +651,7 @@ export interface FileRouteTypes {
     | '/plus'
     | '/provider'
     | '/provider-finance'
+    | '/referrals'
     | '/request-anything'
     | '/reset-password'
     | '/setup-admin'
@@ -711,6 +721,7 @@ export interface FileRouteTypes {
     | '/plus'
     | '/provider'
     | '/provider-finance'
+    | '/referrals'
     | '/request-anything'
     | '/reset-password'
     | '/setup-admin'
@@ -780,6 +791,7 @@ export interface FileRouteTypes {
     | '/plus'
     | '/provider'
     | '/provider-finance'
+    | '/referrals'
     | '/request-anything'
     | '/reset-password'
     | '/setup-admin'
@@ -850,6 +862,7 @@ export interface RootRouteChildren {
   PlusRoute: typeof PlusRoute
   ProviderRoute: typeof ProviderRoute
   ProviderFinanceRoute: typeof ProviderFinanceRoute
+  ReferralsRoute: typeof ReferralsRoute
   RequestAnythingRoute: typeof RequestAnythingRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SetupAdminRoute: typeof SetupAdminRoute
@@ -1027,6 +1040,13 @@ declare module '@tanstack/react-router' {
       path: '/provider-finance'
       fullPath: '/provider-finance'
       preLoaderRoute: typeof ProviderFinanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/referrals': {
+      id: '/referrals'
+      path: '/referrals'
+      fullPath: '/referrals'
+      preLoaderRoute: typeof ReferralsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/request-anything': {
@@ -1394,6 +1414,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlusRoute: PlusRoute,
   ProviderRoute: ProviderRoute,
   ProviderFinanceRoute: ProviderFinanceRoute,
+  ReferralsRoute: ReferralsRoute,
   RequestAnythingRoute: RequestAnythingRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SetupAdminRoute: SetupAdminRoute,
