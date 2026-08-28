@@ -1,5 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
 
 /**
  * إدارة حسابات دخول أصحاب المطاعم/المحلات من لوحة الإدارة.
@@ -9,11 +11,10 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
  * التحقق من صلاحية الإدارة يتم على الخادم وداخل قاعدة البيانات، لا في الواجهة.
  */
 
-type Ctx = { userId: string; supabase: { rpc: (...args: never[]) => unknown } };
-
 function friendly(message: string): string {
   const m = message.toLowerCase();
-  if (m.includes("owner_already_linked")) return "هذا الحساب مرتبط بنشاط آخر — استخدم بريداً مختلفاً";
+  if (m.includes("owner_already_linked"))
+    return "هذا الحساب مرتبط بنشاط آخر — استخدم بريداً مختلفاً";
   if (m.includes("provider_not_found")) return "النشاط غير موجود";
   if (m.includes("already been registered") || m.includes("already registered"))
     return "هذا البريد مسجّل مسبقاً — استخدم «ربط حساب موجود» أو بريداً آخر";
@@ -25,11 +26,10 @@ function friendly(message: string): string {
   return message || "تعذر تنفيذ العملية";
 }
 
+type AuthedContext = { userId: string; supabase: SupabaseClient<Database> };
+
 /** يمنع أي استخدام لصلاحيات الخدمة قبل التأكد أن المنفّذ من طاقم الإدارة. */
-async function assertStaff(context: {
-  userId: string;
-  supabase: { rpc: (fn: "is_staff", args: { _user_id: string }) => Promise<{ data: unknown }> };
-}) {
+async function assertStaff(context: AuthedContext) {
   const { data } = await context.supabase.rpc("is_staff", { _user_id: context.userId });
   if (data !== true) throw new Error("forbidden");
 }
@@ -53,7 +53,7 @@ export const getProviderAccount = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { providerId: string }) => ({ providerId: String(data.providerId) }))
   .handler(async ({ data, context }) => {
-    await assertStaff(context as never);
+    await assertStaff(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const { data: provider } = await supabaseAdmin
@@ -102,7 +102,7 @@ export const createProviderAccount = createServerFn({ method: "POST" })
     }) => data,
   )
   .handler(async ({ data, context }) => {
-    await assertStaff(context as never);
+    await assertStaff(context);
     const email = (data.email ?? "").trim().toLowerCase();
     if (!email.includes("@")) throw new Error("صيغة البريد الإلكتروني غير صحيحة");
     if (data.mode === "password" && (data.password ?? "").length < 8)
@@ -165,14 +165,10 @@ export const createProviderAccount = createServerFn({ method: "POST" })
       .upsert({ user_id: userId, role: "provider" }, { onConflict: "user_id,role" });
 
     // الربط يمر بدالة الإدارة الآمنة (تمنع ربط حساب بنشاطين وتسجّل التدقيق)
-    const { error: linkError } = await (
-      context.supabase as unknown as {
-        rpc: (
-          fn: "admin_link_provider_owner",
-          args: { _provider_id: string; _owner_id: string },
-        ) => Promise<{ error: { message: string } | null }>;
-      }
-    ).rpc("admin_link_provider_owner", { _provider_id: provider.id, _owner_id: userId });
+    const { error: linkError } = await context.supabase.rpc("admin_link_provider_owner", {
+      _provider_id: provider.id,
+      _owner_id: userId,
+    });
     if (linkError) throw new Error(friendly(linkError.message));
 
     return { ok: true as const, userId, email, created, mode: data.mode };
@@ -183,8 +179,9 @@ export const resetProviderAccountPassword = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { providerId: string; password: string }) => data)
   .handler(async ({ data, context }) => {
-    await assertStaff(context as never);
-    if ((data.password ?? "").length < 8) throw new Error("كلمة المرور يجب أن تكون 8 أحرف على الأقل");
+    await assertStaff(context);
+    if ((data.password ?? "").length < 8)
+      throw new Error("كلمة المرور يجب أن تكون 8 أحرف على الأقل");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const { data: provider } = await supabaseAdmin
@@ -214,7 +211,7 @@ export const setProviderAccountBlocked = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { providerId: string; blocked: boolean }) => data)
   .handler(async ({ data, context }) => {
-    await assertStaff(context as never);
+    await assertStaff(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const { data: provider } = await supabaseAdmin
@@ -249,17 +246,11 @@ export const unlinkProviderAccount = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { providerId: string }) => data)
   .handler(async ({ data, context }) => {
-    await assertStaff(context as never);
-    const { error } = await (
-      context.supabase as unknown as {
-        rpc: (
-          fn: "admin_link_provider_owner",
-          args: { _provider_id: string; _owner_id: string | null },
-        ) => Promise<{ error: { message: string } | null }>;
-      }
-    ).rpc("admin_link_provider_owner", { _provider_id: data.providerId, _owner_id: null });
+    await assertStaff(context);
+    const { error } = await context.supabase.rpc("admin_link_provider_owner", {
+      _provider_id: data.providerId,
+      _owner_id: null as unknown as string,
+    });
     if (error) throw new Error(friendly(error.message));
     return { ok: true as const };
   });
-
-export type ProviderAccountCtx = Ctx;
