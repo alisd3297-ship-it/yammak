@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
 import { BackButton, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
+import { ProductImage } from "@/components/product-image";
 import { useCart } from "@/lib/cart";
 import { formatIQD } from "@/lib/orders";
 
