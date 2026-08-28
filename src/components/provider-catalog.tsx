@@ -66,7 +66,7 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
       sort_order: (data?.categories.length ?? 0) + 1,
     });
     if (error) {
-      toast.error("تعذر إضافة القسم");
+      toast.error(`تعذر إضافة القسم: ${error.message}`);
       return;
     }
     setCatName("");
@@ -91,7 +91,7 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
       sort_order: (data?.products.length ?? 0) + 1,
     });
     if (error) {
-      toast.error("تعذر إضافة المنتج");
+      toast.error(`تعذر إضافة المنتج: ${error.message}`);
       return;
     }
     setForm({ name: "", price: "", cost: "", stock: "", categoryId: "" });
@@ -141,7 +141,7 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
   async function patchProduct(id: string, patch: ProductPatch) {
     const { error } = await supabase.from("products").update(patch).eq("id", id);
     if (error) {
-      toast.error("تعذر حفظ التعديل");
+      toast.error(`تعذر حفظ التعديل: ${error.message}`);
       return;
     }
     refresh();
@@ -150,7 +150,7 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
   async function removeProduct(id: string) {
     const { error } = await supabase.from("products").delete().eq("id", id);
     if (error) {
-      toast.error("تعذر حذف المنتج");
+      toast.error(`تعذر حذف المنتج: ${error.message}`);
       return;
     }
     refresh();
