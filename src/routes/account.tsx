@@ -338,6 +338,18 @@ function AccountPage() {
         <Link to="/ads" className="flex items-center gap-3 px-5 py-4 text-sm font-semibold">
           <Megaphone className="size-5 text-primary" /> إعلاناتي
         </Link>
+        <Link to="/plus" className="flex items-center gap-3 px-5 py-4 text-sm font-semibold">
+          <Crown className="size-5 text-primary" /> لبابك بلس
+        </Link>
+        <Link to="/referrals" className="flex items-center gap-3 px-5 py-4 text-sm font-semibold">
+          <Gift className="size-5 text-primary" /> ادعُ أصدقاءك
+        </Link>
+        <Link
+          to="/request-anything"
+          className="flex items-center gap-3 px-5 py-4 text-sm font-semibold"
+        >
+          <Sparkles className="size-5 text-primary" /> طلباتي الحرة
+        </Link>
       </section>
 
       <div className="mx-4 mt-4">
