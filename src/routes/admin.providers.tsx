@@ -46,13 +46,14 @@ export const Route = createFileRoute("/admin/providers")({
 });
 
 const STATUS_LABELS: Record<string, string> = {
+  all: "الكل",
   pending: "قيد المراجعة",
   approved: "معتمد",
   suspended: "معلّق",
   rejected: "مرفوض",
 };
 
-const FILTERS = ["pending", "approved", "suspended", "rejected"] as const;
+const FILTERS = ["all", "pending", "approved", "suspended", "rejected"] as const;
 
 /** خطوات الإدارة على طلب الخدمة عندما يحتاج المزوّد متابعة يدوية. */
 const STAFF_NEXT_STEPS: Partial<
@@ -86,7 +87,7 @@ function AdminProvidersPage() {
   const qc = useQueryClient();
   const setStatus = useServerFn(setProviderStatus);
   const setRequestStatus = useServerFn(changeServiceRequestStatus);
-  const [filter, setFilter] = useState<(typeof FILTERS)[number]>("pending");
+  const [filter, setFilter] = useState<(typeof FILTERS)[number]>("all");
   const [view, setView] = useState<"providers" | "service-requests">("providers");
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<ProviderFormValue | null>(null);
@@ -126,14 +127,15 @@ function AdminProvidersPage() {
     queryKey: ["admin-providers", filter],
     enabled: isStaff,
     queryFn: async () => {
-      const { data } = await supabase
+      let query = supabase
         .from("providers")
         .select(
           "id, name, kind, status, phone, address_text, description, created_at, owner_id, city_id, lat, lng, logo_url, opening_time, closing_time, delivery_fee_override, min_order_amount, is_open, keywords, profession_category_id",
         )
-        .eq("status", filter)
         .order("created_at", { ascending: false })
-        .limit(50);
+        .limit(100);
+      if (filter !== "all") query = query.eq("status", filter);
+      const { data } = await query;
       return data ?? [];
     },
   });
@@ -311,6 +313,11 @@ function AdminProvidersPage() {
       </div>
 
       <div className={cn("space-y-3 px-4 py-5", view !== "providers" && "hidden")}>
+        <Button onClick={openCreate} className="h-14 w-full rounded-2xl text-base font-bold">
+          <Plus className="size-5" />
+          إضافة مطعم / محل / مقدم خدمة + حساب دخول
+        </Button>
+
         {(providers ?? []).map((p) => (
           <article key={p.id} className="rounded-2xl bg-card p-4 shadow-soft">
             <div className="flex items-center justify-between">
@@ -322,6 +329,21 @@ function AdminProvidersPage() {
             <p className="mt-1 text-xs text-muted-foreground">{p.description}</p>
             <p className="text-xs text-muted-foreground">{p.address_text}</p>
             {p.phone && <p className="text-xs text-muted-foreground">هاتف: {p.phone}</p>}
+            <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-semibold">
+              <span className="rounded-full bg-muted px-2 py-1 text-muted-foreground">
+                {STATUS_LABELS[p.status] ?? p.status}
+              </span>
+              <span
+                className={cn(
+                  "rounded-full px-2 py-1",
+                  p.owner_id
+                    ? "bg-success/15 text-success-foreground"
+                    : "bg-warning/15 text-warning-foreground",
+                )}
+              >
+                {p.owner_id ? "حساب دخول مرتبط" : "بدون حساب دخول"}
+              </span>
+            </div>
             <div className="mt-3 flex flex-wrap gap-2">
               <Button
                 variant="outline"
@@ -375,7 +397,9 @@ function AdminProvidersPage() {
         open={formOpen}
         onOpenChange={setFormOpen}
         provider={editing}
-        onSaved={() => {
+        onSaved={(_id, savedStatus) => {
+          // يُعرض النشاط الجديد فوراً مهما كانت حالته
+          setFilter(filter === "all" || filter === savedStatus ? filter : "all");
           qc.invalidateQueries({ queryKey: ["admin-providers"] });
         }}
       />

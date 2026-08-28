@@ -90,6 +90,23 @@ async function ensureChannels(
       // القنوات مدعومة على أندرويد فقط
     }
   }
+  // تحقق فعلي أن القنوات أُنشئت بأهمية عالية (وليس قناة قديمة صامتة)
+  try {
+    const { channels: existing } = await PushNotifications.listChannels();
+    const orders = existing.find((c) => c.id === ORDER_CHANNEL_ID);
+    const taxi = existing.find((c) => c.id === TAXI_CHANNEL_ID);
+    for (const [label, ch] of [
+      ["orders", orders],
+      ["taxi", taxi],
+    ] as const) {
+      if (!ch) console.error(`[push] channel missing: ${label}`);
+      else if ((ch.importance ?? 0) < 4 || ch.vibration === false)
+        console.error(`[push] channel ${label} is quiet`, ch.importance, ch.vibration);
+    }
+  } catch {
+    // listChannels متاح على أندرويد فقط
+  }
+
   for (const id of LEGACY_CHANNEL_IDS) {
     try {
       await PushNotifications.deleteChannel({ id });

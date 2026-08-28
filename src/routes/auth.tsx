@@ -221,6 +221,10 @@ function AuthPage() {
             >
               نسيت كلمة المرور؟
             </button>
+            <p className="rounded-xl bg-muted p-3 text-xs text-muted-foreground">
+              أصحاب المطاعم والمحلات ومقدمو الخدمات: سجّلوا الدخول بالبريد وكلمة المرور المستلمة من
+              إدارة لبابك، وتُفتح لوحة نشاطكم تلقائياً بعد الدخول.
+            </p>
           </form>
         </TabsContent>
 
