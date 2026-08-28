@@ -73,7 +73,6 @@ export const submitCustomRequest = createServerFn({ method: "POST" })
       .select("id, status, created_at")
       .maybeSingle();
 
-
     if (error || !row) throw new Error(friendly(error?.message ?? ""));
 
     // تنبيه الإدارة ليحوّل الطلب إلى طلب منظم

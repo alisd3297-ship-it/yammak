@@ -176,7 +176,10 @@ export const addGroupMember = createServerFn({ method: "POST" })
         monthly_limit: limit,
         can_order: data.canOrder ?? true,
       });
-      if (error) throw new Error(error.message.includes("duplicate") ? "العضو مضاف مسبقاً" : "تعذر إضافة العضو");
+      if (error)
+        throw new Error(
+          error.message.includes("duplicate") ? "العضو مضاف مسبقاً" : "تعذر إضافة العضو",
+        );
     } else {
       const { error } = await supabase.from("business_members").insert({
         business_id: data.accountId,
@@ -185,7 +188,10 @@ export const addGroupMember = createServerFn({ method: "POST" })
         monthly_limit: limit,
         can_order: data.canOrder ?? true,
       });
-      if (error) throw new Error(error.message.includes("duplicate") ? "العضو مضاف مسبقاً" : "تعذر إضافة العضو");
+      if (error)
+        throw new Error(
+          error.message.includes("duplicate") ? "العضو مضاف مسبقاً" : "تعذر إضافة العضو",
+        );
     }
     return { ok: true, name: label };
   });
@@ -218,5 +224,4 @@ export const updateGroupMember = createServerFn({ method: "POST" })
         : await context.supabase.from("business_members").update(patch).eq("id", data.memberId);
     if (error) throw new Error("تعذر تحديث العضو");
     return { ok: true };
-
   });

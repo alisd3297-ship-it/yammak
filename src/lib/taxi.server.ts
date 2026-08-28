@@ -151,7 +151,6 @@ export async function runTripMaintenance(): Promise<{ expired: number; redispatc
   // إلغاء الرحلات العالقة في البحث عن سائق بعد المهلة (كانت تبقى للأبد)
   await supabaseAdmin.rpc("expire_stale_trips");
 
-
   const { data: stuck } = await supabaseAdmin
     .from("trips")
     .select("id")

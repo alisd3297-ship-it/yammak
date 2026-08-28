@@ -41,10 +41,7 @@ function patch(source) {
   let out = source;
 
   if (!out.includes(`${MARKER} (start)`)) {
-    out = out.replace(
-      /^(apply plugin: 'com\.android\.application'\s*\n)/m,
-      `$1\n${LOADER}`,
-    );
+    out = out.replace(/^(apply plugin: 'com\.android\.application'\s*\n)/m, `$1\n${LOADER}`);
   }
 
   if (!out.includes(`${MARKER} configs`)) {
@@ -63,9 +60,7 @@ function patch(source) {
 
 function main() {
   if (!existsSync(GRADLE_PATH)) {
-    console.error(
-      "android/app/build.gradle غير موجود — نفّذ `npx cap add android` أولاً.",
-    );
+    console.error("android/app/build.gradle غير موجود — نفّذ `npx cap add android` أولاً.");
     process.exit(1);
   }
   const source = readFileSync(GRADLE_PATH, "utf8");

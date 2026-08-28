@@ -60,5 +60,11 @@ export async function buildReorder(orderId: string): Promise<ReorderResult> {
   }
 
   if (!result.length) return { ok: false, reason: "كل منتجات الطلب السابق غير متوفرة حالياً" };
-  return { ok: true, providerId: order.provider_id, providerName: provider.name, items: result, skipped };
+  return {
+    ok: true,
+    providerId: order.provider_id,
+    providerName: provider.name,
+    items: result,
+    skipped,
+  };
 }

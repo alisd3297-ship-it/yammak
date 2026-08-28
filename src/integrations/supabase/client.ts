@@ -47,7 +47,6 @@ function createSupabaseClient() {
     throw new Error(message);
   }
 
-
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     global: {
       fetch: createSupabaseFetch(SUPABASE_PUBLISHABLE_KEY),
