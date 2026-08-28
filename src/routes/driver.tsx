@@ -44,7 +44,6 @@ function PushStatusNotice({ approved }: { approved: boolean }) {
   );
 }
 
-
 export const Route = createFileRoute("/driver")({
   ssr: false,
   beforeLoad: requireWorker,
@@ -142,7 +141,6 @@ function DriverDashboard() {
           </div>
         )}
         <PushStatusNotice approved={!!worker?.is_approved} />
-
 
         <section className="grid grid-cols-3 gap-2">
           <Metric icon={Bike} label="توصيلات اليوم" value={String(summary.todayCount)} />

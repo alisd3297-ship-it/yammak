@@ -81,7 +81,9 @@ function PushReadinessPanel() {
       ) : null}
       {stats.data ? (
         <ul className="mt-3 space-y-1 text-xs text-muted-foreground">
-          <li>أجهزة نشطة: {stats.data.devices.active} (أندرويد {stats.data.devices.android})</li>
+          <li>
+            أجهزة نشطة: {stats.data.devices.active} (أندرويد {stats.data.devices.android})
+          </li>
           <li>
             مناديب توصيل بجهاز مسجّل: {stats.data.workers.delivery.withDevice} من{" "}
             {stats.data.workers.delivery.total}
@@ -104,7 +106,6 @@ function PushReadinessPanel() {
     </section>
   );
 }
-
 
 function StatCard({
   label,
@@ -318,8 +319,6 @@ function AdminMonitoringPage() {
             </section>
 
             <PushReadinessPanel />
-
-
 
             <section className="rounded-2xl border bg-card p-4">
               <h2 className="text-sm font-bold text-foreground">الطلبات حسب الخدمة</h2>

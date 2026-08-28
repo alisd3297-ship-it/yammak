@@ -30,7 +30,6 @@ export const registerPushDevice = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
-
 /** إلغاء تفعيل رمز جهاز (تسجيل خروج أو رفض إذن الإشعارات). */
 export const deactivatePushDevice = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
