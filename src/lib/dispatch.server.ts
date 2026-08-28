@@ -84,10 +84,20 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
     };
 
   if (order.status === "ready_for_pickup" || order.status === "new") {
-    await supabaseAdmin.rpc("system_change_order_status", {
+    // لا نكمل التوزيع إذا فشل تحويل الحالة، وإلا نُنشئ عرضاً «شبحاً» لا يستطيع
+    // المندوب قبوله لأن حالة الطلب ما زالت غير قابلة للتوزيع.
+    const { error: statusError } = await supabaseAdmin.rpc("system_change_order_status", {
       _order_id: order.id,
       _new_status: "searching_driver",
     });
+    if (statusError) {
+      console.error("dispatch: failed to move order to searching_driver", order.id, statusError);
+      return {
+        assignedTo: null,
+        status: order.status,
+        message: "تعذر تحويل الطلب إلى حالة البحث عن مندوب",
+      };
+    }
   }
 
   // الرافض يُستبعد نهائياً، أما من انتهت مهلته فيُستبعد مؤقتاً فقط (تبريد 10 دقائق)
