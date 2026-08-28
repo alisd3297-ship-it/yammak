@@ -270,7 +270,6 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
     }
   }
 
-
   return {
     assignedTo: chosen.driverId,
     status: "offered_to_driver",
@@ -364,7 +363,6 @@ export async function runMaintenance(source = "manual", minSeconds = 30) {
     redispatched,
     pushed,
   };
-
 
   await supabaseAdmin.from("maintenance_runs").insert({
     source,

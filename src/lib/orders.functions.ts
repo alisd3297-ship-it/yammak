@@ -132,7 +132,6 @@ export const changeOrderStatus = createServerFn({ method: "POST" })
     return { id: order.id, status: order.status as OrderStatus };
   });
 
-
 /**
  * تقدير أجرة التوصيل قبل تأكيد الطلب اعتماداً على قواعد التسعير،
  * بنفس نوع الطلب الذي ستستخدمه قاعدة البيانات عند الإنشاء (مطعم/متجر)

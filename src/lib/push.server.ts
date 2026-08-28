@@ -290,7 +290,10 @@ export async function dispatchPendingPush(limit = 100): Promise<PushDispatchResu
       .in("id", doneIds);
   }
   if (invalidTokens.length > 0) {
-    await supabaseAdmin.from("push_devices").update({ is_active: false }).in("token", invalidTokens);
+    await supabaseAdmin
+      .from("push_devices")
+      .update({ is_active: false })
+      .in("token", invalidTokens);
   }
 
   return {
