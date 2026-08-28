@@ -10,6 +10,9 @@ import { BackButton, BottomNav, OfflineBanner, PageShell } from "@/components/ap
 import { Input } from "@/components/ui/input";
 import { fuzzyScore } from "@/lib/search";
 import { cn } from "@/lib/utils";
+import { VerifiedBadge } from "@/components/verified-badge";
+import { formatIQD } from "@/lib/orders";
+import { sortByCheapest, useCheapestPrices } from "@/lib/cheapest";
 
 export const Route = createFileRoute("/restaurants/")({
   beforeLoad: requireCustomerFlow,
@@ -24,12 +27,13 @@ export const Route = createFileRoute("/restaurants/")({
   component: RestaurantsPage,
 });
 
-type SortKey = "nearest" | "rating" | "popular" | "fastest" | "open";
+type SortKey = "nearest" | "rating" | "popular" | "fastest" | "open" | "cheapest";
 
 const SORTS: { key: SortKey; label: string }[] = [
   { key: "rating", label: "الأعلى تقييماً" },
   { key: "popular", label: "الأكثر طلباً" },
-  { key: "fastest", label: "الأسرع" },
+  { key: "fastest", label: "أسرع توصيل" },
+  { key: "cheapest", label: "أرخص خيار" },
   { key: "open", label: "المتاح الآن" },
   { key: "nearest", label: "الأقرب إليك" },
 ];
@@ -44,13 +48,16 @@ function RestaurantsPage() {
     const { data } = await supabase
       .from("providers")
       .select(
-        "id, name, description, rating, orders_count, avg_prep_minutes, is_open, keywords, lat, lng, address_text",
+        "id, name, description, rating, orders_count, avg_prep_minutes, is_open, keywords, lat, lng, address_text, verification_status",
       )
       .eq("status", "approved")
       .eq("is_demo", false)
       .eq("kind", "restaurant");
     return data ?? [];
   });
+
+  const ids = useMemo(() => (query.data ?? []).map((p) => p.id), [query.data]);
+  const { data: prices } = useCheapestPrices(ids);
 
   const list = useMemo(() => {
     let rows = query.data ?? [];
@@ -69,6 +76,7 @@ function RestaurantsPage() {
     if (sort === "rating") sorted.sort((a, b) => Number(b.rating) - Number(a.rating));
     if (sort === "popular") sorted.sort((a, b) => b.orders_count - a.orders_count);
     if (sort === "fastest") sorted.sort((a, b) => a.avg_prep_minutes - b.avg_prep_minutes);
+    if (sort === "cheapest") return sortByCheapest(sorted, prices ?? {});
     if (sort === "open") sorted.sort((a, b) => Number(b.is_open) - Number(a.is_open));
     if (sort === "nearest" && coords)
       sorted.sort((a, b) => {
@@ -77,7 +85,7 @@ function RestaurantsPage() {
         return da - db;
       });
     return sorted;
-  }, [query.data, term, sort, coords]);
+  }, [query.data, term, sort, coords, prices]);
 
   function pickNearest() {
     setSort("nearest");
@@ -146,7 +154,10 @@ function RestaurantsPage() {
               {p.name.slice(0, 2)}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate font-bold">{p.name}</p>
+              <div className="flex items-center gap-2">
+                <p className="truncate font-bold">{p.name}</p>
+                <VerifiedBadge status={p.verification_status} />
+              </div>
               <p className="truncate text-xs text-muted-foreground">{p.description}</p>
               <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
@@ -157,6 +168,9 @@ function RestaurantsPage() {
                   <Clock className="size-3.5" />
                   {p.avg_prep_minutes} دقيقة
                 </span>
+                {prices?.[p.id] != null && (
+                  <span className="font-bold">يبدأ من {formatIQD(prices[p.id]!)}</span>
+                )}
                 <span className={p.is_open ? "text-success" : "text-destructive"}>
                   {p.is_open ? "مفتوح" : "مغلق"}
                 </span>

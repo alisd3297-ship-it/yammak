@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CartProvider } from "@/lib/cart";
+import { ThemeProvider } from "@/lib/theme";
 import { Toaster } from "@/components/ui/sonner";
 import { useSessionKeeper } from "@/lib/session-keeper";
 import { useAccount } from "@/lib/auth";
@@ -164,11 +165,13 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <NativePushBridge />
-      <CartProvider>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-        <Toaster position="top-center" richColors />
-      </CartProvider>
+      <ThemeProvider>
+        <CartProvider>
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+          <Toaster position="top-center" richColors />
+        </CartProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

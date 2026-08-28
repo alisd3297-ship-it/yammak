@@ -107,7 +107,7 @@ function QuickAction({
   icon: Icon,
   highlight,
 }: {
-  to: "/request-anything" | "/assistant" | "/nearby" | "/map";
+  to: "/request-anything" | "/assistant" | "/nearby" | "/map" | "/marketplace" | "/quotes";
   title: string;
   hint: string;
   icon: Icons.LucideIcon;
@@ -242,6 +242,18 @@ function CustomerHome() {
           />
           <QuickAction to="/nearby" title="قريب منك" hint="عروض ومتاجر" icon={Icons.MapPin} />
           <QuickAction to="/map" title="خريطة الخدمات" hint="شوف الأقرب" icon={Icons.Map} />
+          <QuickAction
+            to="/marketplace"
+            title="سوق لبابك"
+            hint="بيع واشترِ بمنطقتك"
+            icon={Icons.ShoppingBag}
+          />
+          <QuickAction
+            to="/quotes"
+            title="عروض الأسعار"
+            hint="تفاوض على سعر الخدمة"
+            icon={Icons.MessagesSquare}
+          />
         </div>
       </section>
 
