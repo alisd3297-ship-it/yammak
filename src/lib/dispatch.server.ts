@@ -122,8 +122,6 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
   const requiredRank =
     vehicleConstrained && order.vehicle_type ? VEHICLE_RANK[order.vehicle_type as VehicleType] : 0;
 
-
-
   const freshAfter = new Date(Date.now() - maxAgeMin * 60_000).toISOString();
   const staleAfter = new Date(Date.now() - maxAgeMin * 4 * 60_000).toISOString();
   const { data: freshLocations } = await supabaseAdmin
