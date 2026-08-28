@@ -29,9 +29,20 @@ type LegacyState = { providerId: string | null; providerName: string | null; ite
 function parseStored(raw: string): CartState {
   const parsed = JSON.parse(raw) as Partial<CartState> & Partial<LegacyState>;
   if (Array.isArray(parsed.baskets)) {
+    // تنظيف أي سلة تالفة (بدون عناصر) حتى لا ينهار حساب المجاميع
+    const baskets = parsed.baskets
+      .filter((b): b is StoredBasket => Boolean(b) && typeof b.providerId === "string")
+      .map((b) => ({
+        providerId: b.providerId,
+        providerName: b.providerName ?? "",
+        items: Array.isArray(b.items) ? b.items.filter(Boolean) : [],
+      }))
+      .filter((b) => b.items.length > 0);
     return {
-      activeId: parsed.activeId ?? parsed.baskets[0]?.providerId ?? null,
-      baskets: parsed.baskets,
+      activeId: baskets.some((b) => b.providerId === parsed.activeId)
+        ? (parsed.activeId ?? null)
+        : (baskets[0]?.providerId ?? null),
+      baskets,
     };
   }
   if (parsed.providerId && Array.isArray(parsed.items) && parsed.items.length) {
@@ -48,6 +59,7 @@ function parseStored(raw: string): CartState {
   }
   return EMPTY;
 }
+
 
 type CartApi = {
   /** السلة النشطة (المتجر المفتوح حالياً). */
