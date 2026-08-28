@@ -60,7 +60,6 @@ function parseStored(raw: string): CartState {
   return EMPTY;
 }
 
-
 type CartApi = {
   /** السلة النشطة (المتجر المفتوح حالياً). */
   providerId: string | null;

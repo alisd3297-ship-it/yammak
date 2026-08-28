@@ -38,7 +38,6 @@ function shouldSend(key: string) {
   return true;
 }
 
-
 export async function logAppError(
   error: unknown,
   options: { kind?: LogKind; details?: Record<string, unknown> } = {},
@@ -48,7 +47,6 @@ export async function logAppError(
   const message = String(err?.message ?? error ?? "خطأ غير معروف").slice(0, 500);
   if (!message || message === "undefined") return;
   if (isIgnored(message)) return;
-
 
   const kind = options.kind ?? "error";
   if (!shouldSend(`${kind}:${message}`)) return;
