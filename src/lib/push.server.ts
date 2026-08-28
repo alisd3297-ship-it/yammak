@@ -368,3 +368,66 @@ export async function pushNotificationNow(notificationId: string): Promise<boole
   }
   return false;
 }
+
+/**
+ * فحص ذاتي حقيقي لجاهزية FCM من الخادم (بدون كشف أي سر):
+ * 1) وجود السرّين، 2) صلاحية JSON وحقوله، 3) مطابقة project_id،
+ * 4) نجاح مصادقة Google، 5) قبول FCM لطلب validate_only.
+ * لا يُرسل أي إشعار حقيقي ولا يعيد أي قيمة سرية.
+ */
+export async function fcmSelfCheck(): Promise<{
+  ok: boolean;
+  step: string;
+  detail?: string;
+  projectId?: string;
+}> {
+  const projectId = process.env["FCM_PROJECT_ID"];
+  const saRaw = process.env["FCM_SERVICE_ACCOUNT_JSON"];
+  if (!projectId) return { ok: false, step: "missing_FCM_PROJECT_ID" };
+  if (!saRaw) return { ok: false, step: "missing_FCM_SERVICE_ACCOUNT_JSON", projectId };
+
+  let sa: ServiceAccount & { project_id?: string };
+  try {
+    sa = JSON.parse(saRaw) as ServiceAccount & { project_id?: string };
+  } catch {
+    return { ok: false, step: "service_account_not_json", projectId };
+  }
+  if (!sa?.client_email || !sa?.private_key) {
+    return { ok: false, step: "service_account_incomplete", projectId };
+  }
+  if (sa.project_id && sa.project_id !== projectId) {
+    return { ok: false, step: "project_id_mismatch", projectId };
+  }
+
+  let token: string;
+  try {
+    token = await accessToken(sa);
+  } catch (err) {
+    return {
+      ok: false,
+      step: "google_auth_failed",
+      detail: err instanceof Error ? err.message : "unknown",
+      projectId,
+    };
+  }
+
+  const res = await fetch(`https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`, {
+    method: "POST",
+    headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
+    body: JSON.stringify({
+      validate_only: true,
+      message: {
+        token: "lubabak-selfcheck-invalid-token",
+        notification: { title: "self-check", body: "self-check" },
+      },
+    }),
+  });
+  // 400 هنا متوقع لأن الرمز وهمي: المهم أن المصادقة والمشروع صحيحان (ليس 401/403/404 مشروع).
+  if (res.status === 401 || res.status === 403) {
+    return { ok: false, step: "fcm_permission_denied", detail: String(res.status), projectId };
+  }
+  if (res.status === 404) {
+    return { ok: false, step: "fcm_project_not_found", detail: String(res.status), projectId };
+  }
+  return { ok: true, step: "ready", detail: `fcm_http_${res.status}`, projectId };
+}
