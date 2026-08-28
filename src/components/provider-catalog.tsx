@@ -1,14 +1,30 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { useRef, useState } from "react";
+import { ImagePlus, Loader2, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { ProductImage } from "@/components/product-image";
 import { formatIQD } from "@/lib/orders";
 
 type Props = { providerId: string; isStore: boolean };
+
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+
+/** رفع صورة منتج إلى مجلد النشاط، ويُعاد مسار عام آمن لعرضه. */
+async function uploadProductImage(providerId: string, file: File): Promise<string> {
+  if (!file.type.startsWith("image/")) throw new Error("الملف لازم يكون صورة");
+  if (file.size > MAX_IMAGE_BYTES) throw new Error("حجم الصورة كبير، الحد 5 ميغابايت");
+  const ext = (file.name.split(".").pop() ?? "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+  const path = `providers/${providerId}/prod-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext || "jpg"}`;
+  const { error } = await supabase.storage
+    .from("provider-images")
+    .upload(path, file, { upsert: true, contentType: file.type || "image/jpeg" });
+  if (error) throw new Error(error.message);
+  return `/api/public/provider-image/${path}`;
+}
 
 /** إدارة الكتالوج للمزوّد — كل الكتابات محكومة بسياسات RLS على المالك فقط. */
 export function ProviderCatalog({ providerId, isStore }: Props) {
