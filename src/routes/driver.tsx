@@ -17,6 +17,33 @@ import {
 } from "@/lib/driver-data";
 import { formatIQD } from "@/lib/orders";
 import { requireWorker } from "@/lib/route-guards";
+import { useQuery } from "@tanstack/react-query";
+import { myPushDevice } from "@/lib/push.functions";
+import { isNativeApp } from "@/lib/native-push";
+
+/**
+ * تنبيه واقعي: بدون تسجيل جهاز لا يصل إشعار للهاتف حتى لو أُنشئ العرض.
+ * يظهر داخل التطبيق المثبّت فقط (المتصفح لا يسجّل أجهزة).
+ */
+function PushStatusNotice({ approved }: { approved: boolean }) {
+  const { data } = useQuery({
+    queryKey: ["my-push-device"],
+    queryFn: () => myPushDevice(),
+    refetchInterval: 60_000,
+  });
+  if (!approved || !data || data.active) return null;
+  return (
+    <div className="rounded-2xl border border-warning/40 bg-warning/10 p-4 text-sm">
+      <p className="font-bold">إشعارات الهاتف غير مفعّلة لحسابك</p>
+      <p className="mt-1 text-muted-foreground">
+        {isNativeApp()
+          ? "ما تم تسجيل جهازك. افتح إعدادات الهاتف واسمح بإشعارات لبابك ثم أعد فتح التطبيق."
+          : "أنت تستخدم المتصفح؛ التنبيه الصوتي يشتغل داخل الصفحة فقط. لاستلام الإشعارات والتطبيق مغلق، ثبّت تطبيق لبابك على الهاتف."}
+      </p>
+    </div>
+  );
+}
+
 
 export const Route = createFileRoute("/driver")({
   ssr: false,
