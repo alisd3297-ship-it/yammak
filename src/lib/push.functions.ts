@@ -12,23 +12,24 @@ export const registerPushDevice = createServerFn({ method: "POST" })
   }))
   .handler(async ({ data, context }) => {
     if (!data.token) return { ok: false as const, reason: "empty_token" };
-    const { error } = await context.supabase.from("push_devices").upsert(
-      {
-        user_id: context.userId,
-        token: data.token,
-        platform: data.platform,
-        is_active: true,
-        last_seen_at: new Date().toISOString(),
-      },
-      { onConflict: "token" },
-    );
+    // عبر RPC آمنة: نفس الهاتف قد يكون مسجّلاً سابقاً بحساب آخر (دراجة/تكسي/زبون)،
+    // وسياسة الصفوف تمنع تحديث صف يملكه مستخدم آخر، فتفشل إعادة التسجيل بصمت.
+    // الدالة تنقل ملكية الرمز للحساب الحالي ذرياً.
+    const rpc = context.supabase.rpc as unknown as (
+      fn: string,
+      args: Record<string, unknown>,
+    ) => Promise<{ error: { message: string } | null }>;
+    const { error } = await rpc("register_push_device", {
+      _token: data.token,
+      _platform: data.platform,
+    });
     if (error) {
-      console.error("[push] device upsert failed", error.message);
+      console.error("[push] device register failed", error.message);
       return { ok: false as const, reason: error.message };
     }
-    // أي رموز قديمة لنفس الجهاز/المستخدم تبقى، لكن نحدّث الرمز الحالي كنشط أعلاه
     return { ok: true as const };
   });
+
 
 /** إلغاء تفعيل رمز جهاز (تسجيل خروج أو رفض إذن الإشعارات). */
 export const deactivatePushDevice = createServerFn({ method: "POST" })
