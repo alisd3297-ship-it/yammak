@@ -81,6 +81,10 @@
   --border: oklch(0.91 0.004 250);
   --input: oklch(0.91 0.004 250);
   --ring: oklch(0.55 0.21 27);
+  /* سطح الحقول (input/textarea/select): شفاف في النهاري كما هو */
+  --field: transparent;
+  --elev-soft: 0 2px 10px -2px oklch(0.2 0.02 20 / 0.12);
+  --elev-card: 0 8px 24px -12px oklch(0.2 0.02 20 / 0.25);
   /* ألوان الأيقونات: أساسي مشبع (هوية لبابك الحمراء) وثانوي أوضح من muted */
   --icon-strong: oklch(0.52 0.22 27);
   --icon-soft: oklch(0.42 0.03 250);
