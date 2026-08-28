@@ -114,6 +114,8 @@ function DriverDashboard() {
             </p>
           </div>
         )}
+        <PushStatusNotice approved={!!worker?.is_approved} />
+
 
         <section className="grid grid-cols-3 gap-2">
           <Metric icon={Bike} label="توصيلات اليوم" value={String(summary.todayCount)} />
