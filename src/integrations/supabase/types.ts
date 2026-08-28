@@ -3405,6 +3405,7 @@ export type Database = {
           application_status: string
           city_id: string | null
           created_at: string
+          delivery_enabled: boolean
           is_approved: boolean
           is_available: boolean
           max_active_orders: number
@@ -3430,6 +3431,7 @@ export type Database = {
           application_status?: string
           city_id?: string | null
           created_at?: string
+          delivery_enabled?: boolean
           is_approved?: boolean
           is_available?: boolean
           max_active_orders?: number
@@ -3455,6 +3457,7 @@ export type Database = {
           application_status?: string
           city_id?: string | null
           created_at?: string
+          delivery_enabled?: boolean
           is_approved?: boolean
           is_available?: boolean
           max_active_orders?: number
@@ -3746,6 +3749,7 @@ export type Database = {
           application_status: string
           city_id: string | null
           created_at: string
+          delivery_enabled: boolean
           is_approved: boolean
           is_available: boolean
           max_active_orders: number
@@ -5038,6 +5042,7 @@ export type Database = {
           application_status: string
           city_id: string | null
           created_at: string
+          delivery_enabled: boolean
           is_approved: boolean
           is_available: boolean
           max_active_orders: number
