@@ -52,6 +52,8 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --shadow-soft: 0 2px 10px -2px oklch(0.2 0.02 20 / 0.12);
   --shadow-card: 0 8px 24px -12px oklch(0.2 0.02 20 / 0.25);
+  --color-icon-strong: var(--icon-strong);
+  --color-icon-soft: var(--icon-soft);
 }
 
 :root {
