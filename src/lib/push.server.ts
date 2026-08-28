@@ -108,17 +108,32 @@ export async function sendFcm(
   if (!projectId || !saRaw) return { sent: 0, invalid: [], reason: "fcm_not_configured" };
   if (tokens.length === 0) return { sent: 0, invalid: [] };
 
-  let sa: ServiceAccount;
+  let sa: ServiceAccount & { project_id?: string };
   try {
-    sa = JSON.parse(saRaw) as ServiceAccount;
+    sa = JSON.parse(saRaw) as ServiceAccount & { project_id?: string };
   } catch {
+    // القيمة المحفوظة ليست JSON (مثلاً نص ملصوق ناقص) — لا نرمي استثناءً حتى لا تتعطل دورة الطلب.
     return { sent: 0, invalid: [], reason: "fcm_service_account_invalid" };
   }
+  if (!sa?.client_email || !sa?.private_key) {
+    return { sent: 0, invalid: [], reason: "fcm_service_account_incomplete" };
+  }
+  if (sa.project_id && sa.project_id !== projectId) {
+    return { sent: 0, invalid: [], reason: "fcm_project_mismatch" };
+  }
 
-  const token = await accessToken(sa);
+  let token: string;
+  try {
+    token = await accessToken(sa);
+  } catch (err) {
+    // فشل مصادقة Google (مفتاح خاطئ/منتهٍ) — لا يُسقط إنشاء الطلب أو العرض.
+    console.error("[push] google auth failed", err instanceof Error ? err.message : "unknown");
+    return { sent: 0, invalid: [], reason: "fcm_auth_failed" };
+  }
   const url = `https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`;
   const invalid: string[] = [];
   let sent = 0;
+
 
   const urgent = isUrgent(msg);
   const channelId = androidChannelId(msg);
