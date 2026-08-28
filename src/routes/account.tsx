@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import {
   Bell,
   ClipboardList,
+  Crown,
+  Gift,
   LogOut,
   MapPin,
   Megaphone,
