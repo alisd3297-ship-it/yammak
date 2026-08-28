@@ -47,7 +47,7 @@ function RestaurantPage() {
           .order("sort_order"),
         supabase
           .from("products")
-          .select("id, name, description, price, category_id, is_available")
+          .select("id, name, description, price, category_id, is_available, image_url")
           .eq("provider_id", id)
           .order("sort_order"),
       ]);
