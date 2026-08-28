@@ -107,10 +107,12 @@ export async function sendFcm(
           android: {
             priority: "HIGH",
             notification: {
-              channel_id:
-                msg.kind === "order" || msg.orderId ? "lubabak_orders" : "lubabak_default",
+              channel_id: androidChannelId(msg),
               sound: "default",
               default_vibrate_timings: true,
+              default_light_settings: true,
+              notification_priority: "PRIORITY_MAX",
+              visibility: "PUBLIC",
             },
           },
           apns: {
