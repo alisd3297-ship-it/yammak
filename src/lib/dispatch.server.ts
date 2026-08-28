@@ -181,8 +181,7 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
         return { driverId: w.user_id, km, score };
       })
       .filter(
-        (c): c is { driverId: string; km: number; score: number } =>
-          c !== null && c.km <= radiusKm,
+        (c): c is { driverId: string; km: number; score: number } => c !== null && c.km <= radiusKm,
       )
       .sort((a, b) => a.score - b.score);
 

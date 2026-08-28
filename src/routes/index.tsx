@@ -147,8 +147,6 @@ function QuickAction({
   );
 }
 
-
-
 function CustomerHome() {
   useCustomerAreaGuard();
   useRoleHomeRedirect();
