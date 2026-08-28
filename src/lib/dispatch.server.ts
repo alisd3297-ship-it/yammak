@@ -23,7 +23,7 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
   const { data: order } = await supabaseAdmin
     .from("orders")
     .select(
-      "id, status, provider_id, driver_id, customer_id, pickup_lat, pickup_lng, vehicle_type, scheduled_at, order_type, dispatch_attempts, dispatch_last_attempt_at",
+      "id, status, provider_id, driver_id, customer_id, pickup_lat, pickup_lng, vehicle_type, scheduled_at, order_type, fulfillment, dispatch_attempts, dispatch_last_attempt_at",
     )
     .eq("id", orderId)
     .maybeSingle();
@@ -32,6 +32,9 @@ export async function runDispatch(orderId: string): Promise<DispatchResult> {
     return { assignedTo: order.driver_id, status: order.status, message: "الطلب مسند مسبقاً" };
   if (order.status === "cancelled" || order.status === "completed")
     return { assignedTo: null, status: order.status, message: "الطلب منتهي" };
+  // طلبات السفري/الصالة لا تحتاج مندوباً إطلاقاً
+  if (order.fulfillment && order.fulfillment !== "delivery")
+    return { assignedTo: null, status: order.status, message: "طلب استلام من المحل" };
   // الطلب المجدول لا يدخل التوزيع قبل اقتراب موعده
   if (order.scheduled_at && new Date(order.scheduled_at).getTime() - Date.now() > 15 * 60_000)
     return { assignedTo: null, status: order.status, message: "الطلب مجدول لوقت لاحق" };
@@ -307,6 +310,7 @@ export async function runMaintenance(source = "manual", minSeconds = 30) {
     .from("orders")
     .select("id")
     .in("status", ["searching_driver", "ready_for_pickup", "offered_to_driver"])
+    .eq("fulfillment", "delivery")
     .is("driver_id", null)
     .limit(40);
 
