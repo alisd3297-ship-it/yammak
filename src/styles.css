@@ -179,6 +179,53 @@
   [aria-disabled="true"] .lucide {
     opacity: 0.45;
   }
+
+  /* ===== تحسينات الوضع الليلي فقط (لا تمس الوضع النهاري) ===== */
+
+  /*
+   * الحقول شفافة افتراضياً في shadcn، وهذا يجعلها غير مرئية على خلفية داكنة.
+   * نمنحها سطحاً مميزاً + حداً أوضح، مع إبراز حالة التركيز.
+   */
+  .dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  .dark textarea,
+  .dark select,
+  .dark [role="combobox"] {
+    background-color: var(--field);
+  }
+
+  .dark input:focus-visible,
+  .dark textarea:focus-visible,
+  .dark select:focus-visible,
+  .dark [role="combobox"]:focus {
+    background-color: color-mix(in oklab, var(--field) 80%, var(--card));
+    border-color: var(--ring);
+  }
+
+  .dark ::placeholder {
+    color: color-mix(in oklab, var(--muted-foreground) 82%, transparent);
+  }
+
+  /* الحقول والأزرار المعطّلة: تبقى مقروءة بدل أن تختفي تماماً */
+  .dark button:disabled,
+  .dark input:disabled,
+  .dark textarea:disabled,
+  .dark [aria-disabled="true"] {
+    opacity: 0.55;
+  }
+
+  /* ضغط واضح على العناصر التفاعلية في الليلي */
+  .dark button:not(:disabled):active,
+  .dark a:active {
+    filter: brightness(1.12);
+  }
+
+  /* تعبئة تلقائية من المتصفح لا تكسر الثيم الداكن */
+  .dark input:-webkit-autofill,
+  .dark input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--foreground);
+    -webkit-box-shadow: 0 0 0 1000px var(--field) inset;
+    caret-color: var(--foreground);
+  }
 }
 
 @utility icon-strong {
