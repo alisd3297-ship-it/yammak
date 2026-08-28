@@ -25,6 +25,8 @@ import { vehicleLabel } from "@/lib/vehicles";
 import { cn } from "@/lib/utils";
 import { requireSignedIn } from "@/lib/route-guards";
 import { OrderRatingCard } from "@/components/order-rating";
+import { OrderChat } from "@/components/order-chat";
+import { ReorderButton } from "@/components/reorder-button";
 
 export const Route = createFileRoute("/orders/$id")({
   ssr: false,
@@ -302,6 +304,12 @@ function OrderTrackPage() {
 
         {order?.id && Number(order.total) > 0 && (
           <PaymentPanel subjectType="order" subjectId={order.id} amount={Number(order.total)} />
+        )}
+
+        {order?.id && <OrderChat orderId={order.id} disabled={TERMINAL.includes(status)} />}
+
+        {order?.id && order.provider_id && TERMINAL.includes(status) && (
+          <ReorderButton orderId={order.id} />
         )}
 
         {order?.id && (status === "completed" || status === "delivered") && (
