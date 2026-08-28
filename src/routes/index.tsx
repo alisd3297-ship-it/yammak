@@ -178,6 +178,26 @@ function CustomerHome() {
       <AdminEntry />
 
       <section className="mt-4 px-4">
+        <div className="grid grid-cols-2 gap-3">
+          <QuickAction
+            to="/request-anything"
+            title="اطلب أي شي"
+            hint="اكتبه بلغتك ونرتبه إلك"
+            icon={Icons.Sparkles}
+            highlight
+          />
+          <QuickAction
+            to="/assistant"
+            title="مساعد لبابك"
+            hint="دلّني على المنتج"
+            icon={Icons.Bot}
+          />
+          <QuickAction to="/nearby" title="قريب منك" hint="عروض ومتاجر" icon={Icons.MapPin} />
+          <QuickAction to="/map" title="خريطة الخدمات" hint="شوف الأقرب" icon={Icons.Map} />
+        </div>
+      </section>
+
+      <section className="mt-4 px-4">
         <div className="mb-2 flex items-center justify-between">
           <h2 className="text-base font-bold">إعلانات</h2>
           <Link to="/ads" className="text-sm font-semibold text-primary">
