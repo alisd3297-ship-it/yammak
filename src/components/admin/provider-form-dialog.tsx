@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ImagePlus, Loader2 } from "lucide-react";
+import { ImagePlus, Loader2, UserPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { adminUpsertProvider } from "@/lib/provider.functions";
+import { createProviderAccount } from "@/lib/provider-accounts.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -74,6 +75,14 @@ export type ProviderFormValue = {
   profession_category_id: string | null;
 };
 
+/** كلمة مرور أولية قوية يسلّمها المسؤول لصاحب النشاط. */
+function randomPassword(): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789@#%";
+  const buf = new Uint32Array(12);
+  crypto.getRandomValues(buf);
+  return Array.from(buf, (n) => chars[n % chars.length]).join("");
+}
+
 function typeKeyOf(p: ProviderFormValue | null): BusinessTypeKey {
   if (!p) return "restaurant";
   const kw = (p.keywords ?? []).join(" ");
@@ -103,9 +112,10 @@ export function ProviderFormDialog({
   open: boolean;
   onOpenChange: (v: boolean) => void;
   provider: ProviderFormValue | null;
-  onSaved: () => void;
+  onSaved: (providerId: string | null, status: string) => void;
 }) {
   const upsert = useServerFn(adminUpsertProvider);
+  const createAccount = useServerFn(createProviderAccount);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [typeKey, setTypeKey] = useState<BusinessTypeKey>("restaurant");
@@ -126,6 +136,11 @@ export function ProviderFormDialog({
   const [logoUrl, setLogoUrl] = useState("");
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  // حساب دخول صاحب النشاط (يُنشأ مع النشاط في نفس الخطوة)
+  const [withAccount, setWithAccount] = useState(true);
+  const [ownerName, setOwnerName] = useState("");
+  const [ownerEmail, setOwnerEmail] = useState("");
+  const [ownerPassword, setOwnerPassword] = useState("");
 
   const { data: cities } = useQuery({
     queryKey: ["cities"],
@@ -173,6 +188,10 @@ export function ProviderFormDialog({
     setStatus((provider?.status as (typeof STATUS_OPTIONS)[number]["key"]) ?? "approved");
     setIsOpen(provider?.is_open ?? true);
     setLogoUrl(provider?.logo_url ?? "");
+    setWithAccount(!provider);
+    setOwnerName("");
+    setOwnerEmail("");
+    setOwnerPassword(provider ? "" : randomPassword());
   }, [open, provider]);
 
   const typeDef = BUSINESS_TYPES.find((t) => t.key === typeKey) ?? BUSINESS_TYPES[0];
@@ -205,12 +224,23 @@ export function ProviderFormDialog({
       toast.error("اختر تصنيف المهنة/الخدمة");
       return;
     }
+    const creatingAccount = !provider && withAccount;
+    if (creatingAccount) {
+      if (!ownerEmail.trim().includes("@")) {
+        toast.error("اكتب بريد صاحب النشاط أو ألغِ إنشاء الحساب");
+        return;
+      }
+      if (ownerPassword.length < 8) {
+        toast.error("كلمة المرور يجب أن تكون 8 أحرف على الأقل");
+        return;
+      }
+    }
     setSaving(true);
     try {
       const keywords = typeDef.keywords.length
         ? Array.from(new Set([...(provider?.keywords ?? []), ...typeDef.keywords]))
         : (provider?.keywords ?? null);
-      await upsert({
+      const saved = await upsert({
         data: {
           providerId: provider?.id ?? null,
           name: name.trim(),
@@ -232,9 +262,23 @@ export function ProviderFormDialog({
           professionCategoryId: needsCategory ? professionCategoryId : null,
         },
       });
-      toast.success(provider ? "تم تحديث النشاط" : "تمت إضافة النشاط");
+      if (creatingAccount && saved?.id) {
+        await createAccount({
+          data: {
+            providerId: saved.id,
+            email: ownerEmail.trim(),
+            password: ownerPassword,
+            fullName: ownerName.trim() || name.trim(),
+            mode: "password",
+            redirectTo: typeof window !== "undefined" ? `${window.location.origin}/auth` : null,
+          },
+        });
+        toast.success(`تمت إضافة النشاط وإنشاء حساب الدخول: ${ownerEmail.trim()}`);
+      } else {
+        toast.success(provider ? "تم تحديث النشاط" : "تمت إضافة النشاط");
+      }
       onOpenChange(false);
-      onSaved();
+      onSaved(saved?.id ?? null, status);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "تعذر الحفظ");
     } finally {
@@ -457,6 +501,76 @@ export function ProviderFormDialog({
             </div>
           </div>
 
+          {!provider && (
+            <div className="space-y-3 rounded-2xl border border-primary/30 bg-primary/5 p-3">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="flex items-center gap-2 text-sm font-bold">
+                    <UserPlus className="size-4 text-primary" />
+                    حساب دخول صاحب النشاط
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    حساب مستقل يدخل منه لوحته فقط، ولا يرى أي نشاط آخر.
+                  </p>
+                </div>
+                <Switch checked={withAccount} onCheckedChange={setWithAccount} />
+              </div>
+
+              {withAccount && (
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="pf-owner-name">اسم صاحب الحساب</Label>
+                    <Input
+                      id="pf-owner-name"
+                      value={ownerName}
+                      placeholder={name || "اسم صاحب المطعم/المحل"}
+                      onChange={(e) => setOwnerName(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="pf-owner-email">البريد الإلكتروني *</Label>
+                    <Input
+                      id="pf-owner-email"
+                      type="email"
+                      dir="ltr"
+                      autoComplete="off"
+                      value={ownerEmail}
+                      onChange={(e) => setOwnerEmail(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="pf-owner-pass">كلمة المرور *</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="pf-owner-pass"
+                        type="text"
+                        dir="ltr"
+                        autoComplete="off"
+                        value={ownerPassword}
+                        onChange={(e) => setOwnerPassword(e.target.value)}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="h-11 shrink-0"
+                        onClick={() => setOwnerPassword(randomPassword())}
+                      >
+                        توليد
+                      </Button>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground">
+                      انسخ البريد وكلمة المرور وسلّمها لصاحب النشاط — يسجّل الدخول من شاشة الدخول
+                      العادية ويُوجَّه تلقائياً للوحة نشاطه.
+                    </p>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">
+                    رقم هاتف الحساب يُؤخذ من حقل هاتف النشاط أعلاه.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="space-y-1.5">
             <Label>حالة النشاط</Label>
             <div className="flex flex-wrap gap-2">
@@ -497,7 +611,13 @@ export function ProviderFormDialog({
             disabled={saving || uploading}
             onClick={() => void save()}
           >
-            {saving ? <Loader2 className="size-4 animate-spin" /> : "حفظ"}
+            {saving ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : !provider && withAccount ? (
+              "حفظ وإنشاء حساب الدخول"
+            ) : (
+              "حفظ"
+            )}
           </Button>
           <Button
             variant="outline"
