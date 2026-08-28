@@ -141,6 +141,36 @@
     font-family: var(--font-sans);
     -webkit-tap-highlight-color: transparent;
   }
+
+  /*
+   * تعزيز وضوح الأيقونات (lucide) في كل التطبيق:
+   * - سماكة خط أعلى قليلاً لقراءة أوضح على شاشات الموبايل.
+   * - الأيقونات داخل عناصر بلون muted ترتفع إلى --icon-soft بدل الرمادي الباهت.
+   * - حالات hover/active تبقى عبر لون الأب (transition جاهزة).
+   */
+  .lucide {
+    stroke-width: 2.3px;
+  }
+  .text-muted-foreground .lucide,
+  .lucide.text-muted-foreground {
+    color: var(--icon-soft);
+  }
+  .text-primary .lucide,
+  .lucide.text-primary {
+    color: var(--icon-strong);
+  }
+  button:disabled .lucide,
+  [aria-disabled="true"] .lucide {
+    opacity: 0.45;
+  }
+}
+
+@utility icon-strong {
+  color: var(--icon-strong);
+}
+
+@utility icon-soft {
+  color: var(--icon-soft);
 }
 
 @utility brand-gradient {
