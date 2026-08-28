@@ -118,6 +118,8 @@
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 16%);
   --ring: oklch(0.6 0.21 27);
+  --icon-strong: oklch(0.68 0.2 27);
+  --icon-soft: oklch(0.82 0.02 250);
   --sidebar: oklch(0.13 0.008 250);
   --sidebar-foreground: oklch(0.97 0 0);
   --sidebar-primary: oklch(0.6 0.21 27);
