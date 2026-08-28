@@ -36,6 +36,23 @@ export async function requireStaff(): Promise<{ userId: string }> {
 }
 
 /**
+ * حارس صفحة الإعداد لمرة واحدة: تُفتح للإداريين فقط، أو لأي مستخدم مسجّل
+ * طالما لم يُعيَّن مدير عام بعد (أول تهيئة للمشروع).
+ */
+export async function requireStaffOrSetup(): Promise<{ userId: string }> {
+  const { userId } = await requireSignedIn();
+  const roles = await rolesOf(userId);
+  if (roles?.some((r) => STAFF_ROLES.includes(r))) return { userId };
+
+  const { count, error } = await supabase
+    .from("user_roles")
+    .select("user_id", { count: "exact", head: true })
+    .eq("role", "super_admin");
+  if (error || (count ?? 0) > 0) throw redirect({ to: "/", replace: true });
+  return { userId };
+}
+
+/**
  * حارس لوحة المندوب: يتطلب تسجيل دخول فقط.
  * من لا يملك ملف مندوب يرى اللوحة مع دعوة واضحة لتقديم طلب الانضمام،
  * بدل طرده من الصفحة (يسهّل أيضاً معاينة الواجهة واختبارها).

@@ -16,8 +16,11 @@ import {
   formatMoney,
   paymentTone,
 } from "@/lib/payments";
+import { requireSignedIn } from "@/lib/route-guards";
 
 export const Route = createFileRoute("/payments")({
+  ssr: false,
+  beforeLoad: requireSignedIn,
   head: () => ({
     meta: [
       { title: "عمليات الدفع | لبابك" },
