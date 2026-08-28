@@ -250,7 +250,6 @@ export function useDriverActions() {
       qc.invalidateQueries({ queryKey: ["worker-profile"] });
     },
 
-
     async answerOffer(offerId: string, accept: boolean) {
       try {
         await respond({
