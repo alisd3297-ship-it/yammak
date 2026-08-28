@@ -9,6 +9,7 @@ import { requireCustomerFlow } from "@/lib/route-guards";
 import { BackButton, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { CustomerTabPanel } from "@/components/customer-tab-panel";
+import { ProductImage } from "@/components/product-image";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/lib/cart";
 import { formatIQD } from "@/lib/orders";
@@ -56,7 +57,7 @@ function StorePage() {
           .order("sort_order"),
         supabase
           .from("products")
-          .select("id, name, description, price, category_id, is_available, stock")
+          .select("id, name, description, price, category_id, is_available, stock, image_url")
           .eq("provider_id", id)
           .order("sort_order"),
       ]);
@@ -196,6 +197,7 @@ type ProductRowProps = {
     price: number;
     is_available: boolean;
     stock: number | null;
+    image_url?: string | null;
   };
   closed?: boolean;
   onAdd: () => void;
@@ -205,6 +207,7 @@ function ProductRow({ product, closed, onAdd }: ProductRowProps) {
   const soldOut = !product.is_available || product.stock === 0 || !!closed;
   return (
     <div className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft">
+      <ProductImage src={product.image_url} alt={product.name} />
       <div className="min-w-0 flex-1">
         <p className="font-bold">{product.name}</p>
         <p className="truncate text-xs text-muted-foreground">{product.description}</p>

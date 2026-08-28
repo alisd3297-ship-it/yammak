@@ -50,7 +50,16 @@ export const Route = createFileRoute("/api/public/provider-image/$")({
           .or(`logo_url.eq.${publicPath},cover_url.eq.${publicPath}`)
           .limit(1)
           .maybeSingle();
-        if (!provider) return new Response("Not found", { status: 404 });
+        if (!provider) {
+          // صور المنتجات مخزّنة بنفس المجلد وتُقدَّم فقط إذا كانت مسجّلة على منتج قائم
+          const { data: product } = await supabaseAdmin
+            .from("products")
+            .select("id")
+            .eq("image_url", publicPath)
+            .limit(1)
+            .maybeSingle();
+          if (!product) return new Response("Not found", { status: 404 });
+        }
 
         const { data: file, error } = await supabaseAdmin.storage
           .from("provider-images")

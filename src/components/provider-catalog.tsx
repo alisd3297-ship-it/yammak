@@ -1,20 +1,39 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { useRef, useState } from "react";
+import { ImagePlus, Loader2, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { ProductImage } from "@/components/product-image";
 import { formatIQD } from "@/lib/orders";
 
 type Props = { providerId: string; isStore: boolean };
+
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+
+/** رفع صورة منتج إلى مجلد النشاط، ويُعاد مسار عام آمن لعرضه. */
+async function uploadProductImage(providerId: string, file: File): Promise<string> {
+  if (!file.type.startsWith("image/")) throw new Error("الملف لازم يكون صورة");
+  if (file.size > MAX_IMAGE_BYTES) throw new Error("حجم الصورة كبير، الحد 5 ميغابايت");
+  const ext = (file.name.split(".").pop() ?? "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+  const path = `providers/${providerId}/prod-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext || "jpg"}`;
+  const { error } = await supabase.storage
+    .from("provider-images")
+    .upload(path, file, { upsert: true, contentType: file.type || "image/jpeg" });
+  if (error) throw new Error(error.message);
+  return `/api/public/provider-image/${path}`;
+}
 
 /** إدارة الكتالوج للمزوّد — كل الكتابات محكومة بسياسات RLS على المالك فقط. */
 export function ProviderCatalog({ providerId, isStore }: Props) {
   const qc = useQueryClient();
   const [catName, setCatName] = useState("");
   const [form, setForm] = useState({ name: "", price: "", cost: "", stock: "", categoryId: "" });
+  const [newImage, setNewImage] = useState<{ url: string; preview: string } | null>(null);
+  const [uploading, setUploading] = useState<string | null>(null);
+  const newImageRef = useRef<HTMLInputElement>(null);
 
   const { data } = useQuery({
     queryKey: ["provider-catalog", providerId],
@@ -27,7 +46,7 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
           .order("sort_order"),
         supabase
           .from("products")
-          .select("id, name, price, cost_price, stock, is_available, category_id")
+          .select("id, name, price, cost_price, stock, is_available, category_id, image_url")
           .eq("provider_id", providerId)
           .order("sort_order"),
       ]);
@@ -68,6 +87,7 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
       price,
       cost_price: form.cost !== "" && Number.isFinite(Number(form.cost)) ? Number(form.cost) : null,
       stock,
+      image_url: newImage?.url ?? null,
       sort_order: (data?.products.length ?? 0) + 1,
     });
     if (error) {
@@ -75,7 +95,39 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
       return;
     }
     setForm({ name: "", price: "", cost: "", stock: "", categoryId: "" });
+    setNewImage(null);
+    if (newImageRef.current) newImageRef.current.value = "";
     refresh();
+  }
+
+  /** رفع صورة للمنتج الجديد قبل الحفظ. */
+  async function pickNewImage(file: File | undefined) {
+    if (!file) return;
+    setUploading("new");
+    try {
+      const url = await uploadProductImage(providerId, file);
+      setNewImage({ url, preview: URL.createObjectURL(file) });
+      toast.success("تم رفع الصورة");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر رفع الصورة");
+    } finally {
+      setUploading(null);
+    }
+  }
+
+  /** تغيير أو إضافة صورة لمنتج محفوظ. */
+  async function changeProductImage(id: string, file: File | undefined) {
+    if (!file) return;
+    setUploading(id);
+    try {
+      const url = await uploadProductImage(providerId, file);
+      await patchProduct(id, { image_url: url });
+      toast.success("تم تحديث صورة المنتج");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر رفع الصورة");
+    } finally {
+      setUploading(null);
+    }
   }
 
   type ProductPatch = {
@@ -83,6 +135,7 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
     cost_price?: number | null;
     stock?: number | null;
     is_available?: boolean;
+    image_url?: string | null;
   };
 
   async function patchProduct(id: string, patch: ProductPatch) {
@@ -177,6 +230,34 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
               </option>
             ))}
           </select>
+          <div className="flex items-center gap-3 rounded-xl bg-muted/50 p-3">
+            <ProductImage src={newImage?.preview} alt="صورة المنتج الجديد" />
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold">صورة المنتج (اختيارية)</p>
+              <p className="text-[11px] text-muted-foreground">JPG أو PNG، حد أقصى 5 ميغابايت</p>
+            </div>
+            <input
+              ref={newImageRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => pickNewImage(e.target.files?.[0])}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              className="h-10"
+              disabled={uploading === "new"}
+              onClick={() => newImageRef.current?.click()}
+            >
+              {uploading === "new" ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <ImagePlus className="size-4" />
+              )}
+              {newImage ? "تغيير" : "رفع صورة"}
+            </Button>
+          </div>
           <Button className="h-11 w-full" onClick={addProduct}>
             حفظ المنتج
           </Button>
@@ -186,9 +267,28 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
       <section className="space-y-2">
         {(data?.products ?? []).map((p) => (
           <div key={p.id} className="rounded-2xl bg-card p-4 shadow-soft">
-            <div className="flex items-center justify-between">
-              <p className="font-bold">{p.name}</p>
-              <span className="text-sm font-bold text-primary">{formatIQD(Number(p.price))}</span>
+            <div className="flex items-center gap-3">
+              <ProductImage src={p.image_url} alt={p.name} className="size-14" />
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-bold">{p.name}</p>
+                <span className="text-sm font-bold text-primary">{formatIQD(Number(p.price))}</span>
+              </div>
+              <label className="cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => changeProductImage(p.id, e.target.files?.[0])}
+                />
+                <span className="inline-flex h-9 items-center gap-1.5 rounded-md border border-input px-3 text-xs font-semibold">
+                  {uploading === p.id ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <ImagePlus className="size-4" />
+                  )}
+                  {p.image_url ? "تغيير الصورة" : "إضافة صورة"}
+                </span>
+              </label>
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-3">
               <label className="flex items-center gap-2 text-xs font-semibold">

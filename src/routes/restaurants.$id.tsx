@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
 import { BackButton, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
+import { ProductImage } from "@/components/product-image";
 import { useCart } from "@/lib/cart";
 import { formatIQD } from "@/lib/orders";
 
@@ -47,7 +48,7 @@ function RestaurantPage() {
           .order("sort_order"),
         supabase
           .from("products")
-          .select("id, name, description, price, category_id, is_available")
+          .select("id, name, description, price, category_id, is_available, image_url")
           .eq("provider_id", id)
           .order("sort_order"),
       ]);
@@ -89,6 +90,7 @@ function RestaurantPage() {
                     key={p.id}
                     className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft"
                   >
+                    <ProductImage src={p.image_url} alt={p.name} />
                     <div className="min-w-0 flex-1">
                       <p className="font-bold">{p.name}</p>
                       <p className="truncate text-xs text-muted-foreground">{p.description}</p>
