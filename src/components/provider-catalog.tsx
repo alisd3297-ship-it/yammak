@@ -46,7 +46,7 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
           .order("sort_order"),
         supabase
           .from("products")
-          .select("id, name, price, cost_price, stock, is_available, category_id")
+          .select("id, name, price, cost_price, stock, is_available, category_id, image_url")
           .eq("provider_id", providerId)
           .order("sort_order"),
       ]);
