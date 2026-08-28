@@ -7,9 +7,9 @@ export function ProductImage({
   alt,
   className,
 }: {
-  src?: string | null;
+  src?: string | null | undefined;
   alt: string;
-  className?: string;
+  className?: string | undefined;
 }) {
   if (!src)
     return (
