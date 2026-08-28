@@ -270,6 +270,10 @@ function AdminMonitoringPage() {
               />
             </section>
 
+            <PushReadinessPanel />
+
+
+
             <section className="rounded-2xl border bg-card p-4">
               <h2 className="text-sm font-bold text-foreground">الطلبات حسب الخدمة</h2>
               {data.orders.byType.length === 0 ? (
