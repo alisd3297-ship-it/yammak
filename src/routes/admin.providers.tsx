@@ -193,19 +193,11 @@ function AdminProvidersPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-black">مقدمو الخدمات</h1>
-            <p className="mt-1 text-sm opacity-90">أضف وراجع مطاعم ومحلات ومقدمي خدمات</p>
-          </div>
-          <Button
-            onClick={openCreate}
-            className="h-10 shrink-0 rounded-full bg-primary-foreground px-4 text-sm font-bold text-primary hover:bg-primary-foreground/90"
-          >
-            <Plus className="size-4" />
-            إضافة مطعم / محل / مقدم خدمة
-          </Button>
+        <div>
+          <h1 className="text-2xl font-black">مقدمو الخدمات</h1>
+          <p className="mt-1 text-sm opacity-90">أضف وراجع مطاعم ومحلات ومقدمي خدمات</p>
         </div>
+
         <div className="mt-3 flex gap-4 text-sm font-semibold underline">
           <Link to="/admin/courier">طلبات المندوب المستقل</Link>
           <Link to="/admin/drivers">
