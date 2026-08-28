@@ -236,12 +236,20 @@ function ProviderDashboard() {
           </button>
         )}
 
-        <Link
-          to="/provider-finance"
-          className="mt-3 inline-block rounded-full bg-primary-foreground/15 px-4 py-2 text-xs font-semibold backdrop-blur"
-        >
-          مالية النشاط والتسويات
-        </Link>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Link
+            to="/provider-finance"
+            className="inline-block rounded-full bg-primary-foreground/15 px-4 py-2 text-xs font-semibold backdrop-blur"
+          >
+            مالية النشاط والتسويات
+          </Link>
+          <Link
+            to="/provider-insights"
+            className="inline-block rounded-full bg-primary-foreground/15 px-4 py-2 text-xs font-semibold backdrop-blur"
+          >
+            لوحة ذكية وعروض
+          </Link>
+        </div>
       </header>
 
       {provider && (
