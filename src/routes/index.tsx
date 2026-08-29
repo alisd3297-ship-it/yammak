@@ -248,22 +248,22 @@ function CustomerHome() {
       <AdminEntry />
 
       <section className="mt-4 px-4">
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 items-stretch gap-3">
           <QuickAction
             to="/request-anything"
             title="اطلب أي شي"
             hint="اكتبه بلغتك ونرتبه إلك"
             icon={Icons.Sparkles}
             highlight
+            secondary={{ to: "/assistant", label: "مساعد لبابك", icon: Icons.Bot }}
           />
           <QuickAction
-            to="/assistant"
-            title="مساعد لبابك"
-            hint="دلّني على المنتج"
-            icon={Icons.Bot}
+            to="/nearby"
+            title="قريب منك"
+            hint="عروض ومتاجر قريبة"
+            icon={Icons.MapPin}
+            secondary={{ to: "/map", label: "خريطة الخدمات", icon: Icons.Map }}
           />
-          <QuickAction to="/nearby" title="قريب منك" hint="عروض ومتاجر" icon={Icons.MapPin} />
-          <QuickAction to="/map" title="خريطة الخدمات" hint="شوف الأقرب" icon={Icons.Map} />
           <QuickAction
             to="/marketplace"
             title="سوق لبابك"
