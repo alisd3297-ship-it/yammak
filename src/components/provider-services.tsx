@@ -1,16 +1,16 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Copy, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { normalizeArabic } from "@/lib/search";
 import { AD_CURRENCIES, adCurrency, type AdCurrency } from "@/lib/ads";
 import {
   PRICE_UNIT_LABELS,
-  formatServiceMoney,
   formatServicePrice,
   type ServicePriceUnit,
 } from "@/lib/services";
@@ -22,19 +22,22 @@ type ServiceRow = {
   name: string;
   description: string | null;
   price_amount: number;
-  cost_amount: number | null;
   currency: string | null;
   price_unit: string;
   is_active: boolean;
 };
 
-/** إدارة خدمات وأسعار وتكاليف مقدم الخدمة المهني — الكتابة محكومة بـ RLS على المالك فقط. */
+/**
+ * «خدماتي» لأصحاب المهن: اسم الخدمة، سعر اختياري، والتوفر — بلا كتالوج منتجات
+ * وبلا أي حقل تكلفة. الكتابة محكومة بـ RLS على المالك فقط.
+ */
 export function ProviderServices({ providerId }: { providerId: string }) {
   const qc = useQueryClient();
+  const [term, setTerm] = useState("");
+  const [editing, setEditing] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: "",
     price: "",
-    cost: "",
     currency: "IQD" as AdCurrency,
     unit: "fixed" as ServicePriceUnit,
     description: "",
@@ -45,63 +48,90 @@ export function ProviderServices({ providerId }: { providerId: string }) {
     queryFn: async () => {
       const { data } = await supabase
         .from("provider_services")
-        .select("id, name, description, price_amount, cost_amount, currency, price_unit, is_active")
+        .select("id, name, description, price_amount, currency, price_unit, is_active")
         .eq("provider_id", providerId)
         .order("sort_order");
       return (data ?? []) as ServiceRow[];
     },
   });
 
+  const visible = useMemo(() => {
+    const q = normalizeArabic(term);
+    if (!q) return services ?? [];
+    return (services ?? []).filter((s) =>
+      normalizeArabic(`${s.name} ${s.description ?? ""}`).includes(q),
+    );
+  }, [services, term]);
+
   function refresh() {
     qc.invalidateQueries({ queryKey: ["provider-services", providerId] });
   }
 
   async function addService() {
-    const price = form.unit === "negotiable" ? 0 : Number(form.price);
-    if (!form.name.trim() || !Number.isFinite(price) || price < 0) {
-      toast.error("اكتب اسم الخدمة وسعراً صحيحاً");
+    if (!form.name.trim()) {
+      toast.error("اكتب اسم الخدمة");
       return;
     }
-    const costRaw = form.cost.trim();
-    let cost: number | null = null;
-    if (costRaw) {
-      const parsed = Number(costRaw);
-      if (!Number.isFinite(parsed) || parsed < 0) {
-        toast.error("تكلفة الخدمة غير صحيحة");
-        return;
-      }
-      cost = parsed;
+    // السعر اختياري: بدون قيمة يُحفظ صفراً ويُعرض «حسب الاتفاق»
+    const raw = form.price.trim();
+    const price = raw === "" ? 0 : Number(raw);
+    if (!Number.isFinite(price) || price < 0) {
+      toast.error("سعر الخدمة غير صحيح");
+      return;
     }
+    const unit: ServicePriceUnit = raw === "" ? "negotiable" : form.unit;
     const { error } = await supabase.from("provider_services").insert({
       provider_id: providerId,
       name: form.name.trim(),
       description: form.description.trim() || null,
-      price_amount: price,
-      cost_amount: cost,
+      price_amount: unit === "negotiable" ? 0 : price,
       currency: form.currency,
-      price_unit: form.unit,
+      price_unit: unit,
       sort_order: (services?.length ?? 0) + 1,
     });
     if (error) {
-      toast.error("تعذر إضافة الخدمة");
+      toast.error(`تعذر إضافة الخدمة: ${error.message}`);
       return;
     }
-    setForm({ name: "", price: "", cost: "", currency: "IQD", unit: "fixed", description: "" });
+    toast.success("تمت إضافة الخدمة");
+    setForm({ name: "", price: "", currency: form.currency, unit: "fixed", description: "" });
     refresh();
   }
 
-  async function patch(
-    id: string,
-    values: {
-      price_amount?: number;
-      cost_amount?: number | null;
-      currency?: AdCurrency;
-      is_active?: boolean;
-    },
-  ) {
+  type Patch = {
+    name?: string;
+    description?: string | null;
+    price_amount?: number;
+    price_unit?: ServicePriceUnit;
+    currency?: AdCurrency;
+    is_active?: boolean;
+  };
+
+  async function patch(id: string, values: Patch) {
     const { error } = await supabase.from("provider_services").update(values).eq("id", id);
-    if (error) toast.error("تعذر حفظ التعديل");
-    else refresh();
+    if (error) {
+      toast.error(`تعذر حفظ التعديل: ${error.message}`);
+      return false;
+    }
+    refresh();
+    return true;
+  }
+
+  async function duplicate(s: ServiceRow) {
+    const { error } = await supabase.from("provider_services").insert({
+      provider_id: providerId,
+      name: `${s.name} (نسخة)`,
+      description: s.description,
+      price_amount: s.price_amount,
+      currency: s.currency ?? "IQD",
+      price_unit: s.price_unit,
+      sort_order: (services?.length ?? 0) + 1,
+    });
+    if (error) {
+      toast.error("تعذر نسخ الخدمة");
+      return;
+    }
+    refresh();
   }
 
   async function remove(id: string) {
@@ -112,25 +142,19 @@ export function ProviderServices({ providerId }: { providerId: string }) {
 
   return (
     <div className="space-y-4">
-      <section className="space-y-3 rounded-2xl bg-card p-4 shadow-soft">
-        <h3 className="text-sm font-bold">إضافة خدمة</h3>
+      <section className="space-y-2 rounded-2xl bg-card p-4 shadow-soft">
+        <h3 className="text-sm font-black">إضافة خدمة</h3>
         <Input
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
           placeholder="اسم الخدمة (مثال: تصليح تسريب ماء)"
           className="h-11"
         />
-        <Input
-          value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
-          placeholder="وصف مختصر"
-          className="h-11"
-        />
         <div className="flex gap-2">
           <Input
             value={form.price}
             onChange={(e) => setForm({ ...form, price: e.target.value })}
-            placeholder="سعر الخدمة"
+            placeholder="السعر (اختياري)"
             inputMode="numeric"
             aria-label="سعر الخدمة"
             disabled={form.unit === "negotiable"}
@@ -148,153 +172,215 @@ export function ProviderServices({ providerId }: { providerId: string }) {
               </option>
             ))}
           </select>
+          <select
+            value={form.currency}
+            onChange={(e) => setForm({ ...form, currency: e.target.value as AdCurrency })}
+            aria-label="العملة"
+            className="h-11 rounded-md border border-input bg-background px-2 text-sm"
+          >
+            {AD_CURRENCIES.map((c) => (
+              <option key={c.value} value={c.value}>
+                {c.value}
+              </option>
+            ))}
+          </select>
         </div>
-        <div className="flex gap-2">
-          <div className="flex-1 space-y-1">
-            <Label htmlFor="service-cost" className="text-xs text-muted-foreground">
-              تكلفة الخدمة (اختياري)
-            </Label>
-            <Input
-              id="service-cost"
-              value={form.cost}
-              onChange={(e) => setForm({ ...form, cost: e.target.value })}
-              placeholder="تكلفتك الفعلية"
-              inputMode="numeric"
-              className="h-11"
-            />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="service-currency" className="text-xs text-muted-foreground">
-              العملة
-            </Label>
-            <select
-              id="service-currency"
-              value={form.currency}
-              onChange={(e) => setForm({ ...form, currency: e.target.value as AdCurrency })}
-              className="h-11 rounded-md border border-input bg-background px-2 text-sm"
-            >
-              {AD_CURRENCIES.map((c) => (
-                <option key={c.value} value={c.value}>
-                  {c.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+        <Textarea
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+          placeholder="وصف مختصر (اختياري)"
+          rows={2}
+        />
         <p className="text-[11px] text-muted-foreground">
-          التكلفة تُحفظ منفصلة عن سعر البيع وبنفس عملة السعر، وتُستخدم في حساب الربح فقط.
+          إذا تركت السعر فارغاً تُعرض الخدمة «حسب الاتفاق» وتقدر تتفق مع الزبون.
         </p>
-        <Button className="h-11 w-full" onClick={addService}>
-          <Plus className="size-4" /> إضافة
+        <Button className="h-12 w-full text-base font-black" onClick={addService}>
+          <Plus className="size-5" /> إضافة الخدمة
         </Button>
       </section>
 
-      <section className="space-y-3">
-        {(services ?? []).map((s) => {
+      <div className="relative">
+        <Search className="pointer-events-none absolute end-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={term}
+          onChange={(e) => setTerm(e.target.value)}
+          placeholder="ابحث في خدماتك"
+          className="h-11 pe-10"
+          aria-label="بحث في الخدمات"
+        />
+      </div>
+
+      <section className="space-y-2">
+        {visible.map((s) => {
           const cur = adCurrency(s.currency);
-          const profit =
-            s.cost_amount != null ? Number(s.price_amount) - Number(s.cost_amount) : null;
           return (
             <article key={s.id} className="rounded-2xl bg-card p-4 shadow-soft">
-              <div className="flex items-center justify-between gap-2">
-                <p className="font-bold">{s.name}</p>
-                <button
-                  onClick={() => remove(s.id)}
-                  aria-label="حذف الخدمة"
-                  className="text-destructive"
-                >
-                  <Trash2 className="size-4" />
-                </button>
-              </div>
-              <p className="text-xs text-muted-foreground">{s.description}</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {formatServicePrice(Number(s.price_amount), s.price_unit as ServicePriceUnit, cur)}
-                {s.cost_amount != null
-                  ? ` · التكلفة ${formatServiceMoney(Number(s.cost_amount), cur)}`
-                  : " · بدون تكلفة مسجّلة"}
-                {profit != null ? ` · الربح ${formatServiceMoney(profit, cur)}` : ""}
-              </p>
-
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <Label htmlFor={`price-${s.id}`} className="text-[11px] text-muted-foreground">
-                    سعر الخدمة
-                  </Label>
-                  <Input
-                    id={`price-${s.id}`}
-                    defaultValue={String(Number(s.price_amount))}
-                    onBlur={(e) => {
-                      const v = Number(e.target.value);
-                      if (Number.isFinite(v) && v >= 0 && v !== Number(s.price_amount))
-                        patch(s.id, { price_amount: v });
-                    }}
-                    inputMode="numeric"
-                    className="h-10"
-                  />
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="truncate font-bold">{s.name}</p>
+                  <p className="text-xs text-muted-foreground">{s.description}</p>
+                  <p className="mt-1 text-sm font-bold text-primary">
+                    {formatServicePrice(
+                      Number(s.price_amount),
+                      s.price_unit as ServicePriceUnit,
+                      cur,
+                    )}
+                  </p>
                 </div>
-                <div className="space-y-1">
-                  <Label htmlFor={`cost-${s.id}`} className="text-[11px] text-muted-foreground">
-                    تكلفة الخدمة
-                  </Label>
-                  <Input
-                    id={`cost-${s.id}`}
-                    defaultValue={s.cost_amount == null ? "" : String(Number(s.cost_amount))}
-                    placeholder="اختياري"
-                    onBlur={(e) => {
-                      const raw = e.target.value.trim();
-                      if (raw === "") {
-                        if (s.cost_amount != null) patch(s.id, { cost_amount: null });
-                        return;
-                      }
-                      const v = Number(raw);
-                      if (!Number.isFinite(v) || v < 0) {
-                        toast.error("تكلفة الخدمة غير صحيحة");
-                        return;
-                      }
-                      if (s.cost_amount == null || v !== Number(s.cost_amount))
-                        patch(s.id, { cost_amount: v });
-                    }}
-                    inputMode="numeric"
-                    className="h-10"
-                  />
-                </div>
-              </div>
-
-              <div className="mt-3 flex items-center justify-between gap-3">
-                <div className="space-y-1">
-                  <Label htmlFor={`cur-${s.id}`} className="text-[11px] text-muted-foreground">
-                    العملة (للسعر والتكلفة)
-                  </Label>
-                  <select
-                    id={`cur-${s.id}`}
-                    value={cur}
-                    onChange={(e) => patch(s.id, { currency: e.target.value as AdCurrency })}
-                    className="h-10 rounded-md border border-input bg-background px-2 text-sm"
-                  >
-                    {AD_CURRENCIES.map((c) => (
-                      <option key={c.value} value={c.value}>
-                        {c.value}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex items-center gap-2 text-xs">
+                <div className="flex flex-col items-end gap-1">
                   <Switch
                     checked={s.is_active}
-                    onCheckedChange={(v) => patch(s.id, { is_active: v })}
+                    onCheckedChange={(v) => void patch(s.id, { is_active: v })}
+                    aria-label="توفر الخدمة"
                   />
-                  {s.is_active ? "مفعّلة" : "متوقفة"}
+                  <span className="text-[10px] text-muted-foreground">
+                    {s.is_active ? "متاحة" : "موقوفة"}
+                  </span>
                 </div>
               </div>
+
+              <div className="mt-3 flex gap-2">
+                <Button
+                  variant="outline"
+                  className="h-9 flex-1"
+                  onClick={() => setEditing(editing === s.id ? null : s.id)}
+                >
+                  <Pencil className="size-4" /> {editing === s.id ? "إغلاق" : "تعديل"}
+                </Button>
+                <Button variant="outline" className="h-9" onClick={() => void duplicate(s)}>
+                  <Copy className="size-4" /> نسخ
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="size-9 text-destructive"
+                  onClick={() => void remove(s.id)}
+                  aria-label="حذف الخدمة"
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              </div>
+
+              {editing === s.id && (
+                <EditService
+                  service={s}
+                  onSave={async (values) => {
+                    const ok = await patch(s.id, values);
+                    if (ok) {
+                      toast.success("تم حفظ التعديلات");
+                      setEditing(null);
+                    }
+                  }}
+                />
+              )}
             </article>
           );
         })}
-        {!services?.length && (
+        {!visible.length && (
           <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
-            ما أضفت خدمات بعد.
+            {services?.length ? "ماكو نتائج للبحث." : "ما أضفت خدمات بعد."}
           </p>
         )}
       </section>
+    </div>
+  );
+}
+
+function EditService({
+  service,
+  onSave,
+}: {
+  service: ServiceRow;
+  onSave: (values: {
+    name: string;
+    description: string | null;
+    price_amount: number;
+    price_unit: ServicePriceUnit;
+    currency: AdCurrency;
+  }) => void;
+}) {
+  const [name, setName] = useState(service.name);
+  const [description, setDescription] = useState(service.description ?? "");
+  const [price, setPrice] = useState(
+    service.price_unit === "negotiable" ? "" : String(Number(service.price_amount)),
+  );
+  const [unit, setUnit] = useState<ServicePriceUnit>(service.price_unit as ServicePriceUnit);
+  const [currency, setCurrency] = useState<AdCurrency>(adCurrency(service.currency));
+
+  return (
+    <div className="mt-3 space-y-2 rounded-xl bg-muted/50 p-3">
+      <Input
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="h-10"
+        aria-label="اسم الخدمة"
+      />
+      <div className="flex gap-2">
+        <Input
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          placeholder="السعر (اختياري)"
+          inputMode="numeric"
+          disabled={unit === "negotiable"}
+          className="h-10 flex-1"
+          aria-label="سعر الخدمة"
+        />
+        <select
+          value={unit}
+          onChange={(e) => setUnit(e.target.value as ServicePriceUnit)}
+          aria-label="وحدة التسعير"
+          className="h-10 rounded-md border border-input bg-background px-2 text-sm"
+        >
+          {UNITS.map((u) => (
+            <option key={u} value={u}>
+              {PRICE_UNIT_LABELS[u]}
+            </option>
+          ))}
+        </select>
+        <select
+          value={currency}
+          onChange={(e) => setCurrency(e.target.value as AdCurrency)}
+          aria-label="العملة"
+          className="h-10 rounded-md border border-input bg-background px-2 text-sm"
+        >
+          {AD_CURRENCIES.map((c) => (
+            <option key={c.value} value={c.value}>
+              {c.value}
+            </option>
+          ))}
+        </select>
+      </div>
+      <Textarea
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="وصف مختصر (اختياري)"
+        rows={2}
+      />
+      <Button
+        className="h-10 w-full"
+        onClick={() => {
+          if (!name.trim()) {
+            toast.error("اكتب اسم الخدمة");
+            return;
+          }
+          const raw = price.trim();
+          const value = raw === "" ? 0 : Number(raw);
+          if (!Number.isFinite(value) || value < 0) {
+            toast.error("سعر الخدمة غير صحيح");
+            return;
+          }
+          const nextUnit: ServicePriceUnit = raw === "" ? "negotiable" : unit;
+          onSave({
+            name: name.trim(),
+            description: description.trim() || null,
+            price_amount: nextUnit === "negotiable" ? 0 : value,
+            price_unit: nextUnit,
+            currency,
+          });
+        }}
+      >
+        حفظ التعديلات
+      </Button>
     </div>
   );
 }
