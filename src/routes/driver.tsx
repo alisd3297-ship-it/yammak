@@ -155,7 +155,7 @@ function DriverDashboard() {
               <TaskCard
                 key={t.id}
                 task={t}
-                onAdvance={(id, next) => void actions.advance(id, next)}
+                onAdvance={(id, chain) => void actions.advanceMany(id, chain)}
                 onCompleteStop={(id) => void actions.completeStop(id)}
               />
             ))}
