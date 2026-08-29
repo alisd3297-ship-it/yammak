@@ -287,6 +287,7 @@ export function AdminEntry() {
 const ADMIN_LINKS = [
   { to: "/admin", label: "الرئيسية", exact: true },
   { to: "/admin/users", label: "المستخدمون", exact: false },
+  { to: "/admin/subscribers", label: "المشتركون", exact: false },
   { to: "/admin/providers", label: "التجار والمحلات", exact: false },
   { to: "/admin/orders", label: "الطلبات", exact: false },
   { to: "/admin/drivers", label: "المندوبون", exact: false },

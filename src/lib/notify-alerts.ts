@@ -70,24 +70,26 @@ export function unlockAlertSound() {
 /** نوع التنبيه: طلب جديد له نغمة أوضح وأطول من التحديثات العادية. */
 export type AlertKind = "default" | "order";
 
-/** نمط النغمة لكل نوع: [إزاحة بالثواني، التردد]. */
-const TONES: Record<AlertKind, Array<[number, number]>> = {
+/**
+ * نمط النغمة: [إزاحة بالثواني، التردد، المدة].
+ * - order: نغمة «طلب جديد» مميزة — جرس صاعد قصير (مي–صول#–سي–مي عالية)
+ *   بجرس أوضح وأقوى، لا يشبه نغمة إشعارات النظام ولا يتجاوز ثانية واحدة.
+ * - default: نقرتان هادئتان لبقية الإشعارات.
+ */
+const TONES: Record<AlertKind, Array<[number, number, number]>> = {
   default: [
-    [0, 880],
-    [0.28, 1175],
+    [0, 880, 0.2],
+    [0.22, 1175, 0.24],
   ],
-  // نغمة طلب جديد: ثلاث نقرات صاعدة مكرّرة مرتين حتى ينتبه المندوب/التاجر
   order: [
-    [0, 988],
-    [0.16, 1319],
-    [0.32, 1568],
-    [0.7, 988],
-    [0.86, 1319],
-    [1.02, 1568],
+    [0, 659.25, 0.16],
+    [0.12, 830.61, 0.16],
+    [0.24, 987.77, 0.2],
+    [0.38, 1318.51, 0.42],
   ],
 };
 
-/** نغمة تنبيه قصيرة (نقرتان) مع منع التكرار المزعج. */
+/** نغمة تنبيه قصيرة مع منع التكرار المزعج. */
 export function playAlertSound(kind: AlertKind = "default") {
   if (!alertSoundEnabled()) return;
   const now = Date.now();
@@ -103,25 +105,50 @@ export function playAlertSound(kind: AlertKind = "default") {
   }
   lastPlayed = now;
   const start = ac.currentTime;
-  const peak = kind === "order" ? 0.3 : 0.22;
-  TONES[kind].forEach(([offset, freq]) => {
-    const osc = ac.createOscillator();
+  const peak = kind === "order" ? 0.42 : 0.2;
+
+  // مخرج مشترك بضاغط بسيط: صوت أوضح وأقوى بلا تشويش.
+  const master = ac.createGain();
+  master.gain.value = 1;
+  const shaper = ac.createDynamicsCompressor?.();
+  if (shaper) master.connect(shaper).connect(ac.destination);
+  else master.connect(ac.destination);
+
+  TONES[kind].forEach(([offset, freq, dur]) => {
+    const t = start + offset;
     const gain = ac.createGain();
-    osc.type = kind === "order" ? "triangle" : "sine";
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(peak, t + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    gain.connect(master);
+
+    // أساس نقي + توافقية خفيفة تعطي رنّة «جرس» جميلة بدل صفير جاف
+    const osc = ac.createOscillator();
+    osc.type = kind === "order" ? "sine" : "sine";
     osc.frequency.value = freq;
-    gain.gain.setValueAtTime(0.0001, start + offset);
-    gain.gain.exponentialRampToValueAtTime(peak, start + offset + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.0001, start + offset + 0.22);
-    osc.connect(gain).connect(ac.destination);
-    osc.start(start + offset);
-    osc.stop(start + offset + 0.24);
+    osc.connect(gain);
+    osc.start(t);
+    osc.stop(t + dur + 0.02);
+
+    if (kind === "order") {
+      const harm = ac.createOscillator();
+      const harmGain = ac.createGain();
+      harm.type = "triangle";
+      harm.frequency.value = freq * 2;
+      harmGain.gain.setValueAtTime(0.0001, t);
+      harmGain.gain.exponentialRampToValueAtTime(peak * 0.35, t + 0.01);
+      harmGain.gain.exponentialRampToValueAtTime(0.0001, t + dur * 0.7);
+      harm.connect(harmGain).connect(master);
+      harm.start(t);
+      harm.stop(t + dur + 0.02);
+    }
   });
 }
 
 function vibrate(kind: AlertKind = "default") {
   if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
     try {
-      navigator.vibrate(kind === "order" ? [200, 100, 200, 100, 300] : [120, 60, 120]);
+      navigator.vibrate(kind === "order" ? [90, 60, 90, 60, 220] : [110, 60, 110]);
     } catch {
       // بعض المتصفحات تمنع الاهتزاز
     }

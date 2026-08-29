@@ -99,51 +99,73 @@ function MainTile({ item }: { item: MainService }) {
   );
 }
 
-/** مدخل سريع للميزات الجديدة (طلب حر، مساعد، قريب منك، الخريطة). */
+type QuickTo = "/request-anything" | "/assistant" | "/nearby" | "/map" | "/marketplace" | "/quotes";
+
+/**
+ * مدخل سريع مدمج: البطاقة تفتح الوجهة الأساسية،
+ * ويبقى رابط ثانوي داخلها للوظيفة المدموجة (بدون حذف أي ميزة).
+ */
 function QuickAction({
   to,
   title,
   hint,
   icon: Icon,
   highlight,
+  secondary,
 }: {
-  to: "/request-anything" | "/assistant" | "/nearby" | "/map" | "/marketplace" | "/quotes";
+  to: QuickTo;
   title: string;
   hint: string;
   icon: Icons.LucideIcon;
   highlight?: boolean;
+  secondary?: { to: QuickTo; label: string; icon: Icons.LucideIcon };
 }) {
+  const SecIcon = secondary?.icon;
   return (
-    <Link
-      to={to}
+    <div
       className={
         highlight
-          ? "flex items-center gap-3 rounded-2xl bg-primary p-3 text-primary-foreground shadow-card transition active:scale-[0.98]"
-          : "flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft transition active:scale-[0.98]"
+          ? "flex flex-col gap-2 rounded-2xl bg-primary p-3 text-primary-foreground shadow-card"
+          : "flex flex-col gap-2 rounded-2xl bg-card p-3 shadow-soft"
       }
     >
-      <span
-        className={
-          highlight
-            ? "flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-foreground/20"
-            : "flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground"
-        }
-      >
-        <Icon className="size-5" />
-      </span>
-      <span className="min-w-0">
-        <span className="block truncate text-sm font-bold">{title}</span>
+      <Link to={to} className="flex items-center gap-3 transition active:scale-[0.98]">
         <span
           className={
             highlight
-              ? "block truncate text-[11px] opacity-90"
-              : "block truncate text-[11px] text-muted-foreground"
+              ? "flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-foreground/20"
+              : "flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground"
           }
         >
-          {hint}
+          <Icon className="size-5" />
         </span>
-      </span>
-    </Link>
+        <span className="min-w-0">
+          <span className="block truncate text-sm font-bold">{title}</span>
+          <span
+            className={
+              highlight
+                ? "block truncate text-[11px] opacity-90"
+                : "block truncate text-[11px] text-muted-foreground"
+            }
+          >
+            {hint}
+          </span>
+        </span>
+      </Link>
+      {secondary && SecIcon ? (
+        <Link
+          to={secondary.to}
+          className={
+            highlight
+              ? "flex items-center justify-center gap-1.5 rounded-xl bg-primary-foreground/20 px-2 py-1.5 text-[11px] font-bold"
+              : "flex items-center justify-center gap-1.5 rounded-xl bg-muted px-2 py-1.5 text-[11px] font-bold text-muted-foreground"
+          }
+        >
+          <SecIcon className="size-3.5" />
+          {secondary.label}
+        </Link>
+      ) : null}
+    </div>
   );
 }
 
@@ -226,22 +248,22 @@ function CustomerHome() {
       <AdminEntry />
 
       <section className="mt-4 px-4">
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 items-stretch gap-3">
           <QuickAction
             to="/request-anything"
             title="اطلب أي شي"
             hint="اكتبه بلغتك ونرتبه إلك"
             icon={Icons.Sparkles}
             highlight
+            secondary={{ to: "/assistant", label: "مساعد لبابك", icon: Icons.Bot }}
           />
           <QuickAction
-            to="/assistant"
-            title="مساعد لبابك"
-            hint="دلّني على المنتج"
-            icon={Icons.Bot}
+            to="/nearby"
+            title="قريب منك"
+            hint="عروض ومتاجر قريبة"
+            icon={Icons.MapPin}
+            secondary={{ to: "/map", label: "خريطة الخدمات", icon: Icons.Map }}
           />
-          <QuickAction to="/nearby" title="قريب منك" hint="عروض ومتاجر" icon={Icons.MapPin} />
-          <QuickAction to="/map" title="خريطة الخدمات" hint="شوف الأقرب" icon={Icons.Map} />
           <QuickAction
             to="/marketplace"
             title="سوق لبابك"

@@ -261,6 +261,22 @@ export function useDriverActions() {
       }
       invalidate();
     },
+    /**
+     * تنفيذ سلسلة حالات دفعة واحدة: واجهة المندوب مختصرة (٣ مراحل)
+     * بينما دورة الطلب الداخلية تبقى كما هي بلا كسر.
+     */
+    async advanceMany(orderId: string, chain: OrderStatus[]) {
+      for (const next of chain) {
+        try {
+          await setStatus({ data: { orderId, status: next } });
+          if (next === "delivered") clearArrivalFlag(orderId);
+        } catch (e) {
+          toast.error(e instanceof Error ? e.message : "تعذر تحديث حالة الطلب");
+          break;
+        }
+      }
+      invalidate();
+    },
     async advance(orderId: string, next: OrderStatus) {
       try {
         await setStatus({ data: { orderId, status: next } });

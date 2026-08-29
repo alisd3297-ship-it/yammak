@@ -258,7 +258,7 @@ function ProviderDashboard() {
           {(isProfession
             ? ([
                 { key: "orders", label: "طلبات الخدمة" },
-                { key: "catalog", label: "خدماتي وأسعاري" },
+                { key: "catalog", label: "خدماتي" },
               ] as const)
             : ([
                 { key: "orders", label: "الطلبات" },

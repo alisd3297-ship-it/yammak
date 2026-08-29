@@ -1,17 +1,32 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRef, useState } from "react";
-import { ImagePlus, Loader2, Plus, Trash2 } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
+import { Copy, ImagePlus, Loader2, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { ProductImage } from "@/components/product-image";
+import { cn } from "@/lib/utils";
 import { formatIQD } from "@/lib/orders";
+import { normalizeArabic } from "@/lib/search";
 
 type Props = { providerId: string; isStore: boolean };
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+
+type ProductRow = {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+  stock: number | null;
+  is_available: boolean;
+  category_id: string | null;
+  image_url: string | null;
+  sort_order?: number | null;
+};
 
 /** رفع صورة منتج إلى مجلد النشاط، ويُعاد مسار عام آمن لعرضه. */
 async function uploadProductImage(providerId: string, file: File): Promise<string> {
@@ -26,13 +41,26 @@ async function uploadProductImage(providerId: string, file: File): Promise<strin
   return `/api/public/provider-image/${path}`;
 }
 
-/** إدارة الكتالوج للمزوّد — كل الكتابات محكومة بسياسات RLS على المالك فقط. */
+/**
+ * كتالوج المزوّد: إضافة سريعة بخطوة واحدة + تعديل/نسخ/حذف داخل نفس الصفحة.
+ * لا يوجد أي حقل تكلفة — سعر البيع فقط.
+ */
 export function ProviderCatalog({ providerId, isStore }: Props) {
   const qc = useQueryClient();
   const [catName, setCatName] = useState("");
-  const [form, setForm] = useState({ name: "", price: "", cost: "", stock: "", categoryId: "" });
-  const [newImage, setNewImage] = useState<{ url: string; preview: string } | null>(null);
+  const [showCats, setShowCats] = useState(false);
+  const [term, setTerm] = useState("");
+  const [filterCat, setFilterCat] = useState<string>("all");
+  const [editing, setEditing] = useState<string | null>(null);
   const [uploading, setUploading] = useState<string | null>(null);
+  const [form, setForm] = useState({
+    name: "",
+    price: "",
+    stock: "",
+    categoryId: "",
+    description: "",
+  });
+  const [newImage, setNewImage] = useState<{ url: string; preview: string } | null>(null);
   const newImageRef = useRef<HTMLInputElement>(null);
 
   const { data } = useQuery({
@@ -46,13 +74,31 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
           .order("sort_order"),
         supabase
           .from("products")
-          .select("id, name, price, cost_price, stock, is_available, category_id, image_url")
+          .select(
+            "id, name, description, price, stock, is_available, category_id, image_url, sort_order",
+          )
           .eq("provider_id", providerId)
           .order("sort_order"),
       ]);
-      return { categories: categories.data ?? [], products: products.data ?? [] };
+      return {
+        categories: categories.data ?? [],
+        products: (products.data ?? []) as ProductRow[],
+      };
     },
   });
+
+  const categories = data?.categories ?? [];
+  const products = data?.products ?? [];
+
+  const visible = useMemo(() => {
+    const q = normalizeArabic(term);
+    return products.filter((p) => {
+      if (filterCat === "none" && p.category_id) return false;
+      if (filterCat !== "all" && filterCat !== "none" && p.category_id !== filterCat) return false;
+      if (!q) return true;
+      return normalizeArabic(`${p.name} ${p.description ?? ""}`).includes(q);
+    });
+  }, [products, term, filterCat]);
 
   function refresh() {
     qc.invalidateQueries({ queryKey: ["provider-catalog", providerId] });
@@ -63,13 +109,22 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
     const { error } = await supabase.from("menu_categories").insert({
       provider_id: providerId,
       name: catName.trim(),
-      sort_order: (data?.categories.length ?? 0) + 1,
+      sort_order: categories.length + 1,
     });
     if (error) {
       toast.error(`تعذر إضافة القسم: ${error.message}`);
       return;
     }
     setCatName("");
+    refresh();
+  }
+
+  async function removeCategory(id: string) {
+    const { error } = await supabase.from("menu_categories").delete().eq("id", id);
+    if (error) {
+      toast.error(`تعذر حذف القسم: ${error.message}`);
+      return;
+    }
     refresh();
   }
 
@@ -84,23 +139,23 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
       provider_id: providerId,
       category_id: form.categoryId || null,
       name: form.name.trim(),
+      description: form.description.trim() || null,
       price,
-      cost_price: form.cost !== "" && Number.isFinite(Number(form.cost)) ? Number(form.cost) : null,
       stock,
       image_url: newImage?.url ?? null,
-      sort_order: (data?.products.length ?? 0) + 1,
+      sort_order: products.length + 1,
     });
     if (error) {
       toast.error(`تعذر إضافة المنتج: ${error.message}`);
       return;
     }
-    setForm({ name: "", price: "", cost: "", stock: "", categoryId: "" });
+    toast.success("تمت إضافة المنتج");
+    setForm({ name: "", price: "", stock: "", categoryId: form.categoryId, description: "" });
     setNewImage(null);
     if (newImageRef.current) newImageRef.current.value = "";
     refresh();
   }
 
-  /** رفع صورة للمنتج الجديد قبل الحفظ. */
   async function pickNewImage(file: File | undefined) {
     if (!file) return;
     setUploading("new");
@@ -115,7 +170,6 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
     }
   }
 
-  /** تغيير أو إضافة صورة لمنتج محفوظ. */
   async function changeProductImage(id: string, file: File | undefined) {
     if (!file) return;
     setUploading(id);
@@ -131,19 +185,42 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
   }
 
   type ProductPatch = {
+    name?: string;
+    description?: string | null;
     price?: number;
-    cost_price?: number | null;
     stock?: number | null;
     is_available?: boolean;
     image_url?: string | null;
+    category_id?: string | null;
   };
 
   async function patchProduct(id: string, patch: ProductPatch) {
     const { error } = await supabase.from("products").update(patch).eq("id", id);
     if (error) {
       toast.error(`تعذر حفظ التعديل: ${error.message}`);
+      return false;
+    }
+    refresh();
+    return true;
+  }
+
+  async function duplicateProduct(p: ProductRow) {
+    const { error } = await supabase.from("products").insert({
+      provider_id: providerId,
+      category_id: p.category_id,
+      name: `${p.name} (نسخة)`,
+      description: p.description,
+      price: p.price,
+      stock: p.stock,
+      image_url: p.image_url,
+      is_available: p.is_available,
+      sort_order: products.length + 1,
+    });
+    if (error) {
+      toast.error(`تعذر نسخ المنتج: ${error.message}`);
       return;
     }
+    toast.success("تم نسخ المنتج");
     refresh();
   }
 
@@ -153,38 +230,15 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
       toast.error(`تعذر حذف المنتج: ${error.message}`);
       return;
     }
+    toast.success("تم حذف المنتج");
     refresh();
   }
 
   return (
     <div className="space-y-4">
+      {/* إضافة سريعة: كل الحقول بخطوة واحدة */}
       <section className="rounded-2xl bg-card p-4 shadow-soft">
-        <h3 className="mb-3 text-sm font-bold">الأقسام</h3>
-        <div className="flex flex-wrap gap-2">
-          {(data?.categories ?? []).map((c) => (
-            <span key={c.id} className="rounded-full bg-muted px-3 py-1.5 text-xs font-semibold">
-              {c.name}
-            </span>
-          ))}
-          {!data?.categories.length && (
-            <p className="text-xs text-muted-foreground">ماكو أقسام بعد.</p>
-          )}
-        </div>
-        <div className="mt-3 flex gap-2">
-          <Input
-            value={catName}
-            onChange={(e) => setCatName(e.target.value)}
-            placeholder="اسم القسم الجديد"
-            className="h-11"
-          />
-          <Button className="h-11" onClick={addCategory}>
-            <Plus className="size-4" /> إضافة
-          </Button>
-        </div>
-      </section>
-
-      <section className="rounded-2xl bg-card p-4 shadow-soft">
-        <h3 className="mb-3 text-sm font-bold">إضافة منتج</h3>
+        <h3 className="mb-3 text-sm font-black">إضافة منتج بسرعة</h3>
         <div className="space-y-2">
           <Input
             value={form.name}
@@ -196,16 +250,9 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
             <Input
               value={form.price}
               onChange={(e) => setForm({ ...form, price: e.target.value })}
-              placeholder="السعر بالدينار"
+              placeholder="سعر البيع بالدينار"
               inputMode="numeric"
-              className="h-11"
-            />
-            <Input
-              value={form.cost}
-              onChange={(e) => setForm({ ...form, cost: e.target.value })}
-              placeholder="التكلفة (اختياري)"
-              inputMode="numeric"
-              className="h-11"
+              className="h-11 flex-1"
             />
             {isStore && (
               <Input
@@ -213,7 +260,8 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
                 onChange={(e) => setForm({ ...form, stock: e.target.value })}
                 placeholder="المخزون"
                 inputMode="numeric"
-                className="h-11"
+                className="h-11 w-28"
+                aria-label="المخزون"
               />
             )}
           </div>
@@ -224,18 +272,26 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
             aria-label="القسم"
           >
             <option value="">بدون قسم</option>
-            {(data?.categories ?? []).map((c) => (
+            {categories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
               </option>
             ))}
           </select>
+          <Textarea
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            placeholder="وصف مختصر (اختياري)"
+            rows={2}
+          />
           <div className="flex items-center gap-3 rounded-xl bg-muted/50 p-3">
-            <ProductImage src={newImage?.preview} alt="صورة المنتج الجديد" />
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold">صورة المنتج (اختيارية)</p>
-              <p className="text-[11px] text-muted-foreground">JPG أو PNG، حد أقصى 5 ميغابايت</p>
-            </div>
+            <ProductImage src={newImage?.preview} alt="صورة المنتج الجديد" className="size-12" />
+            <p className="min-w-0 flex-1 text-xs font-semibold">
+              صورة اختيارية
+              <span className="block text-[11px] font-normal text-muted-foreground">
+                JPG أو PNG، حد 5 ميغابايت
+              </span>
+            </p>
             <input
               ref={newImageRef}
               type="file"
@@ -255,24 +311,142 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
               ) : (
                 <ImagePlus className="size-4" />
               )}
-              {newImage ? "تغيير" : "رفع صورة"}
+              {newImage ? "تغيير" : "رفع"}
             </Button>
           </div>
-          <Button className="h-11 w-full" onClick={addProduct}>
-            حفظ المنتج
+          <Button className="h-12 w-full text-base font-black" onClick={addProduct}>
+            <Plus className="size-5" /> إضافة المنتج
           </Button>
         </div>
       </section>
 
+      {/* الأقسام: مطوية حتى لا تزدحم الواجهة */}
+      <section className="rounded-2xl bg-card p-4 shadow-soft">
+        <button
+          type="button"
+          className="flex w-full items-center justify-between text-sm font-black"
+          onClick={() => setShowCats((v) => !v)}
+        >
+          الأقسام ({categories.length})
+          <span className="text-xs font-semibold text-primary">
+            {showCats ? "إخفاء" : "إدارة الأقسام"}
+          </span>
+        </button>
+        {showCats && (
+          <div className="mt-3 space-y-3">
+            <div className="flex flex-wrap gap-2">
+              {categories.map((c) => (
+                <span
+                  key={c.id}
+                  className="flex items-center gap-1 rounded-full bg-muted px-3 py-1.5 text-xs font-semibold"
+                >
+                  {c.name}
+                  <button
+                    type="button"
+                    aria-label={`حذف قسم ${c.name}`}
+                    onClick={() => void removeCategory(c.id)}
+                    className="text-destructive"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                </span>
+              ))}
+              {!categories.length && (
+                <p className="text-xs text-muted-foreground">ماكو أقسام بعد.</p>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={catName}
+                onChange={(e) => setCatName(e.target.value)}
+                placeholder="اسم القسم الجديد"
+                className="h-11"
+              />
+              <Button className="h-11" onClick={addCategory}>
+                <Plus className="size-4" /> إضافة
+              </Button>
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* بحث وتصفية */}
       <section className="space-y-2">
-        {(data?.products ?? []).map((p) => (
-          <div key={p.id} className="rounded-2xl bg-card p-4 shadow-soft">
+        <div className="relative">
+          <Search className="pointer-events-none absolute end-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={term}
+            onChange={(e) => setTerm(e.target.value)}
+            placeholder="ابحث عن منتج"
+            className="h-11 pe-10"
+            aria-label="بحث في المنتجات"
+          />
+        </div>
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {[
+            { key: "all", label: "الكل" },
+            ...categories.map((c) => ({ key: c.id, label: c.name })),
+            { key: "none", label: "بدون قسم" },
+          ].map((c) => (
+            <button
+              key={c.key}
+              type="button"
+              onClick={() => setFilterCat(c.key)}
+              className={cn(
+                "whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition",
+                filterCat === c.key
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground",
+              )}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* قائمة المنتجات */}
+      <section className="space-y-2">
+        {visible.map((p) => (
+          <div key={p.id} className="rounded-2xl bg-card p-3 shadow-soft">
             <div className="flex items-center gap-3">
               <ProductImage src={p.image_url} alt={p.name} className="size-14" />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-bold">{p.name}</p>
-                <span className="text-sm font-bold text-primary">{formatIQD(Number(p.price))}</span>
+                <p className="text-sm font-bold text-primary">{formatIQD(Number(p.price))}</p>
+                <p className="truncate text-[11px] text-muted-foreground">
+                  {categories.find((c) => c.id === p.category_id)?.name ?? "بدون قسم"}
+                  {isStore && p.stock != null ? ` · مخزون ${p.stock}` : ""}
+                </p>
               </div>
+              <div className="flex flex-col items-end gap-1">
+                <Switch
+                  checked={p.is_available}
+                  onCheckedChange={(v) => void patchProduct(p.id, { is_available: v })}
+                  aria-label="توفر المنتج"
+                />
+                <span className="text-[10px] text-muted-foreground">
+                  {p.is_available ? "متوفر" : "موقوف"}
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                className="h-9 flex-1"
+                onClick={() => setEditing(editing === p.id ? null : p.id)}
+              >
+                <Pencil className="size-4" /> {editing === p.id ? "إغلاق" : "تعديل"}
+              </Button>
+              <Button
+                variant="outline"
+                className="h-9"
+                onClick={() => void duplicateProduct(p)}
+                aria-label="نسخ المنتج"
+              >
+                <Copy className="size-4" /> نسخ
+              </Button>
               <label className="cursor-pointer">
                 <input
                   type="file"
@@ -286,61 +460,136 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
                   ) : (
                     <ImagePlus className="size-4" />
                   )}
-                  {p.image_url ? "تغيير الصورة" : "إضافة صورة"}
+                  صورة
                 </span>
               </label>
-            </div>
-            <div className="mt-3 flex flex-wrap items-center gap-3">
-              <label className="flex items-center gap-2 text-xs font-semibold">
-                <Switch
-                  checked={p.is_available}
-                  onCheckedChange={(v) => patchProduct(p.id, { is_available: v })}
-                />
-                {p.is_available ? "متوفر" : "غير متوفر"}
-              </label>
-              {isStore && (
-                <label className="flex items-center gap-2 text-xs font-semibold">
-                  المخزون
-                  <Input
-                    defaultValue={p.stock ?? ""}
-                    onBlur={(e) => {
-                      const raw = e.target.value.trim();
-                      const value = raw === "" ? null : Math.max(0, Math.trunc(Number(raw)));
-                      if (value !== null && !Number.isFinite(value)) return;
-                      if (value !== (p.stock ?? null)) patchProduct(p.id, { stock: value });
-                    }}
-                    inputMode="numeric"
-                    className="h-9 w-24"
-                  />
-                </label>
-              )}
-              <Input
-                defaultValue={p.price}
-                onBlur={(e) => {
-                  const value = Number(e.target.value);
-                  if (Number.isFinite(value) && value > 0 && value !== Number(p.price))
-                    patchProduct(p.id, { price: value });
-                }}
-                inputMode="numeric"
-                className="h-9 w-28"
-                aria-label="تعديل السعر"
-              />
               <Button
                 variant="outline"
                 size="icon"
-                className="size-9"
-                onClick={() => removeProduct(p.id)}
+                className="size-9 text-destructive"
+                onClick={() => void removeProduct(p.id)}
                 aria-label="حذف المنتج"
               >
                 <Trash2 className="size-4" />
               </Button>
             </div>
+
+            {editing === p.id && (
+              <EditProduct
+                product={p}
+                categories={categories}
+                isStore={isStore}
+                onSave={async (patch) => {
+                  const ok = await patchProduct(p.id, patch);
+                  if (ok) {
+                    toast.success("تم حفظ التعديلات");
+                    setEditing(null);
+                  }
+                }}
+              />
+            )}
           </div>
         ))}
-        {!data?.products.length && (
-          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">ماكو منتجات بعد.</p>
+        {!visible.length && (
+          <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
+            {products.length ? "ماكو نتائج للبحث." : "ماكو منتجات بعد — أضف أول منتج من فوق."}
+          </p>
         )}
       </section>
+    </div>
+  );
+}
+
+/** تعديل سريع داخل البطاقة نفسها بدل فتح صفحة أو نافذة جديدة. */
+function EditProduct({
+  product,
+  categories,
+  isStore,
+  onSave,
+}: {
+  product: ProductRow;
+  categories: { id: string; name: string }[];
+  isStore: boolean;
+  onSave: (patch: {
+    name?: string;
+    description?: string | null;
+    price?: number;
+    stock?: number | null;
+    category_id?: string | null;
+  }) => void;
+}) {
+  const [name, setName] = useState(product.name);
+  const [price, setPrice] = useState(String(Number(product.price)));
+  const [stock, setStock] = useState(product.stock == null ? "" : String(product.stock));
+  const [categoryId, setCategoryId] = useState(product.category_id ?? "");
+  const [description, setDescription] = useState(product.description ?? "");
+
+  return (
+    <div className="mt-3 space-y-2 rounded-xl bg-muted/50 p-3">
+      <Input
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="اسم المنتج"
+        className="h-10"
+        aria-label="اسم المنتج"
+      />
+      <div className="flex gap-2">
+        <Input
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          inputMode="numeric"
+          className="h-10 flex-1"
+          aria-label="سعر البيع"
+        />
+        {isStore && (
+          <Input
+            value={stock}
+            onChange={(e) => setStock(e.target.value)}
+            inputMode="numeric"
+            placeholder="المخزون"
+            className="h-10 w-28"
+            aria-label="المخزون"
+          />
+        )}
+      </div>
+      <select
+        value={categoryId}
+        onChange={(e) => setCategoryId(e.target.value)}
+        className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+        aria-label="القسم"
+      >
+        <option value="">بدون قسم</option>
+        {categories.map((c) => (
+          <option key={c.id} value={c.id}>
+            {c.name}
+          </option>
+        ))}
+      </select>
+      <Textarea
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="وصف مختصر (اختياري)"
+        rows={2}
+      />
+      <Button
+        className="h-10 w-full"
+        onClick={() => {
+          const p = Number(price);
+          if (!name.trim() || !Number.isFinite(p) || p <= 0) {
+            toast.error("تأكد من الاسم والسعر");
+            return;
+          }
+          onSave({
+            name: name.trim(),
+            price: p,
+            description: description.trim() || null,
+            category_id: categoryId || null,
+            stock: isStore ? (stock.trim() === "" ? null : Math.max(0, Math.trunc(Number(stock)))) : product.stock,
+          });
+        }}
+      >
+        حفظ التعديلات
+      </Button>
     </div>
   );
 }
