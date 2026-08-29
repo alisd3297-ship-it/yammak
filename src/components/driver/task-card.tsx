@@ -2,35 +2,32 @@ import { Check, MapPin, PackageCheck, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DriverMap } from "@/components/driver/driver-map";
 import { OrderChat } from "@/components/order-chat";
-import { formatIQD, isCourierType } from "@/lib/orders";
+import { formatIQD } from "@/lib/orders";
 import { vehicleLabel } from "@/lib/vehicles";
 import { cn } from "@/lib/utils";
 import {
-  DRIVER_STAGE_LABELS,
-  DRIVER_STAGE_ORDER,
-  nextActionFor,
-  stageOf,
-  useArrivalFlag,
+  SIMPLE_STAGE_LABELS,
+  SIMPLE_STAGE_ORDER,
+  simpleNextAction,
+  simpleStageOf,
 } from "@/lib/driver-flow";
 import type { DriverTask } from "@/lib/driver-data";
 import type { OrderStatus } from "@/lib/orders";
 
-/** بطاقة المهمة الحالية: حالة مرئية، خريطة، وزر إجراء واحد للمرحلة التالية. */
+/** بطاقة المهمة الحالية: تدفق مختصر (قبول → جاهز → تم التسليم) بزر إجراء واحد. */
 export function TaskCard({
   task,
   onAdvance,
   onCompleteStop,
 }: {
   task: DriverTask;
-  onAdvance: (orderId: string, next: OrderStatus) => void;
+  onAdvance: (orderId: string, chain: OrderStatus[]) => void;
   onCompleteStop: (stopId: string) => void;
 }) {
-  const [arrival, setArrival] = useArrivalFlag(task.id);
-  const stage = stageOf(task.status, arrival);
-  const pickupLabel = isCourierType(task.order_type) ? "نقطة الاستلام" : "المطعم/المتجر";
-  const action = nextActionFor(stage, pickupLabel);
-  const currentIndex = DRIVER_STAGE_ORDER.indexOf(stage);
-  const target = currentIndex >= DRIVER_STAGE_ORDER.indexOf("picked_up") ? "dropoff" : "pickup";
+  const stage = simpleStageOf(task.status);
+  const action = simpleNextAction(task.status);
+  const currentIndex = SIMPLE_STAGE_ORDER.indexOf(stage);
+  const target = currentIndex >= 1 ? "dropoff" : "pickup";
   const stops = [...(task.order_stops ?? [])].sort((a, b) => a.position - b.position);
 
   return (
@@ -38,7 +35,7 @@ export function TaskCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-base font-black">طلب #{task.code}</p>
-          <p className="mt-1 text-xs font-bold text-primary">{DRIVER_STAGE_LABELS[stage]}</p>
+          <p className="mt-1 text-xs font-bold text-primary">{SIMPLE_STAGE_LABELS[stage]}</p>
         </div>
         <div className="text-end">
           <p className="text-xl font-black text-primary">
@@ -50,8 +47,8 @@ export function TaskCard({
         </div>
       </div>
 
-      <ol className="mt-4 flex items-center gap-1">
-        {DRIVER_STAGE_ORDER.map((s, i) => (
+      <ol className="mt-4 flex items-center gap-2">
+        {SIMPLE_STAGE_ORDER.map((s, i) => (
           <li key={s} className="flex flex-1 flex-col items-center gap-1">
             <span
               className={cn(
@@ -59,12 +56,17 @@ export function TaskCard({
                 i <= currentIndex ? "bg-primary" : "bg-muted",
               )}
             />
+            <span
+              className={cn(
+                "text-[10px] font-semibold leading-tight",
+                i <= currentIndex ? "text-primary" : "text-muted-foreground",
+              )}
+            >
+              {SIMPLE_STAGE_LABELS[s]}
+            </span>
           </li>
         ))}
       </ol>
-      <p className="mt-1 text-[11px] text-muted-foreground">
-        الخطوة {currentIndex + 1} من {DRIVER_STAGE_ORDER.length}
-      </p>
 
       <div className="mt-3 space-y-2 rounded-2xl bg-muted/60 p-3 text-sm">
         <p className="flex items-start gap-2">
@@ -136,10 +138,7 @@ export function TaskCard({
       {action && (
         <Button
           className="mt-4 h-16 w-full rounded-2xl text-base font-black"
-          onClick={() => {
-            if (action.kind === "status") onAdvance(task.id, action.next);
-            else setArrival(action.flag);
-          }}
+          onClick={() => onAdvance(task.id, action.chain)}
         >
           {action.label}
         </Button>
