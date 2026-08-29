@@ -84,10 +84,6 @@ function JoinProviderPage() {
       toast.error("اكتب اسم النشاط");
       return;
     }
-    if (kind === "profession" && !professionCategoryId) {
-      toast.error("اختر تصنيف المهنة");
-      return;
-    }
     setSaving(true);
     try {
       await apply({
@@ -182,7 +178,7 @@ function JoinProviderPage() {
               className="h-12 w-full rounded-md border border-input bg-background px-3 text-sm"
               aria-label="تصنيف المهنة"
             >
-              <option value="">اختر تصنيف المهنة</option>
+              <option value="">تصنيف المهنة (اختياري)</option>
               {(categories ?? []).map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
