@@ -61,6 +61,7 @@ import { Route as AdminSectionsRouteImport } from './routes/admin.sections'
 import { Route as AdminServicesRouteImport } from './routes/admin.services'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminSettlementsRouteImport } from './routes/admin.settlements'
+import { Route as AdminSubscribersRouteImport } from './routes/admin.subscribers'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminZonesRouteImport } from './routes/admin.zones'
 import { Route as AdsIndexRouteImport } from './routes/ads.index'
@@ -349,6 +350,11 @@ const AdminSettlementsRoute = AdminSettlementsRouteImport.update({
   path: '/admin/settlements',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSubscribersRoute = AdminSubscribersRouteImport.update({
+  id: '/admin/subscribers',
+  path: '/admin/subscribers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/admin/users',
   path: '/admin/users',
@@ -538,6 +544,7 @@ export interface FileRoutesByFullPath {
   '/admin/services': typeof AdminServicesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/settlements': typeof AdminSettlementsRoute
+  '/admin/subscribers': typeof AdminSubscribersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/zones': typeof AdminZonesRoute
   '/ads/$id': typeof AdsIdRoute
@@ -619,6 +626,7 @@ export interface FileRoutesByTo {
   '/admin/services': typeof AdminServicesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/settlements': typeof AdminSettlementsRoute
+  '/admin/subscribers': typeof AdminSubscribersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/zones': typeof AdminZonesRoute
   '/ads/$id': typeof AdsIdRoute
@@ -701,6 +709,7 @@ export interface FileRoutesById {
   '/admin/services': typeof AdminServicesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/settlements': typeof AdminSettlementsRoute
+  '/admin/subscribers': typeof AdminSubscribersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/zones': typeof AdminZonesRoute
   '/ads/$id': typeof AdsIdRoute
@@ -784,6 +793,7 @@ export interface FileRouteTypes {
     | '/admin/services'
     | '/admin/settings'
     | '/admin/settlements'
+    | '/admin/subscribers'
     | '/admin/users'
     | '/admin/zones'
     | '/ads/$id'
@@ -865,6 +875,7 @@ export interface FileRouteTypes {
     | '/admin/services'
     | '/admin/settings'
     | '/admin/settlements'
+    | '/admin/subscribers'
     | '/admin/users'
     | '/admin/zones'
     | '/ads/$id'
@@ -946,6 +957,7 @@ export interface FileRouteTypes {
     | '/admin/services'
     | '/admin/settings'
     | '/admin/settlements'
+    | '/admin/subscribers'
     | '/admin/users'
     | '/admin/zones'
     | '/ads/$id'
@@ -1028,6 +1040,7 @@ export interface RootRouteChildren {
   AdminServicesRoute: typeof AdminServicesRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSettlementsRoute: typeof AdminSettlementsRoute
+  AdminSubscribersRoute: typeof AdminSubscribersRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminZonesRoute: typeof AdminZonesRoute
   AdsIdRoute: typeof AdsIdRoute
@@ -1424,6 +1437,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettlementsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/subscribers': {
+      id: '/admin/subscribers'
+      path: '/admin/subscribers'
+      fullPath: '/admin/subscribers'
+      preLoaderRoute: typeof AdminSubscribersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/users': {
       id: '/admin/users'
       path: '/admin/users'
@@ -1668,6 +1688,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminServicesRoute: AdminServicesRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSettlementsRoute: AdminSettlementsRoute,
+  AdminSubscribersRoute: AdminSubscribersRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminZonesRoute: AdminZonesRoute,
   AdsIdRoute: AdsIdRoute,
