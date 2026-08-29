@@ -124,7 +124,7 @@ export function ProviderServices({ providerId }: { providerId: string }) {
       description: s.description,
       price_amount: s.price_amount,
       currency: s.currency ?? "IQD",
-      price_unit: s.price_unit,
+      price_unit: s.price_unit as ServicePriceUnit,
       sort_order: (services?.length ?? 0) + 1,
     });
     if (error) {
