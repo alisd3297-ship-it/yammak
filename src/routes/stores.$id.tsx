@@ -42,7 +42,7 @@ function StorePage() {
   const { data } = useQuery({
     queryKey: ["store", id],
     queryFn: async () => {
-      const [provider, categories, products] = await Promise.all([
+      const [provider, products] = await Promise.all([
         supabase
           .from("providers")
           .select("id, name, description, rating, is_open, address_text, kind")
@@ -51,26 +51,19 @@ function StorePage() {
           .eq("is_demo", false)
           .maybeSingle(),
         supabase
-          .from("menu_categories")
-          .select("id, name, sort_order")
-          .eq("provider_id", id)
-          .order("sort_order"),
-        supabase
           .from("products")
-          .select("id, name, description, price, category_id, is_available, stock, image_url")
+          .select("id, name, description, price, is_available, stock, image_url")
           .eq("provider_id", id)
           .order("sort_order"),
       ]);
       return {
         provider: provider.data,
-        categories: categories.data ?? [],
         products: products.data ?? [],
       };
     },
   });
 
   const provider = data?.provider;
-  const uncategorized = (data?.products ?? []).filter((p) => !p.category_id);
 
   function addToCart(p: { id: string; name: string; price: number }) {
     if (!provider) return;
