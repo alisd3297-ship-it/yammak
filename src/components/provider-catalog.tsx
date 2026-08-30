@@ -59,7 +59,9 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
     queryFn: async () => {
       const products = await supabase
         .from("products")
-        .select("id, name, description, price, stock, is_available, category_id, image_url, sort_order")
+        .select(
+          "id, name, description, price, stock, is_available, category_id, image_url, sort_order",
+        )
         .eq("provider_id", providerId)
         .order("sort_order");
       return { products: (products.data ?? []) as ProductRow[] };

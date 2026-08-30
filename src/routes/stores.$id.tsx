@@ -133,7 +133,6 @@ function StorePage() {
           ))}
         </div>
 
-
         {data && !provider && (
           <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
             هذا النشاط غير موجود ضمن المتاجر. تفقّده في قسم المطاعم.
