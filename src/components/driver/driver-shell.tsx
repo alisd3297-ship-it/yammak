@@ -63,6 +63,7 @@ export function useDriverPresence(isAvailable: boolean) {
       });
       if (error) {
         lastSent = 0;
+        lastPoint = null;
         if (!warned) {
           warned = true;
           toast.error("تعذر تحديث حالتك كمتصل، حدّث الصفحة أو تأكد من الاتصال");
@@ -70,8 +71,14 @@ export function useDriverPresence(isAvailable: boolean) {
       }
     };
 
-    const sendFallback = () =>
-      void send(OPERATING_LOCATION_COORDS.lat, OPERATING_LOCATION_COORDS.lng, true);
+    // الموقع البديل يُكتب بقوة مرة واحدة فقط، ثم يخضع للتقييد العادي حتى لا
+    // تتكرر الكتابة مع كل خطأ في قراءة GPS.
+    let fallbackForced = false;
+    const sendFallback = () => {
+      const force = !fallbackForced;
+      fallbackForced = true;
+      void send(OPERATING_LOCATION_COORDS.lat, OPERATING_LOCATION_COORDS.lng, force);
+    };
 
     const onError = () => {
       sendFallback();
