@@ -1,14 +1,12 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useRef, useState } from "react";
-import { Copy, ImagePlus, Loader2, Pencil, Plus, Search, Trash2, X } from "lucide-react";
+import { Copy, ImagePlus, Loader2, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { ProductImage } from "@/components/product-image";
-import { cn } from "@/lib/utils";
 import { formatIQD } from "@/lib/orders";
 import { normalizeArabic } from "@/lib/search";
 
@@ -47,85 +45,37 @@ async function uploadProductImage(providerId: string, file: File): Promise<strin
  */
 export function ProviderCatalog({ providerId, isStore }: Props) {
   const qc = useQueryClient();
-  const [catName, setCatName] = useState("");
-  const [showCats, setShowCats] = useState(false);
   const [term, setTerm] = useState("");
-  const [filterCat, setFilterCat] = useState<string>("all");
   const [editing, setEditing] = useState<string | null>(null);
   const [uploading, setUploading] = useState<string | null>(null);
-  const [form, setForm] = useState({
-    name: "",
-    price: "",
-    stock: "",
-    categoryId: "",
-    description: "",
-  });
+  const [form, setForm] = useState({ name: "", price: "", stock: "" });
   const [newImage, setNewImage] = useState<{ url: string; preview: string } | null>(null);
   const newImageRef = useRef<HTMLInputElement>(null);
 
   const { data } = useQuery({
     queryKey: ["provider-catalog", providerId],
     queryFn: async () => {
-      const [categories, products] = await Promise.all([
-        supabase
-          .from("menu_categories")
-          .select("id, name, sort_order")
-          .eq("provider_id", providerId)
-          .order("sort_order"),
-        supabase
-          .from("products")
-          .select(
-            "id, name, description, price, stock, is_available, category_id, image_url, sort_order",
-          )
-          .eq("provider_id", providerId)
-          .order("sort_order"),
-      ]);
-      return {
-        categories: categories.data ?? [],
-        products: (products.data ?? []) as ProductRow[],
-      };
+      const products = await supabase
+        .from("products")
+        .select(
+          "id, name, description, price, stock, is_available, category_id, image_url, sort_order",
+        )
+        .eq("provider_id", providerId)
+        .order("sort_order");
+      return { products: (products.data ?? []) as ProductRow[] };
     },
   });
 
-  const categories = data?.categories ?? [];
   const products = data?.products ?? [];
 
   const visible = useMemo(() => {
     const q = normalizeArabic(term);
-    return products.filter((p) => {
-      if (filterCat === "none" && p.category_id) return false;
-      if (filterCat !== "all" && filterCat !== "none" && p.category_id !== filterCat) return false;
-      if (!q) return true;
-      return normalizeArabic(`${p.name} ${p.description ?? ""}`).includes(q);
-    });
-  }, [products, term, filterCat]);
+    if (!q) return products;
+    return products.filter((p) => normalizeArabic(`${p.name} ${p.description ?? ""}`).includes(q));
+  }, [products, term]);
 
   function refresh() {
     qc.invalidateQueries({ queryKey: ["provider-catalog", providerId] });
-  }
-
-  async function addCategory() {
-    if (!catName.trim()) return;
-    const { error } = await supabase.from("menu_categories").insert({
-      provider_id: providerId,
-      name: catName.trim(),
-      sort_order: categories.length + 1,
-    });
-    if (error) {
-      toast.error(`تعذر إضافة القسم: ${error.message}`);
-      return;
-    }
-    setCatName("");
-    refresh();
-  }
-
-  async function removeCategory(id: string) {
-    const { error } = await supabase.from("menu_categories").delete().eq("id", id);
-    if (error) {
-      toast.error(`تعذر حذف القسم: ${error.message}`);
-      return;
-    }
-    refresh();
   }
 
   async function addProduct() {
@@ -137,9 +87,7 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
     const stock = isStore && form.stock !== "" ? Math.max(0, Math.trunc(Number(form.stock))) : null;
     const { error } = await supabase.from("products").insert({
       provider_id: providerId,
-      category_id: form.categoryId || null,
       name: form.name.trim(),
-      description: form.description.trim() || null,
       price,
       stock,
       image_url: newImage?.url ?? null,
@@ -150,7 +98,7 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
       return;
     }
     toast.success("تمت إضافة المنتج");
-    setForm({ name: "", price: "", stock: "", categoryId: form.categoryId, description: "" });
+    setForm({ name: "", price: "", stock: "" });
     setNewImage(null);
     if (newImageRef.current) newImageRef.current.value = "";
     refresh();
@@ -265,25 +213,6 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
               />
             )}
           </div>
-          <select
-            value={form.categoryId}
-            onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
-            className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
-            aria-label="القسم"
-          >
-            <option value="">بدون قسم</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-          <Textarea
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-            placeholder="وصف مختصر (اختياري)"
-            rows={2}
-          />
           <div className="flex items-center gap-3 rounded-xl bg-muted/50 p-3">
             <ProductImage src={newImage?.preview} alt="صورة المنتج الجديد" className="size-12" />
             <p className="min-w-0 flex-1 text-xs font-semibold">
@@ -320,57 +249,7 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
         </div>
       </section>
 
-      {/* الأقسام: مطوية حتى لا تزدحم الواجهة */}
-      <section className="rounded-2xl bg-card p-4 shadow-soft">
-        <button
-          type="button"
-          className="flex w-full items-center justify-between text-sm font-black"
-          onClick={() => setShowCats((v) => !v)}
-        >
-          الأقسام ({categories.length})
-          <span className="text-xs font-semibold text-primary">
-            {showCats ? "إخفاء" : "إدارة الأقسام"}
-          </span>
-        </button>
-        {showCats && (
-          <div className="mt-3 space-y-3">
-            <div className="flex flex-wrap gap-2">
-              {categories.map((c) => (
-                <span
-                  key={c.id}
-                  className="flex items-center gap-1 rounded-full bg-muted px-3 py-1.5 text-xs font-semibold"
-                >
-                  {c.name}
-                  <button
-                    type="button"
-                    aria-label={`حذف قسم ${c.name}`}
-                    onClick={() => void removeCategory(c.id)}
-                    className="text-destructive"
-                  >
-                    <X className="size-3.5" />
-                  </button>
-                </span>
-              ))}
-              {!categories.length && (
-                <p className="text-xs text-muted-foreground">ماكو أقسام بعد.</p>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <Input
-                value={catName}
-                onChange={(e) => setCatName(e.target.value)}
-                placeholder="اسم القسم الجديد"
-                className="h-11"
-              />
-              <Button className="h-11" onClick={addCategory}>
-                <Plus className="size-4" /> إضافة
-              </Button>
-            </div>
-          </div>
-        )}
-      </section>
-
-      {/* بحث وتصفية */}
+      {/* بحث */}
       <section className="space-y-2">
         <div className="relative">
           <Search className="pointer-events-none absolute end-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -381,27 +260,6 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
             className="h-11 pe-10"
             aria-label="بحث في المنتجات"
           />
-        </div>
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {[
-            { key: "all", label: "الكل" },
-            ...categories.map((c) => ({ key: c.id, label: c.name })),
-            { key: "none", label: "بدون قسم" },
-          ].map((c) => (
-            <button
-              key={c.key}
-              type="button"
-              onClick={() => setFilterCat(c.key)}
-              className={cn(
-                "whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition",
-                filterCat === c.key
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground",
-              )}
-            >
-              {c.label}
-            </button>
-          ))}
         </div>
       </section>
 
@@ -414,10 +272,9 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
               <div className="min-w-0 flex-1">
                 <p className="truncate font-bold">{p.name}</p>
                 <p className="text-sm font-bold text-primary">{formatIQD(Number(p.price))}</p>
-                <p className="truncate text-[11px] text-muted-foreground">
-                  {categories.find((c) => c.id === p.category_id)?.name ?? "بدون قسم"}
-                  {isStore && p.stock != null ? ` · مخزون ${p.stock}` : ""}
-                </p>
+                {isStore && p.stock != null ? (
+                  <p className="truncate text-[11px] text-muted-foreground">مخزون {p.stock}</p>
+                ) : null}
               </div>
               <div className="flex flex-col items-end gap-1">
                 <Switch
@@ -477,7 +334,6 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
             {editing === p.id && (
               <EditProduct
                 product={p}
-                categories={categories}
                 isStore={isStore}
                 onSave={async (patch) => {
                   const ok = await patchProduct(p.id, patch);
@@ -503,26 +359,21 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
 /** تعديل سريع داخل البطاقة نفسها بدل فتح صفحة أو نافذة جديدة. */
 function EditProduct({
   product,
-  categories,
   isStore,
   onSave,
 }: {
   product: ProductRow;
-  categories: { id: string; name: string }[];
   isStore: boolean;
   onSave: (patch: {
     name?: string;
     description?: string | null;
     price?: number;
     stock?: number | null;
-    category_id?: string | null;
   }) => void;
 }) {
   const [name, setName] = useState(product.name);
   const [price, setPrice] = useState(String(Number(product.price)));
   const [stock, setStock] = useState(product.stock == null ? "" : String(product.stock));
-  const [categoryId, setCategoryId] = useState(product.category_id ?? "");
-  const [description, setDescription] = useState(product.description ?? "");
 
   return (
     <div className="mt-3 space-y-2 rounded-xl bg-muted/50 p-3">
@@ -552,25 +403,6 @@ function EditProduct({
           />
         )}
       </div>
-      <select
-        value={categoryId}
-        onChange={(e) => setCategoryId(e.target.value)}
-        className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
-        aria-label="القسم"
-      >
-        <option value="">بدون قسم</option>
-        {categories.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.name}
-          </option>
-        ))}
-      </select>
-      <Textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="وصف مختصر (اختياري)"
-        rows={2}
-      />
       <Button
         className="h-10 w-full"
         onClick={() => {
@@ -582,9 +414,11 @@ function EditProduct({
           onSave({
             name: name.trim(),
             price: p,
-            description: description.trim() || null,
-            category_id: categoryId || null,
-            stock: isStore ? (stock.trim() === "" ? null : Math.max(0, Math.trunc(Number(stock)))) : product.stock,
+            stock: isStore
+              ? stock.trim() === ""
+                ? null
+                : Math.max(0, Math.trunc(Number(stock)))
+              : product.stock,
           });
         }}
       >
