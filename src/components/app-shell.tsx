@@ -1,3 +1,4 @@
+import logoUrl from "@/assets/lubabak-logo.png";
 import { Link, useNavigate, useRouter, useCanGoBack } from "@tanstack/react-router";
 import {
   Home,
