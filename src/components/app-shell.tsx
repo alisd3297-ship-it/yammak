@@ -190,9 +190,10 @@ export function BottomNav() {
       ] as const)
     : ([
         { to: "/", label: "الرئيسية", icon: Home },
+        { to: "/favorites", label: "المفضلة", icon: Heart },
         { to: "/orders", label: "طلباتي", icon: ClipboardList },
-        { to: "/checkout", label: "السلة", icon: ShoppingCart, badge: count },
         { to: "/account", label: "حسابي", icon: User },
+        { to: "/more", label: "المزيد", icon: LayoutGrid, badge: count },
       ] as const);
 
   return (

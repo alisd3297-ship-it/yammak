@@ -25,6 +25,7 @@ import { Route as FamilyRouteImport } from './routes/family'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as GuaranteeRouteImport } from './routes/guarantee'
 import { Route as MapRouteImport } from './routes/map'
+import { Route as MoreRouteImport } from './routes/more'
 import { Route as NearbyRouteImport } from './routes/nearby'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PaymentsRouteImport } from './routes/payments'
@@ -169,6 +170,11 @@ const GuaranteeRoute = GuaranteeRouteImport.update({
 const MapRoute = MapRouteImport.update({
   id: '/map',
   path: '/map',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MoreRoute = MoreRouteImport.update({
+  id: '/more',
+  path: '/more',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NearbyRoute = NearbyRouteImport.update({
@@ -515,6 +521,7 @@ export interface FileRoutesByFullPath {
   '/favorites': typeof FavoritesRoute
   '/guarantee': typeof GuaranteeRoute
   '/map': typeof MapRoute
+  '/more': typeof MoreRoute
   '/nearby': typeof NearbyRoute
   '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
@@ -598,6 +605,7 @@ export interface FileRoutesByTo {
   '/favorites': typeof FavoritesRoute
   '/guarantee': typeof GuaranteeRoute
   '/map': typeof MapRoute
+  '/more': typeof MoreRoute
   '/nearby': typeof NearbyRoute
   '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
@@ -682,6 +690,7 @@ export interface FileRoutesById {
   '/favorites': typeof FavoritesRoute
   '/guarantee': typeof GuaranteeRoute
   '/map': typeof MapRoute
+  '/more': typeof MoreRoute
   '/nearby': typeof NearbyRoute
   '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
@@ -767,6 +776,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/guarantee'
     | '/map'
+    | '/more'
     | '/nearby'
     | '/notifications'
     | '/payments'
@@ -850,6 +860,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/guarantee'
     | '/map'
+    | '/more'
     | '/nearby'
     | '/notifications'
     | '/payments'
@@ -933,6 +944,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/guarantee'
     | '/map'
+    | '/more'
     | '/nearby'
     | '/notifications'
     | '/payments'
@@ -1017,6 +1029,7 @@ export interface RootRouteChildren {
   FavoritesRoute: typeof FavoritesRoute
   GuaranteeRoute: typeof GuaranteeRoute
   MapRoute: typeof MapRoute
+  MoreRoute: typeof MoreRoute
   NearbyRoute: typeof NearbyRoute
   NotificationsRoute: typeof NotificationsRoute
   PaymentsRoute: typeof PaymentsRoute
@@ -1196,6 +1209,13 @@ declare module '@tanstack/react-router' {
       path: '/map'
       fullPath: '/map'
       preLoaderRoute: typeof MapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/more': {
+      id: '/more'
+      path: '/more'
+      fullPath: '/more'
+      preLoaderRoute: typeof MoreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/nearby': {
@@ -1673,6 +1693,7 @@ const rootRouteChildren: RootRouteChildren = {
   FavoritesRoute: FavoritesRoute,
   GuaranteeRoute: GuaranteeRoute,
   MapRoute: MapRoute,
+  MoreRoute: MoreRoute,
   NearbyRoute: NearbyRoute,
   NotificationsRoute: NotificationsRoute,
   PaymentsRoute: PaymentsRoute,
