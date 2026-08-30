@@ -22,6 +22,7 @@ import { Route as DriverEarningsRouteImport } from './routes/driver-earnings'
 import { Route as DriverMapRouteImport } from './routes/driver-map'
 import { Route as DriverTasksRouteImport } from './routes/driver-tasks'
 import { Route as FamilyRouteImport } from './routes/family'
+import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as GuaranteeRouteImport } from './routes/guarantee'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as NearbyRouteImport } from './routes/nearby'
@@ -153,6 +154,11 @@ const DriverTasksRoute = DriverTasksRouteImport.update({
 const FamilyRoute = FamilyRouteImport.update({
   id: '/family',
   path: '/family',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritesRoute = FavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GuaranteeRoute = GuaranteeRouteImport.update({
@@ -506,6 +512,7 @@ export interface FileRoutesByFullPath {
   '/driver-map': typeof DriverMapRoute
   '/driver-tasks': typeof DriverTasksRoute
   '/family': typeof FamilyRoute
+  '/favorites': typeof FavoritesRoute
   '/guarantee': typeof GuaranteeRoute
   '/map': typeof MapRoute
   '/nearby': typeof NearbyRoute
@@ -588,6 +595,7 @@ export interface FileRoutesByTo {
   '/driver-map': typeof DriverMapRoute
   '/driver-tasks': typeof DriverTasksRoute
   '/family': typeof FamilyRoute
+  '/favorites': typeof FavoritesRoute
   '/guarantee': typeof GuaranteeRoute
   '/map': typeof MapRoute
   '/nearby': typeof NearbyRoute
@@ -671,6 +679,7 @@ export interface FileRoutesById {
   '/driver-map': typeof DriverMapRoute
   '/driver-tasks': typeof DriverTasksRoute
   '/family': typeof FamilyRoute
+  '/favorites': typeof FavoritesRoute
   '/guarantee': typeof GuaranteeRoute
   '/map': typeof MapRoute
   '/nearby': typeof NearbyRoute
@@ -755,6 +764,7 @@ export interface FileRouteTypes {
     | '/driver-map'
     | '/driver-tasks'
     | '/family'
+    | '/favorites'
     | '/guarantee'
     | '/map'
     | '/nearby'
@@ -837,6 +847,7 @@ export interface FileRouteTypes {
     | '/driver-map'
     | '/driver-tasks'
     | '/family'
+    | '/favorites'
     | '/guarantee'
     | '/map'
     | '/nearby'
@@ -919,6 +930,7 @@ export interface FileRouteTypes {
     | '/driver-map'
     | '/driver-tasks'
     | '/family'
+    | '/favorites'
     | '/guarantee'
     | '/map'
     | '/nearby'
@@ -1002,6 +1014,7 @@ export interface RootRouteChildren {
   DriverMapRoute: typeof DriverMapRoute
   DriverTasksRoute: typeof DriverTasksRoute
   FamilyRoute: typeof FamilyRoute
+  FavoritesRoute: typeof FavoritesRoute
   GuaranteeRoute: typeof GuaranteeRoute
   MapRoute: typeof MapRoute
   NearbyRoute: typeof NearbyRoute
@@ -1162,6 +1175,13 @@ declare module '@tanstack/react-router' {
       path: '/family'
       fullPath: '/family'
       preLoaderRoute: typeof FamilyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favorites': {
+      id: '/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof FavoritesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/guarantee': {
@@ -1650,6 +1670,7 @@ const rootRouteChildren: RootRouteChildren = {
   DriverMapRoute: DriverMapRoute,
   DriverTasksRoute: DriverTasksRoute,
   FamilyRoute: FamilyRoute,
+  FavoritesRoute: FavoritesRoute,
   GuaranteeRoute: GuaranteeRoute,
   MapRoute: MapRoute,
   NearbyRoute: NearbyRoute,
