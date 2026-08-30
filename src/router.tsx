@@ -21,7 +21,6 @@ export const getRouter = () => {
   // مراقبة خفيفة لأزمنة الاستعلامات (محلية فقط، بلا خدمة خارجية).
   installQueryPerfMonitor(queryClient);
 
-
   const router = createRouter({
     routeTree,
     context: { queryClient },
