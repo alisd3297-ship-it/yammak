@@ -265,25 +265,6 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
               />
             )}
           </div>
-          <select
-            value={form.categoryId}
-            onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
-            className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
-            aria-label="القسم"
-          >
-            <option value="">بدون قسم</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-          <Textarea
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-            placeholder="وصف مختصر (اختياري)"
-            rows={2}
-          />
           <div className="flex items-center gap-3 rounded-xl bg-muted/50 p-3">
             <ProductImage src={newImage?.preview} alt="صورة المنتج الجديد" className="size-12" />
             <p className="min-w-0 flex-1 text-xs font-semibold">
