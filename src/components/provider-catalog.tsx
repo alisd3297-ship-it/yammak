@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { ProductImage } from "@/components/product-image";
-import { cn } from "@/lib/utils";
 import { formatIQD } from "@/lib/orders";
 import { normalizeArabic } from "@/lib/search";
 
