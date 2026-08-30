@@ -72,48 +72,36 @@ function RestaurantPage() {
       </header>
 
       <div className="space-y-6 px-4 py-5">
-        {(data?.categories ?? []).map((cat) => {
-          const items = (data?.products ?? []).filter((p) => p.category_id === cat.id);
-          if (!items.length) return null;
-          return (
-            <section key={cat.id}>
-              <h2 className="mb-3 text-base font-bold">{cat.name}</h2>
-              <div className="space-y-3">
-                {items.map((p) => (
-                  <div
-                    key={p.id}
-                    className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft"
-                  >
-                    <ProductImage src={p.image_url} alt={p.name} />
-                    <div className="min-w-0 flex-1">
-                      <p className="font-bold">{p.name}</p>
-                      <p className="truncate text-xs text-muted-foreground">{p.description}</p>
-                      <p className="mt-1 text-sm font-bold text-primary">
-                        {formatIQD(Number(p.price))}
-                      </p>
-                    </div>
-                    <Button
-                      size="icon"
-                      className="size-10 rounded-xl"
-                      disabled={!p.is_available || !provider?.is_open}
-                      onClick={() => {
-                        if (!provider) return;
-                        cart.add(
-                          { id: provider.id, name: provider.name },
-                          { productId: p.id, name: p.name, price: Number(p.price) },
-                        );
-                        toast.success("أضفناها للسلة");
-                      }}
-                      aria-label="إضافة للسلة"
-                    >
-                      <Plus className="size-5" />
-                    </Button>
-                  </div>
-                ))}
+        <div className="space-y-3">
+          {(data?.products ?? []).map((p) => (
+            <div key={p.id} className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft">
+              <ProductImage src={p.image_url} alt={p.name} />
+              <div className="min-w-0 flex-1">
+                <p className="font-bold">{p.name}</p>
+                {p.description ? (
+                  <p className="truncate text-xs text-muted-foreground">{p.description}</p>
+                ) : null}
+                <p className="mt-1 text-sm font-bold text-primary">{formatIQD(Number(p.price))}</p>
               </div>
-            </section>
-          );
-        })}
+              <Button
+                size="icon"
+                className="size-10 rounded-xl"
+                disabled={!p.is_available || !provider?.is_open}
+                onClick={() => {
+                  if (!provider) return;
+                  cart.add(
+                    { id: provider.id, name: provider.name },
+                    { productId: p.id, name: p.name, price: Number(p.price) },
+                  );
+                  toast.success("أضفناها للسلة");
+                }}
+                aria-label="إضافة للسلة"
+              >
+                <Plus className="size-5" />
+              </Button>
+            </div>
+          ))}
+        </div>
         {data && !provider && (
           <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
             هذا النشاط غير موجود ضمن المطاعم. تفقّده في قسم السوبر ماركت والمتاجر.
