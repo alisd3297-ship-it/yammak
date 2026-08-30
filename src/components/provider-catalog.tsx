@@ -57,66 +57,25 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
   const { data } = useQuery({
     queryKey: ["provider-catalog", providerId],
     queryFn: async () => {
-      const [categories, products] = await Promise.all([
-        supabase
-          .from("menu_categories")
-          .select("id, name, sort_order")
-          .eq("provider_id", providerId)
-          .order("sort_order"),
-        supabase
-          .from("products")
-          .select(
-            "id, name, description, price, stock, is_available, category_id, image_url, sort_order",
-          )
-          .eq("provider_id", providerId)
-          .order("sort_order"),
-      ]);
-      return {
-        categories: categories.data ?? [],
-        products: (products.data ?? []) as ProductRow[],
-      };
+      const products = await supabase
+        .from("products")
+        .select("id, name, description, price, stock, is_available, category_id, image_url, sort_order")
+        .eq("provider_id", providerId)
+        .order("sort_order");
+      return { products: (products.data ?? []) as ProductRow[] };
     },
   });
 
-  const categories = data?.categories ?? [];
   const products = data?.products ?? [];
 
   const visible = useMemo(() => {
     const q = normalizeArabic(term);
-    return products.filter((p) => {
-      if (filterCat === "none" && p.category_id) return false;
-      if (filterCat !== "all" && filterCat !== "none" && p.category_id !== filterCat) return false;
-      if (!q) return true;
-      return normalizeArabic(`${p.name} ${p.description ?? ""}`).includes(q);
-    });
-  }, [products, term, filterCat]);
+    if (!q) return products;
+    return products.filter((p) => normalizeArabic(`${p.name} ${p.description ?? ""}`).includes(q));
+  }, [products, term]);
 
   function refresh() {
     qc.invalidateQueries({ queryKey: ["provider-catalog", providerId] });
-  }
-
-  async function addCategory() {
-    if (!catName.trim()) return;
-    const { error } = await supabase.from("menu_categories").insert({
-      provider_id: providerId,
-      name: catName.trim(),
-      sort_order: categories.length + 1,
-    });
-    if (error) {
-      toast.error(`تعذر إضافة القسم: ${error.message}`);
-      return;
-    }
-    setCatName("");
-    refresh();
-  }
-
-  async function removeCategory(id: string) {
-    const { error } = await supabase.from("menu_categories").delete().eq("id", id);
-    if (error) {
-      toast.error(`تعذر حذف القسم: ${error.message}`);
-      return;
-    }
-    refresh();
   }
 
   async function addProduct() {
@@ -128,9 +87,7 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
     const stock = isStore && form.stock !== "" ? Math.max(0, Math.trunc(Number(form.stock))) : null;
     const { error } = await supabase.from("products").insert({
       provider_id: providerId,
-      category_id: form.categoryId || null,
       name: form.name.trim(),
-      description: form.description.trim() || null,
       price,
       stock,
       image_url: newImage?.url ?? null,
@@ -141,7 +98,7 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
       return;
     }
     toast.success("تمت إضافة المنتج");
-    setForm({ name: "", price: "", stock: "", categoryId: form.categoryId, description: "" });
+    setForm({ name: "", price: "", stock: "" });
     setNewImage(null);
     if (newImageRef.current) newImageRef.current.value = "";
     refresh();
