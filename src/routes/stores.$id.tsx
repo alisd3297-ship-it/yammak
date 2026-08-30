@@ -122,42 +122,17 @@ function StorePage() {
       )}
 
       <div className={cn("space-y-6 px-4 py-5", view !== "products" && "hidden")}>
-        {(data?.categories ?? []).map((cat) => {
-          const items = (data?.products ?? []).filter((p) => p.category_id === cat.id);
+        <div className="space-y-3">
+          {(data?.products ?? []).map((p) => (
+            <ProductRow
+              key={p.id}
+              product={p}
+              closed={!provider?.is_open}
+              onAdd={() => addToCart(p)}
+            />
+          ))}
+        </div>
 
-          if (!items.length) return null;
-          return (
-            <section key={cat.id}>
-              <h2 className="mb-3 text-base font-bold">{cat.name}</h2>
-              <div className="space-y-3">
-                {items.map((p) => (
-                  <ProductRow
-                    key={p.id}
-                    product={p}
-                    closed={!provider?.is_open}
-                    onAdd={() => addToCart(p)}
-                  />
-                ))}
-              </div>
-            </section>
-          );
-        })}
-
-        {uncategorized.length > 0 && (
-          <section>
-            <h2 className="mb-3 text-base font-bold">منتجات أخرى</h2>
-            <div className="space-y-3">
-              {uncategorized.map((p) => (
-                <ProductRow
-                  key={p.id}
-                  product={p}
-                  closed={!provider?.is_open}
-                  onAdd={() => addToCart(p)}
-                />
-              ))}
-            </div>
-          </section>
-        )}
 
         {data && !provider && (
           <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
