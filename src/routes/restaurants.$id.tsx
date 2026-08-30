@@ -33,7 +33,7 @@ function RestaurantPage() {
   const { data } = useQuery({
     queryKey: ["restaurant", id],
     queryFn: async () => {
-      const [provider, categories, products] = await Promise.all([
+      const [provider, products] = await Promise.all([
         supabase
           .from("providers")
           .select("id, name, description, rating, avg_prep_minutes, is_open, address_text")
@@ -42,19 +42,13 @@ function RestaurantPage() {
           .eq("is_demo", false)
           .maybeSingle(),
         supabase
-          .from("menu_categories")
-          .select("id, name, sort_order")
-          .eq("provider_id", id)
-          .order("sort_order"),
-        supabase
           .from("products")
-          .select("id, name, description, price, category_id, is_available, image_url")
+          .select("id, name, description, price, is_available, image_url")
           .eq("provider_id", id)
           .order("sort_order"),
       ]);
       return {
         provider: provider.data,
-        categories: categories.data ?? [],
         products: products.data ?? [],
       };
     },
