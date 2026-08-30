@@ -466,9 +466,11 @@ function EditProduct({
           onSave({
             name: name.trim(),
             price: p,
-            description: description.trim() || null,
-            category_id: categoryId || null,
-            stock: isStore ? (stock.trim() === "" ? null : Math.max(0, Math.trunc(Number(stock)))) : product.stock,
+            stock: isStore
+              ? stock.trim() === ""
+                ? null
+                : Math.max(0, Math.trunc(Number(stock)))
+              : product.stock,
           });
         }}
       >
