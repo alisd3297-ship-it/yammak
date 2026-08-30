@@ -40,7 +40,8 @@ function ShopsPage() {
       .select("id, name, description, keywords")
       .eq("status", "approved")
       .eq("is_demo", false)
-      .eq("kind", "store");
+      .eq("kind", "store")
+      .limit(500);
     return data ?? [];
   });
 

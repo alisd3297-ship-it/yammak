@@ -52,7 +52,9 @@ function RestaurantsPage() {
       )
       .eq("status", "approved")
       .eq("is_demo", false)
-      .eq("kind", "restaurant");
+      .eq("kind", "restaurant")
+      .order("rating", { ascending: false })
+      .limit(300);
     return data ?? [];
   });
 

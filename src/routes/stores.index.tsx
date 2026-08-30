@@ -58,7 +58,9 @@ function StoresPage() {
       )
       .eq("status", "approved")
       .eq("is_demo", false)
-      .eq("kind", "store");
+      .eq("kind", "store")
+      .order("rating", { ascending: false })
+      .limit(300);
     // الصيدليات لها صفحتها المستقلة /pharmacies
     return (data ?? []).filter((p) => !isPharmacyProvider(p));
   });
