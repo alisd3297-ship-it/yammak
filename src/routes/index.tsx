@@ -363,6 +363,23 @@ function CustomerHome() {
         </section>
       ) : (
         <>
+          <section className="mt-4 px-4">
+            <div className="ads-glow rounded-3xl p-[2px]">
+              <div className="rounded-[22px] bg-card/95 p-3">
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <h2 className="text-sm font-black">عروض وخصومات</h2>
+                  <Link to="/ads" className="shrink-0 text-xs font-semibold text-primary">
+                    أعلن معنا
+                  </Link>
+                </div>
+                <AdsTickerBoard
+                  categories={adsBoard.data?.categories ?? []}
+                  ads={adsBoard.data?.ads ?? []}
+                />
+              </div>
+            </div>
+          </section>
+
           <section className="mt-5 px-4">
             <h2 className="mb-3 text-base font-bold">الخدمات الرئيسية</h2>
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
@@ -373,13 +390,7 @@ function CustomerHome() {
           </section>
 
           <section className="mt-6 px-4">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <h2 className="text-base font-bold">عروض وخصومات</h2>
-              <Link to="/ads" className="shrink-0 text-sm font-semibold text-primary">
-                أعلن معنا
-              </Link>
-            </div>
-            <div className="mb-3 grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               <Link
                 to="/plus"
                 className="rounded-3xl bg-brand-amber p-3 text-brand-amber-foreground shadow-soft transition active:scale-[0.98]"
@@ -397,11 +408,8 @@ function CustomerHome() {
                 <p className="text-[11px] opacity-90">رصيد هدية لكما</p>
               </Link>
             </div>
-            <AdsTickerBoard
-              categories={adsBoard.data?.categories ?? []}
-              ads={adsBoard.data?.ads ?? []}
-            />
           </section>
+
 
           <section className="mt-6 px-4">
             <h2 className="mb-3 text-base font-bold">خدمات إضافية</h2>

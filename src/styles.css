@@ -332,3 +332,31 @@
 @media (prefers-reduced-motion: reduce) {
   .ad-ticker-track { animation: none; }
 }
+
+@keyframes ads-glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 32%, transparent),
+      0 8px 26px -12px color-mix(in oklab, var(--primary) 55%, transparent);
+    background-position: 0% 50%;
+  }
+  50% {
+    box-shadow: 0 0 22px 4px color-mix(in oklab, var(--primary) 38%, transparent),
+      0 10px 30px -10px color-mix(in oklab, var(--primary) 65%, transparent);
+    background-position: 100% 50%;
+  }
+}
+
+.ads-glow {
+  background: linear-gradient(
+    100deg,
+    color-mix(in oklab, var(--primary) 85%, transparent),
+    color-mix(in oklab, var(--brand-amber, var(--accent)) 85%, transparent),
+    color-mix(in oklab, var(--primary) 85%, transparent)
+  );
+  background-size: 220% 100%;
+  animation: ads-glow-pulse 3.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ads-glow { animation: none; }
+}
