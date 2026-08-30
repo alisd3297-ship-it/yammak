@@ -59,7 +59,8 @@ export function useAdsBoard() {
           .eq("status", "published")
           .eq("is_demo", false)
           .order("sort_order")
-          .order("published_at", { ascending: false }),
+          .order("published_at", { ascending: false })
+          .limit(200),
       ]);
       return {
         categories: (categories.data ?? []) as AdCategory[],

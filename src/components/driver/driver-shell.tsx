@@ -22,12 +22,38 @@ export function useDriverPresence(isAvailable: boolean) {
 
     let warned = false;
     let lastSent = 0;
+    let lastPoint: { lat: number; lng: number } | null = null;
     let watchId: number | null = null;
+
+    // مسافة تقريبية بالأمتار بين نقطتين (كافية لتصفية «التذبذب» في قراءة GPS).
+    const metersBetween = (
+      a: { lat: number; lng: number },
+      b: { lat: number; lng: number },
+    ): number => {
+      const dLat = (a.lat - b.lat) * 111_320;
+      const dLng = (a.lng - b.lng) * 111_320 * Math.cos((a.lat * Math.PI) / 180);
+      return Math.sqrt(dLat * dLat + dLng * dLng);
+    };
+
+    const MIN_MOVE_M = 30;
+    const MIN_GAP_MS = 20_000;
+    const HEARTBEAT_MS = 120_000;
 
     const send = async (lat: number, lng: number, force = false) => {
       const now = Date.now();
-      if (!force && now - lastSent < 20_000) return;
+      if (!force) {
+        if (now - lastSent < MIN_GAP_MS) return;
+        // ثابت في مكانه: لا نكتب إلا نبضة كل دقيقتين لتأكيد أنه «متصل».
+        if (
+          lastPoint &&
+          metersBetween(lastPoint, { lat, lng }) < MIN_MOVE_M &&
+          now - lastSent < HEARTBEAT_MS
+        ) {
+          return;
+        }
+      }
       lastSent = now;
+      lastPoint = { lat, lng };
       const { error } = await supabase.from("worker_locations").upsert({
         user_id: userId,
         lat,
@@ -37,6 +63,7 @@ export function useDriverPresence(isAvailable: boolean) {
       });
       if (error) {
         lastSent = 0;
+        lastPoint = null;
         if (!warned) {
           warned = true;
           toast.error("تعذر تحديث حالتك كمتصل، حدّث الصفحة أو تأكد من الاتصال");
@@ -44,8 +71,14 @@ export function useDriverPresence(isAvailable: boolean) {
       }
     };
 
-    const sendFallback = () =>
-      void send(OPERATING_LOCATION_COORDS.lat, OPERATING_LOCATION_COORDS.lng, true);
+    // الموقع البديل يُكتب بقوة مرة واحدة فقط، ثم يخضع للتقييد العادي حتى لا
+    // تتكرر الكتابة مع كل خطأ في قراءة GPS.
+    let fallbackForced = false;
+    const sendFallback = () => {
+      const force = !fallbackForced;
+      fallbackForced = true;
+      void send(OPERATING_LOCATION_COORDS.lat, OPERATING_LOCATION_COORDS.lng, force);
+    };
 
     const onError = () => {
       sendFallback();

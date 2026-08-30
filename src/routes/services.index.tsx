@@ -51,7 +51,9 @@ function ServicesPage() {
         )
         .eq("status", "approved")
         .eq("is_demo", false)
-        .eq("kind", "profession"),
+        .eq("kind", "profession")
+        .order("rating", { ascending: false })
+        .limit(300),
     ]);
     return { categories: categories.data ?? [], providers: providers.data ?? [] };
   });

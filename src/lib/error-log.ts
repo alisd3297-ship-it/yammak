@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
  * مصمّم ليكون صامتاً تماماً: أي فشل هنا لا يجب أن يؤثر على تجربة المستخدم.
  */
 
-type LogKind = "error" | "unhandled_rejection" | "network" | "boundary";
+type LogKind = "error" | "unhandled_rejection" | "network" | "boundary" | "perf";
 
 const recent = new Map<string, number>();
 const DEDUPE_MS = 60_000;
