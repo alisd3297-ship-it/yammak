@@ -324,10 +324,9 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
               <div className="min-w-0 flex-1">
                 <p className="truncate font-bold">{p.name}</p>
                 <p className="text-sm font-bold text-primary">{formatIQD(Number(p.price))}</p>
-                <p className="truncate text-[11px] text-muted-foreground">
-                  {categories.find((c) => c.id === p.category_id)?.name ?? "بدون قسم"}
-                  {isStore && p.stock != null ? ` · مخزون ${p.stock}` : ""}
-                </p>
+                {isStore && p.stock != null ? (
+                  <p className="truncate text-[11px] text-muted-foreground">مخزون {p.stock}</p>
+                ) : null}
               </div>
               <div className="flex flex-col items-end gap-1">
                 <Switch
