@@ -34,7 +34,8 @@ export function BrandHeader({ subtitle }: { subtitle?: string }) {
           <SignOutButton />
         </div>
 
-        <div className="absolute inset-y-0 end-0 flex items-center">
+        <div className="absolute inset-y-0 end-0 flex items-center gap-1">
+          <CartButton />
           <NotificationsButton />
         </div>
         <h1 className="text-3xl font-black leading-none tracking-tight">لبابك</h1>
