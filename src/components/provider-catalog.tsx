@@ -411,26 +411,21 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
 /** تعديل سريع داخل البطاقة نفسها بدل فتح صفحة أو نافذة جديدة. */
 function EditProduct({
   product,
-  categories,
   isStore,
   onSave,
 }: {
   product: ProductRow;
-  categories: { id: string; name: string }[];
   isStore: boolean;
   onSave: (patch: {
     name?: string;
     description?: string | null;
     price?: number;
     stock?: number | null;
-    category_id?: string | null;
   }) => void;
 }) {
   const [name, setName] = useState(product.name);
   const [price, setPrice] = useState(String(Number(product.price)));
   const [stock, setStock] = useState(product.stock == null ? "" : String(product.stock));
-  const [categoryId, setCategoryId] = useState(product.category_id ?? "");
-  const [description, setDescription] = useState(product.description ?? "");
 
   return (
     <div className="mt-3 space-y-2 rounded-xl bg-muted/50 p-3">
