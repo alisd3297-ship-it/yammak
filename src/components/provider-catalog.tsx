@@ -47,19 +47,10 @@ async function uploadProductImage(providerId: string, file: File): Promise<strin
  */
 export function ProviderCatalog({ providerId, isStore }: Props) {
   const qc = useQueryClient();
-  const [catName, setCatName] = useState("");
-  const [showCats, setShowCats] = useState(false);
   const [term, setTerm] = useState("");
-  const [filterCat, setFilterCat] = useState<string>("all");
   const [editing, setEditing] = useState<string | null>(null);
   const [uploading, setUploading] = useState<string | null>(null);
-  const [form, setForm] = useState({
-    name: "",
-    price: "",
-    stock: "",
-    categoryId: "",
-    description: "",
-  });
+  const [form, setForm] = useState({ name: "", price: "", stock: "" });
   const [newImage, setNewImage] = useState<{ url: string; preview: string } | null>(null);
   const newImageRef = useRef<HTMLInputElement>(null);
 
