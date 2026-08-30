@@ -179,6 +179,13 @@ function AuthPage() {
   return (
     <div className="app-shell flex flex-col justify-center px-5 py-10">
       <div className="mb-8 text-center">
+        <img
+          src={logoUrl}
+          alt="شعار لبابك"
+          width={96}
+          height={96}
+          className="mx-auto mb-3 size-24 rounded-3xl shadow-card"
+        />
         <h1 className="text-4xl font-black text-primary">لبابك</h1>
         <p className="mt-1 text-sm text-muted-foreground">خدماتك وطلباتك لبابك</p>
       </div>
