@@ -455,25 +455,6 @@ function EditProduct({
           />
         )}
       </div>
-      <select
-        value={categoryId}
-        onChange={(e) => setCategoryId(e.target.value)}
-        className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
-        aria-label="القسم"
-      >
-        <option value="">بدون قسم</option>
-        {categories.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.name}
-          </option>
-        ))}
-      </select>
-      <Textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="وصف مختصر (اختياري)"
-        rows={2}
-      />
       <Button
         className="h-10 w-full"
         onClick={() => {
