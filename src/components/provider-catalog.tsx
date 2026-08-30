@@ -301,57 +301,7 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
         </div>
       </section>
 
-      {/* الأقسام: مطوية حتى لا تزدحم الواجهة */}
-      <section className="rounded-2xl bg-card p-4 shadow-soft">
-        <button
-          type="button"
-          className="flex w-full items-center justify-between text-sm font-black"
-          onClick={() => setShowCats((v) => !v)}
-        >
-          الأقسام ({categories.length})
-          <span className="text-xs font-semibold text-primary">
-            {showCats ? "إخفاء" : "إدارة الأقسام"}
-          </span>
-        </button>
-        {showCats && (
-          <div className="mt-3 space-y-3">
-            <div className="flex flex-wrap gap-2">
-              {categories.map((c) => (
-                <span
-                  key={c.id}
-                  className="flex items-center gap-1 rounded-full bg-muted px-3 py-1.5 text-xs font-semibold"
-                >
-                  {c.name}
-                  <button
-                    type="button"
-                    aria-label={`حذف قسم ${c.name}`}
-                    onClick={() => void removeCategory(c.id)}
-                    className="text-destructive"
-                  >
-                    <X className="size-3.5" />
-                  </button>
-                </span>
-              ))}
-              {!categories.length && (
-                <p className="text-xs text-muted-foreground">ماكو أقسام بعد.</p>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <Input
-                value={catName}
-                onChange={(e) => setCatName(e.target.value)}
-                placeholder="اسم القسم الجديد"
-                className="h-11"
-              />
-              <Button className="h-11" onClick={addCategory}>
-                <Plus className="size-4" /> إضافة
-              </Button>
-            </div>
-          </div>
-        )}
-      </section>
-
-      {/* بحث وتصفية */}
+      {/* بحث */}
       <section className="space-y-2">
         <div className="relative">
           <Search className="pointer-events-none absolute end-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -362,27 +312,6 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
             className="h-11 pe-10"
             aria-label="بحث في المنتجات"
           />
-        </div>
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {[
-            { key: "all", label: "الكل" },
-            ...categories.map((c) => ({ key: c.id, label: c.name })),
-            { key: "none", label: "بدون قسم" },
-          ].map((c) => (
-            <button
-              key={c.key}
-              type="button"
-              onClick={() => setFilterCat(c.key)}
-              className={cn(
-                "whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition",
-                filterCat === c.key
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground",
-              )}
-            >
-              {c.label}
-            </button>
-          ))}
         </div>
       </section>
 
