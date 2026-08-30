@@ -47,6 +47,27 @@ export function BrandHeader({ subtitle }: { subtitle?: string }) {
   );
 }
 
+/** سلة الزبون تبقى بمتناول اليد في الهيدر بعد تحديث شريط التنقل السفلي. */
+function CartButton() {
+  const { totalCount } = useCart();
+  const { data: account } = useAccount();
+  if (isWorkerOnlyAccount(account)) return null;
+  return (
+    <Link
+      to="/checkout"
+      aria-label="السلة"
+      className="relative flex size-11 items-center justify-center rounded-2xl bg-primary-foreground/15 backdrop-blur transition hover:bg-primary-foreground/25"
+    >
+      <ShoppingCart className="size-5" />
+      {totalCount ? (
+        <span className="absolute -top-1 -end-1 min-w-5 rounded-full bg-brand-amber px-1 text-[10px] font-bold leading-5 text-brand-amber-foreground">
+          {totalCount > 9 ? "9+" : totalCount}
+        </span>
+      ) : null}
+    </Link>
+  );
+}
+
 function SignOutButton() {
   const { data: account } = useAccount();
   const signOut = useSignOut();
