@@ -13,7 +13,7 @@ import { useRoleHomeRedirect, useCustomerAreaGuard } from "@/lib/auth";
 import { useOnboardingRedirect } from "@/lib/service-preferences";
 import { useFavorites } from "@/lib/favorites";
 import { cn } from "@/lib/utils";
-import logoUrl from "/icon-192.png?url";
+import logoUrl from "@/assets/lubabak-logo.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({

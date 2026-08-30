@@ -1,3 +1,4 @@
+import logoUrl from "@/assets/lubabak-logo.png";
 import { Link, useNavigate, useRouter, useCanGoBack } from "@tanstack/react-router";
 import {
   Home,
@@ -38,6 +39,13 @@ export function BrandHeader({ subtitle }: { subtitle?: string }) {
           <CartButton />
           <NotificationsButton />
         </div>
+        <img
+          src={logoUrl}
+          alt="شعار لبابك"
+          width={48}
+          height={48}
+          className="mb-1 size-12 rounded-2xl bg-primary-foreground/15 p-1 shadow-soft"
+        />
         <h1 className="text-3xl font-black leading-none tracking-tight">لبابك</h1>
         <p className="mt-1 max-w-[62%] text-sm/6 opacity-90">
           {subtitle ?? "خدماتك وطلباتك لبابك"}
