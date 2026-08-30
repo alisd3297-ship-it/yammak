@@ -88,8 +88,10 @@ export function useCachedQuery<T>(key: QueryKey, fetcher: () => Promise<T>) {
       }
     },
     ...(cached ? { placeholderData: (() => cached.data) as never } : {}),
-    staleTime: 60 * 1000,
-    refetchOnMount: "always",
+    // بيانات ثابتة نسبياً (خدمات، أقسام، مطاعم، متاجر): نعتبرها طازجة 5 دقائق
+    // فلا تُعاد جلبها مع كل تنقل بين الصفحات، مع بقاء التحديث الدوري كل 6 ساعات.
+    staleTime: 5 * 60 * 1000,
+    refetchOnMount: true,
     refetchInterval: CACHE_TTL_MS,
     refetchOnWindowFocus: false,
   });
