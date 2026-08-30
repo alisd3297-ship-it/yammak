@@ -238,9 +238,9 @@ function HomeHero({ term, setTerm }: { term: string; setTerm: (v: string) => voi
         <img
           src={logoUrl}
           alt="شعار لبابك"
-          width={72}
-          height={72}
-          className="size-16 shrink-0 rounded-2xl bg-primary-foreground/15 p-1.5 shadow-card sm:size-[72px]"
+          width={88}
+          height={88}
+          className="size-20 shrink-0 rounded-2xl bg-primary-foreground p-2 shadow-card sm:size-[88px]"
         />
         <div className="min-w-0">
           <h1 className="truncate text-3xl font-black leading-tight tracking-tight sm:text-4xl">
