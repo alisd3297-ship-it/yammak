@@ -386,7 +386,6 @@ export function ProviderCatalog({ providerId, isStore }: Props) {
             {editing === p.id && (
               <EditProduct
                 product={p}
-                categories={categories}
                 isStore={isStore}
                 onSave={async (patch) => {
                   const ok = await patchProduct(p.id, patch);
