@@ -24,6 +24,7 @@ import {
   type TripStatus,
 } from "@/lib/taxi";
 import { changeTripStatus, createTaxiTrip, quoteTaxiTrip, rateTrip } from "@/lib/taxi.functions";
+import { ensureLocationPermission } from "@/lib/native-bridge";
 
 export const Route = createFileRoute("/taxi")({
   beforeLoad: requireCustomerFlow,
@@ -150,15 +151,17 @@ function TaxiPage() {
       toast.error("جهازك ما يدعم تحديد الموقع");
       return;
     }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const c = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        if (target === "pickup") setPickup(c);
-        else setDest(c);
-        toast.success("تم تحديد الموقع");
-      },
-      () => toast.error("تعذر تحديد موقعك، اكتب العنوان يدوياً"),
-    );
+    void ensureLocationPermission().then(() => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const c = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          if (target === "pickup") setPickup(c);
+          else setDest(c);
+          toast.success("تم تحديد الموقع");
+        },
+        () => toast.error("تعذر تحديد موقعك، اكتب العنوان يدوياً"),
+      );
+    });
   }
 
   async function send() {

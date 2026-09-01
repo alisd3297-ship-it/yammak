@@ -17,6 +17,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { useSessionKeeper } from "@/lib/session-keeper";
 import { useAccount } from "@/lib/auth";
 import { useNativePush } from "@/lib/native-push";
+import { initNativeShell } from "@/lib/native-bridge";
 import { SplashScreen } from "@/components/splash-screen";
 import { installGlobalErrorLogging, logAppError } from "@/lib/error-log";
 
@@ -150,6 +151,9 @@ function RootComponent() {
 
   // تجميع أخطاء الواجهة في لوحة مراقبة الإدارة
   useEffect(() => installGlobalErrorLogging(), []);
+
+  // تهيئة غلاف الموبايل (شريط الحالة، شاشة البداية، زر الرجوع، الروابط الخارجية)
+  useEffect(() => initNativeShell(), []);
 
   // تسجيل عامل الخدمة لتوفير صفحة بديلة عند انقطاع الاتصال (غلاف Capacitor والويب)
   useEffect(() => {

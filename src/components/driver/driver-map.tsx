@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { MapPin, Navigation } from "lucide-react";
 import { OPERATING_LOCATION_COORDS } from "@/lib/location";
+import { ensureLocationPermission } from "@/lib/native-bridge";
 
 type Point = { lat: number; lng: number; label: string };
 
@@ -21,11 +22,14 @@ export function DriverMap({
 
   useEffect(() => {
     if (typeof navigator === "undefined" || !navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      (p) => setMe({ lat: p.coords.latitude, lng: p.coords.longitude }),
-      () => setMe(OPERATING_LOCATION_COORDS),
-      { enableHighAccuracy: true, timeout: 10_000, maximumAge: 60_000 },
-    );
+    void ensureLocationPermission().then((granted) => {
+      if (!granted) return setMe(OPERATING_LOCATION_COORDS);
+      navigator.geolocation.getCurrentPosition(
+        (p) => setMe({ lat: p.coords.latitude, lng: p.coords.longitude }),
+        () => setMe(OPERATING_LOCATION_COORDS),
+        { enableHighAccuracy: true, timeout: 10_000, maximumAge: 60_000 },
+      );
+    });
   }, []);
 
   const focus = (target === "pickup" ? pickup : dropoff) ?? dropoff ?? pickup ?? null;

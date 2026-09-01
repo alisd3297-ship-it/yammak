@@ -14,6 +14,7 @@ import { isPharmacyProvider } from "@/lib/verticals";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { formatIQD } from "@/lib/orders";
 import { sortByCheapest, useCheapestPrices } from "@/lib/cheapest";
+import { ensureLocationPermission } from "@/lib/native-bridge";
 
 export const Route = createFileRoute("/stores/")({
   beforeLoad: requireCustomerFlow,
@@ -108,14 +109,16 @@ function StoresPage() {
       setSort("rating");
       return;
     }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      () => {
-        toast.error("تعذر تحديد موقعك، فعّل صلاحية الموقع وحاول مجدداً");
-        setSort("rating");
-      },
-      { enableHighAccuracy: false, timeout: 10_000, maximumAge: 60_000 },
-    );
+    void ensureLocationPermission().then(() => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        () => {
+          toast.error("تعذر تحديد موقعك، فعّل صلاحية الموقع وحاول مجدداً");
+          setSort("rating");
+        },
+        { enableHighAccuracy: false, timeout: 10_000, maximumAge: 60_000 },
+      );
+    });
   }
 
   return (

@@ -1,205 +1,70 @@
-# متطلبات إصدار الموبايل — لبابك
+# إصدار الموبايل — لبابك (Android / Capacitor)
 
 | العنصر | القيمة |
 | --- | --- |
 | اسم التطبيق | لبابك |
-| الاسم المختصر | لبابك |
-| Bundle / Package ID | `iq.yammak.app` (Android + iOS) |
-| اللون الأساسي / Theme | `#c81e2b` |
+| Package / appId | `iq.lababak.app` (ثابت — لا يتغير بعد أول رفع) |
+| اللون الأساسي / Theme | `#1b3a86` |
 | الاتجاه | RTL، عربي (`lang="ar"`) |
-| الأيقونة المصدر | `src/assets/app-icon.png` (1024×1024) |
-| أيقونات الويب/PWA | `public/icon-192.png`, `public/icon-512.png`, `public/apple-touch-icon.png`, `public/favicon.png` |
-| Manifest | `public/manifest.webmanifest` (standalone, portrait) |
-| Splash | لون `#c81e2b` + الأيقونة، معرّف في `capacitor.config.ts` |
+| نمط الإطلاق | Hosted Wrapper — يفتح `https://lubabak.lovable.app` |
 | إعداد Capacitor | `capacitor.config.ts` (webDir = `dist/client`) |
+| أصول الأيقونة/Splash | مجلد `assets/` (icon.png, icon-foreground.png, icon-background.png, splash.png, splash-dark.png) |
+| مشروع أندرويد | يُولَّد آلياً بـ `cap add android` (غير مضاف إلى Git) |
 
-## الصلاحيات المطلوبة
+## لماذا Hosted Wrapper؟
 
-| الصلاحية | السبب | إلزامية |
-| --- | --- | --- |
-| `ACCESS_FINE_LOCATION` / `NSLocationWhenInUseUsageDescription` | تحديد موقع الاستلام/التسليم وتوزيع المهام على السائقين | نعم |
-| `INTERNET` / `ACCESS_NETWORK_STATE` | الاتصال بالخدمات | نعم |
-| `CALL_PHONE` (اختياري) أو فتح `tel:` مباشرة | زر «اتصل الآن» في الإعلانات وتواصل السائق | لا (يكفي `tel:`) |
-| `CAMERA` / `READ_MEDIA_IMAGES` | رفع صور الإعلانات والمنتجات | نعم لصفحة الإعلانات |
-| `POST_NOTIFICATIONS` (Android 13+) | إشعارات حالة الطلب مستقبلاً | اختيارية |
+المشروع TanStack Start مع SSR و`createServerFn` ومسارات `src/routes/api/*` (الدفع، Stripe webhook،
+صور الإعلانات، الصيانة، إرسال الإشعارات) — لا يمكن تصديره كموقع ثابت داخل الحزمة.
+النتيجة: كل تحديث ويب يظهر فوراً داخل التطبيق بدون إصدار جديد على المتاجر،
+مع بقاء كل الأدوار والصلاحيات وقاعدة البيانات كما هي.
 
-## الروابط العميقة (Deep links)
+## ما نُفّذ داخل المشروع
 
-المسارات المرشحة: `/orders/:id`, `/ads/:id`, `/restaurants/:id`, `/stores/:id`, `/services/:id`.
-تُفعَّل عبر Android App Links و iOS Universal Links بعد ربط الدومين النهائي (يتطلب
-`assetlinks.json` و `apple-app-site-association` على الدومين).
+- `capacitor.config.ts`: appId `iq.lababak.app`، ملء الشاشة، Splash كحلي `#1b3a86`،
+  StatusBar، Keyboard، PushNotifications، Geolocation، وقائمة `allowNavigation` مقيّدة.
+- `src/lib/native-bridge.ts`: تهيئة الغلاف (شريط الحالة، إخفاء Splash، زر الرجوع الأصلي)،
+  اعتراض الروابط الخارجية وفتحها بـ In-App Browser، وطلب صلاحية الموقع (`ensureLocationPermission`).
+- ربط `initNativeShell()` في `src/routes/__root.tsx` (لا يؤثر على الويب إطلاقاً).
+- طلب صلاحية الموقع قبل `navigator.geolocation` في: واجهة المندوب، خريطة المندوب، التكسي، المتاجر.
+- `scripts/android-customize.mjs`: يحقن الصلاحيات و`<queries>` واسم التطبيق العربي،
+  ويفعّل `google-services` تلقائياً **فقط** إذا وُجد `android/app/google-services.json`.
+- `scripts/android-signing.mjs`: توقيع الإصدار من `android/keystore.properties` (بدون أي كلمات مرور في الكود).
+- `.github/workflows/main.yml`: بناء APK (debug) و **AAB (release)** ورفعهما كـ artifacts.
+- إضافات مثبّتة: `@capacitor/browser`, `@capacitor/geolocation`, `@capacitor/keyboard`
+  إلى جانب `push-notifications`, `splash-screen`, `status-bar`, `app`, `haptics`.
 
-## متغيرات البيئة
+## الصلاحيات المحقونة في AndroidManifest
 
-- عميل: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (مُدارة تلقائياً).
-- خادم: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (مُدارة).
-- تكاملات خارجية اختيارية تُضاف من Project Settings → Secrets:
-  `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
-  `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM` (أو `TWILIO_VERIFY_SERVICE_SID`),
-  `LOVABLE_CRON_SECRET` (اختياري لتأمين نقطة الصيانة).
+`INTERNET`, `ACCESS_NETWORK_STATE`, `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION`,
+`POST_NOTIFICATIONS`, `VIBRATE`, `CAMERA`, `READ_MEDIA_IMAGES`
+مع `<queries>` لفتح المتصفح والاتصال الهاتفي على أندرويد 11+.
 
-## خطوات البناء (خارج Lovable)
-
-```bash
-npm i @capacitor/cli @capacitor/core @capacitor/android @capacitor/ios
-npm run build
-npx cap add android && npx cap add ios
-npx cap sync
-```
-
-## نمط الإطلاق: Hosted Wrapper (Capacitor)
-
-التطبيق الأصلي يفتح نسخة الإنتاج المنشورة مباشرة:
-`server.url = https://yammak.lovable.app` في `capacitor.config.ts`.
-السبب: المشروع TanStack Start مع SSR و`createServerFn` ومسارات `src/routes/api/*`
-(الدفع، webhook Stripe، صور الإعلانات، الصيانة) — لا يمكن تصديره كموقع ثابت داخل الحزمة.
-النتيجة: أي تحديث في الويب يظهر فوراً داخل التطبيق بدون إصدار جديد على المتاجر.
-
-الحزم المثبتة: `@capacitor/core`, `@capacitor/cli`, `@capacitor/android`, `@capacitor/ios`,
-`@capacitor/splash-screen`, `@capacitor/status-bar`, `@capacitor/app`.
-
-### ما لا يمكن إنجازه داخل Lovable
-- إنشاء مجلدي `android/` و`ios/` (`npx cap add`) والبناء والتوقيع: يتطلبان Android Studio/JDK وXcode/macOS.
-- توليد AAB/IPA ورفعها إلى Google Play / App Store Connect.
-- تحرير `AndroidManifest.xml` و`Info.plist` للصلاحيات (الملفات غير موجودة قبل `cap add`).
-
-### الخطوات الخارجية لإنتاج AAB/IPA
-```bash
-git clone <repo> && npm install
-npm run build
-npx cap add android && npx cap add ios
-npx cap sync
-```
-1. Android: افتح `android/` في Android Studio، اضبط `versionCode/versionName`،
-   أضف الصلاحيات في `AndroidManifest.xml` (INTERNET, ACCESS_NETWORK_STATE,
-   ACCESS_FINE_LOCATION, CAMERA/READ_MEDIA_IMAGES, POST_NOTIFICATIONS)،
-   ثم `Build > Generate Signed Bundle (AAB)` بمفتاح keystore خاص بك.
-2. iOS: افتح `ios/App/App.xcworkspace` في Xcode على macOS، اضبط Team وBundle ID
-   `iq.yammak.app`، أضف مفاتيح الاستخدام في `Info.plist`
-   (`NSLocationWhenInUseUsageDescription`, `NSCameraUsageDescription`,
-   `NSPhotoLibraryUsageDescription`)، ثم Archive ورفع إلى App Store Connect.
-3. الأيقونات والـ splash: استخدم `npx @capacitor/assets generate` مع
-   `src/assets/app-icon.png` (1024×1024) ولون الخلفية `#c81e2b`.
-4. Deep links (اختياري): استضف `assetlinks.json` و`apple-app-site-association`
-   على الدومين النهائي ثم فعّل App Links / Universal Links.
-
-> ملاحظة مراجعة Apple: تطبيقات wrapper بحتة قد تُرفض بموجب 4.2؛ يُنصح بإضافة
-> قيمة أصلية (إشعارات Push، موقع أصلي، كاميرا) قبل التقديم.
-
-## توقيع إصدار Android (Release signing)
-
-- ملف الأسرار المحلي: `android/keystore.properties` (غير مضاف إلى Git — مستثنى في `.gitignore`)
-  ويحتوي: `storeFile`, `storePassword`, `keyAlias`, `keyPassword`.
-- بعد أي `npx cap add android` (الذي يعيد توليد `android/app/build.gradle`) نفّذ:
+## البناء محلياً
 
 ```bash
-npm run android:signing   # أو: node scripts/android-signing.mjs
+bun install
+bun run build
+bunx cap add android
+bunx capacitor-assets generate --android
+node scripts/android-customize.mjs
+node scripts/android-signing.mjs
+bunx cap sync android
+cd android && ./gradlew bundleRelease   # المخرج: app/build/outputs/bundle/release/app-release.aab
 ```
 
-السكربت idempotent: يحقن قراءة `keystore.properties` + `signingConfigs.release`
-ويستخدمها في `buildTypes.release`، بدون المساس بـ `applicationId iq.yammak.app`
-أو `versionCode 1` / `versionName "1.0"` أو أي إعداد آخر. إذا لم يوجد ملف
-`keystore.properties` يبقى البناء كما كان (بدون توقيع إصدار)، لذلك لا ينكسر CI.
+## ما يجب فعله خارج Lovable
 
-- التحقق: `cd android && ./gradlew signingReport` ثم `./gradlew bundleRelease`.
-- لا تُرفع الـkeystore ولا كلمات المرور إلى المستودع إطلاقاً.
-
-## بناء نسخة الإصدار محلياً خطوة بخطوة (Android)
-
-المتطلبات: JDK 17، Android SDK (Android Studio)، Node 20+.
-
-```bash
-# 1) تجهيز المشروع
-git clone <repo> && cd <repo>
-npm install
-npm run build
-
-# 2) توليد مشروع الأندرويد ومزامنته
-npx cap add android      # مرة واحدة فقط
-npx cap sync android
-
-# 3) إنشاء keystore للإصدار (مرة واحدة فقط، واحفظه بأمان خارج المستودع)
-keytool -genkey -v -keystore ~/yammak-release.jks \
-  -alias yammak -keyalg RSA -keysize 2048 -validity 10000
-
-# 4) ملف الأسرار المحلي android/keystore.properties
-cat > android/keystore.properties <<'PROPS'
-storeFile=/absolute/path/to/yammak-release.jks
-storePassword=********
-keyAlias=yammak
-keyPassword=********
-PROPS
-
-# 5) حقن إعدادات التوقيع في build.gradle (idempotent)
-npm run android:signing
-
-# 6) التحقق من التوقيع
-cd android && ./gradlew signingReport
-
-# 7) بناء AAB للنشر على Google Play
-./gradlew bundleRelease      # android/app/build/outputs/bundle/release/app-release.aab
-# أو APK للتجربة المباشرة
-./gradlew assembleRelease    # android/app/build/outputs/apk/release/app-release.apk
-```
-
-### الناتج المتوقع من `./gradlew signingReport`
-
-يجب أن تظهر كتلة variant `release` بمفتاحك الخاص (وليس `debug.keystore`):
-
-```text
-Variant: release
-Config: release
-Store: /absolute/path/to/yammak-release.jks
-Alias: yammak
-MD5: 1A:2B:3C:...
-SHA1: AA:BB:CC:...
-SHA-256: 11:22:33:...
-Valid until: <تاريخ بعد ~27 سنة>
-```
-
-علامات الخطأ وكيف تُصلح:
-
-| ما تراه | المعنى | الإصلاح |
-| --- | --- | --- |
-| `Variant: release ... Store: ~/.android/debug.keystore` | لم يُقرأ `keystore.properties` | تأكد من مكان الملف `android/keystore.properties` وأعد `npm run android:signing` |
-| `Config: null` في variant release | `signingConfigs.release` غير مربوط | أعد تشغيل `npm run android:signing` وتحقق من وجود `signingConfig signingConfigs.release` داخل `buildTypes.release` |
-| `Keystore was tampered with, or password was incorrect` | كلمة مرور خاطئة | صحّح `storePassword` / `keyPassword` |
-| `storeFile ... (No such file or directory)` | مسار غير صحيح | استخدم مساراً مطلقاً في `storeFile` |
-
-### تحقق نهائي قبل الرفع
-
-```bash
-# التأكد أن الـAAB موقّع بمفتاح الإصدار
-$ANDROID_HOME/build-tools/34.0.0/apksigner verify --print-certs \
-  android/app/build/outputs/apk/release/app-release.apk
-# أو للـ AAB
-jarsigner -verify -verbose -certs android/app/build/outputs/bundle/release/app-release.aab | head -20
-```
-
-يجب أن تتطابق بصمة `SHA-256` مع ما ظهر في `signingReport`، وأن تكون النتيجة
-`jar verified` / `Verifies`. لا تُرفع أبداً ملفات `*.jks` أو `keystore.properties` إلى Git.
-
-## إشعارات الهاتف (Push) — ما هو منجز وما ينقص
-
-منجز داخل المشروع:
-- تسجيل رمز الجهاز لكل مستخدم (`push_devices`) مع إعادة الربط عند تبدّل المستخدم.
-- قنوات أندرويد `lubabak_orders` (طلبات: صوت + اهتزاز، أولوية قصوى) و`lubabak_default`، تُنشأ قبل التسجيل ويستخدمها الـ payload.
-- فتح صفحة الطلب عند الضغط على الإشعار (بالخلفية أو بعد الإغلاق).
-- مرسل `/api/public/push-dispatch` مع محاولات إعادة: لا يُعلَّم الإشعار مُرسلاً إلا بعد نجاح فعلي، وتُعطَّل الرموز غير الصالحة.
-
-تم على الخادم:
-1. الأسرار `FCM_PROJECT_ID` (= `lababak-834cc`) و`FCM_SERVICE_ACCOUNT_JSON` و`PUSH_DISPATCH_SECRET` مخزّنة في Cloud Secrets وتُقرأ داخل `src/lib/push.server.ts` فقط (لا تظهر في الواجهة ولا في السجلات).
-2. الإرسال الفوري عند جاهزية طلب مطعم/سوبرماركت: `dispatch.server.ts → pushNotificationNow()`، بالإضافة إلى دورة `runMaintenance` كل دقيقة كشبكة أمان.
-3. فحص جاهزية فعلي: `GET /api/public/push-dispatch` بترويسة `Authorization: Bearer <PUSH_DISPATCH_SECRET>` (أو بطاقة «حالة اتصال FCM» في `/admin/monitoring`) — يتحقق من صلاحية JSON ومطابقة المشروع ونجاح مصادقة Google وقبول FCM لطلب `validate_only` دون إرسال إشعار حقيقي.
-
-ينقص (يُنفَّذ على جهاز/جهاز بناء خارج المشروع):
-1. `npx cap add android` (مجلد `android/` غير موجود هنا).
-2. تنزيل `google-services.json` من Firebase Console لمشروع **lababak-834cc** لتطبيق أندرويد بحزمة **iq.lubabak.app**، ووضعه في `android/app/google-services.json`، ثم:
-   - في `android/build.gradle`: `classpath 'com.google.gms:google-services:4.4.2'`.
-   - في `android/app/build.gradle`: `apply plugin: 'com.google.gms.google-services'` والتأكد أن `applicationId = "iq.lubabak.app"`.
-   - `npx cap sync android` ثم بناء APK/AAB (راجع قسم التوقيع أعلاه).
-3. iOS (لاحقاً): `GoogleService-Info.plist` + مفتاح APNs في Firebase + تفعيل Push Notifications capability.
-4. اختبار على جهاز أندرويد حقيقي: فتح التطبيق وتسجيل الدخول كمندوب → قبول إذن الإشعارات → يظهر الجهاز في `push_devices` وفي `/admin/monitoring` → إنشاء طلب مطعم وجعله «جاهز» → يصل الإشعار بصوت واهتزاز على قناة `lubabak_orders_v2` حتى والتطبيق مغلق.
-
-قبل تثبيت APK على جهاز حقيقي لا يوجد أي `push_devices` (المتصفح لا يسجّل رمز جهاز)؛ التنبيه داخل التطبيق (صوت/اهتزاز/toast) يعمل بدونها.
-
+1. **google-services.json**: من Firebase Console (مشروع `lababak-834cc`) أضف تطبيق أندرويد
+   بالحزمة `iq.lababak.app`، نزّل الملف وضعه في `android/app/google-services.json`
+   (أو ضعه كـ GitHub Secret باسم `GOOGLE_SERVICES_JSON`). بدونه لن تصل إشعارات FCM.
+2. **بصمة SHA-1/SHA-256** لمفتاح التوقيع تُضاف في Firebase إذا استخدمت خدمات تتطلبها.
+3. **Keystore للإصدار**:
+   ```bash
+   keytool -genkey -v -keystore lubabak-release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias lubabak
+   ```
+   ضعه في `android/lubabak-release.jks` وأنشئ `android/keystore.properties`
+   (`storeFile`, `storePassword`, `keyAlias`, `keyPassword`) — أو أضفه كـ Secrets:
+   `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`.
+4. **Google Play Console**: إنشاء التطبيق باسم «لبابك»، رفع الـ AAB، سياسة الخصوصية،
+   استبيان أمان البيانات (موقع + إشعارات + كاميرا)، تصنيف المحتوى، ولقطات الشاشة.
+5. **Deep links (اختياري)**: رفع `assetlinks.json` على `lubabak.lovable.app` لتفعيل App Links.

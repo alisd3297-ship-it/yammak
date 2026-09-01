@@ -13,15 +13,20 @@ import type { CapacitorConfig } from "@capacitor/cli";
 const PRODUCTION_HOST = "lubabak.lovable.app";
 
 const config: CapacitorConfig = {
-  appId: "iq.lubabak.app",
+  appId: "iq.lababak.app",
   appName: "لبابك",
   webDir: "dist/client",
   android: {
     allowMixedContent: false,
+    // اسم مستعرض المستخدم يساعد على تمييز طلبات التطبيق في السجلات
+    appendUserAgent: "LubabakApp/Android",
+    backgroundColor: "#1b3a86",
   },
   ios: {
     contentInset: "always",
     limitsNavigationsToAppBoundDomains: false,
+    appendUserAgent: "LubabakApp/iOS",
+    backgroundColor: "#1b3a86",
   },
   server: {
     // Hosted Wrapper: يفتح التطبيق نسخة الإنتاج المنشورة.
@@ -34,11 +39,28 @@ const config: CapacitorConfig = {
   },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 1200,
-      backgroundColor: "#c81e2b",
+      launchShowDuration: 1500,
+      launchAutoHide: true,
+      backgroundColor: "#1b3a86",
       androidScaleType: "CENTER_CROP",
+      androidSplashResourceName: "splash",
       showSpinner: false,
+      splashFullScreen: true,
+      splashImmersive: false,
     },
+    StatusBar: {
+      style: "DARK",
+      backgroundColor: "#1b3a86",
+      overlaysWebView: false,
+    },
+    Keyboard: {
+      resize: "native",
+      resizeOnFullScreen: true,
+    },
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"],
+    },
+    Geolocation: {},
   },
 };
 
