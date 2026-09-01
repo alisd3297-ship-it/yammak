@@ -117,9 +117,11 @@ function NotificationsButton() {
     refetchInterval: 120_000,
     staleTime: 30_000,
     queryFn: async () => {
+      // count head فقط: لا تُنقل صفوف الإشعارات إلى العميل، فقط الرقم
       const { count } = await supabase
         .from("notifications")
-        .select("id", { count: "exact", head: true })
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", userId!)
         .eq("is_read", false);
       return count ?? 0;
     },
