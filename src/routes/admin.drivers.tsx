@@ -113,7 +113,21 @@ function AdminDriversPage() {
         )
         .order("created_at", { ascending: false })
         .limit(100);
-      return data ?? [];
+      const rows = data ?? [];
+      if (rows.length === 0) return rows.map((r) => ({ ...r, full_name: "", phone: "" }));
+      const { data: profs } = await supabase
+        .from("profiles")
+        .select("id, full_name, phone")
+        .in(
+          "id",
+          rows.map((r) => r.user_id),
+        );
+      const byId = new Map((profs ?? []).map((p) => [p.id, p]));
+      return rows.map((r) => ({
+        ...r,
+        full_name: byId.get(r.user_id)?.full_name ?? "",
+        phone: byId.get(r.user_id)?.phone ?? "",
+      }));
     },
   });
 
