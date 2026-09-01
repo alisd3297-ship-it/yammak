@@ -51,6 +51,51 @@ function AdminDriversPage() {
 
   const [rejectFor, setRejectFor] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
+  const [showAdd, setShowAdd] = useState(false);
+  const createDriver = useServerFn(createDriverAccount);
+  const [addForm, setAddForm] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    phone: "",
+    kind: "delivery" as "delivery" | "taxi",
+    vehicleType: "bike" as VehicleType,
+    vehicleMake: "",
+    vehicleModel: "",
+    vehicleColor: "",
+    plateNumber: "",
+  });
+  const [adding, setAdding] = useState(false);
+
+  async function submitAddDriver() {
+    setAdding(true);
+    try {
+      const res = await createDriver({ data: addForm });
+      toast.success(
+        res.created
+          ? `تم إنشاء حساب السائق واعتماده (${res.email})`
+          : `تم تحديث الحساب الحالي واعتماده كسائق (${res.email})`,
+      );
+      setShowAdd(false);
+      setAddForm({
+        fullName: "",
+        email: "",
+        password: "",
+        phone: "",
+        kind: "delivery",
+        vehicleType: "bike",
+        vehicleMake: "",
+        vehicleModel: "",
+        vehicleColor: "",
+        plateNumber: "",
+      });
+      qc.invalidateQueries({ queryKey: ["admin-drivers"] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر إنشاء الحساب");
+    } finally {
+      setAdding(false);
+    }
+  }
 
   const isStaff = (account?.roles ?? []).some((r) =>
     ["super_admin", "admin", "supervisor"].includes(r),
