@@ -133,7 +133,7 @@ export const createDriverAccount = createServerFn({ method: "POST" })
       action: created ? "driver_account_created" : "driver_account_updated",
       entity: "worker_profiles",
       entity_id: userId,
-      meta: { email, kind: data.kind },
+      details: { email, kind: data.kind },
     });
 
     return { ok: true as const, userId, email, created };
