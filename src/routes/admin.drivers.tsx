@@ -70,6 +70,61 @@ function AdminDriversPage() {
     plateNumber: "",
   });
   const [adding, setAdding] = useState(false);
+  const updateDriver = useServerFn(updateDriverAccount);
+  const removeDriver = useServerFn(deleteDriverAccount);
+  const [editFor, setEditFor] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState({
+    fullName: "",
+    phone: "",
+    kind: "delivery" as "delivery" | "taxi",
+    vehicleType: "bike" as VehicleType,
+    vehicleMake: "",
+    vehicleModel: "",
+    vehicleColor: "",
+    plateNumber: "",
+  });
+
+  async function saveEdit(userId: string) {
+    setBusyId(userId);
+    try {
+      await updateDriver({ data: { userId, ...editForm } });
+      toast.success("تم حفظ بيانات السائق");
+      setEditFor(null);
+      qc.invalidateQueries({ queryKey: ["admin-drivers"] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر حفظ التعديل");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function toggleActive(userId: string, next: boolean) {
+    setBusyId(userId);
+    try {
+      await updateDriver({ data: { userId, isApproved: next } });
+      toast.success(next ? "تم تفعيل السائق" : "تم تعطيل السائق");
+      qc.invalidateQueries({ queryKey: ["admin-drivers"] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر تغيير الحالة");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function deleteDriver(userId: string) {
+    if (!window.confirm("حذف حساب السائق نهائياً؟ لا يمكن التراجع.")) return;
+    setBusyId(userId);
+    try {
+      await removeDriver({ data: { userId } });
+      toast.success("تم حذف حساب السائق");
+      qc.invalidateQueries({ queryKey: ["admin-drivers"] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر حذف الحساب");
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   async function submitAddDriver() {
     setAdding(true);
