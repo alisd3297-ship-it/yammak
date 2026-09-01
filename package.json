@@ -10,7 +10,12 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "android:signing": "node scripts/android-signing.mjs"
+    "android:signing": "node scripts/android-signing.mjs",
+    "android:add": "cap add android",
+    "android:customize": "node scripts/android-customize.mjs",
+    "android:assets": "capacitor-assets generate --android",
+    "android:sync": "cap sync android",
+    "android:aab": "cd android && ./gradlew bundleRelease"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.0",
