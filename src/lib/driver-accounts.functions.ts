@@ -138,3 +138,117 @@ export const createDriverAccount = createServerFn({ method: "POST" })
 
     return { ok: true as const, userId, email, created };
   });
+
+type UpdateDriverInput = {
+  userId: string;
+  fullName?: string;
+  phone?: string;
+  kind?: "delivery" | "taxi";
+  vehicleType?: VehicleType;
+  vehicleMake?: string;
+  vehicleModel?: string;
+  vehicleColor?: string;
+  plateNumber?: string;
+  isApproved?: boolean;
+};
+
+/** تعديل بيانات سائق مسجل من لوحة الإدارة. */
+export const updateDriverAccount = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: UpdateDriverInput) => data)
+  .handler(async ({ data, context }) => {
+    await assertStaff(context);
+    if (!data.userId) throw new Error("معرّف السائق مفقود");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    if (data.fullName !== undefined || data.phone !== undefined) {
+      const patch: Record<string, any> = {};
+      if (data.fullName !== undefined) {
+        const name = data.fullName.trim();
+        if (name.length < 2) throw new Error("أدخل اسم السائق الكامل");
+        patch["full_name"] = name;
+      }
+      if (data.phone !== undefined) patch["phone"] = data.phone.trim() || null;
+      const { error } = await supabaseAdmin.from("profiles").update(patch as never).eq("id", data.userId);
+      if (error) throw new Error(friendly(error.message));
+    }
+
+    const workerPatch: Record<string, any> = {};
+    if (data.kind !== undefined) {
+      if (!["delivery", "taxi"].includes(data.kind)) throw new Error("نوع السائق غير صحيح");
+      workerPatch["worker_kind"] = data.kind;
+      workerPatch["requested_kind"] = data.kind;
+    }
+    if (data.vehicleType !== undefined) workerPatch["vehicle_type"] = data.vehicleType;
+    if (data.vehicleMake !== undefined) workerPatch["vehicle_make"] = data.vehicleMake.trim() || null;
+    if (data.vehicleModel !== undefined)
+      workerPatch["vehicle_model"] = data.vehicleModel.trim() || null;
+    if (data.vehicleColor !== undefined)
+      workerPatch["vehicle_color"] = data.vehicleColor.trim() || null;
+    if (data.plateNumber !== undefined)
+      workerPatch["plate_number"] = data.plateNumber.trim() || null;
+    if (data.isApproved !== undefined) {
+      workerPatch["is_approved"] = data.isApproved;
+      workerPatch["application_status"] = data.isApproved ? "approved" : "suspended";
+      if (!data.isApproved) workerPatch["is_available"] = false;
+    }
+
+    if (Object.keys(workerPatch).length > 0) {
+      const { error } = await supabaseAdmin
+        .from("worker_profiles")
+        .update(workerPatch as never)
+        .eq("user_id", data.userId);
+      if (error) throw new Error(friendly(error.message));
+    }
+
+    if (data.isApproved !== undefined) {
+      if (data.isApproved) {
+        await supabaseAdmin
+          .from("user_roles")
+          .upsert({ user_id: data.userId, role: "worker" }, { onConflict: "user_id,role" });
+      } else {
+        await supabaseAdmin
+          .from("user_roles")
+          .delete()
+          .eq("user_id", data.userId)
+          .eq("role", "worker");
+      }
+    }
+
+    await supabaseAdmin.from("audit_logs").insert({
+      actor_id: context.userId,
+      action: "driver_account_updated",
+      entity: "worker_profiles",
+      entity_id: data.userId,
+      after_data: { ...workerPatch, full_name: data.fullName ?? null },
+    });
+
+    return { ok: true as const };
+  });
+
+/** حذف حساب سائق نهائياً (ملف السائق + الحساب). */
+export const deleteDriverAccount = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { userId: string }) => data)
+  .handler(async ({ data, context }) => {
+    await assertStaff(context);
+    if (!data.userId) throw new Error("معرّف السائق مفقود");
+    if (data.userId === context.userId) throw new Error("لا يمكنك حذف حسابك الحالي");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    await supabaseAdmin.from("worker_profiles").delete().eq("user_id", data.userId);
+    await supabaseAdmin.from("user_roles").delete().eq("user_id", data.userId).eq("role", "worker");
+    await supabaseAdmin.from("push_devices").delete().eq("user_id", data.userId);
+
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
+    if (error) throw new Error(friendly(error.message));
+
+    await supabaseAdmin.from("audit_logs").insert({
+      actor_id: context.userId,
+      action: "driver_account_deleted",
+      entity: "worker_profiles",
+      entity_id: data.userId,
+    });
+
+    return { ok: true as const };
+  });
