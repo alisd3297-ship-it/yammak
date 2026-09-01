@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">لبابك</string>
-    <string name="title_activity_main">لبابك</string>
-    <string name="package_name">iq.lababak.app</string>
-    <string name="custom_url_scheme">iq.lababak.app</string>
-</resources>
