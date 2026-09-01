@@ -162,18 +162,18 @@ export const updateDriverAccount = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     if (data.fullName !== undefined || data.phone !== undefined) {
-      const patch: Record<string, unknown> = {};
+      const patch: Record<string, any> = {};
       if (data.fullName !== undefined) {
         const name = data.fullName.trim();
         if (name.length < 2) throw new Error("أدخل اسم السائق الكامل");
         patch["full_name"] = name;
       }
       if (data.phone !== undefined) patch["phone"] = data.phone.trim() || null;
-      const { error } = await supabaseAdmin.from("profiles").update(patch).eq("id", data.userId);
+      const { error } = await supabaseAdmin.from("profiles").update(patch as never).eq("id", data.userId);
       if (error) throw new Error(friendly(error.message));
     }
 
-    const workerPatch: Record<string, unknown> = {};
+    const workerPatch: Record<string, any> = {};
     if (data.kind !== undefined) {
       if (!["delivery", "taxi"].includes(data.kind)) throw new Error("نوع السائق غير صحيح");
       workerPatch["worker_kind"] = data.kind;
@@ -196,7 +196,7 @@ export const updateDriverAccount = createServerFn({ method: "POST" })
     if (Object.keys(workerPatch).length > 0) {
       const { error } = await supabaseAdmin
         .from("worker_profiles")
-        .update(workerPatch)
+        .update(workerPatch as never)
         .eq("user_id", data.userId);
       if (error) throw new Error(friendly(error.message));
     }
