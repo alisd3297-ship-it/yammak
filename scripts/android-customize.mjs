@@ -97,7 +97,9 @@ function patchGoogleServices() {
 
 function main() {
   if (!patchManifest()) {
-    console.error("android/app/src/main/AndroidManifest.xml غير موجود — نفّذ `cap add android` أولاً.");
+    console.error(
+      "android/app/src/main/AndroidManifest.xml غير موجود — نفّذ `cap add android` أولاً.",
+    );
     process.exit(1);
   }
   patchStrings();

@@ -110,14 +110,15 @@ function StoresPage() {
       return;
     }
     void ensureLocationPermission().then(() => {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      () => {
-        toast.error("تعذر تحديد موقعك، فعّل صلاحية الموقع وحاول مجدداً");
-        setSort("rating");
-      },
-      { enableHighAccuracy: false, timeout: 10_000, maximumAge: 60_000 },
-    );
+      navigator.geolocation.getCurrentPosition(
+        (pos) => setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        () => {
+          toast.error("تعذر تحديد موقعك، فعّل صلاحية الموقع وحاول مجدداً");
+          setSort("rating");
+        },
+        { enableHighAccuracy: false, timeout: 10_000, maximumAge: 60_000 },
+      );
+    });
   }
 
   return (

@@ -152,15 +152,16 @@ function TaxiPage() {
       return;
     }
     void ensureLocationPermission().then(() => {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const c = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        if (target === "pickup") setPickup(c);
-        else setDest(c);
-        toast.success("تم تحديد الموقع");
-      },
-      () => toast.error("تعذر تحديد موقعك، اكتب العنوان يدوياً"),
-    );
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const c = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          if (target === "pickup") setPickup(c);
+          else setDest(c);
+          toast.success("تم تحديد الموقع");
+        },
+        () => toast.error("تعذر تحديد موقعك، اكتب العنوان يدوياً"),
+      );
+    });
   }
 
   async function send() {
