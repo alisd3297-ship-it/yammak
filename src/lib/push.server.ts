@@ -137,7 +137,7 @@ export async function sendFcm(
   const urgent = isUrgent(msg);
   const channelId = androidChannelId(msg);
 
-  for (const deviceToken of tokens) {
+  async function sendOne(deviceToken: string): Promise<void> {
     const res = await fetch(url, {
       method: "POST",
       headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
@@ -190,14 +190,51 @@ export async function sendFcm(
         },
       }),
     });
-    if (res.ok) sent += 1;
-    else if (res.status === 404 || res.status === 400) {
+    if (res.ok) {
+      sent += 1;
+      return;
+    }
+    if (res.status === 404 || res.status === 400) {
       invalid.push(deviceToken);
       // نص الخطأ من Google لا يحتوي أسراراً؛ يساعد في تشخيص الرمز التالف.
       console.error("[push] fcm rejected token", res.status, (await res.text()).slice(0, 200));
-    } else {
-      console.error("[push] fcm send failed", res.status, (await res.text()).slice(0, 200));
+      return;
     }
+    // 429/5xx: إعادة محاولة واحدة بتأخير قصير قبل اعتبارها فاشلة
+    if (res.status === 429 || res.status >= 500) {
+      await new Promise((r) => setTimeout(r, 400));
+      const retry = await fetch(url, {
+        method: "POST",
+        headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
+        body: JSON.stringify({
+          message: {
+            token: deviceToken,
+            notification: { title: msg.title, body: msg.body },
+            data: { orderId: msg.orderId ?? "", kind: msg.kind ?? "", urgent: urgent ? "1" : "0" },
+            android: { priority: "HIGH", notification: { channel_id: channelId, sound: "default" } },
+          },
+        }),
+      });
+      if (retry.ok) {
+        sent += 1;
+        return;
+      }
+      console.error("[push] fcm retry failed", retry.status);
+      return;
+    }
+    console.error("[push] fcm send failed", res.status, (await res.text()).slice(0, 200));
+  }
+
+  // إرسال متوازٍ بدفعات: يقلّل زمن التسليم عند وجود أجهزة كثيرة دون إغراق FCM
+  const CONCURRENCY = 10;
+  for (let i = 0; i < tokens.length; i += CONCURRENCY) {
+    await Promise.all(
+      tokens.slice(i, i + CONCURRENCY).map((t) =>
+        sendOne(t).catch((err) => {
+          console.error("[push] fcm send error", err instanceof Error ? err.message : "unknown");
+        }),
+      ),
+    );
   }
 
   return { sent, invalid };
