@@ -17,7 +17,8 @@ import {
   type TripStatus,
 } from "@/lib/taxi";
 import { changeTripStatus, redispatchTrip, setDriverApproval } from "@/lib/taxi.functions";
-import { vehicleLabel } from "@/lib/vehicles";
+import { createDriverAccount } from "@/lib/driver-accounts.functions";
+import { VEHICLE_LABELS, vehicleLabel, type VehicleType } from "@/lib/vehicles";
 
 import { requireStaff } from "@/lib/route-guards";
 
