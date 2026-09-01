@@ -186,9 +186,131 @@ function AdminDriversPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <h1 className="text-2xl font-black">السائقون والرحلات</h1>
-        <p className="mt-1 text-sm opacity-90">اعتماد السائقين ومتابعة رحلات التكسي</p>
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="truncate text-2xl font-black">السائقون والرحلات</h1>
+            <p className="mt-1 text-sm opacity-90">اعتماد السائقين ومتابعة رحلات التكسي</p>
+          </div>
+          <Button
+            variant="secondary"
+            className="h-10 shrink-0 font-bold"
+            onClick={() => setShowAdd((v) => !v)}
+          >
+            {showAdd ? "إغلاق" : "+ إضافة سائق"}
+          </Button>
+        </div>
       </header>
+
+      {showAdd && (
+        <div className="px-4 pt-4">
+          <section className="space-y-3 rounded-2xl bg-card p-4 shadow-soft">
+            <h2 className="text-base font-bold">إضافة سائق جديد (معتمد مباشرة)</h2>
+            <input
+              value={addForm.fullName}
+              onChange={(e) => setAddForm((f) => ({ ...f, fullName: e.target.value }))}
+              placeholder="اسم السائق الكامل"
+              aria-label="اسم السائق"
+              className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
+            />
+            <input
+              value={addForm.email}
+              onChange={(e) => setAddForm((f) => ({ ...f, email: e.target.value }))}
+              placeholder="البريد الإلكتروني"
+              aria-label="البريد الإلكتروني"
+              type="email"
+              dir="ltr"
+              className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
+            />
+            <input
+              value={addForm.password}
+              onChange={(e) => setAddForm((f) => ({ ...f, password: e.target.value }))}
+              placeholder="كلمة المرور (8 أحرف فأكثر)"
+              aria-label="كلمة المرور"
+              type="text"
+              dir="ltr"
+              className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
+            />
+            <input
+              value={addForm.phone}
+              onChange={(e) => setAddForm((f) => ({ ...f, phone: e.target.value }))}
+              placeholder="رقم الهاتف (اختياري)"
+              aria-label="رقم الهاتف"
+              type="tel"
+              dir="ltr"
+              className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
+            />
+            <div className="grid grid-cols-2 gap-2">
+              <select
+                value={addForm.kind}
+                onChange={(e) =>
+                  setAddForm((f) => ({ ...f, kind: e.target.value as "delivery" | "taxi" }))
+                }
+                aria-label="نوع السائق"
+                className="h-11 rounded-md border border-input bg-background px-2 text-sm"
+              >
+                <option value="delivery">مندوب توصيل</option>
+                <option value="taxi">سائق تكسي</option>
+              </select>
+              <select
+                value={addForm.vehicleType}
+                onChange={(e) =>
+                  setAddForm((f) => ({ ...f, vehicleType: e.target.value as VehicleType }))
+                }
+                aria-label="نوع المركبة"
+                className="h-11 rounded-md border border-input bg-background px-2 text-sm"
+              >
+                {Object.entries(VEHICLE_LABELS).map(([v, label]) => (
+                  <option key={v} value={v}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <input
+                value={addForm.vehicleMake}
+                onChange={(e) => setAddForm((f) => ({ ...f, vehicleMake: e.target.value }))}
+                placeholder="نوع المركبة (مثال: هوندا)"
+                aria-label="ماركة المركبة"
+                className="h-11 rounded-md border border-input bg-background px-3 text-sm"
+              />
+              <input
+                value={addForm.vehicleModel}
+                onChange={(e) => setAddForm((f) => ({ ...f, vehicleModel: e.target.value }))}
+                placeholder="الموديل"
+                aria-label="موديل المركبة"
+                className="h-11 rounded-md border border-input bg-background px-3 text-sm"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <input
+                value={addForm.vehicleColor}
+                onChange={(e) => setAddForm((f) => ({ ...f, vehicleColor: e.target.value }))}
+                placeholder="اللون"
+                aria-label="لون المركبة"
+                className="h-11 rounded-md border border-input bg-background px-3 text-sm"
+              />
+              <input
+                value={addForm.plateNumber}
+                onChange={(e) => setAddForm((f) => ({ ...f, plateNumber: e.target.value }))}
+                placeholder="رقم اللوحة"
+                aria-label="رقم اللوحة"
+                className="h-11 rounded-md border border-input bg-background px-3 text-sm"
+              />
+            </div>
+            <Button
+              className="h-11 w-full font-bold"
+              disabled={adding}
+              onClick={() => void submitAddDriver()}
+            >
+              {adding ? "جارٍ الإنشاء…" : "إنشاء حساب السائق واعتماده"}
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              إذا كان البريد مسجلاً مسبقاً تُحدَّث كلمة المرور ويُمنح صلاحية السائق المعتمد.
+            </p>
+          </section>
+        </div>
+      )}
 
       <div className="space-y-5 px-4 py-5">
         <div className="grid grid-cols-2 gap-2 rounded-2xl bg-muted p-1">
