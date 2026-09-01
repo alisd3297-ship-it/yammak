@@ -28,7 +28,8 @@ const SIGNING_BLOCK = `    ${MARKER} configs
     signingConfigs {
         release {
             if (keystorePropertiesFile.exists()) {
-                storeFile file(keystoreProperties['storeFile'])
+                // rootProject.file => المسار في keystore.properties نسبي لمجلد android/
+                storeFile rootProject.file(keystoreProperties['storeFile'])
                 storePassword keystoreProperties['storePassword']
                 keyAlias keystoreProperties['keyAlias']
                 keyPassword keystoreProperties['keyPassword']
