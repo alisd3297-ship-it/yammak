@@ -414,11 +414,15 @@ function AdminDriversPage() {
             {(drivers ?? []).map((d) => (
               <article key={d.user_id} className="rounded-2xl bg-card p-4 shadow-soft">
                 <div className="flex items-center justify-between">
-                  <p className="font-bold">
-                    {d.worker_kind === "taxi" || d.requested_kind === "taxi"
-                      ? "سائق تكسي"
-                      : "مندوب توصيل"}
-                  </p>
+                  <div>
+                    <p className="font-bold">{d.full_name || "سائق بدون اسم"}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {d.worker_kind === "taxi" || d.requested_kind === "taxi"
+                        ? "سائق تكسي"
+                        : "مندوب توصيل"}
+                      {d.phone ? ` · ${d.phone}` : ""}
+                    </p>
+                  </div>
                   <span
                     className={cn(
                       "rounded-full px-2 py-0.5 text-xs font-semibold",
