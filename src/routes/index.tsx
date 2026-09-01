@@ -375,18 +375,46 @@ function CustomerHome() {
       ) : (
         <>
           <section className="mt-4 px-4">
-            <div className="ads-glow rounded-3xl p-[2px]">
-              <div className="rounded-[22px] bg-card/95 p-3">
-                <div className="mb-2 flex items-center justify-between gap-3">
-                  <h2 className="text-sm font-black">عروض وخصومات</h2>
-                  <Link to="/ads" className="shrink-0 text-xs font-semibold text-primary">
+            <div className="ads-glow rounded-3xl p-[1px]">
+              <div className="rounded-[22px] bg-card/95 p-2">
+                <div className="mb-1.5 flex items-center justify-between gap-3">
+                  <h2 className="text-xs font-black">عروض وخصومات</h2>
+                  <Link to="/ads" className="shrink-0 text-[10px] font-semibold text-primary">
                     أعلن معنا
                   </Link>
                 </div>
                 <AdsTickerBoard
+                  compact
                   categories={adsBoard.data?.categories ?? []}
                   ads={adsBoard.data?.ads ?? []}
                 />
+              </div>
+            </div>
+          </section>
+
+          <section className="mt-4 px-4">
+            <div className="ads-glow rounded-3xl p-[1px]">
+              <div className="rounded-[22px] bg-card/95 p-2">
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                  {QUICK_LINKS.map((q) => {
+                    const Icon = q.icon;
+                    return (
+                      <Link
+                        key={q.to}
+                        to={q.to}
+                        className={cn(
+                          "flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 transition active:scale-95",
+                          q.highlight
+                            ? "bg-primary text-primary-foreground shadow-soft"
+                            : "bg-muted text-foreground",
+                        )}
+                      >
+                        <Icon className={cn("size-4 shrink-0", q.highlight ? "text-primary-foreground" : "text-primary")} />
+                        <span className="whitespace-nowrap text-[11px] font-bold">{q.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </section>
@@ -421,7 +449,6 @@ function CustomerHome() {
             </div>
           </section>
 
-
           <section className="mt-6 px-4">
             <h2 className="mb-3 text-base font-bold">خدمات إضافية</h2>
             <div className="grid grid-cols-4 gap-2 sm:grid-cols-4 sm:gap-3">
@@ -431,38 +458,7 @@ function CustomerHome() {
             </div>
           </section>
 
-          <section className="mt-6 px-4">
-            <h2 className="mb-3 text-base font-bold">مختصرات سريعة</h2>
-            <div className="grid grid-cols-2 items-stretch gap-3 sm:grid-cols-4">
-              <QuickAction
-                to="/request-anything"
-                title="اطلب أي شي"
-                hint="اكتبه بلغتك ونرتبه إلك"
-                icon={Icons.Sparkles}
-                highlight
-                secondary={{ to: "/assistant", label: "مساعد لبابك", icon: Icons.Bot }}
-              />
-              <QuickAction
-                to="/nearby"
-                title="قريب منك"
-                hint="عروض ومتاجر قريبة"
-                icon={Icons.MapPin}
-                secondary={{ to: "/map", label: "خريطة الخدمات", icon: Icons.Map }}
-              />
-              <QuickAction
-                to="/marketplace"
-                title="سوق لبابك"
-                hint="بيع واشترِ بمنطقتك"
-                icon={Icons.ShoppingBag}
-              />
-              <QuickAction
-                to="/quotes"
-                title="عروض الأسعار"
-                hint="تفاوض على سعر الخدمة"
-                icon={Icons.MessagesSquare}
-              />
-            </div>
-          </section>
+
 
           {(data?.sections ?? []).map((section) => {
             const services = (data?.services ?? []).filter(
