@@ -92,7 +92,13 @@ const MAIN_SERVICES: MainService[] = [
   { label: "متاجر", hint: "تسوّق يومي", icon: Icons.ShoppingCart, to: "/stores", tone: "blue" },
   { label: "صيدليات", hint: "أدوية ومستلزمات", icon: Icons.Pill, to: "/pharmacies", tone: "green" },
   { label: "تاكسي", hint: "نقل ركاب", icon: Icons.Car, to: "/taxi", tone: "amber" },
-  { label: "خدمات ومهن", hint: "فنيين ومهنيين", icon: Icons.Wrench, to: "/services", tone: "purple" },
+  {
+    label: "خدمات ومهن",
+    hint: "فنيين ومهنيين",
+    icon: Icons.Wrench,
+    to: "/services",
+    tone: "purple",
+  },
   {
     label: "عمال وحرفيين",
     hint: "اطلب عامل أو حرفي",
@@ -341,7 +347,12 @@ function CustomerHome() {
                             : "bg-muted text-foreground",
                         )}
                       >
-                        <Icon className={cn("size-4 shrink-0", q.highlight ? "text-primary-foreground" : "text-primary")} />
+                        <Icon
+                          className={cn(
+                            "size-4 shrink-0",
+                            q.highlight ? "text-primary-foreground" : "text-primary",
+                          )}
+                        />
                         <span className="whitespace-nowrap text-[11px] font-bold">{q.label}</span>
                       </Link>
                     );
@@ -389,8 +400,6 @@ function CustomerHome() {
               ))}
             </div>
           </section>
-
-
 
           {(data?.sections ?? []).map((section) => {
             const services = (data?.services ?? []).filter(
