@@ -151,6 +151,9 @@ function RootComponent() {
   // تجميع أخطاء الواجهة في لوحة مراقبة الإدارة
   useEffect(() => installGlobalErrorLogging(), []);
 
+  // تهيئة غلاف الموبايل (شريط الحالة، شاشة البداية، زر الرجوع، الروابط الخارجية)
+  useEffect(() => initNativeShell(), []);
+
   // تسجيل عامل الخدمة لتوفير صفحة بديلة عند انقطاع الاتصال (غلاف Capacitor والويب)
   useEffect(() => {
     if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
