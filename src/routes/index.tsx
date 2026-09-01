@@ -116,6 +116,17 @@ const EXTRA_SERVICES: MainService[] = [
   },
 ];
 
+type QuickLink = { label: string; icon: Icons.LucideIcon; to: QuickTo; highlight?: boolean };
+
+const QUICK_LINKS: QuickLink[] = [
+  { label: "اطلب أي شي", icon: Icons.Sparkles, to: "/request-anything", highlight: true },
+  { label: "مساعد لبابك", icon: Icons.Bot, to: "/assistant" },
+  { label: "قريب منك", icon: Icons.MapPin, to: "/nearby" },
+  { label: "خريطة الخدمات", icon: Icons.Map, to: "/map" },
+  { label: "سوق لبابك", icon: Icons.ShoppingBag, to: "/marketplace" },
+  { label: "عروض الأسعار", icon: Icons.MessagesSquare, to: "/quotes" },
+];
+
 function MainTile({ item }: { item: MainService }) {
   const Icon = item.icon;
   return (
