@@ -17,6 +17,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { useSessionKeeper } from "@/lib/session-keeper";
 import { useAccount } from "@/lib/auth";
 import { useNativePush } from "@/lib/native-push";
+import { initNativeShell } from "@/lib/native-bridge";
 import { SplashScreen } from "@/components/splash-screen";
 import { installGlobalErrorLogging, logAppError } from "@/lib/error-log";
 
