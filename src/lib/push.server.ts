@@ -302,6 +302,7 @@ export async function dispatchPendingPush(limit = 100): Promise<PushDispatchResu
   const invalidTokens: string[] = [];
   const doneIds: string[] = [];
 
+  const sendable: typeof pending = [];
   for (const n of pending) {
     const tokens = byUser.get(n.user_id) ?? [];
     if (tokens.length === 0) {
@@ -314,29 +315,49 @@ export async function dispatchPendingPush(limit = 100): Promise<PushDispatchResu
       }
       continue;
     }
-    let res: Awaited<ReturnType<typeof sendFcm>>;
-    try {
-      res = await sendFcm(tokens, {
-        title: n.title,
-        body: n.body ?? n.title,
-        orderId: n.order_id,
-        kind: n.order_id ? "order" : n.kind,
-      });
-    } catch (err) {
-      reason = err instanceof Error ? err.message : "fcm_send_failed";
-      failed += 1;
-      break;
-    }
-    if (res.reason) {
-      reason = res.reason;
-      break;
-    }
-    invalidTokens.push(...res.invalid);
-    if (res.sent > 0) {
-      sent += res.sent;
-      doneIds.push(n.id);
-    } else {
-      failed += 1;
+    sendable.push(n);
+  }
+
+  // معالجة متوازية بدفعات: تقلّل زمن تسليم دفعة الإشعارات المعلّقة بشكل كبير
+  const BATCH = 8;
+  let stop = false;
+  for (let i = 0; i < sendable.length && !stop; i += BATCH) {
+    const results = await Promise.all(
+      sendable.slice(i, i + BATCH).map(async (n) => {
+        try {
+          const res = await sendFcm(byUser.get(n.user_id) ?? [], {
+            title: n.title,
+            body: n.body ?? n.title,
+            orderId: n.order_id,
+            kind: n.order_id ? "order" : n.kind,
+          });
+          return { n, res };
+        } catch (err) {
+          return { n, error: err instanceof Error ? err.message : "fcm_send_failed" };
+        }
+      }),
+    );
+    for (const r of results) {
+      if ("error" in r && r.error) {
+        reason = r.error;
+        failed += 1;
+        stop = true;
+        continue;
+      }
+      const res = r.res!;
+      if (res.reason) {
+        // فشل إعداد عام (مصادقة/إعداد) — لا فائدة من متابعة بقية الدفعات
+        reason = res.reason;
+        stop = true;
+        continue;
+      }
+      invalidTokens.push(...res.invalid);
+      if (res.sent > 0) {
+        sent += res.sent;
+        doneIds.push(r.n.id);
+      } else {
+        failed += 1;
+      }
     }
   }
 
