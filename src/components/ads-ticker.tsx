@@ -197,10 +197,12 @@ export function AdsTickerBoard({
   categories,
   ads,
   className,
+  compact,
 }: {
   categories: AdCategory[];
   ads: AdRow[];
   className?: string;
+  compact?: boolean;
 }) {
   const { isVisible } = useAdPreferences();
   const visibleAds = ads.filter((ad) => isVisible(ad.category_id));
@@ -209,7 +211,8 @@ export function AdsTickerBoard({
   return (
     <section
       className={cn(
-        "flex h-10 items-center gap-2 overflow-hidden rounded-xl bg-card px-2 shadow-soft",
+        "flex items-center gap-2 overflow-hidden rounded-xl bg-card px-2 shadow-soft",
+        compact ? "h-7" : "h-10",
         className,
       )}
       aria-label="شريط الإعلانات"
