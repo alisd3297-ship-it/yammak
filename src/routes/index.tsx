@@ -413,7 +413,7 @@ function CustomerHome() {
 
           <section className="mt-6 px-4">
             <h2 className="mb-3 text-base font-bold">خدمات إضافية</h2>
-            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+            <div className="grid grid-cols-4 gap-2 sm:grid-cols-4 sm:gap-3">
               {EXTRA_SERVICES.map((s) => (
                 <MainTile key={s.to + s.label} item={s} />
               ))}
