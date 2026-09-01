@@ -24,6 +24,7 @@ import {
   type TripStatus,
 } from "@/lib/taxi";
 import { changeTripStatus, createTaxiTrip, quoteTaxiTrip, rateTrip } from "@/lib/taxi.functions";
+import { ensureLocationPermission } from "@/lib/native-bridge";
 
 export const Route = createFileRoute("/taxi")({
   beforeLoad: requireCustomerFlow,
@@ -150,6 +151,7 @@ function TaxiPage() {
       toast.error("جهازك ما يدعم تحديد الموقع");
       return;
     }
+    void ensureLocationPermission().then(() => {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const c = { lat: pos.coords.latitude, lng: pos.coords.longitude };

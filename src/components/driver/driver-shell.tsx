@@ -10,6 +10,7 @@ import { useSignOut } from "@/lib/sign-out";
 import { OPERATING_LOCATION_COORDS } from "@/lib/location";
 import { fireAlert, requestNotificationPermission, unlockAlertSound } from "@/lib/notify-alerts";
 import { cn } from "@/lib/utils";
+import { ensureLocationPermission } from "@/lib/native-bridge";
 
 /** بث موقع المندوب أثناء التوفر + تنبيهه لحظياً بالعروض الجديدة. */
 export function useDriverPresence(isAvailable: boolean) {
@@ -91,11 +92,15 @@ export function useDriverPresence(isAvailable: boolean) {
 
     const pushOnce = (force = false) => {
       if (!hasGeo) return sendFallback();
-      return navigator.geolocation.getCurrentPosition(
-        (pos) => void send(pos.coords.latitude, pos.coords.longitude, force),
-        onError,
-        { enableHighAccuracy: true, timeout: 15_000, maximumAge: 30_000 },
-      );
+      void ensureLocationPermission().then((granted) => {
+        if (!granted) return sendFallback();
+        navigator.geolocation.getCurrentPosition(
+          (pos) => void send(pos.coords.latitude, pos.coords.longitude, force),
+          onError,
+          { enableHighAccuracy: true, timeout: 15_000, maximumAge: 30_000 },
+        );
+      });
+      return;
     };
 
     pushOnce(true);

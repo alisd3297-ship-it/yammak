@@ -14,6 +14,7 @@ import { isPharmacyProvider } from "@/lib/verticals";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { formatIQD } from "@/lib/orders";
 import { sortByCheapest, useCheapestPrices } from "@/lib/cheapest";
+import { ensureLocationPermission } from "@/lib/native-bridge";
 
 export const Route = createFileRoute("/stores/")({
   beforeLoad: requireCustomerFlow,
@@ -108,6 +109,7 @@ function StoresPage() {
       setSort("rating");
       return;
     }
+    void ensureLocationPermission().then(() => {
     navigator.geolocation.getCurrentPosition(
       (pos) => setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
       () => {
