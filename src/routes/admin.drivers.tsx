@@ -475,6 +475,112 @@ function AdminDriversPage() {
                     {d.is_approved ? "تعليق" : "رفض"}
                   </Button>
                 </div>
+                <div className="mt-2 flex gap-2">
+                  <Button
+                    variant="secondary"
+                    className="h-10 flex-1"
+                    disabled={busyId === d.user_id}
+                    onClick={() => {
+                      setEditFor(editFor === d.user_id ? null : d.user_id);
+                      setEditForm({
+                        fullName: d.full_name ?? "",
+                        phone: d.phone ?? "",
+                        kind:
+                          d.worker_kind === "taxi" || d.requested_kind === "taxi"
+                            ? "taxi"
+                            : "delivery",
+                        vehicleType: (d.vehicle_type ?? "bike") as VehicleType,
+                        vehicleMake: d.vehicle_make ?? "",
+                        vehicleModel: d.vehicle_model ?? "",
+                        vehicleColor: d.vehicle_color ?? "",
+                        plateNumber: d.plate_number ?? "",
+                      });
+                    }}
+                  >
+                    تعديل البيانات
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="h-10 flex-1"
+                    disabled={busyId === d.user_id}
+                    onClick={() => toggleActive(d.user_id, !d.is_approved)}
+                  >
+                    {d.is_approved ? "تعطيل" : "تفعيل"}
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    className="h-10"
+                    disabled={busyId === d.user_id}
+                    onClick={() => deleteDriver(d.user_id)}
+                  >
+                    حذف
+                  </Button>
+                </div>
+                {editFor === d.user_id && (
+                  <div className="mt-3 space-y-2 rounded-xl bg-muted p-3">
+                    {(
+                      [
+                        ["fullName", "اسم السائق"],
+                        ["phone", "رقم الهاتف"],
+                        ["vehicleMake", "نوع المركبة (الشركة)"],
+                        ["vehicleModel", "الموديل"],
+                        ["vehicleColor", "اللون"],
+                        ["plateNumber", "رقم اللوحة"],
+                      ] as const
+                    ).map(([key, label]) => (
+                      <input
+                        key={key}
+                        value={editForm[key]}
+                        onChange={(e) => setEditForm((f) => ({ ...f, [key]: e.target.value }))}
+                        placeholder={label}
+                        aria-label={label}
+                        className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                      />
+                    ))}
+                    <div className="flex gap-2">
+                      <select
+                        value={editForm.kind}
+                        aria-label="نوع السائق"
+                        onChange={(e) =>
+                          setEditForm((f) => ({
+                            ...f,
+                            kind: e.target.value as "delivery" | "taxi",
+                          }))
+                        }
+                        className="h-10 flex-1 rounded-md border border-input bg-background px-2 text-sm"
+                      >
+                        <option value="delivery">مندوب توصيل</option>
+                        <option value="taxi">سائق تكسي</option>
+                      </select>
+                      <select
+                        value={editForm.vehicleType}
+                        aria-label="نوع مركبة التوصيل"
+                        onChange={(e) =>
+                          setEditForm((f) => ({ ...f, vehicleType: e.target.value as VehicleType }))
+                        }
+                        className="h-10 flex-1 rounded-md border border-input bg-background px-2 text-sm"
+                      >
+                        {Object.entries(VEHICLE_LABELS).map(([v, label]) => (
+                          <option key={v} value={v}>
+                            {label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        className="h-10 flex-1"
+                        disabled={busyId === d.user_id}
+                        onClick={() => saveEdit(d.user_id)}
+                      >
+                        حفظ
+                      </Button>
+                      <Button variant="ghost" className="h-10" onClick={() => setEditFor(null)}>
+                        إلغاء
+                      </Button>
+                    </div>
+                  </div>
+                )}
                 {rejectFor === d.user_id && (
                   <div className="mt-3 space-y-2 rounded-xl bg-muted p-3">
                     <input
