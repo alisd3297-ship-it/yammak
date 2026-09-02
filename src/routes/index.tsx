@@ -138,15 +138,20 @@ function MainTile({ item }: { item: MainService }) {
   return (
     <Link
       to={item.to}
-      className="flex h-full flex-col items-center gap-2 rounded-3xl border border-border/60 bg-card p-3 text-center shadow-soft transition hover:shadow-card active:scale-95"
+      className="flex h-full flex-col items-center gap-1.5 rounded-2xl border border-border/60 bg-card p-2 text-center shadow-soft transition hover:shadow-card active:scale-95 sm:gap-2 sm:rounded-3xl sm:p-3"
     >
       <span
-        className={cn("flex size-12 items-center justify-center rounded-2xl", TONE_TILE[item.tone])}
+        className={cn(
+          "flex size-10 items-center justify-center rounded-xl sm:size-12 sm:rounded-2xl",
+          TONE_TILE[item.tone],
+        )}
       >
-        <Icon className="size-6" />
+        <Icon className="size-5 sm:size-6" />
       </span>
-      <span className="text-xs font-bold leading-tight">{item.label}</span>
-      <span className="text-[10px] leading-tight text-muted-foreground">{item.hint}</span>
+      <span className="text-[11px] font-bold leading-tight sm:text-xs">{item.label}</span>
+      <span className="hidden text-[10px] leading-tight text-muted-foreground sm:block">
+        {item.hint}
+      </span>
     </Link>
   );
 }
@@ -156,9 +161,9 @@ type QuickTo = "/request-anything" | "/assistant" | "/nearby" | "/map" | "/marke
 /** هيدر + هيرو الواجهة الرئيسية بهوية لبابك الزرقاء. */
 function HomeHero({ term, setTerm }: { term: string; setTerm: (v: string) => void }) {
   return (
-    <header className="hero-gradient rounded-b-[2rem] px-4 pb-10 pt-5 text-primary-foreground shadow-card">
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-        <div className="flex min-w-0 items-center gap-2 rounded-2xl bg-primary-foreground/15 px-3 py-2 backdrop-blur">
+    <header className="hero-gradient rounded-b-[2rem] px-4 pb-5 pt-4 text-primary-foreground shadow-card">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+        <div className="flex min-w-0 items-center gap-2 rounded-2xl bg-primary-foreground/15 px-3 py-1.5 backdrop-blur">
           <MapPin className="size-4 shrink-0" />
           <span className="min-w-0">
             <span className="block text-[10px] leading-none opacity-80">التوصيل إلى</span>
@@ -169,47 +174,47 @@ function HomeHero({ term, setTerm }: { term: string; setTerm: (v: string) => voi
           <Link
             to="/wallet"
             aria-label="المحفظة"
-            className="flex size-11 items-center justify-center rounded-2xl bg-primary-foreground/15 backdrop-blur transition hover:bg-primary-foreground/25"
+            className="flex size-10 items-center justify-center rounded-2xl bg-primary-foreground/15 backdrop-blur transition hover:bg-primary-foreground/25"
           >
             <Wallet className="size-5" />
           </Link>
           <Link
             to="/notifications"
             aria-label="الإشعارات"
-            className="flex size-11 items-center justify-center rounded-2xl bg-primary-foreground/15 backdrop-blur transition hover:bg-primary-foreground/25"
+            className="flex size-10 items-center justify-center rounded-2xl bg-primary-foreground/15 backdrop-blur transition hover:bg-primary-foreground/25"
           >
             <Bell className="size-5" />
           </Link>
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4">
+      <div className="mt-3 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3">
         <img
           src={logoUrl}
           alt="شعار لبابك"
           width={88}
           height={88}
-          className="size-20 shrink-0 rounded-2xl bg-primary-foreground p-2 shadow-card sm:size-[88px]"
+          className="size-16 shrink-0 rounded-2xl bg-primary-foreground p-1.5 shadow-card sm:size-[88px]"
         />
         <div className="min-w-0">
-          <h1 className="truncate text-3xl font-black leading-tight tracking-tight sm:text-4xl">
+          <h1 className="truncate text-2xl font-black leading-tight tracking-tight sm:text-4xl">
             لبابك
           </h1>
-          <p className="mt-1 text-sm/6 opacity-90">كل خدماتك توصل لباب بيتك</p>
-          <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/15 px-3 py-1 text-[11px] font-bold backdrop-blur">
-            <Bike className="size-3.5" />
+          <p className="text-xs/5 opacity-90 sm:mt-1 sm:text-sm/6">كل خدماتك توصل لباب بيتك</p>
+          <p className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/15 px-2.5 py-0.5 text-[10px] font-bold backdrop-blur">
+            <Bike className="size-3" />
             توصيل سريع داخل الحسينية
           </p>
         </div>
       </div>
 
-      <div className="relative mt-5">
+      <div className="relative mt-3">
         <Search className="pointer-events-none absolute end-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={term}
           onChange={(e) => setTerm(e.target.value)}
           placeholder="دور على مطعم، خدمة، متجر أو أي شي..."
-          className="h-14 rounded-2xl border-none bg-card pe-12 text-base text-foreground shadow-card"
+          className="h-12 rounded-2xl border-none bg-card pe-12 text-base text-foreground shadow-card sm:h-14"
           aria-label="بحث"
         />
       </div>
@@ -312,10 +317,10 @@ function CustomerHome() {
         </section>
       ) : (
         <>
-          <section className="mt-4 px-4">
+          <section className="-mt-1 px-4">
             <div className="ads-glow rounded-3xl p-[1px]">
-              <div className="rounded-[22px] bg-card/95 p-2">
-                <div className="mb-1.5 flex items-center justify-between gap-3">
+              <div className="rounded-[22px] bg-card/95 p-1.5">
+                <div className="mb-1 flex items-center justify-between gap-3 px-1">
                   <h2 className="text-xs font-black">عروض وخصومات</h2>
                   <Link to="/ads" className="shrink-0 text-[10px] font-semibold text-primary">
                     أعلن معنا
@@ -330,7 +335,7 @@ function CustomerHome() {
             </div>
           </section>
 
-          <section className="mt-4 px-4">
+          <section className="mt-2 px-4">
             <div className="ads-glow rounded-3xl p-[1px]">
               <div className="rounded-[22px] bg-card/95 p-2">
                 <div className="flex gap-2 overflow-x-auto pb-1">
@@ -362,9 +367,9 @@ function CustomerHome() {
             </div>
           </section>
 
-          <section className="mt-5 px-4">
-            <h2 className="mb-3 text-base font-bold">الخدمات الرئيسية</h2>
-            <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
+          <section className="mt-3 px-4">
+            <h2 className="mb-2 text-sm font-bold sm:mb-3 sm:text-base">الخدمات الرئيسية</h2>
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-6 sm:gap-3">
               {MAIN_SERVICES.map((s) => (
                 <MainTile key={s.to + s.label} item={s} />
               ))}
