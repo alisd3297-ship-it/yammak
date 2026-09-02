@@ -312,10 +312,10 @@ function CustomerHome() {
         </section>
       ) : (
         <>
-          <section className="mt-4 px-4">
+          <section className="-mt-1 px-4">
             <div className="ads-glow rounded-3xl p-[1px]">
-              <div className="rounded-[22px] bg-card/95 p-2">
-                <div className="mb-1.5 flex items-center justify-between gap-3">
+              <div className="rounded-[22px] bg-card/95 p-1.5">
+                <div className="mb-1 flex items-center justify-between gap-3 px-1">
                   <h2 className="text-xs font-black">عروض وخصومات</h2>
                   <Link to="/ads" className="shrink-0 text-[10px] font-semibold text-primary">
                     أعلن معنا
@@ -330,7 +330,7 @@ function CustomerHome() {
             </div>
           </section>
 
-          <section className="mt-4 px-4">
+          <section className="mt-2 px-4">
             <div className="ads-glow rounded-3xl p-[1px]">
               <div className="rounded-[22px] bg-card/95 p-2">
                 <div className="flex gap-2 overflow-x-auto pb-1">
@@ -362,9 +362,9 @@ function CustomerHome() {
             </div>
           </section>
 
-          <section className="mt-5 px-4">
-            <h2 className="mb-3 text-base font-bold">الخدمات الرئيسية</h2>
-            <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
+          <section className="mt-3 px-4">
+            <h2 className="mb-2 text-sm font-bold sm:mb-3 sm:text-base">الخدمات الرئيسية</h2>
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-6 sm:gap-3">
               {MAIN_SERVICES.map((s) => (
                 <MainTile key={s.to + s.label} item={s} />
               ))}
