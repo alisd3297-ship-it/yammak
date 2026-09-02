@@ -156,9 +156,9 @@ type QuickTo = "/request-anything" | "/assistant" | "/nearby" | "/map" | "/marke
 /** هيدر + هيرو الواجهة الرئيسية بهوية لبابك الزرقاء. */
 function HomeHero({ term, setTerm }: { term: string; setTerm: (v: string) => void }) {
   return (
-    <header className="hero-gradient rounded-b-[2rem] px-4 pb-10 pt-5 text-primary-foreground shadow-card">
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-        <div className="flex min-w-0 items-center gap-2 rounded-2xl bg-primary-foreground/15 px-3 py-2 backdrop-blur">
+    <header className="hero-gradient rounded-b-[2rem] px-4 pb-5 pt-4 text-primary-foreground shadow-card">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+        <div className="flex min-w-0 items-center gap-2 rounded-2xl bg-primary-foreground/15 px-3 py-1.5 backdrop-blur">
           <MapPin className="size-4 shrink-0" />
           <span className="min-w-0">
             <span className="block text-[10px] leading-none opacity-80">التوصيل إلى</span>
@@ -169,47 +169,47 @@ function HomeHero({ term, setTerm }: { term: string; setTerm: (v: string) => voi
           <Link
             to="/wallet"
             aria-label="المحفظة"
-            className="flex size-11 items-center justify-center rounded-2xl bg-primary-foreground/15 backdrop-blur transition hover:bg-primary-foreground/25"
+            className="flex size-10 items-center justify-center rounded-2xl bg-primary-foreground/15 backdrop-blur transition hover:bg-primary-foreground/25"
           >
             <Wallet className="size-5" />
           </Link>
           <Link
             to="/notifications"
             aria-label="الإشعارات"
-            className="flex size-11 items-center justify-center rounded-2xl bg-primary-foreground/15 backdrop-blur transition hover:bg-primary-foreground/25"
+            className="flex size-10 items-center justify-center rounded-2xl bg-primary-foreground/15 backdrop-blur transition hover:bg-primary-foreground/25"
           >
             <Bell className="size-5" />
           </Link>
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4">
+      <div className="mt-3 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3">
         <img
           src={logoUrl}
           alt="شعار لبابك"
           width={88}
           height={88}
-          className="size-20 shrink-0 rounded-2xl bg-primary-foreground p-2 shadow-card sm:size-[88px]"
+          className="size-16 shrink-0 rounded-2xl bg-primary-foreground p-1.5 shadow-card sm:size-[88px]"
         />
         <div className="min-w-0">
-          <h1 className="truncate text-3xl font-black leading-tight tracking-tight sm:text-4xl">
+          <h1 className="truncate text-2xl font-black leading-tight tracking-tight sm:text-4xl">
             لبابك
           </h1>
-          <p className="mt-1 text-sm/6 opacity-90">كل خدماتك توصل لباب بيتك</p>
-          <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/15 px-3 py-1 text-[11px] font-bold backdrop-blur">
-            <Bike className="size-3.5" />
+          <p className="text-xs/5 opacity-90 sm:mt-1 sm:text-sm/6">كل خدماتك توصل لباب بيتك</p>
+          <p className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/15 px-2.5 py-0.5 text-[10px] font-bold backdrop-blur">
+            <Bike className="size-3" />
             توصيل سريع داخل الحسينية
           </p>
         </div>
       </div>
 
-      <div className="relative mt-5">
+      <div className="relative mt-3">
         <Search className="pointer-events-none absolute end-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={term}
           onChange={(e) => setTerm(e.target.value)}
           placeholder="دور على مطعم، خدمة، متجر أو أي شي..."
-          className="h-14 rounded-2xl border-none bg-card pe-12 text-base text-foreground shadow-card"
+          className="h-12 rounded-2xl border-none bg-card pe-12 text-base text-foreground shadow-card sm:h-14"
           aria-label="بحث"
         />
       </div>
