@@ -88,10 +88,16 @@ function AdminThemePage() {
   }
 
   return (
-    <PageShell title="ألوان التطبيق" description="غيّر هوية ألوان لبابك مباشرة بدون تعديل الكود.">
+    <PageShell>
       <AdminNav />
+      <header className="space-y-1 px-4 pt-4">
+        <h1 className="text-xl font-extrabold">ألوان التطبيق</h1>
+        <p className="text-sm text-muted-foreground">
+          غيّر هوية ألوان لبابك مباشرة بدون تعديل الكود.
+        </p>
+      </header>
 
-      <section className="space-y-3">
+      <section className="space-y-3 px-4 pt-4">
         <h2 className="text-base font-bold">أنماط جاهزة</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {BRAND_PRESETS.map((p) => (
@@ -123,7 +129,7 @@ function AdminThemePage() {
         </div>
       </section>
 
-      <section className="space-y-3">
+      <section className="space-y-3 px-4 pt-4">
         <h2 className="text-base font-bold">ألوان مخصصة</h2>
         <div className="grid gap-3 sm:grid-cols-2">
           {FIELDS.map((f) => (
@@ -149,7 +155,7 @@ function AdminThemePage() {
         </div>
       </section>
 
-      <section className="space-y-3">
+      <section className="space-y-3 px-4 pt-4">
         <h2 className="text-base font-bold">معاينة</h2>
         <div className="rounded-2xl border border-border bg-card p-4 shadow-card">
           <p className="mb-3 text-sm text-muted-foreground">
@@ -166,7 +172,7 @@ function AdminThemePage() {
         </div>
       </section>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 px-4 pt-4">
         <Button onClick={save} disabled={saving}>
           {saving ? "جارٍ الحفظ…" : "حفظ ونشر للجميع"}
         </Button>
