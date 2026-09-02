@@ -20,13 +20,13 @@ const config: CapacitorConfig = {
     allowMixedContent: false,
     // اسم مستعرض المستخدم يساعد على تمييز طلبات التطبيق في السجلات
     appendUserAgent: "LubabakApp/Android",
-    backgroundColor: "#5c2018",
+    backgroundColor: "#111111",
   },
   ios: {
     contentInset: "always",
     limitsNavigationsToAppBoundDomains: false,
     appendUserAgent: "LubabakApp/iOS",
-    backgroundColor: "#5c2018",
+    backgroundColor: "#111111",
   },
   server: {
     // Hosted Wrapper: يفتح التطبيق نسخة الإنتاج المنشورة.
@@ -41,7 +41,7 @@ const config: CapacitorConfig = {
     SplashScreen: {
       launchShowDuration: 1500,
       launchAutoHide: true,
-      backgroundColor: "#5c2018",
+      backgroundColor: "#111111",
       androidScaleType: "CENTER_CROP",
       androidSplashResourceName: "splash",
       showSpinner: false,
@@ -50,7 +50,7 @@ const config: CapacitorConfig = {
     },
     StatusBar: {
       style: "DARK",
-      backgroundColor: "#5c2018",
+      backgroundColor: "#111111",
       overlaysWebView: false,
     },
     Keyboard: {
