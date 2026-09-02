@@ -1,4 +1,14 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  applyBrand,
+  BRAND_SETTINGS_KEY,
+  cacheBrand,
+  DEFAULT_BRAND,
+  parseBrand,
+  readCachedBrand,
+  type BrandTheme,
+} from "@/lib/brand-theme";
 
 export type ThemeMode = "light" | "dark" | "auto";
 
@@ -8,6 +18,10 @@ type ThemeApi = {
   mode: ThemeMode;
   resolved: "light" | "dark";
   setMode: (mode: ThemeMode) => void;
+  /** ألوان الهوية الحالية (قابلة للتغيير من إعدادات التطبيق) */
+  brand: BrandTheme;
+  /** تطبيق ألوان جديدة محلياً فوراً (الحفظ العام يتم من صفحة الإعدادات) */
+  applyBrandPreview: (theme: BrandTheme) => void;
 };
 
 const ThemeContext = createContext<ThemeApi | null>(null);
@@ -21,6 +35,7 @@ function systemPrefersDark(): boolean {
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [mode, setModeState] = useState<ThemeMode>("auto");
   const [systemDark, setSystemDark] = useState(false);
+  const [brand, setBrand] = useState<BrandTheme>(DEFAULT_BRAND);
 
   useEffect(() => {
     try {
@@ -35,6 +50,31 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const onChange = (e: MediaQueryListEvent) => setSystemDark(e.matches);
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  // ألوان الهوية: من الكاش فوراً ثم من إعدادات التطبيق العامة
+  useEffect(() => {
+    const cached = readCachedBrand();
+    if (cached) {
+      setBrand(cached);
+      applyBrand(cached);
+    }
+    let cancelled = false;
+    void (async () => {
+      const { data } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", BRAND_SETTINGS_KEY)
+        .maybeSingle();
+      if (cancelled || !data?.value) return;
+      const next = parseBrand(data.value);
+      setBrand(next);
+      applyBrand(next);
+      cacheBrand(next);
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const resolved: "light" | "dark" = mode === "auto" ? (systemDark ? "dark" : "light") : mode;
@@ -57,8 +97,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
           /* التخزين غير متاح */
         }
       },
+      brand,
+      applyBrandPreview: (next) => {
+        setBrand(next);
+        applyBrand(next);
+        cacheBrand(next);
+      },
     }),
-    [mode, resolved],
+    [mode, resolved, brand],
   );
 
   return <ThemeContext.Provider value={api}>{children}</ThemeContext.Provider>;
@@ -66,7 +112,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
 export function useTheme(): ThemeApi {
   const ctx = useContext(ThemeContext);
-  if (!ctx) return { mode: "auto", resolved: "light", setMode: () => undefined };
+  if (!ctx)
+    return {
+      mode: "auto",
+      resolved: "light",
+      setMode: () => undefined,
+      brand: DEFAULT_BRAND,
+      applyBrandPreview: () => undefined,
+    };
   return ctx;
 }
 
