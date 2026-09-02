@@ -68,30 +68,30 @@
 
 :root {
   --radius: 1rem;
-  /* هوية لبابك الجديدة: أحمر عميق وكريمي */
-  --background: oklch(0.95 0.015 85);
-  --foreground: oklch(0.22 0.03 30);
-  --card: oklch(0.99 0.008 85);
-  --card-foreground: oklch(0.22 0.03 30);
-  --popover: oklch(0.99 0.008 85);
-  --popover-foreground: oklch(0.22 0.03 30);
-  --primary: oklch(0.38 0.1 32);
-  --primary-foreground: oklch(0.98 0.01 85);
-  --secondary: oklch(0.5 0.13 40);
-  --secondary-foreground: oklch(0.98 0.01 85);
-  --muted: oklch(0.92 0.02 75);
-  --muted-foreground: oklch(0.48 0.03 45);
-  --accent: oklch(0.9 0.05 75);
-  --accent-foreground: oklch(0.36 0.09 32);
+  /* هوية لبابك الجديدة: أسود وأحمر */
+  --background: oklch(0.96 0.003 27);
+  --foreground: oklch(0.18 0.005 27);
+  --card: oklch(0.995 0.002 27);
+  --card-foreground: oklch(0.18 0.005 27);
+  --popover: oklch(0.995 0.002 27);
+  --popover-foreground: oklch(0.18 0.005 27);
+  --primary: oklch(0.55 0.22 27);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.24 0.005 27);
+  --secondary-foreground: oklch(0.98 0 0);
+  --muted: oklch(0.92 0.004 27);
+  --muted-foreground: oklch(0.48 0.01 27);
+  --accent: oklch(0.93 0.03 27);
+  --accent-foreground: oklch(0.42 0.18 27);
   --destructive: oklch(0.55 0.21 27);
   --destructive-foreground: oklch(0.99 0 0);
   --success: oklch(0.62 0.16 150);
   --success-foreground: oklch(0.99 0 0);
   --warning: oklch(0.75 0.15 75);
   --warning-foreground: oklch(0.2 0.02 75);
-  --border: oklch(0.88 0.02 75);
-  --input: oklch(0.88 0.02 75);
-  --ring: oklch(0.38 0.1 32);
+  --border: oklch(0.89 0.005 27);
+  --input: oklch(0.89 0.005 27);
+  --ring: oklch(0.55 0.22 27);
   /* ألوان مساعدة متناسقة مع الهوية */
   --brand-blue: oklch(0.55 0.17 250);
   --brand-blue-foreground: oklch(0.99 0 0);
@@ -105,19 +105,19 @@
   --brand-purple-foreground: oklch(0.99 0 0);
   /* سطح الحقول (input/textarea/select): شفاف في النهاري كما هو */
   --field: transparent;
-  --elev-soft: 0 2px 10px -2px oklch(0.3 0.06 40 / 0.12);
-  --elev-card: 0 8px 24px -12px oklch(0.3 0.06 40 / 0.25);
-  /* ألوان الأيقونات: أساسي أحمر عميق وثانوي دافئ أوضح من muted */
-  --icon-strong: oklch(0.42 0.11 32);
-  --icon-soft: oklch(0.45 0.04 45);
-  --sidebar: oklch(0.25 0.05 30);
-  --sidebar-foreground: oklch(0.96 0.01 85);
-  --sidebar-primary: oklch(0.68 0.15 62);
-  --sidebar-primary-foreground: oklch(0.25 0.05 30);
-  --sidebar-accent: oklch(0.33 0.05 30);
-  --sidebar-accent-foreground: oklch(0.96 0.01 85);
-  --sidebar-border: oklch(0.38 0.05 30);
-  --sidebar-ring: oklch(0.68 0.15 62);
+  --elev-soft: 0 2px 10px -2px oklch(0.2 0.02 27 / 0.12);
+  --elev-card: 0 8px 24px -12px oklch(0.2 0.02 27 / 0.25);
+  /* ألوان الأيقونات: أساسي أحمر قوي وثانوي فحمي أوضح من muted */
+  --icon-strong: oklch(0.5 0.2 27);
+  --icon-soft: oklch(0.42 0.02 27);
+  --sidebar: oklch(0.16 0.005 27);
+  --sidebar-foreground: oklch(0.97 0 0);
+  --sidebar-primary: oklch(0.55 0.22 27);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.26 0.008 27);
+  --sidebar-accent-foreground: oklch(0.97 0 0);
+  --sidebar-border: oklch(0.3 0.008 27);
+  --sidebar-ring: oklch(0.55 0.22 27);
 }
 
 /*
