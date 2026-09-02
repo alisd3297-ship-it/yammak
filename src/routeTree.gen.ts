@@ -64,6 +64,7 @@ import { Route as AdminServicesRouteImport } from './routes/admin.services'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminSettlementsRouteImport } from './routes/admin.settlements'
 import { Route as AdminSubscribersRouteImport } from './routes/admin.subscribers'
+import { Route as AdminThemeRouteImport } from './routes/admin.theme'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminZonesRouteImport } from './routes/admin.zones'
 import { Route as AdsIndexRouteImport } from './routes/ads.index'
@@ -367,6 +368,11 @@ const AdminSubscribersRoute = AdminSubscribersRouteImport.update({
   path: '/admin/subscribers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminThemeRoute = AdminThemeRouteImport.update({
+  id: '/admin/theme',
+  path: '/admin/theme',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/admin/users',
   path: '/admin/users',
@@ -559,6 +565,7 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/settlements': typeof AdminSettlementsRoute
   '/admin/subscribers': typeof AdminSubscribersRoute
+  '/admin/theme': typeof AdminThemeRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/zones': typeof AdminZonesRoute
   '/ads/$id': typeof AdsIdRoute
@@ -643,6 +650,7 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/settlements': typeof AdminSettlementsRoute
   '/admin/subscribers': typeof AdminSubscribersRoute
+  '/admin/theme': typeof AdminThemeRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/zones': typeof AdminZonesRoute
   '/ads/$id': typeof AdsIdRoute
@@ -728,6 +736,7 @@ export interface FileRoutesById {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/settlements': typeof AdminSettlementsRoute
   '/admin/subscribers': typeof AdminSubscribersRoute
+  '/admin/theme': typeof AdminThemeRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/zones': typeof AdminZonesRoute
   '/ads/$id': typeof AdsIdRoute
@@ -814,6 +823,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/settlements'
     | '/admin/subscribers'
+    | '/admin/theme'
     | '/admin/users'
     | '/admin/zones'
     | '/ads/$id'
@@ -898,6 +908,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/settlements'
     | '/admin/subscribers'
+    | '/admin/theme'
     | '/admin/users'
     | '/admin/zones'
     | '/ads/$id'
@@ -982,6 +993,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/settlements'
     | '/admin/subscribers'
+    | '/admin/theme'
     | '/admin/users'
     | '/admin/zones'
     | '/ads/$id'
@@ -1067,6 +1079,7 @@ export interface RootRouteChildren {
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSettlementsRoute: typeof AdminSettlementsRoute
   AdminSubscribersRoute: typeof AdminSubscribersRoute
+  AdminThemeRoute: typeof AdminThemeRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminZonesRoute: typeof AdminZonesRoute
   AdsIdRoute: typeof AdsIdRoute
@@ -1484,6 +1497,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSubscribersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/theme': {
+      id: '/admin/theme'
+      path: '/admin/theme'
+      fullPath: '/admin/theme'
+      preLoaderRoute: typeof AdminThemeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/users': {
       id: '/admin/users'
       path: '/admin/users'
@@ -1731,6 +1751,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSettlementsRoute: AdminSettlementsRoute,
   AdminSubscribersRoute: AdminSubscribersRoute,
+  AdminThemeRoute: AdminThemeRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminZonesRoute: AdminZonesRoute,
   AdsIdRoute: AdsIdRoute,
