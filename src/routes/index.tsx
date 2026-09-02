@@ -141,12 +141,17 @@ function MainTile({ item }: { item: MainService }) {
       className="flex h-full flex-col items-center gap-1.5 rounded-2xl border border-border/60 bg-card p-2 text-center shadow-soft transition hover:shadow-card active:scale-95 sm:gap-2 sm:rounded-3xl sm:p-3"
     >
       <span
-        className={cn("flex size-10 items-center justify-center rounded-xl sm:size-12 sm:rounded-2xl", TONE_TILE[item.tone])}
+        className={cn(
+          "flex size-10 items-center justify-center rounded-xl sm:size-12 sm:rounded-2xl",
+          TONE_TILE[item.tone],
+        )}
       >
         <Icon className="size-5 sm:size-6" />
       </span>
       <span className="text-[11px] font-bold leading-tight sm:text-xs">{item.label}</span>
-      <span className="hidden text-[10px] leading-tight text-muted-foreground sm:block">{item.hint}</span>
+      <span className="hidden text-[10px] leading-tight text-muted-foreground sm:block">
+        {item.hint}
+      </span>
     </Link>
   );
 }
