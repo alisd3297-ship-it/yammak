@@ -29,6 +29,7 @@ export const Route = createFileRoute("/admin/settings")({
 });
 
 const LINKS = [
+  { to: "/admin/theme", label: "ألوان التطبيق", hint: "تغيير نظام الألوان بدون كود" },
   { to: "/admin/features", label: "مفاتيح الميزات", hint: "تفعيل أو إيقاف ميزات المنصة" },
   { to: "/admin/audit", label: "سجل التدقيق", hint: "كل إجراءات الإدارة" },
   { to: "/admin/ads", label: "الإعلانات", hint: "مراجعة ونشر الإعلانات" },
