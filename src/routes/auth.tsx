@@ -336,6 +336,12 @@ function AuthPage() {
       <Link to="/" className="mt-6 text-center text-sm text-muted-foreground">
         تصفح التطبيق بدون تسجيل
       </Link>
+      <Link
+        to="/privacy"
+        className="mt-2 text-center text-xs text-muted-foreground underline decoration-primary underline-offset-4"
+      >
+        سياسة الخصوصية
+      </Link>
     </div>
   );
 }
