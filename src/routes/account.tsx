@@ -388,6 +388,12 @@ function AccountPage() {
         </Button>
       </div>
 
+      <div className="mx-4 mt-4 text-center text-xs text-muted-foreground">
+        <Link to="/privacy" className="underline decoration-primary underline-offset-4 hover:text-foreground">
+          سياسة الخصوصية
+        </Link>
+      </div>
+
       <BottomNav />
     </PageShell>
   );
