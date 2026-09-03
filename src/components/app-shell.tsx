@@ -331,6 +331,7 @@ const ADMIN_LINKS = [
   { to: "/admin/reports", label: "التقارير", exact: false },
   { to: "/admin/notifications", label: "الإشعارات", exact: false },
   { to: "/admin/monitoring", label: "المراقبة", exact: false },
+  { to: "/admin/push", label: "مراقبة الإشعارات", exact: false },
   { to: "/admin/map", label: "خريطة الطلبات", exact: false },
   { to: "/admin/zones", label: "مناطق التوصيل", exact: false },
   { to: "/admin/marketplace", label: "السوق والضمان", exact: false },
