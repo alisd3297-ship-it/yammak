@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_deletion_requests: {
+        Row: {
+          contact: string
+          created_at: string
+          full_name: string | null
+          handled_at: string | null
+          id: string
+          reason: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          contact: string
+          created_at?: string
+          full_name?: string | null
+          handled_at?: string | null
+          id?: string
+          reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          contact?: string
+          created_at?: string
+          full_name?: string | null
+          handled_at?: string | null
+          id?: string
+          reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ad_categories: {
         Row: {
           color: string
@@ -4737,6 +4770,10 @@ export type Database = {
       provider_finance_summary: {
         Args: { _from: string; _provider_id: string; _to: string }
         Returns: Json
+      }
+      purge_user_personal_data: {
+        Args: { _user_id: string }
+        Returns: undefined
       }
       push_notification: {
         Args: {
