@@ -484,7 +484,7 @@ function PrivacyPage() {
                 <strong>البريد الإلكتروني للدعم:</strong> [ضع بريد الدعم هنا]
               </li>
               <li>
-                <strong>رابط حذف الحساب:</strong> [ضع رابط حذف الحساب هنا]
+                <strong>رابط حذف الحساب:</strong> https://lubabak.lovable.app/delete-account
               </li>
               <li>
                 <strong>رابط سياسة الخصوصية:</strong> [ضع الرابط النهائي هنا]
