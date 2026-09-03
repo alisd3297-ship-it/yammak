@@ -27,7 +27,6 @@ export const deleteMyAccount = createServerFn({ method: "POST" })
 
     // حذف حساب المصادقة يبطل كل الجلسات والتوكنات المرتبطة به تلقائياً
 
-
     const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(userId);
     if (deleteError) {
       console.error("[delete-account] auth delete failed", deleteError.message);
