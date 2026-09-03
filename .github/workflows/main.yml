@@ -1,3 +1,4 @@
+```yaml
 name: Build Android (APK + AAB)
 
 on:
@@ -6,6 +7,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    env:
+      GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
     steps:
       - name: Checkout repository
@@ -25,26 +33,26 @@ jobs:
           rm -rf android
           bunx cap add android
 
-      - name: Restore google-services.json (optional)
-        if: ${{ secrets.GOOGLE_SERVICES_JSON != '' }}
+      - name: Restore google-services.json
+        if: ${{ env.GOOGLE_SERVICES_JSON != '' }}
         run: |
-          printf '%s' "${{ secrets.GOOGLE_SERVICES_JSON }}" > android/app/google-services.json
+          printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
 
-      - name: Restore release keystore (optional)
-        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+      - name: Restore release keystore
+        if: ${{ env.ANDROID_KEYSTORE_BASE64 != '' }}
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/lubabak-release.jks
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/lubabak-release.jks
           cat > android/keystore.properties <<EOF
           storeFile=lubabak-release.jks
-          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
-          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          storePassword=$ANDROID_KEYSTORE_PASSWORD
+          keyAlias=$ANDROID_KEY_ALIAS
+          keyPassword=$ANDROID_KEY_PASSWORD
           EOF
 
       - name: Generate app icons and splash
         run: bunx capacitor-assets generate --android || true
 
-      - name: Apply Android customizations (permissions, name, FCM)
+      - name: Apply Android customizations
         run: node scripts/android-customize.mjs
 
       - name: Apply release signing config
@@ -83,3 +91,4 @@ jobs:
         with:
           name: Lubabak-AAB
           path: android/app/build/outputs/bundle/release/app-release*.aab
+```
