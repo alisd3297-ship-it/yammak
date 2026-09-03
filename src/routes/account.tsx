@@ -24,7 +24,20 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAccount } from "@/lib/auth";
-import { useSignOut } from "@/lib/sign-out";
+import { clearLocalAuthState, useSignOut } from "@/lib/sign-out";
+import { useServerFn } from "@tanstack/react-start";
+import { deleteMyAccount } from "@/lib/account-deletion.functions";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
   SERVICE_PREF_OPTIONS,
   useSaveServicePreferences,
@@ -427,6 +440,73 @@ function ThemeCard() {
           </button>
         ))}
       </div>
+    </section>
+  );
+}
+
+/** إعدادات الحساب: حذف الحساب نهائياً (متطلب Google Play / App Store). */
+function DeleteAccountCard() {
+  const deleteAccount = useServerFn(deleteMyAccount);
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  async function confirmDelete() {
+    setBusy(true);
+    try {
+      await deleteAccount({});
+      clearLocalAuthState();
+      try {
+        await supabase.auth.signOut();
+      } catch {
+        /* الحساب محذوف أصلاً */
+      }
+      toast.success("تم حذف حسابك وجميع بياناتك الشخصية نهائياً");
+      window.location.href = "/auth";
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذر حذف الحساب، حاول لاحقاً");
+      setBusy(false);
+      setOpen(false);
+    }
+  }
+
+  return (
+    <section className="mx-4 mt-4 rounded-2xl border border-destructive/30 bg-card p-5 shadow-card">
+      <h2 className="flex items-center gap-2 font-bold text-destructive">
+        <Trash2 className="size-4" /> إعدادات الحساب
+      </h2>
+      <p className="mt-1 text-xs text-muted-foreground">
+        حذف الحساب إجراء نهائي: تُحذف بياناتك الشخصية وعناوينك وإشعاراتك ولن تتمكن من تسجيل الدخول
+        مرة أخرى.
+      </p>
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialogTrigger asChild>
+          <Button variant="destructive" className="mt-3 h-11 w-full">
+            <Trash2 className="size-4" /> حذف الحساب نهائياً
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent dir="rtl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>هل تريد حذف حسابك نهائياً؟</AlertDialogTitle>
+            <AlertDialogDescription>
+              سيتم حذف ملفك الشخصي وعناوينك وإشعاراتك وأجهزتك وإعلاناتك بشكل دائم، ولن يعود بإمكانك
+              تسجيل الدخول. تبقى سجلات الطلبات والمدفوعات محفوظة لأسباب قانونية ومالية بدون ربطها
+              بهويتك. لا يمكن التراجع عن هذه العملية.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={busy}>إلغاء</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={busy}
+              onClick={(e) => {
+                e.preventDefault();
+                void confirmDelete();
+              }}
+            >
+              {busy ? "جاري الحذف..." : "تأكيد الحذف"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 }
