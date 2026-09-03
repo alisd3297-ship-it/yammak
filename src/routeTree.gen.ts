@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BusinessRouteImport } from './routes/business'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CourierRouteImport } from './routes/courier'
+import { Route as DeleteAccountRouteImport } from './routes/delete-account'
 import { Route as DriverRouteImport } from './routes/driver'
 import { Route as DriverAccountRouteImport } from './routes/driver-account'
 import { Route as DriverEarningsRouteImport } from './routes/driver-earnings'
@@ -127,6 +128,11 @@ const CheckoutRoute = CheckoutRouteImport.update({
 const CourierRoute = CourierRouteImport.update({
   id: '/courier',
   path: '/courier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeleteAccountRoute = DeleteAccountRouteImport.update({
+  id: '/delete-account',
+  path: '/delete-account',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DriverRoute = DriverRouteImport.update({
@@ -524,6 +530,7 @@ export interface FileRoutesByFullPath {
   '/business': typeof BusinessRoute
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
+  '/delete-account': typeof DeleteAccountRoute
   '/driver': typeof DriverRoute
   '/driver-account': typeof DriverAccountRoute
   '/driver-earnings': typeof DriverEarningsRoute
@@ -610,6 +617,7 @@ export interface FileRoutesByTo {
   '/business': typeof BusinessRoute
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
+  '/delete-account': typeof DeleteAccountRoute
   '/driver': typeof DriverRoute
   '/driver-account': typeof DriverAccountRoute
   '/driver-earnings': typeof DriverEarningsRoute
@@ -697,6 +705,7 @@ export interface FileRoutesById {
   '/business': typeof BusinessRoute
   '/checkout': typeof CheckoutRoute
   '/courier': typeof CourierRoute
+  '/delete-account': typeof DeleteAccountRoute
   '/driver': typeof DriverRoute
   '/driver-account': typeof DriverAccountRoute
   '/driver-earnings': typeof DriverEarningsRoute
@@ -785,6 +794,7 @@ export interface FileRouteTypes {
     | '/business'
     | '/checkout'
     | '/courier'
+    | '/delete-account'
     | '/driver'
     | '/driver-account'
     | '/driver-earnings'
@@ -871,6 +881,7 @@ export interface FileRouteTypes {
     | '/business'
     | '/checkout'
     | '/courier'
+    | '/delete-account'
     | '/driver'
     | '/driver-account'
     | '/driver-earnings'
@@ -957,6 +968,7 @@ export interface FileRouteTypes {
     | '/business'
     | '/checkout'
     | '/courier'
+    | '/delete-account'
     | '/driver'
     | '/driver-account'
     | '/driver-earnings'
@@ -1044,6 +1056,7 @@ export interface RootRouteChildren {
   BusinessRoute: typeof BusinessRoute
   CheckoutRoute: typeof CheckoutRoute
   CourierRoute: typeof CourierRoute
+  DeleteAccountRoute: typeof DeleteAccountRoute
   DriverRoute: typeof DriverRoute
   DriverAccountRoute: typeof DriverAccountRoute
   DriverEarningsRoute: typeof DriverEarningsRoute
@@ -1172,6 +1185,13 @@ declare module '@tanstack/react-router' {
       path: '/courier'
       fullPath: '/courier'
       preLoaderRoute: typeof CourierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/delete-account': {
+      id: '/delete-account'
+      path: '/delete-account'
+      fullPath: '/delete-account'
+      preLoaderRoute: typeof DeleteAccountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/driver': {
@@ -1724,6 +1744,7 @@ const rootRouteChildren: RootRouteChildren = {
   BusinessRoute: BusinessRoute,
   CheckoutRoute: CheckoutRoute,
   CourierRoute: CourierRoute,
+  DeleteAccountRoute: DeleteAccountRoute,
   DriverRoute: DriverRoute,
   DriverAccountRoute: DriverAccountRoute,
   DriverEarningsRoute: DriverEarningsRoute,
