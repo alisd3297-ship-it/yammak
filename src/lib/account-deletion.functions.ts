@@ -25,12 +25,8 @@ export const deleteMyAccount = createServerFn({ method: "POST" })
       throw new Error("تعذر حذف بياناتك، حاول مرة أخرى أو تواصل مع الدعم");
     }
 
-    // إبطال كل الجلسات قبل حذف الحساب
-    try {
-      await supabaseAdmin.auth.admin.signOut(userId, "global");
-    } catch {
-      /* الجلسات ستُبطل تلقائياً مع حذف الحساب */
-    }
+    // حذف حساب المصادقة يبطل كل الجلسات والتوكنات المرتبطة به تلقائياً
+
 
     const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(userId);
     if (deleteError) {
