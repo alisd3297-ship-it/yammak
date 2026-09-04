@@ -15,7 +15,12 @@
     "android:customize": "node scripts/android-customize.mjs",
     "android:assets": "capacitor-assets generate --android",
     "android:sync": "cap sync android",
-    "android:aab": "cd android && ./gradlew bundleRelease"
+    "android:aab": "cd android && ./gradlew bundleRelease",
+    "ios:add": "cap add ios",
+    "ios:customize": "node scripts/ios-customize.mjs",
+    "ios:assets": "capacitor-assets generate --ios",
+    "ios:sync": "cap sync ios",
+    "ios:open": "cap open ios"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.0",

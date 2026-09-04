@@ -25,17 +25,24 @@ jobs:
           rm -rf ios
           bunx cap add ios
 
+      - name: Generate app icon & splash
+        run: bunx capacitor-assets generate --ios
+
+      - name: Customize iOS project (name, permissions, push)
+        run: node scripts/ios-customize.mjs
+
       - name: Sync Capacitor
         run: bunx cap sync ios
 
-      - name: Build iOS archive
+      - name: Build iOS archive (unsigned)
         working-directory: ios/App
         run: |
           xcodebuild archive \
-            -workspace App.xcworkspace \
+            -project App.xcodeproj \
             -scheme App \
             -configuration Release \
             -archivePath "$RUNNER_TEMP/Lababak.xcarchive" \
+            -destination 'generic/platform=iOS' \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO
 
