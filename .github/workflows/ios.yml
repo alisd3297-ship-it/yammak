@@ -1,26 +1,13 @@
-name: Build iOS - Lababak
-
-on:
-  workflow_dispatch:
-
-jobs:
-  build-ios:
-    runs-on: macos-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-
-      - name: Install dependencies
-        run: bun install
-
       - name: Repair sharp for Capacitor Assets (macOS ARM64)
         run: |
           bun pm untrusted || true
-          npm install --ignore-scripts=false --foreground-scripts --prefix node_modules/@capacitor/assets/node_modules/sharp --os=darwin --cpu=arm64 sharp@0.32.6
+          npm install \
+            --prefix node_modules/@capacitor/assets \
+            --ignore-scripts=false \
+            --foreground-scripts \
+            --os=darwin \
+            --cpu=arm64 \
+            sharp@0.32.6
           node -e "require('./node_modules/@capacitor/assets/node_modules/sharp'); console.log('capacitor-assets sharp OK')"
 
       - name: Build web app
