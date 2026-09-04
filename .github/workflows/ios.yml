@@ -17,6 +17,13 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Install sharp native binary (macOS ARM64)
+        run: |
+          bun pm untrusted || true
+          bun add -d @img/sharp-darwin-arm64 --optional || true
+          bun add -d sharp --force || npm install --force --os=darwin --cpu=arm64 sharp
+          node -e "require('sharp'); console.log('sharp OK')"
+
       - name: Build web app
         run: bun run build
 
