@@ -1,11 +1,11 @@
 # إصدار iOS — لبابك (Capacitor)
 
-| العنصر | القيمة |
-| --- | --- |
-| اسم التطبيق | لبابك |
-| Bundle ID | `iq.lababak.app` (نفس Android — ثابت بعد أول رفع) |
-| نمط الإطلاق | Hosted Wrapper — يفتح `https://lubabak.lovable.app` |
-| الأصول | مجلد `assets/` (icon.png, splash.png, splash-dark.png) |
+| العنصر      | القيمة                                                               |
+| ----------- | -------------------------------------------------------------------- |
+| اسم التطبيق | لبابك                                                                |
+| Bundle ID   | `iq.lababak.app` (نفس Android — ثابت بعد أول رفع)                    |
+| نمط الإطلاق | Hosted Wrapper — يفتح `https://lubabak.lovable.app`                  |
+| الأصول      | مجلد `assets/` (icon.png, splash.png, splash-dark.png)               |
 | مشروع Xcode | `ios/App/App.xcodeproj` (يُولَّد بـ `cap add ios`، غير مضاف إلى Git) |
 
 ## ما نُفّذ داخل المشروع
@@ -34,7 +34,7 @@ bun run ios:open          # يفتح Xcode
 
 1. **حساب Apple Developer** ($99/سنة) وتفعيل الوصول إلى App Store Connect.
 2. في **Xcode → Target App → Signing & Capabilities**:
-   - فعّل *Automatically manage signing* واختر فريقك (Team).
+   - فعّل _Automatically manage signing_ واختر فريقك (Team).
    - تأكد أن **Bundle Identifier = `iq.lababak.app`**.
    - أضف Capability: **Push Notifications**، واختر ملف `App.entitlements` إن لم يُربط تلقائياً.
    - أضف Capability: **Background Modes → Remote notifications**.
@@ -51,4 +51,4 @@ bun run ios:open          # يفتح Xcode
    **Product → Archive** → **Distribute App → App Store Connect → Upload**.
 7. بعد اكتمال المعالجة: أضف البناء إلى نسخة TestFlight للاختبار، ثم **Submit for Review**.
 8. ملاحظة مهمة لمراجعة Apple: التطبيق غلاف لموقع منشور — وفّر **حساب تجريبي (اسم مستخدم/كلمة مرور)**
-   في حقل *App Review Information* وإلا يُرفض غالباً بالبند 2.1.
+   في حقل _App Review Information_ وإلا يُرفض غالباً بالبند 2.1.
