@@ -410,8 +410,16 @@ function CheckoutPage() {
             </p>
           </section>
 
-          <Button className="h-13 w-full text-base" disabled={saving} onClick={submitOrder}>
-            {fulfillment === "dine_in" ? "تأكيد الحجز" : "تأكيد الطلب"}
+          <Button
+            className="h-13 w-full text-base"
+            disabled={saving || (fulfillment === "delivery" && feeLoading)}
+            onClick={submitOrder}
+          >
+            {fulfillment === "delivery" && feeLoading
+              ? "جاري حساب أجرة التوصيل…"
+              : fulfillment === "dine_in"
+                ? "تأكيد الحجز"
+                : "تأكيد الطلب"}
           </Button>
         </div>
       )}
