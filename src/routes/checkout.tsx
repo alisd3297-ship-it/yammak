@@ -81,6 +81,7 @@ function CheckoutPage() {
   const {
     data: feeQuote,
     isError: feeError,
+    isFetching: feeLoading,
     refetch: refetchFee,
   } = useQuery({
     queryKey: ["delivery-quote", cart.providerId, coords?.lat, coords?.lng],
