@@ -1,7 +1,7 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 
 /** نطاقات الإنتاج التي تبقى فيها أدوات الإعداد مغلقة مهما كانت الإعدادات. */
-const PRODUCTION_HOSTS = ["lubabak.lovable.app"];
+const PRODUCTION_HOSTS = ["lababak.lovable.app"];
 
 /** هل هذا المضيف بيئة اختبار/معاينة؟ (localhost أو معاينة lovable) */
 export function isPreviewHost(host: string | null | undefined): boolean {

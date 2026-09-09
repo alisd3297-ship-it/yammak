@@ -58,10 +58,7 @@ function FavoritesPage() {
         <h1 className="text-base font-bold">أماكنك المفضلة</h1>
         {items.length ? (
           items.map((p) => (
-            <div
-              key={p.id}
-              className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft"
-            >
+            <div key={p.id} className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft">
               <Link
                 to={href(p.kind)}
                 params={{ id: p.id }}

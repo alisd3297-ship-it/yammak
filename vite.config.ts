@@ -12,4 +12,11 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    build: {
+      // متصفح النظام في أندرويد القديم (Chrome 90) لا يفهم class static blocks
+      // ولا الحقول الخاصة #x، فكانت صفحة الدخول تنهار قبل العرض.
+      target: ["es2020", "chrome87", "safari14"],
+    },
+  },
 });
