@@ -7,7 +7,9 @@ function maskToken(token: string): string {
   return `${token.slice(0, 6)}…${token.slice(-4)}`;
 }
 
-async function assertStaff(context: { supabase: { rpc: (fn: string) => Promise<{ data: unknown }> } }) {
+async function assertStaff(context: {
+  supabase: { rpc: (fn: string) => Promise<{ data: unknown }> };
+}) {
   const { data } = await context.supabase.rpc("is_staff");
   if (!data) throw new Error("غير مصرح بهذا الإجراء");
 }
@@ -201,7 +203,10 @@ export const sendFcmTest = createServerFn({ method: "POST" })
     });
 
     if (res.invalid.length > 0) {
-      await supabaseAdmin.from("push_devices").update({ is_active: false }).in("token", res.invalid);
+      await supabaseAdmin
+        .from("push_devices")
+        .update({ is_active: false })
+        .in("token", res.invalid);
     }
 
     return {

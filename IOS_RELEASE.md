@@ -4,7 +4,7 @@
 | ----------- | -------------------------------------------------------------------- |
 | اسم التطبيق | لبابك                                                                |
 | Bundle ID   | `iq.lababak.app` (نفس Android — ثابت بعد أول رفع)                    |
-| نمط الإطلاق | Hosted Wrapper — يفتح `https://lubabak.lovable.app`                  |
+| نمط الإطلاق | Hosted Wrapper — يفتح `https://lababak.lovable.app`                  |
 | الأصول      | مجلد `assets/` (icon.png, splash.png, splash-dark.png)               |
 | مشروع Xcode | `ios/App/App.xcodeproj` (يُولَّد بـ `cap add ios`، غير مضاف إلى Git) |
 
@@ -44,8 +44,8 @@ bun run ios:open          # يفتح Xcode
 4. في Xcode: **General** → اضبط `Version` (مثلاً 1.0.0) و`Build` (1)، والحد الأدنى iOS 14+.
 5. **App Store Connect**: أنشئ تطبيقاً جديداً باسم «لبابك» بنفس Bundle ID،
    واملأ: الوصف، الكلمات المفتاحية، لقطات الشاشة (6.7" و6.5" و5.5" و iPad إن دعمته)،
-   **رابط سياسة الخصوصية**: `https://lubabak.lovable.app/privacy`،
-   **رابط حذف الحساب**: `https://lubabak.lovable.app/delete-account`،
+   **رابط سياسة الخصوصية**: `https://lababak.lovable.app/privacy`،
+   **رابط حذف الحساب**: `https://lababak.lovable.app/delete-account`،
    واستبيان الخصوصية (الموقع + الإشعارات + الكاميرا + بيانات الحساب).
 6. **الأرشفة والرفع**: في Xcode اختر جهاز `Any iOS Device (arm64)` ثم
    **Product → Archive** → **Distribute App → App Store Connect → Upload**.

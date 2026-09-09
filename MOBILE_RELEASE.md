@@ -6,7 +6,7 @@
 | Package / appId | `iq.lababak.app` (ثابت — لا يتغير بعد أول رفع) |
 | اللون الأساسي / Theme | `#1b3a86` |
 | الاتجاه | RTL، عربي (`lang="ar"`) |
-| نمط الإطلاق | Hosted Wrapper — يفتح `https://lubabak.lovable.app` |
+| نمط الإطلاق | Hosted Wrapper — يفتح `https://lababak.lovable.app` |
 | إعداد Capacitor | `capacitor.config.ts` (webDir = `dist/client`) |
 | أصول الأيقونة/Splash | مجلد `assets/` (icon.png, icon-foreground.png, icon-background.png, splash.png, splash-dark.png) |
 | مشروع أندرويد | يُولَّد آلياً بـ `cap add android` (غير مضاف إلى Git) |
@@ -67,4 +67,4 @@ cd android && ./gradlew bundleRelease   # المخرج: app/build/outputs/bundle
    `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`.
 4. **Google Play Console**: إنشاء التطبيق باسم «لبابك»، رفع الـ AAB، سياسة الخصوصية،
    استبيان أمان البيانات (موقع + إشعارات + كاميرا)، تصنيف المحتوى، ولقطات الشاشة.
-5. **Deep links (اختياري)**: رفع `assetlinks.json` على `lubabak.lovable.app` لتفعيل App Links.
+5. **Deep links (اختياري)**: رفع `assetlinks.json` على `lababak.lovable.app` لتفعيل App Links.

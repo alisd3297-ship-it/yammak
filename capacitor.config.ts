@@ -8,9 +8,9 @@ import type { CapacitorConfig } from "@capacitor/cli";
  * webDir موجود فقط لأن Capacitor يتطلبه (نسخة احتياطية من dist/client).
  *
  * ملاحظة مهمة: appId ثابت بعد أول رفع للمتاجر ولا يجوز تغييره لاحقاً.
- * النطاق المعتمد للإنتاج: lubabak.lovable.app
+ * النطاق المعتمد للإنتاج: lababak.lovable.app
  */
-const PRODUCTION_HOST = "lubabak.lovable.app";
+const PRODUCTION_HOST = "lababak.lovable.app";
 
 const config: CapacitorConfig = {
   appId: "iq.lababak.app",

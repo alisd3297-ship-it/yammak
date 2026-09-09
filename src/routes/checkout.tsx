@@ -386,6 +386,13 @@ function CheckoutPage() {
             ) : (
               <Row label="أجرة التوصيل" value="بدون توصيل" />
             )}
+            {fulfillment === "delivery" && !feeError && feeQuote && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                {feeQuote.hasProviderCoords
+                  ? `المسافة التقريبية: ${feeQuote.km.toFixed(1)} كم`
+                  : "موقع المتجر غير محدد، فالأجرة محسوبة بالحد الأدنى وقد تتغير."}
+              </p>
+            )}
             {feeError && fulfillment === "delivery" && (
               <button
                 type="button"

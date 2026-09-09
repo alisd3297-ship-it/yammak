@@ -152,11 +152,12 @@ export const quoteDeliveryFee = createServerFn({ method: "POST" })
     const orderType = provider.kind === "store" ? "store" : "restaurant";
 
     // نفس دالة المسافة المستخدمة داخل create_customer_order (0 عند غياب الإحداثيات)
+    const hasProviderCoords = provider.lat != null && provider.lng != null;
     let km = 0;
-    if (provider.lat != null && provider.lng != null && data.lat != null && data.lng != null) {
+    if (hasProviderCoords && data.lat != null && data.lng != null) {
       const { data: d } = await context.supabase.rpc("haversine_km", {
-        a_lat: provider.lat,
-        a_lng: provider.lng,
+        a_lat: provider.lat as number,
+        a_lng: provider.lng as number,
         b_lat: data.lat,
         b_lng: data.lng,
       });
@@ -169,5 +170,5 @@ export const quoteDeliveryFee = createServerFn({ method: "POST" })
       _provider_id: provider.id,
       _distance_km: km,
     });
-    return { fee: Number(fee ?? 0), km, orderType };
+    return { fee: Number(fee ?? 0), km, orderType, hasProviderCoords };
   });

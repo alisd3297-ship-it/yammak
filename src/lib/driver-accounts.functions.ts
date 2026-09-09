@@ -4,8 +4,17 @@ import type { VehicleType } from "@/lib/vehicles";
 
 const STAFF_ROLES = ["super_admin", "admin", "supervisor"] as const;
 
-async function assertStaff(context: { supabase: any; userId: string }) {
-  const { data } = await context.supabase
+/** أقل واجهة نحتاجها من عميل قاعدة البيانات هنا: قراءة أدوار المستخدم فقط. */
+type RolesReader = {
+  from: (table: string) => {
+    select: (columns: string) => {
+      eq: (column: string, value: string) => PromiseLike<{ data: { role: string }[] | null }>;
+    };
+  };
+};
+
+async function assertStaff(context: { supabase: unknown; userId: string }) {
+  const { data } = await (context.supabase as RolesReader)
     .from("user_roles")
     .select("role")
     .eq("user_id", context.userId);
@@ -162,25 +171,29 @@ export const updateDriverAccount = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     if (data.fullName !== undefined || data.phone !== undefined) {
-      const patch: Record<string, any> = {};
+      const patch: Record<string, string | number | boolean | null> = {};
       if (data.fullName !== undefined) {
         const name = data.fullName.trim();
         if (name.length < 2) throw new Error("أدخل اسم السائق الكامل");
         patch["full_name"] = name;
       }
       if (data.phone !== undefined) patch["phone"] = data.phone.trim() || null;
-      const { error } = await supabaseAdmin.from("profiles").update(patch as never).eq("id", data.userId);
+      const { error } = await supabaseAdmin
+        .from("profiles")
+        .update(patch as never)
+        .eq("id", data.userId);
       if (error) throw new Error(friendly(error.message));
     }
 
-    const workerPatch: Record<string, any> = {};
+    const workerPatch: Record<string, string | number | boolean | null> = {};
     if (data.kind !== undefined) {
       if (!["delivery", "taxi"].includes(data.kind)) throw new Error("نوع السائق غير صحيح");
       workerPatch["worker_kind"] = data.kind;
       workerPatch["requested_kind"] = data.kind;
     }
     if (data.vehicleType !== undefined) workerPatch["vehicle_type"] = data.vehicleType;
-    if (data.vehicleMake !== undefined) workerPatch["vehicle_make"] = data.vehicleMake.trim() || null;
+    if (data.vehicleMake !== undefined)
+      workerPatch["vehicle_make"] = data.vehicleMake.trim() || null;
     if (data.vehicleModel !== undefined)
       workerPatch["vehicle_model"] = data.vehicleModel.trim() || null;
     if (data.vehicleColor !== undefined)

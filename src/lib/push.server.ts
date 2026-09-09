@@ -211,7 +211,10 @@ export async function sendFcm(
             token: deviceToken,
             notification: { title: msg.title, body: msg.body },
             data: { orderId: msg.orderId ?? "", kind: msg.kind ?? "", urgent: urgent ? "1" : "0" },
-            android: { priority: "HIGH", notification: { channel_id: channelId, sound: "default" } },
+            android: {
+              priority: "HIGH",
+              notification: { channel_id: channelId, sound: "default" },
+            },
           },
         }),
       });

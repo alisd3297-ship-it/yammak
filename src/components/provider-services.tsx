@@ -9,11 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { normalizeArabic } from "@/lib/search";
 import { AD_CURRENCIES, adCurrency, type AdCurrency } from "@/lib/ads";
-import {
-  PRICE_UNIT_LABELS,
-  formatServicePrice,
-  type ServicePriceUnit,
-} from "@/lib/services";
+import { PRICE_UNIT_LABELS, formatServicePrice, type ServicePriceUnit } from "@/lib/services";
 
 const UNITS: ServicePriceUnit[] = ["fixed", "hourly", "daily", "visit", "negotiable"];
 
