@@ -375,15 +375,7 @@ export function AdminNav() {
           </li>
         ))}
         <li className="ms-auto shrink-0">
-          <button
-            type="button"
-            onClick={() => void signOut()}
-            aria-label="تسجيل الخروج"
-            className="flex items-center gap-1.5 whitespace-nowrap rounded-full bg-destructive/10 px-4 py-2 text-xs font-bold text-destructive transition hover:bg-destructive/20"
-          >
-            <LogOut className="size-3.5" />
-            تسجيل الخروج
-          </button>
+          <AdminSignOutButton />
         </li>
       </ul>
     </nav>
