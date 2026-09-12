@@ -5,7 +5,7 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { PageShell, StatusDot } from "@/components/app-shell";
+import { AdminSignOutButton, PageShell, StatusDot } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -128,6 +128,9 @@ function AdminAdsPage() {
             <ArrowRight className="size-5" />
           </Link>
           <h1 className="text-xl font-black">إدارة الإعلانات</h1>
+          <span className="ms-auto">
+            <AdminSignOutButton dark />
+          </span>
         </div>
       </header>
 

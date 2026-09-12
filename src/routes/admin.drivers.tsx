@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { PageShell, StatusDot } from "@/components/app-shell";
+import { AdminSignOutButton, PageShell, StatusDot } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAccount } from "@/lib/auth";
@@ -264,13 +264,16 @@ function AdminDriversPage() {
             <h1 className="truncate text-2xl font-black">السائقون والرحلات</h1>
             <p className="mt-1 text-sm opacity-90">اعتماد السائقين ومتابعة رحلات التكسي</p>
           </div>
-          <Button
-            variant="secondary"
-            className="h-10 shrink-0 font-bold"
-            onClick={() => setShowAdd((v) => !v)}
-          >
-            {showAdd ? "إغلاق" : "+ إضافة سائق"}
-          </Button>
+          <div className="flex shrink-0 items-center gap-2">
+            <Button
+              variant="secondary"
+              className="h-10 font-bold"
+              onClick={() => setShowAdd((v) => !v)}
+            >
+              {showAdd ? "إغلاق" : "+ إضافة سائق"}
+            </Button>
+            <AdminSignOutButton dark />
+          </div>
         </div>
       </header>
 
