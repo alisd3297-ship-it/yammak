@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { ArrowRight } from "lucide-react";
-import { BackButton, PageShell, StatusDot } from "@/components/app-shell";
+import { AdminSignOutButton, BackButton, PageShell, StatusDot } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { adminListPayments, refundPayment } from "@/lib/payments.functions";
 import {

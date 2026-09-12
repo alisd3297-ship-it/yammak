@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { PageShell, StatusDot } from "@/components/app-shell";
+import { AdminSignOutButton, PageShell, StatusDot } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAccount } from "@/lib/auth";

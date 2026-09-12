@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { PageShell } from "@/components/app-shell";
+import { AdminSignOutButton, PageShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { useAccount } from "@/lib/auth";
 import { setProviderStatus } from "@/lib/provider.functions";
