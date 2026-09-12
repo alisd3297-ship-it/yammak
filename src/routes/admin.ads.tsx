@@ -128,6 +128,9 @@ function AdminAdsPage() {
             <ArrowRight className="size-5" />
           </Link>
           <h1 className="text-xl font-black">إدارة الإعلانات</h1>
+          <span className="ms-auto">
+            <AdminSignOutButton dark />
+          </span>
         </div>
       </header>
 

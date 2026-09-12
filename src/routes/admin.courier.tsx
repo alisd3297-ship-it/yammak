@@ -134,7 +134,10 @@ function AdminCourierPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <h1 className="text-2xl font-black">التوصيل والمندوب المستقل</h1>
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="text-2xl font-black">التوصيل والمندوب المستقل</h1>
+          <AdminSignOutButton dark />
+        </div>
         <p className="mt-1 text-sm opacity-90">متابعة الإرسال والاستلام وتعيين المندوبين.</p>
         <Link to="/admin/providers" className="mt-3 inline-block text-sm font-semibold underline">
           اعتماد المزوّدين
