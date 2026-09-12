@@ -338,9 +338,28 @@ const ADMIN_LINKS = [
   { to: "/admin/settings", label: "الإعدادات", exact: false },
 ] as const;
 
+/** زر خروج واضح لصفحات الإدارة: ينهي الجلسة فعلياً ويعيد التوجيه إلى صفحة الدخول. */
+export function AdminSignOutButton({ dark = false }: { dark?: boolean }) {
+  const signOut = useSignOut();
+  return (
+    <button
+      type="button"
+      onClick={() => void signOut()}
+      aria-label="تسجيل الخروج"
+      className={
+        dark
+          ? "flex items-center gap-1.5 whitespace-nowrap rounded-full bg-primary-foreground/15 px-4 py-2 text-xs font-bold backdrop-blur transition hover:bg-primary-foreground/25"
+          : "flex items-center gap-1.5 whitespace-nowrap rounded-full bg-destructive/10 px-4 py-2 text-xs font-bold text-destructive transition hover:bg-destructive/20"
+      }
+    >
+      <LogOut className="size-3.5" />
+      تسجيل الخروج
+    </button>
+  );
+}
+
 /** شريط تنقل موحّد بين صفحات الإدارة، مع زر خروج واضح ينهي الجلسة فعلياً. */
 export function AdminNav() {
-  const signOut = useSignOut();
   return (
     <nav className="mt-4 overflow-x-auto px-4">
       <ul className="flex items-center gap-2">
