@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bike, ClipboardList, Wallet } from "lucide-react";
 import { PageShell } from "@/components/app-shell";
 import { DriverShell, useDriverPresence } from "@/components/driver/driver-shell";
@@ -19,7 +19,14 @@ import { formatIQD } from "@/lib/orders";
 import { requireWorker } from "@/lib/route-guards";
 import { useQuery } from "@tanstack/react-query";
 import { myPushDevice } from "@/lib/push.functions";
-import { isNativeApp } from "@/lib/native-push";
+import {
+  isNativeApp,
+  getPushPermission,
+  enablePushNotifications,
+  openNotificationSettings,
+  type PushPermissionState,
+} from "@/lib/native-push";
+import { Button } from "@/components/ui/button";
 
 /**
  * تنبيه واقعي: بدون تسجيل جهاز لا يصل إشعار للهاتف حتى لو أُنشئ العرض.
