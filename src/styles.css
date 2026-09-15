@@ -197,7 +197,23 @@
    * - حالات hover/active تبقى عبر لون الأب (transition جاهزة).
    */
   .lucide {
-    stroke-width: 2.3px;
+    stroke-width: 2.6px;
+    filter:
+      drop-shadow(0 0 1px currentColor)
+      drop-shadow(0 0 4px currentColor);
+    transition: filter 180ms ease, transform 180ms ease;
+  }
+  button:not(:disabled):hover .lucide,
+  button:not(:disabled):focus-visible .lucide,
+  a:hover .lucide,
+  a:focus-visible .lucide,
+  [role="button"]:hover .lucide,
+  [role="button"]:focus-visible .lucide {
+    filter:
+      drop-shadow(0 0 2px currentColor)
+      drop-shadow(0 0 7px currentColor)
+      drop-shadow(0 0 12px currentColor);
+    transform: scale(1.06);
   }
   .text-muted-foreground .lucide,
   .lucide.text-muted-foreground {
@@ -210,6 +226,7 @@
   button:disabled .lucide,
   [aria-disabled="true"] .lucide {
     opacity: 0.45;
+    filter: none;
   }
 
   /* ===== تحسينات الوضع الليلي فقط (لا تمس الوضع النهاري) ===== */
