@@ -192,6 +192,15 @@ export async function sendFcm(
     });
     if (res.ok) {
       sent += 1;
+      // تشخيص آمن: معرّف الرسالة من FCM + القناة، بلا أي رمز جهاز كامل أو سرّ
+      const info = (await res.json().catch(() => ({}))) as { name?: string };
+      console.info("[push] fcm accepted", {
+        messageId: (info.name ?? "").split("/").pop() ?? "",
+        channel: channelId,
+        kind: msg.kind ?? "",
+        orderId: msg.orderId ?? "",
+        device: `${deviceToken.slice(0, 8)}…`,
+      });
       return;
     }
     if (res.status === 404 || res.status === 400) {
