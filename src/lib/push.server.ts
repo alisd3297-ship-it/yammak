@@ -424,11 +424,19 @@ export async function pushNotificationNow(notificationId: string): Promise<boole
     body: n.body ?? n.title,
     orderId: n.order_id,
     // نمرر النوع الحقيقي (offer/trip/...) حتى يفتح الضغط على الإشعار الشاشة الصحيحة
-            kind: n.kind ?? (n.order_id ? "order" : ""),
+    kind: n.kind ?? (n.order_id ? "order" : ""),
   });
   if (res.invalid.length > 0) {
     await supabaseAdmin.from("push_devices").update({ is_active: false }).in("token", res.invalid);
   }
+  console.info("[push] immediate dispatch", {
+    notificationId: n.id,
+    userId: n.user_id,
+    devices: tokens.length,
+    sent: res.sent,
+    invalid: res.invalid.length,
+    reason: res.reason ?? "",
+  });
   if (res.sent > 0) {
     await supabaseAdmin
       .from("notifications")
