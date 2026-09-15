@@ -116,6 +116,59 @@ async function ensureChannels(
   }
 }
 
+export type PushPermissionState = "granted" | "denied" | "prompt" | "unsupported";
+
+/** حالة إذن الإشعارات على الجهاز (داخل الغلاف الأصلي فقط). */
+export async function getPushPermission(): Promise<PushPermissionState> {
+  if (!isNativeApp()) return "unsupported";
+  try {
+    const { PushNotifications } = await import("@capacitor/push-notifications");
+    const { receive } = await PushNotifications.checkPermissions();
+    if (receive === "granted") return "granted";
+    if (receive === "denied") return "denied";
+    return "prompt";
+  } catch {
+    return "unsupported";
+  }
+}
+
+/**
+ * طلب إذن الإشعارات ثم إنشاء القنوات والتسجيل لدى FCM.
+ * يُستدعى من زر يضغطه المندوب (أندرويد 13+ يتطلب طلباً صريحاً).
+ */
+export async function enablePushNotifications(): Promise<PushPermissionState> {
+  if (!isNativeApp()) return "unsupported";
+  try {
+    const { PushNotifications } = await import("@capacitor/push-notifications");
+    let status = (await PushNotifications.checkPermissions()).receive;
+    if (status === "prompt" || status === "prompt-with-rationale") {
+      status = (await PushNotifications.requestPermissions()).receive;
+    }
+    if (status !== "granted") return status === "denied" ? "denied" : "prompt";
+    await ensureChannels(PushNotifications);
+    await PushNotifications.register();
+    return "granted";
+  } catch {
+    return "unsupported";
+  }
+}
+
+/** فتح شاشة إعدادات إشعارات التطبيق في النظام (بعد رفض الإذن). */
+export async function openNotificationSettings(): Promise<boolean> {
+  if (!isNativeApp()) return false;
+  try {
+    const mod = await import("capacitor-native-settings");
+    if ((window as unknown as { Capacitor?: { getPlatform?: () => string } }).Capacitor?.getPlatform?.() === "ios") {
+      await mod.NativeSettings.openIOS({ option: mod.IOSSettings.App });
+    } else {
+      await mod.NativeSettings.openAndroid({ option: mod.AndroidSettings.AppNotification });
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function useNativePush(
   userId: string | null | undefined,
   opts?: { deepLink?: (orderId: string | null) => string | null },
