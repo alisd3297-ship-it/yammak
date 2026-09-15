@@ -43,6 +43,17 @@ const QUERIES = `    <queries>
     </queries>
 `;
 
+/**
+ * قناة احتياطية لإشعارات FCM: إذا وصل إشعار قبل أن ينشئ التطبيق قنواته،
+ * يضعه أندرويد في قناة «متفرقات» منخفضة الأهمية = إشعار صامت بلا اهتزاز.
+ * هذه الـ meta-data تجبر FCM على استخدام قناة الطلبات عالية الأهمية.
+ */
+const FCM_DEFAULT_CHANNEL = "lubabak_orders_v2";
+const FCM_META = `        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="${FCM_DEFAULT_CHANNEL}" />
+`;
+
 function patchManifest() {
   if (!existsSync(MANIFEST)) return false;
   let xml = readFileSync(MANIFEST, "utf8");
@@ -56,6 +67,9 @@ function patchManifest() {
   }
   if (!xml.includes('android:usesCleartextTraffic="false"')) {
     xml = xml.replace(/(<application\b)/, '$1\n        android:usesCleartextTraffic="false"');
+  }
+  if (!xml.includes("default_notification_channel_id")) {
+    xml = xml.replace(/(\s*<\/application>)/, `\n${FCM_META}$1`);
   }
   writeFileSync(MANIFEST, xml);
   return true;

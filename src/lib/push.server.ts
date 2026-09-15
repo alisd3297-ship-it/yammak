@@ -417,7 +417,10 @@ export async function pushNotificationNow(notificationId: string): Promise<boole
     .eq("is_active", true)
     .eq("user_id", n.user_id);
   const tokens = (devices ?? []).map((d) => d.token);
-  if (tokens.length === 0) return false;
+  if (tokens.length === 0) {
+    console.warn("[push] no active device for user", n.user_id, "notification", n.id);
+    return false;
+  }
 
   const res = await sendFcm(tokens, {
     title: n.title,
