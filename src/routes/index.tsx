@@ -79,7 +79,7 @@ type MainTo =
   | "/doctors"
   | "/pharmacies"
   | "/special-delivery"
-  | "/service-requests";
+  | "/service-requests"
   | "/salons";
 
 type MainService = { label: string; hint: string; icon: Icons.LucideIcon; to: MainTo; tone: Tone };
