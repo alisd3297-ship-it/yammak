@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "270023809176",
+    "project_id": "lababak-834cc",
+    "storage_bucket": "lababak-834cc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:270023809176:android:4b5c8d39ab392941bbd8ed",
+        "android_client_info": {
+          "package_name": "iq.lababak.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnIPa56c-T6fIeLr3UynnehPMoAvGq_uA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
