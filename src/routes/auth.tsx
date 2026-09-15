@@ -32,10 +32,19 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  // طريقة التسجيل/الدخول: بريد إلكتروني أو رقم هاتف
+  const [signinMethod, setSigninMethod] = useState<AuthMethod>("phone");
+  const [signupMethod, setSignupMethod] = useState<AuthMethod>("phone");
   // نوع الحساب عند التسجيل: زبون يتفعل مباشرة، مندوب يمر بطلب اعتماد من الإدارة
   const [accountType, setAccountType] = useState<"customer" | "driver">("customer");
   const [pendingDriverSignup, setPendingDriverSignup] = useState(false);
   const { needsOnboarding } = useServicePreferences();
+
+  /** البريد المستخدم فعلياً مع المصادقة: إما بريد المستخدم أو بريد مشتق من رقمه. */
+  function credentialEmail(method: AuthMethod): string | null {
+    if (method === "email") return email.trim() || null;
+    return phoneToAuthEmail(phone);
+  }
 
   useEffect(() => {
     // لا نوجّه إلا بوجود جلسة فعلية (وليس بيانات مخزّنة قديمة بعد الخروج)
