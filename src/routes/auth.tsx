@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { phoneToAuthEmail } from "@/lib/phone-identity";
+
+type AuthMethod = "email" | "phone";
 
 export const Route = createFileRoute("/auth")({
   // صفحة تعتمد على جلسة المتصفح: نعطّل التصيير على الخادم لتفادي اختلاف الترطيب
