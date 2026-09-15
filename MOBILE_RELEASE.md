@@ -47,9 +47,12 @@ bun run build
 bunx cap add android
 bunx capacitor-assets generate --android
 node scripts/android-customize.mjs
+node scripts/android-version.mjs   # versionCode/versionName من android-config/version.json
 node scripts/android-signing.mjs
 bunx cap sync android
-cd android && ./gradlew bundleRelease   # المخرج: app/build/outputs/bundle/release/app-release.aab
+cd android && ./gradlew assembleRelease bundleRelease
+# APK:  app/build/outputs/apk/release/app-release.apk
+# AAB:  app/build/outputs/bundle/release/app-release.aab
 ```
 
 ## ما يجب فعله خارج Lovable
@@ -68,3 +71,11 @@ cd android && ./gradlew bundleRelease   # المخرج: app/build/outputs/bundle
 4. **Google Play Console**: إنشاء التطبيق باسم «لبابك»، رفع الـ AAB، سياسة الخصوصية،
    استبيان أمان البيانات (موقع + إشعارات + كاميرا)، تصنيف المحتوى، ولقطات الشاشة.
 5. **Deep links (اختياري)**: رفع `assetlinks.json` على `lababak.lovable.app` لتفعيل App Links.
+
+## أرقام الإصدار (تحديثات Google Play)
+
+المصدر الوحيد: `android-config/version.json` (`versionCode`, `versionName`).
+مشروع أندرويد يُولَّد في كل بناء بـ `cap add android` بقيمة افتراضية `versionCode 1`،
+لذلك `scripts/android-version.mjs` يعيد ضبط القيم قبل البناء، وإلا يرفض Play التحديث.
+يمكن التجاوز وقت التشغيل عبر مدخلات الـ workflow أو `ANDROID_VERSION_CODE` / `ANDROID_VERSION_NAME`.
+كل رفع جديد = `versionCode` أعلى من المنشور حالياً، مع نفس `applicationId` ونفس مفتاح التوقيع.
