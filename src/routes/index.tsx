@@ -100,14 +100,14 @@ const MAIN_SERVICES: MainService[] = [
     label: "خدمات ومهن",
     hint: "فنيين ومهنيين",
     icon: Icons.Wrench,
-    to: "/salons",
+    to: "/services",
     tone: "purple",
   },
   {
     label: "صالونات وكوزمتك",
     hint: "تجميل وعناية",
     icon: Icons.Scissors,
-    to: "/services",
+    to: "/salons",
     tone: "purple",
   },
   {
