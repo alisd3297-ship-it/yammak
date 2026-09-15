@@ -266,13 +266,15 @@ function AuthPage() {
             <Button type="submit" className="h-12 w-full text-base" disabled={loading}>
               دخول
             </Button>
-            <button
-              type="button"
-              onClick={resetPassword}
-              className="w-full text-sm text-muted-foreground"
-            >
-              نسيت كلمة المرور؟
-            </button>
+            {signinMethod === "email" && (
+              <button
+                type="button"
+                onClick={resetPassword}
+                className="w-full text-sm text-muted-foreground"
+              >
+                نسيت كلمة المرور؟
+              </button>
+            )}
             <p className="rounded-xl bg-muted p-3 text-xs text-muted-foreground">
               أصحاب المطاعم والمحلات ومقدمو الخدمات: سجّلوا الدخول بالبريد وكلمة المرور المستلمة من
               إدارة لبابك، وتُفتح لوحة نشاطكم تلقائياً بعد الدخول.
