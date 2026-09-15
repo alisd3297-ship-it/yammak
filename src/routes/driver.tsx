@@ -26,20 +26,66 @@ import { isNativeApp } from "@/lib/native-push";
  * يظهر داخل التطبيق المثبّت فقط (المتصفح لا يسجّل أجهزة).
  */
 function PushStatusNotice({ approved }: { approved: boolean }) {
-  const { data } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: ["my-push-device"],
     queryFn: () => myPushDevice(),
     refetchInterval: 60_000,
   });
+  const [permission, setPermission] = useState<PushPermissionState>("unsupported");
+  const [busy, setBusy] = useState(false);
+  const native = isNativeApp();
+
+  useEffect(() => {
+    if (!native) return;
+    void getPushPermission().then(setPermission);
+  }, [native]);
+
   if (!approved || !data || data.active) return null;
+
+  const enable = async () => {
+    setBusy(true);
+    try {
+      const next = await enablePushNotifications();
+      setPermission(next);
+      // التسجيل يصل عبر مستمع Capacitor؛ نعيد الفحص بعد لحظة
+      setTimeout(() => void refetch(), 2500);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <div className="rounded-2xl border border-warning/40 bg-warning/10 p-4 text-sm">
       <p className="font-bold">إشعارات الهاتف غير مفعّلة لحسابك</p>
       <p className="mt-1 text-muted-foreground">
-        {isNativeApp()
-          ? "ما تم تسجيل جهازك. افتح إعدادات الهاتف واسمح بإشعارات لبابك ثم أعد فتح التطبيق."
-          : "أنت تستخدم المتصفح؛ التنبيه الصوتي يشتغل داخل الصفحة فقط. لاستلام الإشعارات والتطبيق مغلق، ثبّت تطبيق لبابك على الهاتف."}
+        {!native
+          ? "أنت تستخدم المتصفح؛ التنبيه الصوتي يشتغل داخل الصفحة فقط. لاستلام الإشعارات والتطبيق مغلق، ثبّت تطبيق لبابك على الهاتف."
+          : permission === "denied"
+            ? "رفضت إذن الإشعارات، فما راح توصلك الطلبات والتطبيق مغلق. افتح إعدادات الإشعارات واسمح لتطبيق لبابك."
+            : "فعّل إشعارات الطلبات حتى يوصلك التنبيه بصوت واهتزاز حتى لو التطبيق مغلق."}
       </p>
+      {native ? (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {permission === "denied" ? (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                void openNotificationSettings();
+              }}
+            >
+              فتح إعدادات الإشعارات
+            </Button>
+          ) : (
+            <Button size="sm" disabled={busy} onClick={() => void enable()}>
+              {busy ? "جارٍ التفعيل…" : "تفعيل إشعارات الطلبات"}
+            </Button>
+          )}
+          <Button size="sm" variant="ghost" onClick={() => void refetch()}>
+            تحديث الحالة
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 }
