@@ -9,6 +9,44 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { phoneToAuthEmail } from "@/lib/phone-identity";
+
+type AuthMethod = "email" | "phone";
+
+/** اختيار طريقة التسجيل/الدخول: رقم هاتف أو بريد إلكتروني. */
+function MethodPicker({
+  value,
+  onChange,
+  idPrefix,
+}: {
+  value: AuthMethod;
+  onChange: (v: AuthMethod) => void;
+  idPrefix: string;
+}) {
+  const options = [
+    { key: "phone" as const, label: "رقم الهاتف" },
+    { key: "email" as const, label: "البريد الإلكتروني" },
+  ];
+  return (
+    <div className="grid grid-cols-2 gap-2 rounded-2xl bg-muted p-1">
+      {options.map((opt) => (
+        <button
+          key={`${idPrefix}-${opt.key}`}
+          type="button"
+          aria-pressed={value === opt.key}
+          onClick={() => onChange(opt.key)}
+          className={
+            value === opt.key
+              ? "rounded-xl bg-card px-3 py-2 text-sm font-bold text-foreground shadow-card"
+              : "rounded-xl px-3 py-2 text-sm font-semibold text-muted-foreground"
+          }
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/auth")({
   // صفحة تعتمد على جلسة المتصفح: نعطّل التصيير على الخادم لتفادي اختلاف الترطيب
@@ -32,10 +70,19 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  // طريقة التسجيل/الدخول: بريد إلكتروني أو رقم هاتف
+  const [signinMethod, setSigninMethod] = useState<AuthMethod>("phone");
+  const [signupMethod, setSignupMethod] = useState<AuthMethod>("phone");
   // نوع الحساب عند التسجيل: زبون يتفعل مباشرة، مندوب يمر بطلب اعتماد من الإدارة
   const [accountType, setAccountType] = useState<"customer" | "driver">("customer");
   const [pendingDriverSignup, setPendingDriverSignup] = useState(false);
   const { needsOnboarding } = useServicePreferences();
+
+  /** البريد المستخدم فعلياً مع المصادقة: إما بريد المستخدم أو بريد مشتق من رقمه. */
+  function credentialEmail(method: AuthMethod): string | null {
+    if (method === "email") return email.trim() || null;
+    return phoneToAuthEmail(phone);
+  }
 
   useEffect(() => {
     // لا نوجّه إلا بوجود جلسة فعلية (وليس بيانات مخزّنة قديمة بعد الخروج)
@@ -55,10 +102,12 @@ function AuthPage() {
     }
   }, [account, navigate, pendingDriverSignup, needsOnboarding]);
 
-  function authErrorMessage(message: string): string {
+  function authErrorMessage(message: string, method: AuthMethod = "email"): string {
     const m = message.toLowerCase();
-    if (m.includes("invalid login credentials"))
-      return "البريد الإلكتروني أو كلمة المرور غير صحيحة";
+    const idLabel = method === "phone" ? "رقم الهاتف" : "البريد الإلكتروني";
+    if (m.includes("invalid login credentials")) return `${idLabel} أو كلمة المرور غير صحيحة`;
+    if (method === "phone" && (m.includes("already registered") || m.includes("user already")))
+      return "هذا الرقم مسجّل مسبقاً، جرّب تسجيل الدخول";
     if (m.includes("email not confirmed")) return "لم يتم تأكيد البريد بعد، راجع بريدك الإلكتروني";
     if (m.includes("weak") || m.includes("pwned"))
       return "كلمة المرور ضعيفة أو مسربة، اختر كلمة مرور أقوى (أحرف وأرقام ورموز)";
@@ -77,14 +126,19 @@ function AuthPage() {
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
+    const loginEmail = credentialEmail(signinMethod);
+    if (!loginEmail) {
+      toast.error("رقم الهاتف غير صحيح، اكتبه بصيغة 07XXXXXXXXX");
+      return;
+    }
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
+      email: loginEmail,
       password,
     });
     setLoading(false);
     if (error) {
-      toast.error(authErrorMessage(error.message));
+      toast.error(authErrorMessage(error.message, signinMethod));
       return;
     }
     toast.success("أهلاً بيك بلبابك");
@@ -92,10 +146,15 @@ function AuthPage() {
 
   async function signUp(e: React.FormEvent) {
     e.preventDefault();
+    const newEmail = credentialEmail(signupMethod);
+    if (!newEmail) {
+      toast.error("رقم الهاتف غير صحيح، اكتبه بصيغة 07XXXXXXXXX");
+      return;
+    }
     setLoading(true);
     setPendingDriverSignup(accountType === "driver");
     const { data, error } = await supabase.auth.signUp({
-      email: email.trim(),
+      email: newEmail,
       password,
       options: {
         emailRedirectTo: window.location.origin,
@@ -106,7 +165,7 @@ function AuthPage() {
     setLoading(false);
     if (error) {
       setPendingDriverSignup(false);
-      toast.error(authErrorMessage(error.message));
+      toast.error(authErrorMessage(error.message, signupMethod));
       return;
     }
     if (data.session) {
@@ -115,11 +174,15 @@ function AuthPage() {
     }
     // No session returned: sign in directly (auto-confirm) or ask to confirm email.
     const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
+      email: newEmail,
       password,
     });
     if (signInError) {
-      toast.success("تم إنشاء الحساب، راجع بريدك لتأكيد التسجيل");
+      toast.success(
+        signupMethod === "phone"
+          ? "تم إنشاء الحساب، جرّب تسجيل الدخول برقمك"
+          : "تم إنشاء الحساب، راجع بريدك لتأكيد التسجيل",
+      );
       return;
     }
     toast.success("تم إنشاء حسابك، أهلاً بيك بلبابك");
@@ -199,16 +262,32 @@ function AuthPage() {
 
         <TabsContent value="signin">
           <form onSubmit={signIn} className="space-y-4 pt-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">البريد الإلكتروني</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+            <MethodPicker value={signinMethod} onChange={setSigninMethod} idPrefix="signin" />
+            {signinMethod === "phone" ? (
+              <div className="space-y-2">
+                <Label htmlFor="signin-phone">رقم الهاتف</Label>
+                <Input
+                  id="signin-phone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  inputMode="tel"
+                  placeholder="07XXXXXXXXX"
+                  dir="ltr"
+                  required
+                />
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Label htmlFor="email">البريد الإلكتروني</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="password">كلمة المرور</Label>
               <Input
@@ -222,13 +301,15 @@ function AuthPage() {
             <Button type="submit" className="h-12 w-full text-base" disabled={loading}>
               دخول
             </Button>
-            <button
-              type="button"
-              onClick={resetPassword}
-              className="w-full text-sm text-muted-foreground"
-            >
-              نسيت كلمة المرور؟
-            </button>
+            {signinMethod === "email" && (
+              <button
+                type="button"
+                onClick={resetPassword}
+                className="w-full text-sm text-muted-foreground"
+              >
+                نسيت كلمة المرور؟
+              </button>
+            )}
             <p className="rounded-xl bg-muted p-3 text-xs text-muted-foreground">
               أصحاب المطاعم والمحلات ومقدمو الخدمات: سجّلوا الدخول بالبريد وكلمة المرور المستلمة من
               إدارة لبابك، وتُفتح لوحة نشاطكم تلقائياً بعد الدخول.
@@ -279,6 +360,7 @@ function AuthPage() {
                 required
               />
             </div>
+            <MethodPicker value={signupMethod} onChange={setSignupMethod} idPrefix="signup" />
             <div className="space-y-2">
               <Label htmlFor="phone">رقم الهاتف</Label>
               <Input
@@ -286,18 +368,29 @@ function AuthPage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 inputMode="tel"
+                placeholder="07XXXXXXXXX"
+                dir="ltr"
+                required={signupMethod === "phone"}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email2">البريد الإلكتروني</Label>
-              <Input
-                id="email2"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+            {signupMethod === "email" && (
+              <div className="space-y-2">
+                <Label htmlFor="email2">البريد الإلكتروني</Label>
+                <Input
+                  id="email2"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+            {signupMethod === "phone" && (
+              <p className="rounded-xl bg-muted p-3 text-xs text-muted-foreground">
+                راح تدخل بعدها برقم هاتفك وكلمة المرور. لو نسيت كلمة المرور، راجع إدارة لبابك
+                لاستعادتها.
+              </p>
+            )}
             <div className="space-y-2">
               <Label htmlFor="password2">كلمة المرور</Label>
               <Input
