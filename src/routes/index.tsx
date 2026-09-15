@@ -80,6 +80,7 @@ type MainTo =
   | "/pharmacies"
   | "/special-delivery"
   | "/service-requests";
+  | "/salons";
 
 type MainService = { label: string; hint: string; icon: Icons.LucideIcon; to: MainTo; tone: Tone };
 
@@ -99,7 +100,7 @@ const MAIN_SERVICES: MainService[] = [
     label: "خدمات ومهن",
     hint: "فنيين ومهنيين",
     icon: Icons.Wrench,
-    to: "/services",
+    to: "/salons",
     tone: "purple",
   },
   {

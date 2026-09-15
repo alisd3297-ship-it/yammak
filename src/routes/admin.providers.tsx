@@ -130,7 +130,7 @@ function AdminProvidersPage() {
       let query = supabase
         .from("providers")
         .select(
-          "id, name, kind, status, phone, address_text, description, created_at, owner_id, city_id, lat, lng, logo_url, opening_time, closing_time, delivery_fee_override, min_order_amount, is_open, keywords, profession_category_id",
+          "id, name, kind, status, phone, address_text, description, created_at, owner_id, city_id, lat, lng, logo_url, opening_time, closing_time, delivery_fee_override, min_order_amount, is_open, keywords, profession_category_id, instagram_url, facebook_url, tiktok_url",
         )
         .order("created_at", { ascending: false })
         .limit(100);
@@ -316,7 +316,7 @@ function AdminProvidersPage() {
       <div className={cn("space-y-3 px-4 py-5", view !== "providers" && "hidden")}>
         <Button onClick={openCreate} className="h-14 w-full rounded-2xl text-base font-bold">
           <Plus className="size-5" />
-          إضافة حساب مطعم / محل
+          إضافة مطعم / محل / صالون
         </Button>
 
         {(providers ?? []).map((p) => (

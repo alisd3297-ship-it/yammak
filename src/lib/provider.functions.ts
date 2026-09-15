@@ -86,6 +86,9 @@ export type AdminProviderInput = {
   isOpen?: boolean;
   keywords?: string[] | null;
   professionCategoryId?: string | null;
+  instagramUrl?: string | null;
+  facebookUrl?: string | null;
+  tiktokUrl?: string | null;
 };
 
 /**
@@ -119,6 +122,9 @@ export const adminUpsertProvider = createServerFn({ method: "POST" })
       _is_open: data.isOpen ?? true,
       ...(data.keywords?.length ? { _keywords: data.keywords } : {}),
       ...(data.professionCategoryId ? { _profession_category_id: data.professionCategoryId } : {}),
+      _instagram_url: data.instagramUrl ?? "",
+      _facebook_url: data.facebookUrl ?? "",
+      _tiktok_url: data.tiktokUrl ?? "",
     });
     if (error || !provider) throw new Error(friendly(error?.message ?? ""));
     return { id: provider.id, status: provider.status as ProviderStatus };

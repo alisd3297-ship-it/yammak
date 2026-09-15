@@ -42,6 +42,12 @@ const BUSINESS_TYPES = [
     kind: "profession" as const,
     keywords: ["خدمة", "خدمات"],
   },
+  {
+    key: "salon",
+    label: "صالون وكوزمتك",
+    kind: "store" as const,
+    keywords: ["salon_cosmetics", "صالون", "كوزمتك"],
+  },
   { key: "profession", label: "مهنة", kind: "profession" as const, keywords: [] as string[] },
 ] as const;
 
@@ -73,6 +79,9 @@ export type ProviderFormValue = {
   is_open: boolean;
   keywords: string[] | null;
   profession_category_id: string | null;
+  instagram_url: string | null;
+  facebook_url: string | null;
+  tiktok_url: string | null;
 };
 
 /** كلمة مرور أولية قوية يسلّمها المسؤول لصاحب النشاط. */
@@ -86,6 +95,7 @@ function randomPassword(): string {
 function typeKeyOf(p: ProviderFormValue | null): BusinessTypeKey {
   if (!p) return "restaurant";
   const kw = (p.keywords ?? []).join(" ");
+  if ((p.keywords ?? []).includes("salon_cosmetics")) return "salon";
   if (p.kind === "store" && /سوبرماركت|supermarket|بقالة/i.test(kw)) return "supermarket";
   if (p.kind === "profession") return "profession";
   if (p.kind === "restaurant") return "restaurant";
@@ -134,6 +144,9 @@ export function ProviderFormDialog({
   const [status, setStatus] = useState<(typeof STATUS_OPTIONS)[number]["key"]>("approved");
   const [isOpen, setIsOpen] = useState(true);
   const [logoUrl, setLogoUrl] = useState("");
+  const [instagramUrl, setInstagramUrl] = useState("");
+  const [facebookUrl, setFacebookUrl] = useState("");
+  const [tiktokUrl, setTiktokUrl] = useState("");
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   // حساب دخول صاحب النشاط (يُنشأ مع النشاط في نفس الخطوة)
@@ -188,6 +201,9 @@ export function ProviderFormDialog({
     setStatus((provider?.status as (typeof STATUS_OPTIONS)[number]["key"]) ?? "approved");
     setIsOpen(provider?.is_open ?? true);
     setLogoUrl(provider?.logo_url ?? "");
+    setInstagramUrl(provider?.instagram_url ?? "");
+    setFacebookUrl(provider?.facebook_url ?? "");
+    setTiktokUrl(provider?.tiktok_url ?? "");
     setWithAccount(!provider);
     setOwnerName("");
     setOwnerEmail("");
@@ -260,6 +276,9 @@ export function ProviderFormDialog({
           isOpen,
           keywords,
           professionCategoryId: needsCategory ? professionCategoryId : null,
+          instagramUrl: instagramUrl.trim() || null,
+          facebookUrl: facebookUrl.trim() || null,
+          tiktokUrl: tiktokUrl.trim() || null,
         },
       });
       if (creatingAccount && saved?.id) {
@@ -435,6 +454,24 @@ export function ProviderFormDialog({
               onChange={(e) => setAddressText(e.target.value)}
             />
           </div>
+
+          {typeKey === "salon" && (
+            <div className="space-y-3 rounded-2xl border border-border p-3">
+              <p className="text-sm font-bold">مواقع التواصل</p>
+              <div className="space-y-1.5">
+                <Label htmlFor="pf-instagram">رابط إنستغرام</Label>
+                <Input id="pf-instagram" dir="ltr" type="url" placeholder="https://instagram.com/..." value={instagramUrl} onChange={(event) => setInstagramUrl(event.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="pf-facebook">رابط فيسبوك</Label>
+                <Input id="pf-facebook" dir="ltr" type="url" placeholder="https://facebook.com/..." value={facebookUrl} onChange={(event) => setFacebookUrl(event.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="pf-tiktok">رابط تيك توك</Label>
+                <Input id="pf-tiktok" dir="ltr" type="url" placeholder="https://tiktok.com/@..." value={tiktokUrl} onChange={(event) => setTiktokUrl(event.target.value)} />
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">

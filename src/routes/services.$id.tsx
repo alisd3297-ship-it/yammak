@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { OPERATING_ADDRESS_PREFIX } from "@/lib/location";
-import { LocateFixed, Star, Wrench } from "lucide-react";
+import { Facebook, Instagram, LocateFixed, MapPin, Music2, Star, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { requireCustomerFlow } from "@/lib/route-guards";
@@ -55,7 +55,7 @@ function ServiceProviderPage() {
         supabase
           .from("providers")
           .select(
-            "id, name, description, rating, ratings_count, is_open, address_text, phone, status",
+            "id, name, description, rating, ratings_count, is_open, address_text, phone, status, keywords, instagram_url, facebook_url, tiktok_url",
           )
           .eq("id", id)
           .eq("is_demo", false)
@@ -72,6 +72,7 @@ function ServiceProviderPage() {
   });
 
   const provider = data?.provider;
+  const isSalon = provider?.keywords?.includes("salon_cosmetics") ?? false;
 
   async function submit() {
     if (!account?.userId) {
@@ -118,7 +119,7 @@ function ServiceProviderPage() {
   return (
     <PageShell>
       <header className="brand-gradient rounded-b-3xl px-5 pb-8 pt-7 text-primary-foreground">
-        <BackButton fallback="/services" label="كل الخدمات" />
+        <BackButton fallback={isSalon ? "/salons" : "/services"} label={isSalon ? "الصالونات والكوزمتك" : "كل الخدمات"} />
         <div className="flex items-start gap-3">
           <span className="flex size-14 items-center justify-center rounded-2xl bg-white/15">
             <Wrench className="size-6" />
@@ -136,6 +137,21 @@ function ServiceProviderPage() {
           </div>
         </div>
       </header>
+
+      {(provider.address_text || provider.instagram_url || provider.facebook_url || provider.tiktok_url) && (
+        <section className="px-4 pt-5">
+          <div className="rounded-2xl bg-card p-4 shadow-soft">
+            {provider.address_text && <p className="flex items-center gap-2 text-sm"><MapPin className="size-4 text-primary" />{provider.address_text}</p>}
+            {(provider.instagram_url || provider.facebook_url || provider.tiktok_url) && (
+              <div className="mt-3 flex gap-2" aria-label="مواقع التواصل">
+                {provider.instagram_url && <a href={provider.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="إنستغرام" className="flex size-10 items-center justify-center rounded-full bg-accent text-accent-foreground"><Instagram className="size-5" /></a>}
+                {provider.facebook_url && <a href={provider.facebook_url} target="_blank" rel="noopener noreferrer" aria-label="فيسبوك" className="flex size-10 items-center justify-center rounded-full bg-accent text-accent-foreground"><Facebook className="size-5" /></a>}
+                {provider.tiktok_url && <a href={provider.tiktok_url} target="_blank" rel="noopener noreferrer" aria-label="تيك توك" className="flex size-10 items-center justify-center rounded-full bg-accent text-accent-foreground"><Music2 className="size-5" /></a>}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       <section className="px-4 py-5">
         <h2 className="mb-3 text-base font-bold">الخدمات والأسعار</h2>
