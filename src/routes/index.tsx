@@ -80,7 +80,7 @@ type MainTo =
 
 type MainService = { label: string; hint: string; icon: Icons.LucideIcon; to: MainTo; tone: Tone };
 
-/** الخدمات الرئيسية الستة في واجهة الزبون. */
+/** الخدمات الرئيسية في واجهة الزبون. */
 const MAIN_SERVICES: MainService[] = [
   {
     label: "مطاعم",
@@ -96,6 +96,13 @@ const MAIN_SERVICES: MainService[] = [
     label: "خدمات ومهن",
     hint: "فنيين ومهنيين",
     icon: Icons.Wrench,
+    to: "/services",
+    tone: "purple",
+  },
+  {
+    label: "صالونات وكوزمتك",
+    hint: "تجميل وعناية",
+    icon: Icons.Scissors,
     to: "/services",
     tone: "purple",
   },
