@@ -89,14 +89,19 @@ function AuthPage() {
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
+    const loginEmail = credentialEmail(signinMethod);
+    if (!loginEmail) {
+      toast.error("رقم الهاتف غير صحيح، اكتبه بصيغة 07XXXXXXXXX");
+      return;
+    }
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
+      email: loginEmail,
       password,
     });
     setLoading(false);
     if (error) {
-      toast.error(authErrorMessage(error.message));
+      toast.error(authErrorMessage(error.message, signinMethod));
       return;
     }
     toast.success("أهلاً بيك بلبابك");
@@ -104,10 +109,15 @@ function AuthPage() {
 
   async function signUp(e: React.FormEvent) {
     e.preventDefault();
+    const newEmail = credentialEmail(signupMethod);
+    if (!newEmail) {
+      toast.error("رقم الهاتف غير صحيح، اكتبه بصيغة 07XXXXXXXXX");
+      return;
+    }
     setLoading(true);
     setPendingDriverSignup(accountType === "driver");
     const { data, error } = await supabase.auth.signUp({
-      email: email.trim(),
+      email: newEmail,
       password,
       options: {
         emailRedirectTo: window.location.origin,
@@ -118,7 +128,7 @@ function AuthPage() {
     setLoading(false);
     if (error) {
       setPendingDriverSignup(false);
-      toast.error(authErrorMessage(error.message));
+      toast.error(authErrorMessage(error.message, signupMethod));
       return;
     }
     if (data.session) {
@@ -127,11 +137,15 @@ function AuthPage() {
     }
     // No session returned: sign in directly (auto-confirm) or ask to confirm email.
     const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
+      email: newEmail,
       password,
     });
     if (signInError) {
-      toast.success("تم إنشاء الحساب، راجع بريدك لتأكيد التسجيل");
+      toast.success(
+        signupMethod === "phone"
+          ? "تم إنشاء الحساب، جرّب تسجيل الدخول برقمك"
+          : "تم إنشاء الحساب، راجع بريدك لتأكيد التسجيل",
+      );
       return;
     }
     toast.success("تم إنشاء حسابك، أهلاً بيك بلبابك");
