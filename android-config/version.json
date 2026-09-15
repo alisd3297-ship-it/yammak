@@ -1,0 +1,5 @@
+{
+  "versionCode": 2,
+  "versionName": "1.0.1",
+  "note": "رقم الإصدار المصدر الوحيد لبناء أندرويد. ارفع versionCode لكل رفع جديد إلى Google Play. يمكن تجاوزه وقت البناء عبر ANDROID_VERSION_CODE / ANDROID_VERSION_NAME."
+}
