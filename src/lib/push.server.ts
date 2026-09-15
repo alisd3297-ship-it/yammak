@@ -332,7 +332,8 @@ export async function dispatchPendingPush(limit = 100): Promise<PushDispatchResu
             title: n.title,
             body: n.body ?? n.title,
             orderId: n.order_id,
-            kind: n.order_id ? "order" : n.kind,
+            // نمرر النوع الحقيقي (offer/trip/...) حتى يفتح الضغط على الإشعار الشاشة الصحيحة
+            kind: n.kind ?? (n.order_id ? "order" : ""),
           });
           return { n, res };
         } catch (err) {
@@ -413,7 +414,8 @@ export async function pushNotificationNow(notificationId: string): Promise<boole
     title: n.title,
     body: n.body ?? n.title,
     orderId: n.order_id,
-    kind: n.order_id ? "order" : n.kind,
+    // نمرر النوع الحقيقي (offer/trip/...) حتى يفتح الضغط على الإشعار الشاشة الصحيحة
+            kind: n.kind ?? (n.order_id ? "order" : ""),
   });
   if (res.invalid.length > 0) {
     await supabaseAdmin.from("push_devices").update({ is_active: false }).in("token", res.invalid);
