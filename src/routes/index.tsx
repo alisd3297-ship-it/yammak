@@ -299,7 +299,11 @@ function CustomerHome() {
 
       <AdminEntry />
 
-      <div className="mt-1 flex items-center justify-center gap-2 px-4">
+      <div
+        className="mt-1 flex items-center justify-center gap-2 px-4"
+        role="group"
+        aria-labelledby="home-color-theme-title"
+      >
         <h2 className="sr-only" id="home-color-theme-title">
           نظام الألوان
         </h2>
