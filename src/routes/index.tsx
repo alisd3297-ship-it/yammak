@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCachedQuery } from "@/lib/offline-cache";
 import { AdminEntry, BottomNav, OfflineBanner, PageShell } from "@/components/app-shell";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { normalizeArabic, fuzzyScore } from "@/lib/search";
 import { AdsTickerBoard } from "@/components/ads-ticker";
 import { useAdsBoard } from "@/routes/ads.index";
@@ -13,6 +14,8 @@ import { useRoleHomeRedirect, useCustomerAreaGuard } from "@/lib/auth";
 import { useOnboardingRedirect } from "@/lib/service-preferences";
 import { useFavorites } from "@/lib/favorites";
 import { cn } from "@/lib/utils";
+import { BRAND_PRESETS } from "@/lib/brand-theme";
+import { useTheme } from "@/lib/theme";
 import logoUrl from "@/assets/lubabak-logo.png";
 
 export const Route = createFileRoute("/")({
@@ -235,6 +238,7 @@ function CustomerHome() {
   // زبون جديد لم يختر خدماته بعد: نعرض له شاشة الترحيب أولاً
   useOnboardingRedirect();
   const [term, setTerm] = useState("");
+  const { brand, applyBrandPreview } = useTheme();
   const adsBoard = useAdsBoard();
 
   const catalog = useCachedQuery(["home-catalog"], async () => {
@@ -294,6 +298,44 @@ function CustomerHome() {
       <OfflineBanner stale={catalog.isStaleCache} />
 
       <AdminEntry />
+
+      <section className="mt-3 px-4" aria-labelledby="home-color-theme-title">
+        <div className="rounded-2xl border border-border/60 bg-card p-3 shadow-soft">
+          <div className="mb-3 flex items-center gap-2">
+            <Icons.Palette className="size-5 text-primary" />
+            <h2 id="home-color-theme-title" className="text-sm font-bold">
+              نظام الألوان
+            </h2>
+          </div>
+          <div className="grid grid-cols-5 gap-2">
+            {BRAND_PRESETS.map((preset) => {
+              const selected = brand.preset === preset.id;
+              return (
+                <Button
+                  key={preset.id}
+                  type="button"
+                  variant="outline"
+                  onClick={() => applyBrandPreview({ ...preset })}
+                  aria-pressed={selected}
+                  aria-label={`اختيار اللون ${preset.label}`}
+                  className={cn(
+                    "h-auto min-w-0 flex-col gap-1.5 px-1.5 py-2 shadow-none",
+                    selected && "border-primary bg-accent ring-2 ring-ring",
+                  )}
+                >
+                  <span
+                    className="size-6 rounded-full border border-border"
+                    style={{ backgroundColor: preset.primary }}
+                  />
+                  <span className="w-full truncate text-[10px] font-bold sm:text-xs">
+                    {preset.label}
+                  </span>
+                </Button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
       {results ? (
         <section className="mt-5 space-y-6 px-4">
