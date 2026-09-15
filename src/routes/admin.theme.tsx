@@ -98,7 +98,12 @@ function AdminThemePage() {
       </header>
 
       <section className="space-y-3 px-4 pt-4">
-        <h2 className="text-base font-bold">أنماط جاهزة</h2>
+        <div>
+          <h2 className="text-base font-bold">اختيار نظام الألوان</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            اختر اللون المناسب وسيظهر فوراً في معاينة التطبيق.
+          </p>
+        </div>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {BRAND_PRESETS.map((p) => (
             <button
