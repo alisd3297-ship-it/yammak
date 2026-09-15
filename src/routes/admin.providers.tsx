@@ -158,7 +158,13 @@ function AdminProvidersPage() {
   async function apply(
     providerId: string,
     status: "approved" | "rejected" | "suspended" | "pending",
+    coords?: { lat: number | null; lng: number | null },
   ) {
+    // الاعتماد بلا موقع يعطي مسافات وأجور توصيل غير واقعية، فنمنعه من الأساس.
+    if (status === "approved" && coords && (coords.lat == null || coords.lng == null)) {
+      toast.error("حدّد موقع المحل على الخريطة قبل اعتماده");
+      return;
+    }
     try {
       await setStatus({ data: { providerId, status } });
       toast.success("تم تحديث حالة المزوّد");
@@ -357,7 +363,10 @@ function AdminProvidersPage() {
                 {p.owner_id ? "إدارة الحساب" : "إنشاء حساب دخول"}
               </Button>
               {p.status !== "approved" && (
-                <Button className="h-10 flex-1" onClick={() => apply(p.id, "approved")}>
+                <Button
+                  className="h-10 flex-1"
+                  onClick={() => apply(p.id, "approved", { lat: p.lat, lng: p.lng })}
+                >
                   اعتماد
                 </Button>
               )}
