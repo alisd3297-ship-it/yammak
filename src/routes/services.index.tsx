@@ -10,6 +10,7 @@ import { BackButton, BottomNav, OfflineBanner, PageShell } from "@/components/ap
 import { Input } from "@/components/ui/input";
 import { fuzzyScore } from "@/lib/search";
 import { cn } from "@/lib/utils";
+import { isBeautyCategoryName, isSalonProvider } from "@/lib/salons";
 
 export const Route = createFileRoute("/services/")({
   beforeLoad: requireCustomerFlow,
@@ -55,7 +56,10 @@ function ServicesPage() {
         .order("rating", { ascending: false })
         .limit(300),
     ]);
-    return { categories: categories.data ?? [], providers: providers.data ?? [] };
+    return {
+      categories: (categories.data ?? []).filter((category) => !isBeautyCategoryName(category.name)),
+      providers: (providers.data ?? []).filter((provider) => !isSalonProvider(provider)),
+    };
   });
 
   const list = useMemo(() => {

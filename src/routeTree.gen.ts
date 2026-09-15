@@ -39,6 +39,7 @@ import { Route as QuotesRouteImport } from './routes/quotes'
 import { Route as ReferralsRouteImport } from './routes/referrals'
 import { Route as RequestAnythingRouteImport } from './routes/request-anything'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SalonsRouteImport } from './routes/salons'
 import { Route as SetupAdminRouteImport } from './routes/setup-admin'
 import { Route as SetupTestAccountsRouteImport } from './routes/setup-test-accounts'
 import { Route as SpecialDeliveryRouteImport } from './routes/special-delivery'
@@ -244,6 +245,11 @@ const RequestAnythingRoute = RequestAnythingRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SalonsRoute = SalonsRouteImport.update({
+  id: '/salons',
+  path: '/salons',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SetupAdminRoute = SetupAdminRouteImport.update({
@@ -559,6 +565,7 @@ export interface FileRoutesByFullPath {
   '/referrals': typeof ReferralsRoute
   '/request-anything': typeof RequestAnythingRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/salons': typeof SalonsRoute
   '/setup-admin': typeof SetupAdminRoute
   '/setup-test-accounts': typeof SetupTestAccountsRoute
   '/special-delivery': typeof SpecialDeliveryRoute
@@ -647,6 +654,7 @@ export interface FileRoutesByTo {
   '/referrals': typeof ReferralsRoute
   '/request-anything': typeof RequestAnythingRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/salons': typeof SalonsRoute
   '/setup-admin': typeof SetupAdminRoute
   '/setup-test-accounts': typeof SetupTestAccountsRoute
   '/special-delivery': typeof SpecialDeliveryRoute
@@ -736,6 +744,7 @@ export interface FileRoutesById {
   '/referrals': typeof ReferralsRoute
   '/request-anything': typeof RequestAnythingRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/salons': typeof SalonsRoute
   '/setup-admin': typeof SetupAdminRoute
   '/setup-test-accounts': typeof SetupTestAccountsRoute
   '/special-delivery': typeof SpecialDeliveryRoute
@@ -826,6 +835,7 @@ export interface FileRouteTypes {
     | '/referrals'
     | '/request-anything'
     | '/reset-password'
+    | '/salons'
     | '/setup-admin'
     | '/setup-test-accounts'
     | '/special-delivery'
@@ -914,6 +924,7 @@ export interface FileRouteTypes {
     | '/referrals'
     | '/request-anything'
     | '/reset-password'
+    | '/salons'
     | '/setup-admin'
     | '/setup-test-accounts'
     | '/special-delivery'
@@ -1002,6 +1013,7 @@ export interface FileRouteTypes {
     | '/referrals'
     | '/request-anything'
     | '/reset-password'
+    | '/salons'
     | '/setup-admin'
     | '/setup-test-accounts'
     | '/special-delivery'
@@ -1091,6 +1103,7 @@ export interface RootRouteChildren {
   ReferralsRoute: typeof ReferralsRoute
   RequestAnythingRoute: typeof RequestAnythingRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SalonsRoute: typeof SalonsRoute
   SetupAdminRoute: typeof SetupAdminRoute
   SetupTestAccountsRoute: typeof SetupTestAccountsRoute
   SpecialDeliveryRoute: typeof SpecialDeliveryRoute
@@ -1359,6 +1372,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/salons': {
+      id: '/salons'
+      path: '/salons'
+      fullPath: '/salons'
+      preLoaderRoute: typeof SalonsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/setup-admin': {
@@ -1787,6 +1807,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReferralsRoute: ReferralsRoute,
   RequestAnythingRoute: RequestAnythingRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SalonsRoute: SalonsRoute,
   SetupAdminRoute: SetupAdminRoute,
   SetupTestAccountsRoute: SetupTestAccountsRoute,
   SpecialDeliveryRoute: SpecialDeliveryRoute,

@@ -79,7 +79,8 @@ type MainTo =
   | "/doctors"
   | "/pharmacies"
   | "/special-delivery"
-  | "/service-requests";
+  | "/service-requests"
+  | "/salons";
 
 type MainService = { label: string; hint: string; icon: Icons.LucideIcon; to: MainTo; tone: Tone };
 
@@ -106,7 +107,7 @@ const MAIN_SERVICES: MainService[] = [
     label: "صالونات وكوزمتك",
     hint: "تجميل وعناية",
     icon: Icons.Scissors,
-    to: "/services",
+    to: "/salons",
     tone: "purple",
   },
   {
