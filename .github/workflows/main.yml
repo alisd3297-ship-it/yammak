@@ -33,9 +33,15 @@ jobs:
           bunx cap add android
 
       - name: Restore google-services.json
-        if: ${{ env.GOOGLE_SERVICES_JSON != '' }}
         run: |
-          printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+          if [ -n "$GOOGLE_SERVICES_JSON" ]; then
+            printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+          else
+            cp android-config/google-services.json android/app/google-services.json
+          fi
+
+      - name: Verify Firebase config
+        run: node scripts/verify-google-services.mjs android/app/google-services.json
 
       - name: Restore release keystore
         if: ${{ env.ANDROID_KEYSTORE_BASE64 != '' }}
