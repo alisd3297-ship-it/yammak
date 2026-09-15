@@ -13,6 +13,41 @@ import { phoneToAuthEmail } from "@/lib/phone-identity";
 
 type AuthMethod = "email" | "phone";
 
+/** اختيار طريقة التسجيل/الدخول: رقم هاتف أو بريد إلكتروني. */
+function MethodPicker({
+  value,
+  onChange,
+  idPrefix,
+}: {
+  value: AuthMethod;
+  onChange: (v: AuthMethod) => void;
+  idPrefix: string;
+}) {
+  const options = [
+    { key: "phone" as const, label: "رقم الهاتف" },
+    { key: "email" as const, label: "البريد الإلكتروني" },
+  ];
+  return (
+    <div className="grid grid-cols-2 gap-2 rounded-2xl bg-muted p-1">
+      {options.map((opt) => (
+        <button
+          key={`${idPrefix}-${opt.key}`}
+          type="button"
+          aria-pressed={value === opt.key}
+          onClick={() => onChange(opt.key)}
+          className={
+            value === opt.key
+              ? "rounded-xl bg-card px-3 py-2 text-sm font-bold text-foreground shadow-card"
+              : "rounded-xl px-3 py-2 text-sm font-semibold text-muted-foreground"
+          }
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export const Route = createFileRoute("/auth")({
   // صفحة تعتمد على جلسة المتصفح: نعطّل التصيير على الخادم لتفادي اختلاف الترطيب
   ssr: false,
