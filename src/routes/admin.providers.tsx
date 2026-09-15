@@ -363,7 +363,10 @@ function AdminProvidersPage() {
                 {p.owner_id ? "إدارة الحساب" : "إنشاء حساب دخول"}
               </Button>
               {p.status !== "approved" && (
-                <Button className="h-10 flex-1" onClick={() => apply(p.id, "approved")}>
+                <Button
+                  className="h-10 flex-1"
+                  onClick={() => apply(p.id, "approved", { lat: p.lat, lng: p.lng })}
+                >
                   اعتماد
                 </Button>
               )}
