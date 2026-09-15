@@ -72,26 +72,32 @@ function PushStatusNotice({ approved }: { approved: boolean }) {
             : "فعّل إشعارات الطلبات حتى يوصلك التنبيه بصوت واهتزاز حتى لو التطبيق مغلق."}
       </p>
       {native ? (
-        <div className="mt-3 flex flex-wrap gap-2">
-          {permission === "denied" ? (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                void openNotificationSettings();
-              }}
-            >
-              فتح إعدادات الإشعارات
+        <>
+          <p className="mt-2 text-xs text-muted-foreground">
+            نصيحة مهمة: من إعدادات الهاتف ألغِ «توفير البطارية/تقييد الخلفية» لتطبيق لبابك، وإلا
+            يوقف النظام الإشعارات وقت ما تكون الشاشة مطفأة.
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {permission === "denied" ? (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  void openNotificationSettings();
+                }}
+              >
+                فتح إعدادات الإشعارات
+              </Button>
+            ) : (
+              <Button size="sm" disabled={busy} onClick={() => void enable()}>
+                {busy ? "جارٍ التفعيل…" : "تفعيل إشعارات الطلبات"}
+              </Button>
+            )}
+            <Button size="sm" variant="ghost" onClick={() => void refetch()}>
+              تحديث الحالة
             </Button>
-          ) : (
-            <Button size="sm" disabled={busy} onClick={() => void enable()}>
-              {busy ? "جارٍ التفعيل…" : "تفعيل إشعارات الطلبات"}
-            </Button>
-          )}
-          <Button size="sm" variant="ghost" onClick={() => void refetch()}>
-            تحديث الحالة
-          </Button>
-        </div>
+          </div>
+        </>
       ) : null}
     </div>
   );

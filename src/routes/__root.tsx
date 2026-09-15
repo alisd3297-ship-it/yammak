@@ -138,7 +138,13 @@ function RootShell({ children }: { children: ReactNode }) {
 function NativePushBridge() {
   const { data: account } = useAccount();
   useNativePush(account?.userId ?? null, {
-    deepLink: (orderId) => (orderId ? `/orders/${orderId}` : "/notifications"),
+    // عروض المندوب تفتح لوحة المندوب على الطلب نفسه، وبقية الإشعارات تفتح صفحة الطلب
+    deepLink: (orderId, kind) => {
+      if (kind.startsWith("trip") || kind.startsWith("taxi")) return "/driver";
+      if (orderId && (kind === "offer" || kind.startsWith("dispatch")))
+        return `/driver?order=${orderId}`;
+      return orderId ? `/orders/${orderId}` : "/notifications";
+    },
   });
   return null;
 }

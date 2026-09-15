@@ -192,6 +192,15 @@ export async function sendFcm(
     });
     if (res.ok) {
       sent += 1;
+      // تشخيص آمن: معرّف الرسالة من FCM + القناة، بلا أي رمز جهاز كامل أو سرّ
+      const info = (await res.json().catch(() => ({}))) as { name?: string };
+      console.info("[push] fcm accepted", {
+        messageId: (info.name ?? "").split("/").pop() ?? "",
+        channel: channelId,
+        kind: msg.kind ?? "",
+        orderId: msg.orderId ?? "",
+        device: `${deviceToken.slice(0, 8)}…`,
+      });
       return;
     }
     if (res.status === 404 || res.status === 400) {
@@ -332,7 +341,8 @@ export async function dispatchPendingPush(limit = 100): Promise<PushDispatchResu
             title: n.title,
             body: n.body ?? n.title,
             orderId: n.order_id,
-            kind: n.order_id ? "order" : n.kind,
+            // نمرر النوع الحقيقي (offer/trip/...) حتى يفتح الضغط على الإشعار الشاشة الصحيحة
+            kind: n.kind ?? (n.order_id ? "order" : ""),
           });
           return { n, res };
         } catch (err) {
@@ -407,17 +417,29 @@ export async function pushNotificationNow(notificationId: string): Promise<boole
     .eq("is_active", true)
     .eq("user_id", n.user_id);
   const tokens = (devices ?? []).map((d) => d.token);
-  if (tokens.length === 0) return false;
+  if (tokens.length === 0) {
+    console.warn("[push] no active device for user", n.user_id, "notification", n.id);
+    return false;
+  }
 
   const res = await sendFcm(tokens, {
     title: n.title,
     body: n.body ?? n.title,
     orderId: n.order_id,
-    kind: n.order_id ? "order" : n.kind,
+    // نمرر النوع الحقيقي (offer/trip/...) حتى يفتح الضغط على الإشعار الشاشة الصحيحة
+    kind: n.kind ?? (n.order_id ? "order" : ""),
   });
   if (res.invalid.length > 0) {
     await supabaseAdmin.from("push_devices").update({ is_active: false }).in("token", res.invalid);
   }
+  console.info("[push] immediate dispatch", {
+    notificationId: n.id,
+    userId: n.user_id,
+    devices: tokens.length,
+    sent: res.sent,
+    invalid: res.invalid.length,
+    reason: res.reason ?? "",
+  });
   if (res.sent > 0) {
     await supabaseAdmin
       .from("notifications")
