@@ -67,10 +67,12 @@ function AuthPage() {
     }
   }, [account, navigate, pendingDriverSignup, needsOnboarding]);
 
-  function authErrorMessage(message: string): string {
+  function authErrorMessage(message: string, method: AuthMethod = "email"): string {
     const m = message.toLowerCase();
-    if (m.includes("invalid login credentials"))
-      return "البريد الإلكتروني أو كلمة المرور غير صحيحة";
+    const idLabel = method === "phone" ? "رقم الهاتف" : "البريد الإلكتروني";
+    if (m.includes("invalid login credentials")) return `${idLabel} أو كلمة المرور غير صحيحة`;
+    if (method === "phone" && (m.includes("already registered") || m.includes("user already")))
+      return "هذا الرقم مسجّل مسبقاً، جرّب تسجيل الدخول";
     if (m.includes("email not confirmed")) return "لم يتم تأكيد البريد بعد، راجع بريدك الإلكتروني";
     if (m.includes("weak") || m.includes("pwned"))
       return "كلمة المرور ضعيفة أو مسربة، اختر كلمة مرور أقوى (أحرف وأرقام ورموز)";
