@@ -299,43 +299,30 @@ function CustomerHome() {
 
       <AdminEntry />
 
-      <section className="mt-3 px-4" aria-labelledby="home-color-theme-title">
-        <div className="rounded-2xl border border-border/60 bg-card p-3 shadow-soft">
-          <div className="mb-3 flex items-center gap-2">
-            <Icons.Palette className="size-5 text-primary" />
-            <h2 id="home-color-theme-title" className="text-sm font-bold">
-              نظام الألوان
-            </h2>
-          </div>
-          <div className="grid grid-cols-5 gap-2">
-            {BRAND_PRESETS.map((preset) => {
-              const selected = brand.preset === preset.id;
-              return (
-                <Button
-                  key={preset.id}
-                  type="button"
-                  variant="outline"
-                  onClick={() => applyBrandPreview({ ...preset })}
-                  aria-pressed={selected}
-                  aria-label={`اختيار اللون ${preset.label}`}
-                  className={cn(
-                    "h-auto min-w-0 flex-col gap-1.5 px-1.5 py-2 shadow-none",
-                    selected && "border-primary bg-accent ring-2 ring-ring",
-                  )}
-                >
-                  <span
-                    className="size-6 rounded-full border border-border"
-                    style={{ backgroundColor: preset.primary }}
-                  />
-                  <span className="w-full truncate text-[10px] font-bold sm:text-xs">
-                    {preset.label}
-                  </span>
-                </Button>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+      <div className="mt-1 flex items-center justify-center gap-2 px-4">
+        <h2 className="sr-only" id="home-color-theme-title">
+          نظام الألوان
+        </h2>
+        <Icons.Palette className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+        {BRAND_PRESETS.map((preset) => {
+          const selected = brand.preset === preset.id;
+          return (
+            <button
+              key={preset.id}
+              type="button"
+              onClick={() => applyBrandPreview({ ...preset })}
+              aria-pressed={selected}
+              aria-label={`اختيار اللون ${preset.label}`}
+              title={preset.label}
+              className={cn(
+                "size-5 shrink-0 rounded-full border border-border/70 transition-transform",
+                selected && "ring-2 ring-ring ring-offset-1 ring-offset-background",
+              )}
+              style={{ backgroundColor: preset.primary }}
+            />
+          );
+        })}
+      </div>
 
       {results ? (
         <section className="mt-5 space-y-6 px-4">
