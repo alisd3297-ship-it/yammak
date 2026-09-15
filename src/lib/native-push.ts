@@ -173,25 +173,99 @@ export async function openNotificationSettings(): Promise<boolean> {
   }
 }
 
+/** آخر رمز جهاز وصل خلال هذا التشغيل (يبقى بعد تبديل الحساب لإعادة الربط). */
+let lastToken: string | null = null;
+
 export function useNativePush(
   userId: string | null | undefined,
-  opts?: { deepLink?: (orderId: string | null) => string | null },
+  opts?: { deepLink?: (orderId: string | null, kind: string) => string | null },
 ) {
   const optsRef = useRef(opts);
   optsRef.current = opts;
 
+  /**
+   * (1) المستمعون يُسجَّلون فور إقلاع التطبيق ودون انتظار جلسة المستخدم.
+   * سبب مهم: عند فتح التطبيق من إشعار والتطبيق مغلق تماماً، يطلق Capacitor حدث
+   * pushNotificationActionPerformed مبكراً جداً؛ لو انتظرنا تحميل الحساب يضيع الحدث
+   * ويفتح التطبيق على الصفحة الرئيسية بدل الطلب.
+   */
+  useEffect(() => {
+    if (!isNativeApp()) return;
+    let cancelled = false;
+    const removers: Array<() => void> = [];
+
+    void (async () => {
+      try {
+        const { PushNotifications } = await import("@capacitor/push-notifications");
+
+        // التطبيق مفتوح: أندرويد لا يعرض الإشعار تلقائياً، فننبّه داخل التطبيق
+        const recvHandle = await PushNotifications.addListener("pushNotificationReceived", (n) => {
+          const orderId = (n.data?.["orderId"] as string | undefined) || null;
+          const dataKind = (n.data?.["kind"] as string | undefined) || "";
+          const urgent =
+            (n.data?.["urgent"] as string | undefined) === "1" ||
+            Boolean(orderId) ||
+            dataKind.startsWith("trip");
+          fireAlert({
+            title: n.title ?? "إشعار جديد",
+            body: n.body ?? "",
+            tag: orderId,
+            kind: urgent ? "order" : "default",
+            url:
+              optsRef.current?.deepLink?.(orderId, dataKind) ??
+              (dataKind.startsWith("trip") ? "/driver" : null),
+          });
+          playAlertSound(urgent ? "order" : "default");
+          void vibrateOrder();
+        });
+        removers.push(() => void recvHandle.remove());
+
+        // الضغط على الإشعار (الخلفية/بعد الإغلاق): فتح الشاشة الصحيحة
+        const tapHandle = await PushNotifications.addListener(
+          "pushNotificationActionPerformed",
+          (action) => {
+            const data = action.notification.data as Record<string, string> | undefined;
+            const orderId = data?.["orderId"] || null;
+            const kind = data?.["kind"] || "";
+            const url =
+              optsRef.current?.deepLink?.(orderId, kind) ?? (orderId ? `/orders/${orderId}` : null);
+            console.info("[push] notification tapped", { kind, hasOrder: Boolean(orderId), url });
+            if (url) window.location.assign(url);
+          },
+        );
+        removers.push(() => void tapHandle.remove());
+
+        // القنوات تُنشأ مبكراً: إن وصل إشعار قبل فتح لوحة المندوب يجب أن تكون القناة موجودة
+        if (!cancelled) await ensureChannels(PushNotifications);
+      } catch (err) {
+        console.error("[push] listeners init failed", err);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      removers.forEach((remove) => {
+        try {
+          remove();
+        } catch {
+          // تجاهل
+        }
+      });
+    };
+  }, []);
+
+  /** (2) ربط رمز الجهاز بالحساب الحالي بعد توفر الجلسة. */
   useEffect(() => {
     if (!userId || !isNativeApp()) return;
     let cancelled = false;
     const removers: Array<() => void> = [];
-    // الرمز قد يصل قبل أو بعد register؛ نحتفظ به لإعادة الربط بالمستخدم الحالي
-    let lastToken: string | null = null;
 
     const saveToken = (token: string) => {
       lastToken = token;
       void registerPushDevice({ data: { token, platform: platformName() } })
         .then((res) => {
           if (res && res.ok === false) console.error("[push] token save failed", res.reason);
+          else console.info("[push] device token registered", token.slice(0, 8) + "…");
         })
         .catch((err) => console.error("[push] token save error", err));
     };
@@ -200,7 +274,6 @@ export function useNativePush(
       try {
         const { PushNotifications } = await import("@capacitor/push-notifications");
 
-        // 1) المستمعون أولاً — قبل register حتى لا يضيع حدث registration
         const regHandle = await PushNotifications.addListener("registration", (t) => {
           if (cancelled) return;
           saveToken(t.value);
@@ -212,54 +285,20 @@ export function useNativePush(
         });
         removers.push(() => void errHandle.remove());
 
-        // التطبيق مفتوح: أندرويد لا يعرض الإشعار تلقائياً، فننبّه داخل التطبيق
-        const recvHandle = await PushNotifications.addListener("pushNotificationReceived", (n) => {
-          const orderId = (n.data?.["orderId"] as string | undefined) || null;
-          const dataKind = (n.data?.["kind"] as string | undefined) || "";
-          // الخادم يحدد العجلة (urgent) بحسب نوع الإشعار؛ نحتفظ باحتياطي محلي
-          const urgent =
-            (n.data?.["urgent"] as string | undefined) === "1" ||
-            Boolean(orderId) ||
-            dataKind.startsWith("trip");
-          fireAlert({
-            title: n.title ?? "إشعار جديد",
-            body: n.body ?? "",
-            tag: orderId,
-            kind: urgent ? "order" : "default",
-            url:
-              optsRef.current?.deepLink?.(orderId) ??
-              (dataKind.startsWith("trip") ? "/driver" : null),
-          });
-          playAlertSound(urgent ? "order" : "default");
-          void vibrateOrder();
-        });
-        removers.push(() => void recvHandle.remove());
-
-        // الضغط على الإشعار (الخلفية/بعد الإغلاق): فتح الطلب
-        const tapHandle = await PushNotifications.addListener(
-          "pushNotificationActionPerformed",
-          (action) => {
-            const orderId = (action.notification.data?.["orderId"] as string | undefined) || null;
-            const url =
-              optsRef.current?.deepLink?.(orderId) ?? (orderId ? `/orders/${orderId}` : null);
-            if (url) window.location.assign(url);
-          },
-        );
-        removers.push(() => void tapHandle.remove());
-
-        // 2) الأذونات
         const perm = await PushNotifications.checkPermissions();
         let status = perm.receive;
         if (status === "prompt" || status === "prompt-with-rationale") {
           status = (await PushNotifications.requestPermissions()).receive;
         }
-        if (status !== "granted" || cancelled) return;
+        if (status !== "granted" || cancelled) {
+          console.warn("[push] notifications permission not granted", status);
+          return;
+        }
 
-        // 3) القنوات ثم التسجيل
         await ensureChannels(PushNotifications);
         await PushNotifications.register();
 
-        // إن كان الرمز محفوظاً من جلسة سابقة داخل نفس التشغيل، أعد ربطه بالمستخدم الحالي
+        // رمز محفوظ من جلسة سابقة داخل نفس التشغيل: أعد ربطه بالحساب الحالي
         if (lastToken && !cancelled) saveToken(lastToken);
       } catch (err) {
         console.error("[push] init failed", err);
