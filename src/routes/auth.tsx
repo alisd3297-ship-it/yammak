@@ -227,16 +227,32 @@ function AuthPage() {
 
         <TabsContent value="signin">
           <form onSubmit={signIn} className="space-y-4 pt-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">البريد الإلكتروني</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+            <MethodPicker value={signinMethod} onChange={setSigninMethod} idPrefix="signin" />
+            {signinMethod === "phone" ? (
+              <div className="space-y-2">
+                <Label htmlFor="signin-phone">رقم الهاتف</Label>
+                <Input
+                  id="signin-phone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  inputMode="tel"
+                  placeholder="07XXXXXXXXX"
+                  dir="ltr"
+                  required
+                />
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Label htmlFor="email">البريد الإلكتروني</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="password">كلمة المرور</Label>
               <Input
