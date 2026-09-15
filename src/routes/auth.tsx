@@ -323,6 +323,7 @@ function AuthPage() {
                 required
               />
             </div>
+            <MethodPicker value={signupMethod} onChange={setSignupMethod} idPrefix="signup" />
             <div className="space-y-2">
               <Label htmlFor="phone">رقم الهاتف</Label>
               <Input
@@ -330,18 +331,29 @@ function AuthPage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 inputMode="tel"
+                placeholder="07XXXXXXXXX"
+                dir="ltr"
+                required={signupMethod === "phone"}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email2">البريد الإلكتروني</Label>
-              <Input
-                id="email2"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+            {signupMethod === "email" && (
+              <div className="space-y-2">
+                <Label htmlFor="email2">البريد الإلكتروني</Label>
+                <Input
+                  id="email2"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+            {signupMethod === "phone" && (
+              <p className="rounded-xl bg-muted p-3 text-xs text-muted-foreground">
+                راح تدخل بعدها برقم هاتفك وكلمة المرور. لو نسيت كلمة المرور، راجع إدارة لبابك
+                لاستعادتها.
+              </p>
+            )}
             <div className="space-y-2">
               <Label htmlFor="password2">كلمة المرور</Label>
               <Input
