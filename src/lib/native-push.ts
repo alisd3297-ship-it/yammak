@@ -158,7 +158,11 @@ export async function openNotificationSettings(): Promise<boolean> {
   if (!isNativeApp()) return false;
   try {
     const mod = await import("capacitor-native-settings");
-    if ((window as unknown as { Capacitor?: { getPlatform?: () => string } }).Capacitor?.getPlatform?.() === "ios") {
+    if (
+      (
+        window as unknown as { Capacitor?: { getPlatform?: () => string } }
+      ).Capacitor?.getPlatform?.() === "ios"
+    ) {
       await mod.NativeSettings.openIOS({ option: mod.IOSSettings.App });
     } else {
       await mod.NativeSettings.openAndroid({ option: mod.AndroidSettings.AppNotification });
