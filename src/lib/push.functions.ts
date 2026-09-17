@@ -15,7 +15,7 @@ export const registerPushDevice = createServerFn({ method: "POST" })
     // عبر RPC آمنة: نفس الهاتف قد يكون مسجّلاً سابقاً بحساب آخر (دراجة/تكسي/زبون)،
     // وسياسة الصفوف تمنع تحديث صف يملكه مستخدم آخر، فتفشل إعادة التسجيل بصمت.
     // الدالة تنقل ملكية الرمز للحساب الحالي ذرياً.
-    const rpc = context.supabase.rpc as unknown as (
+    const rpc = context.supabase.rpc.bind(context.supabase) as unknown as (
       fn: string,
       args: Record<string, unknown>,
     ) => Promise<{ error: { message: string } | null }>;
