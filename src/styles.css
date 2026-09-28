@@ -11,7 +11,7 @@
  */
 
 @theme inline {
-  --font-sans: "Cairo", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -188,7 +188,16 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-tap-highlight-color: transparent;
+    font-size: 15px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
+
+  /* خط رسمي: IBM Plex Sans Arabic أقصى وزن 700، فنحوّل الأوزان الثقيلة إليه */
+  .font-black, .font-extrabold { font-weight: 700; }
+  h1, h2, h3, h4 { line-height: 1.45; letter-spacing: 0; }
+  p, li { line-height: 1.75; }
 
   /*
    * تعزيز وضوح الأيقونات (lucide) في كل التطبيق:
