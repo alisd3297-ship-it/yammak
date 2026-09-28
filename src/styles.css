@@ -11,7 +11,7 @@
  */
 
 @theme inline {
-  --font-sans: "Cairo", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -188,7 +188,16 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-tap-highlight-color: transparent;
+    font-size: 15px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
+
+  /* خط رسمي: IBM Plex Sans Arabic أقصى وزن 700، فنحوّل الأوزان الثقيلة إليه */
+  .font-black, .font-extrabold { font-weight: 700; }
+  h1, h2, h3, h4 { line-height: 1.45; letter-spacing: 0; }
+  p, li { line-height: 1.75; }
 
   /*
    * تعزيز وضوح الأيقونات (lucide) في كل التطبيق:
@@ -197,23 +206,18 @@
    * - حالات hover/active تبقى عبر لون الأب (transition جاهزة).
    */
   .lucide {
-    stroke-width: 2.6px;
-    filter:
-      drop-shadow(0 0 1px currentColor)
-      drop-shadow(0 0 4px currentColor);
-    transition: filter 180ms ease, transform 180ms ease;
+    stroke-width: 2.2px;
+    transition: color 150ms ease, opacity 150ms ease;
   }
   button:not(:disabled):hover .lucide,
-  button:not(:disabled):focus-visible .lucide,
   a:hover .lucide,
+  [role="button"]:hover .lucide {
+    opacity: 0.85;
+  }
+  button:focus-visible .lucide,
   a:focus-visible .lucide,
-  [role="button"]:hover .lucide,
   [role="button"]:focus-visible .lucide {
-    filter:
-      drop-shadow(0 0 2px currentColor)
-      drop-shadow(0 0 7px currentColor)
-      drop-shadow(0 0 12px currentColor);
-    transform: scale(1.06);
+    opacity: 1;
   }
   .text-muted-foreground .lucide,
   .lucide.text-muted-foreground {
@@ -226,7 +230,6 @@
   button:disabled .lucide,
   [aria-disabled="true"] .lucide {
     opacity: 0.45;
-    filter: none;
   }
 
   /* ===== تحسينات الوضع الليلي فقط (لا تمس الوضع النهاري) ===== */
